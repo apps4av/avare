@@ -52,14 +52,12 @@ public class Coordinate {
     }
     
     /**
-     * 
      */
     public double getLongitude() {
         return mLon;
     }
     
     /**
-     * 
      */
     public double getLatitude() {
         return mLat;

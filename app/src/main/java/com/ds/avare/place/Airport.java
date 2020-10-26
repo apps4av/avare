@@ -39,7 +39,6 @@ public class Airport {
     private double mHeight;
    
     /**
-     * 
      * @param params
      * @param cLon
      * @param cLat
