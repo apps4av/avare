@@ -21,7 +21,6 @@ public class MessageFactory {
     /**
      * Find NMEA checksum that excludes $ and things including, after *
      * @param bufin
-     * @param len
      * @return
      */
     public static int checkSum(byte bufin[]) {

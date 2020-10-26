@@ -163,6 +163,14 @@ public class DataSource {
         return  LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
     }
 
+    public String findClosestNavaidID(double lon, double lat) {
+        return  LocationContentProviderHelper.findClosestNavaidID(mContext, lon, lat);
+    }
+
+    public String findClosestFixID(double lon, double lat) {
+        return  LocationContentProviderHelper.findClosestFixID(mContext, lon, lat);
+    }
+
     public Coordinate findRunwayCoordinates(String name, String airport) {
         return LocationContentProviderHelper.findRunwayCoordinates(mContext, name, airport);
     }

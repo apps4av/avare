@@ -39,10 +39,7 @@ public class Airport {
     private double mHeight;
    
     /**
-     * 
-     * @param id
-     * @param lon
-     * @param lat
+     * @param params
      * @param cLon
      * @param cLat
      */
@@ -154,7 +151,7 @@ public class Airport {
     }
 
     /**
-     * @param altitude
+     * @param mPref
      */
     public boolean canGlide(Preferences mPref) {
         /*

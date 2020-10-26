@@ -26,8 +26,8 @@ public class PixelCoordinate {
     
     /**
      * 
-     * @param lon
-     * @param lat
+     * @param x
+     * @param y
      */
     public PixelCoordinate(double x, double y) {
         mX = x;

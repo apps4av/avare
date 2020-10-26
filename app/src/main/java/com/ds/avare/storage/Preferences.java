@@ -1151,6 +1151,10 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
     }
 
+    public String getAircraftOtherInfo() {
+        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
+    }
+
     public String getAircraftSurveillanceEquipment() {
         return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
     }

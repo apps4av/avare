@@ -105,7 +105,7 @@ public class AfdView extends View implements MultiTouchObjectCanvas<Object>, OnT
     }
 
     /**
-     * @param name
+     * @param holder
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
