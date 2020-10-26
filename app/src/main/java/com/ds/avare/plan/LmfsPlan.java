@@ -168,6 +168,7 @@ public class LmfsPlan {
         noOfAircraft = "1";
         wakeTurbulence = "LIGHT";
         route = DIRECT;
+        otherInfo = pref.getAircraftOtherInfo();
 		surveillanceEquipment = pref.getAircraftSurveillanceEquipment();
         aircraftEquipment = pref.getAircraftEquipment();
         cruisingSpeed = String.valueOf(pref.getAircraftTAS());
