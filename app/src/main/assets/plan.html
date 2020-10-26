@@ -173,6 +173,9 @@ function plan_add(id, type) {
 
     // clear search input
     document.getElementById("search_input").value = "";
+
+    //each time plan updates, update "create new plan" for faster plan editing
+    document.getElementById("create_input").value += id.substring(0, 6) + " ";
 }
 
 // Delete a waypoint in Plan
@@ -214,6 +217,9 @@ function plan_clear() {
 			plan_table.deleteRow(row);
 	}
     document.getElementById('plan_altitude').selectedIndex = 0;
+
+    //clear Create New Plan box as well
+    document.getElementById("create_input").value = "";
 }
 
 // remove the entire plan
