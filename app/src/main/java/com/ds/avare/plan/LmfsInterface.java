@@ -275,7 +275,9 @@ public class LmfsInterface {
 
 	/**
 	 * Gte briefing
-	 * @param id
+	 * @param pl
+	 * @param translated
+	 * @param routeWidth
 	 */
 	public void getBriefing(LmfsPlan pl, boolean translated, String routeWidth) {
 

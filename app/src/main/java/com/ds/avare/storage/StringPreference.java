@@ -156,7 +156,7 @@ public class StringPreference {
 
     /**
      * 
-     * @param hashedDesc
+     * @param hashedName
      * @return
      */
     static public String parseHashedNameDesc(String hashedName) {

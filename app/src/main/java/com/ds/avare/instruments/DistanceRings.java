@@ -183,9 +183,9 @@ public class DistanceRings {
     /**
      * 
      * @param context
-     * @param pref
      * @param scale
-     * @param movement
+     * @param origin
+     * @param lat
      * @param speed
      */
     public void calculateRings(Context context,

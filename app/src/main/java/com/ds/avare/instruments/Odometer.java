@@ -39,7 +39,6 @@ public class Odometer {
 	
 	/***
 	 * Reset the value of the odometer to zero.
-	 * @param pref The preference object so as to clear the saved value
 	 */
 	public void reset() {
 		if(mPref != null) {
@@ -52,7 +51,6 @@ public class Odometer {
 
 	/***
 	 * Update the value of the odometer based upon the gpsParams passed in
-	 * @param pref preferences object soas to save the current odometer value
 	 * @param gpsParams current gps locations
 	 */
 	public void updateValue(GpsParams gpsParams) {

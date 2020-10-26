@@ -96,7 +96,7 @@ public class TwoButton extends Button implements OnClickListener {
 	
 	/**
 	 * 
-	 * @param on
+	 * @param checked
 	 */
 	public void setChecked(boolean checked) {
 		mOn = checked;

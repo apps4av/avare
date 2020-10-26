@@ -31,8 +31,7 @@ public class ElevationTile {
 
     /**
      * 
-     * @param x
-     * @param y
+     * @param context
      */
     public ElevationTile(Context context) {
         mContext = context;

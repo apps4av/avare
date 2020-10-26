@@ -70,7 +70,7 @@ public class Checklist {
 
     /**
      * From JSON
-     * @param name
+     * @param json
      */
     public Checklist(JSONObject json) {
         try {
@@ -155,8 +155,8 @@ public class Checklist {
 
     /**
      * Insert a step in the middle
-     * @param step
-     * @param pos
+     * @param from
+     * @param to
      */
     public void moveStep(int from, int to) {
         String steps[] = getStepsArray();
