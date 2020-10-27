@@ -570,35 +570,16 @@ public class Plan implements Observer {
     public void replaceDestination(Preferences pref, int id, double lon,
             double lat, boolean finish) {
         boolean active = mActive;
-        String newDestination = null;
-        String destType;
+        String airport = null;
 
         if (finish) {
-            /*
-                Assume an airport at start or end.
-                For mid-flight, prioritize as 1) navaid, 2) airport, 3) fix
-             */
-            if (id==0 || id==getDestinationNumber()-1) {
-                destType=Destination.BASE;
-                newDestination = mService.getDBResource().findClosestAirportID(lon, lat);
-            } else {
-                destType=Destination.NAVAID;
-                newDestination = mService.getDBResource().findClosestNavaidID(lon,lat);
-                if (null == newDestination) {
-                    destType=Destination.BASE;
-                    newDestination = mService.getDBResource().findClosestAirportID(lon, lat);
-                }
-                if (null == newDestination) {
-                    destType=Destination.FIX;
-                    newDestination = mService.getDBResource().findClosestFixID(lon,lat);
-                }
-            }
+            airport = mService.getDBResource().findClosestAirportID(lon, lat);
 
             mReplaceId = id;
 
             Destination d;
-            if (null != newDestination) {
-                d = DestinationFactory.build(mService, newDestination,destType);
+            if (null != airport) {
+                d = DestinationFactory.build(mService, airport, Destination.BASE);
             } else {
                 d = DestinationFactory.build(mService, Helper.getGpsAddress(lon, lat), Destination.GPS);
             }
