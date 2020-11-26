@@ -76,9 +76,9 @@ function updateImageWinds() {
 	getImageWinds(type, level, ftime);
 }
 
-function getImageTurb(level, ftime, cat) {
+function getImageTurb(level, ftime) {
 	var elem = document.getElementById('weatherImageTurb');
-	var filename = 'https://aviationweather.gov/adds/data/turbulence/' + ftime + '_gtg_cat-' + cat + '_' + level + '.gif';
+	var filename = 'https://aviationweather.gov/data/products/turbulence/F' + ftime + '_gtg_' + level + '_total.gif';
 	elem.src = filename;
 }
 
@@ -86,15 +86,21 @@ function updateImageTurb() {
 	var lelem = document.getElementById('levelTurb');
 	var level = lelem.options[lelem.selectedIndex].value;
 	var felem = document.getElementById('foreTurb');
-	var celem = document.getElementById('catTurb');
 	var fore = felem.options[felem.selectedIndex].value;
-	var cat = celem.options[celem.selectedIndex].value;
-	getImageTurb( level, fore,  cat);
+	getImageTurb(level, fore);
 }
 
 function getImageIcing(type, level, ftime) {
 	var elem = document.getElementById('weatherImageIcing');
-	var filename = 'https://aviationweather.gov/adds/data/icing/' + ftime + '_' + type + '_' + level + '.gif';
+	var prod = '';
+	if (type == 'frz') {
+	    prod = '_rap_frz_hght';
+	}
+	else {
+	    prod = (ftime == '00' ? '_cip_' : '_fip_') + level + '_' + type;
+	}
+
+	var filename = 'https://aviationweather.gov/data/products/icing/F' + ftime + prod + '.gif';
 	elem.src = filename;
 }
 
@@ -105,9 +111,7 @@ function updateImageIcing() {
 	var fore = felem.options[felem.selectedIndex].value;
 	var telem = document.getElementById('typeIce');
 	var type = telem.options[telem.selectedIndex].value;
-	if(fore == '00') type = 'cip' + type;
-	else type = 'fip' + type;
-	getImageIcing(type, level, fore );
+	getImageIcing(type, level, fore);
 }
 
 function getImageMisc(type) {
@@ -183,13 +187,12 @@ $(document).ready(function(){
     <div id="misc" class="tab-pane fade">
       <h3>Misc. Charts</h3>
       <select class="selectpicker" id='typeMisc' data-mobile="true"  name='typeMisc' onChange='updateImageMisc()'>
-        <option value='https://aviationweather.gov/adds/data/airmets/airmets_ALL.gif'>AIRMETS</option>
-        <option value='https://aviationweather.gov/adds/data/fzl/latest_fzl.gif'>Freezing Levels</option>
-        <option value='https://aviationweather.gov/data/products/lamp/F00_lamp_sfc_fltcat_n.png'>Flight Category</option>
-        <option value='https://aviationweather.gov/adds/data/pireps/pireps_US_TB.gif'>Turbulence PIREPs</option>
-        <option value='https://aviationweather.gov/adds/data/pireps/pireps_US_WS.gif'>Sky Conditions PIREPs</option>
-        <option value='https://aviationweather.gov/data/iffdp/2020.gif'>Weather Depiction</option>
-        <option value='https://aviationweather.gov/data/iffdp/2080.gif'>Radar Summary</option>
+        <option value='https://aviationweather.gov/data/obs/pirep/pireps_turb_us.gif'>PIREPs Turbulence</option>
+        <option value='https://aviationweather.gov/data/obs/pirep/pireps_ice_us.gif'>PIREPs Icing</option>
+        <option value='https://aviationweather.gov/data/obs/pirep/pireps_wx_us.gif'>PIREPs Weather</option>
+        <option value='https://aviationweather.gov/data/products/sigmet/sigmet_all.gif'>SIGMETs</option>
+        <option value='https://aviationweather.gov/data/obs/metar/metars_us.gif'>METAR</option>
+        <option value='https://aviationweather.gov/data/obs/radar/rcm_tops.gif'>Radar</option>
         <option value='https://aviationweather.gov/data/obs/sat/us/sat_vis_us.jpg'>Satellite</option>
         <option value='http://www.ospo.noaa.gov/data/land/fire/currenthms.jpg'>Fire and Smoke</option>
       </select>
@@ -212,14 +215,14 @@ $(document).ready(function(){
         <option value='https://aviationweather.gov/data/products/progs/F120_wpc_prog.gif'>WPC 120 HR Prognostic</option>
         <option value='https://aviationweather.gov/data/products/progs/F144_wpc_prog.gif'>WPC 144 HR Prognostic</option>
         <option value='https://aviationweather.gov/data/products/progs/F168_wpc_prog.gif'>WPC 168 HR Prognostic</option>
-        <option value='https://aviationweather.gov/data/products/swl/ll_00_4_cl_new.gif'>Low Level Significant 0000Z</option>
-        <option value='https://aviationweather.gov/data/products/swl/ll_06_4_cl_new.gif'>Low Level Significant 0600Z</option>
-        <option value='https://aviationweather.gov/data/products/swl/ll_12_4_cl_new.gif'>Low Level Significant 1200Z</option>
-        <option value='https://aviationweather.gov/data/products/swl/ll_18_4_cl_new.gif'>Low Level Significant 1800Z</option>
-        <option value='https://aviationweather.gov/data/products/swm/PGNE14_00_CL.gif'>Mid Level Significant 0000Z</option>
-        <option value='https://aviationweather.gov/data/products/swm/PGNE14_06_CL.gif'>Mid Level Significant 0600Z</option>
-        <option value='https://aviationweather.gov/data/products/swm/PGNE14_12_CL.gif'>Mid Level Significant 1200Z</option>
-        <option value='https://aviationweather.gov/data/products/swm/PGNE14_18_CL.gif'>Mid Level Significant 1800Z</option>
+        <option value='https://aviationweather.gov/data/products/swl/00_sigwx_lo_us.gif'>Low Level Significant 0000Z</option>
+        <option value='https://aviationweather.gov/data/products/swl/06_sigwx_lo_us.gif'>Low Level Significant 0600Z</option>
+        <option value='https://aviationweather.gov/data/products/swl/12_sigwx_lo_us.gif'>Low Level Significant 1200Z</option>
+        <option value='https://aviationweather.gov/data/products/swl/18_sigwx_lo_us.gif'>Low Level Significant 1800Z</option>
+        <option value='https://aviationweather.gov/data/products/swm/00_sigwx_mid_nat.gif'>Mid Level Significant 0000Z</option>
+        <option value='https://aviationweather.gov/data/products/swm/06_sigwx_mid_nat.gif'>Mid Level Significant 0600Z</option>
+        <option value='https://aviationweather.gov/data/products/swm/12_sigwx_mid_nat.gif'>Mid Level Significant 1200Z</option>
+        <option value='https://aviationweather.gov/data/products/swm/18_sigwx_mid_nat.gif'>Mid Level Significant 1800Z</option>
       </select>
       <br><img id='weatherImageProg'><br>
     </div>
@@ -304,11 +307,6 @@ $(document).ready(function(){
         <option value='09'>9hr</option>
         <option value='12'>12hr</option>
       </select>
-      <select class="selectpicker" id='catTurb' data-mobile="true"  name='catTurb' onChange='updateImageTurb()'>
-        <option value='lgt'>Light</option>
-        <option value='med'>Medium</option>
-        <option value='hvy'>Heavy</option>
-      </select>
       <br><img id='weatherImageTurb'><br>
     </div>
     <div id="icing" class="tab-pane fade">
@@ -317,7 +315,8 @@ $(document).ready(function(){
         <OPTION VALUE='sev'>Severity</OPTION>
         <OPTION VALUE='sev25'>Severity(Prob>25%)</OPTION>
         <OPTION VALUE='sev50'>Severity(Prob>50%)</OPTION>
-        <OPTION VALUE=''>Probability</OPTION>
+        <OPTION VALUE='prob'>Probability</OPTION>
+        <OPTION VALUE='frz'>Freezing Levels</OPTION>
       </select>
       <select class="selectpicker" id='levelIce' data-mobile="true"  name='levelIce' onChange='updateImageIcing()'>
         <OPTION VALUE='010'>1,000</OPTION>
