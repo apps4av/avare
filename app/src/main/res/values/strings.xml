@@ -563,4 +563,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AdjustFontSizeSummary">Adjust the relative font size that Avare uses</string>
     <string name="AdjustFontSizeMessage">Select the scaling size to apply</string>
 
+    <string name="ResetDataSummary">Reset app to default, and delete all user data in the app (plans, accounts, lists, WNB, way points etc.)?</string>
+    <string name="ResetData">Reset</string>
+
 </resources>

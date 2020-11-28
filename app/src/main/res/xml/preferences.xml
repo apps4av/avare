@@ -545,4 +545,8 @@ authors: zkhan, jlmcgraw
             />
     </PreferenceScreen>
 
+    <com.ds.avare.utils.ResetPreference
+        android:summary="@string/ResetDataSummary"
+        android:title="@string/ResetData" />
+
 </PreferenceScreen>
