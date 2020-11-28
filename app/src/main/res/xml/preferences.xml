@@ -135,7 +135,7 @@ authors: zkhan, jlmcgraw
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="@string/LeaveRunning"
             android:summary="@string/LeaveRunningSummary"
             android:title="@string/LeaveRunningLabel" />
