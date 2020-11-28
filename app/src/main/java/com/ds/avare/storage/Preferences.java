@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.storage;
 
 import android.app.Activity;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -40,7 +41,7 @@ import java.util.List;
 /**
  * Preferences for main activity
  */
-public class Preferences {
+public class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     /*
      * These are set when inited
@@ -122,6 +123,8 @@ public class Preferences {
          * Set default prefs.
          */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mPref.registerOnSharedPreferenceChangeListener(this);
+
         if (getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             speedConversion = 1.944; // m/s to kt/hr
             heightConversion = 3.28084;
@@ -149,9 +152,26 @@ public class Preferences {
         }
     }
 
-    public static boolean isKnots() { return distanceConversionUnit.equals("nm"); }
-    public static boolean isMPH()   { return distanceConversionUnit.equals("mi"); }
-    public static boolean isKPH()   { return distanceConversionUnit.equals("km"); }
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        /**
+         * Backup properties on cloud on change
+         */
+        BackupManager bm = new BackupManager(mContext);
+        bm.dataChanged();
+    }
+
+    public static boolean isKnots() {
+        return distanceConversionUnit.equals("nm");
+    }
+
+    public static boolean isMPH() {
+        return distanceConversionUnit.equals("mi");
+    }
+
+    public static boolean isKPH() {
+        return distanceConversionUnit.equals("km");
+    }
 
     /**
      * @return
@@ -167,15 +187,13 @@ public class Preferences {
         }
         if (val.equals("0")) {
             return "http://www.apps4av.org/new/";
-        }
-        else if (val.equals("1")) {
+        } else if (val.equals("1")) {
             return "http://avare.kitepilot.net/new/";
-        }
-        else if (val.equals("2")) {
-	    val = mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
-	    if (!val.substring(val.length() - 1).equals("/")) {
-		val = val + "/";   
-	    }
+        } else if (val.equals("2")) {
+            val = mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
+            if (!val.substring(val.length() - 1).equals("/")) {
+                val = val + "/";
+            }
             return val;
         }
         return ("");
@@ -245,11 +263,11 @@ public class Preferences {
 
     public void searchARecent(String name, LinkedHashMap<String, String> params) {
         String[] tokens = getRecent();
-        for(String t : tokens) {
+        for (String t : tokens) {
             if (t.toUpperCase().startsWith(name.toUpperCase())) {
                 String[] wpd = t.split(";");
-                if(wpd[0].endsWith("::GPS")) {
-                    if(wpd[0].contains("@")) {
+                if (wpd[0].endsWith("::GPS")) {
+                    if (wpd[0].contains("@")) {
                         String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
                         String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
                         StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
@@ -262,11 +280,11 @@ public class Preferences {
 
     public StringPreference searchARecent(String name) {
         String[] tokens = getRecent();
-        for(String t : tokens) {
+        for (String t : tokens) {
             if (t.toUpperCase().startsWith(name.toUpperCase())) {
                 String[] wpd = t.split(";");
                 if (wpd[0].endsWith("::GPS")) {
-                    if(wpd[0].contains("@")) {
+                    if (wpd[0].contains("@")) {
                         String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
                         String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
                         return new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
@@ -323,7 +341,7 @@ public class Preferences {
      */
     public static int[] getTilesNumber(Context ctx) {
         int[] ret = new int[3];
-        
+
         /*
          * Find max tiles this system can support.
          */
@@ -363,27 +381,27 @@ public class Preferences {
         int tilesy = (height / BitmapHolder.HEIGHT) + 2;
 
         // odd tiles only
-        if(tilesx % 2 == 0) {
+        if (tilesx % 2 == 0) {
             tilesx++;
         }
-        if(tilesy % 2 == 0) {
+        if (tilesy % 2 == 0) {
             tilesy++;
         }
 
         // no going above memory limit
-        if(tilesx > ret[0]) {
+        if (tilesx > ret[0]) {
             tilesx = ret[0];
         }
-        if(tilesy > ret[1]) {
+        if (tilesy > ret[1]) {
             tilesy = ret[1];
         }
         ret[0] = tilesx;
         ret[1] = tilesy;
 
-        if(ret[0] <= 0) {
+        if (ret[0] <= 0) {
             ret[0] = MEM_16_X;
         }
-        if(ret[1] <= 0) {
+        if (ret[1] <= 0) {
             ret[1] = MEM_16_Y;
         }
 
@@ -443,16 +461,16 @@ public class Preferences {
     public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
+
     public boolean isShowLabelMETARS() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
     }
 
     /**
-     *
      * @return
      */
     public boolean showObstacles() {
-        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+        return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
     }
 
     /**
@@ -533,7 +551,7 @@ public class Preferences {
      */
     public boolean isNewerVersion(Activity activity) {
         PackageInfo packageInfo = null;
-        
+
         /*
          * Get current version code.
          */
@@ -543,7 +561,7 @@ public class Preferences {
         } catch (Exception e) {
             packageInfo = null;
         }
-        
+
         /*
          * Found.
          */
@@ -655,7 +673,7 @@ public class Preferences {
          * If cannot get internal folder, return / at least
          */
         String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
-        
+
         /*
          * XXX: Legacy for 5.1.0 and 5.1.1.
          */
@@ -757,8 +775,6 @@ public class Preferences {
     }
 
     /**
-     *
-     *
      * @return
      */
     public void showDistanceRingStatic() {
@@ -818,7 +834,7 @@ public class Preferences {
 
     public String getRowFormats(boolean getDefault) {
         final String defRowFormats = "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4";
-        if(getDefault)
+        if (getDefault)
             return defRowFormats;
         return mPref.getString(mContext.getString(R.string.prefGetRowFormats), defRowFormats);
     }
@@ -852,12 +868,12 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return  mPref.getBoolean(mContext.getString(R.string.register), false);
+        return mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
      * @return
-         */
+     */
     public String getExternalGpsSource() {
         return mPref.getString(mContext.getString(R.string.externalGps), "0");
     }
@@ -979,7 +995,6 @@ public class Preferences {
     }
 
 
-
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {
         long mTabs = 1;
@@ -1034,6 +1049,7 @@ public class Preferences {
     public void setTipIndex(int index) {
         mPref.edit().putInt(mContext.getString(R.string.tipIndex), index).commit();
     }
+
     public int getTipIndex() {
         return mPref.getInt(mContext.getString(R.string.tipIndex), 0);
     }
@@ -1179,8 +1195,7 @@ public class Preferences {
         int code = 0;
         try {
             code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
         return code;
@@ -1220,9 +1235,11 @@ public class Preferences {
     public boolean removeB1Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b1plate), false);
     }
+
     public boolean removeB2Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b2plate), false);
     }
+
     public boolean removeB1Map() {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
@@ -1241,7 +1258,7 @@ public class Preferences {
 
     public int getWindsAloftCeiling() {
         try {
-           return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
+            return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
         } catch (Exception x) {
             return 39;
         }
@@ -1249,22 +1266,21 @@ public class Preferences {
 
 
     /**
-      * @return
-      */
-     public String getGeotags() {
+     * @return
+     */
+    public String getGeotags() {
         return mPref.getString(mContext.getString(R.string.Geotag), "");
-     }
+    }
 
 
     /**
-      * @param tags
-      */
+     * @param tags
+     */
     public void setGeotags(String tags) {
         mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
     }
 
     /**
-     *
      * @return
      */
     public boolean showGameTFRs() {
@@ -1304,7 +1320,7 @@ public class Preferences {
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
     }
-  
+
     public boolean reverseRollInAhrs() {
         return mPref.getBoolean(mContext.getString(R.string.ReverseAhrsRoll), false);
     }

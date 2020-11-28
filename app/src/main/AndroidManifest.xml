@@ -41,8 +41,11 @@ Redistribution and use in source and binary forms, with or without modification,
         android:largeHeap="true"
         android:usesCleartextTraffic="true"
         android:name="AvareApplication"
-        android:allowBackup="true">
+        android:backupAgent="com.ds.avare.AppBackupAgent"
+        android:restoreAnyVersion="true">
 
+        <meta-data android:name="com.google.android.backup.api_key"
+            android:value="unused" />
 
         <provider
             android:name=".content.ObstaclesProvider"
@@ -95,7 +98,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".PfdActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
-        <activity android:name=".SyncActivity"/>
         <activity android:name=".WnbActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>

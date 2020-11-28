@@ -10,7 +10,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.gms:play-services-drive:7.8.0'
     }
 
 
