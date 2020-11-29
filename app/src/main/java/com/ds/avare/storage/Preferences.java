@@ -1343,7 +1343,4 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return val;
     }
 
-    public boolean isDrawGlideProfile() {
-        return mPref.getBoolean(mContext.getString(R.string.DrawGlideProfile), false);
-    }
 }

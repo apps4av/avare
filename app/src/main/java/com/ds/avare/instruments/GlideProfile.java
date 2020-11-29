@@ -13,10 +13,8 @@ import android.graphics.Path;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Coordinate;
-import com.ds.avare.position.Movement;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Projection;
-import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.weather.WindsAloft;
@@ -30,6 +28,7 @@ public class GlideProfile {
     private float mDipToPix;
     private Preferences mPref;
     double[] mDistanceTotal;
+    private String mWind;
 
     private static final int HEIGHT_STEPS = 10;
     private static final int DIRECTION_STEPS = 24;
@@ -63,7 +62,7 @@ public class GlideProfile {
         double bearing = gpsParams.getBearing();
         WindsAloft wa;
 
-        if(!mPref.isDrawGlideProfile()) {
+        if(mPref.getDistanceRingType() != 3) {
             return;
         }
 
@@ -87,6 +86,7 @@ public class GlideProfile {
 
         // calculate airspeed from ground speed, direction, and wind speed.
         double[] waa = wa.getWindAtAltitude(altitudeGps);
+        mWind = String.format("%d@%dkt", (int)waa[1], (int)waa[0]);
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
         // wind triangle solution for airspeed from wind and ground vector.
@@ -141,7 +141,7 @@ public class GlideProfile {
     public void draw(Canvas canvas, Origin origin, GpsParams gpsParams) {
 
 
-        if(!mPref.isDrawGlideProfile()) {
+        if(mPref.getDistanceRingType() != 3) {
             return;
         }
 
@@ -150,7 +150,7 @@ public class GlideProfile {
          */
         mPaint.setStrokeWidth(4 * mDipToPix);
         mPaint.setShadowLayer(0, 0, 0, 0);
-        mPaint.setColor(Color.GRAY);
+        mPaint.setColor(mPref.getDistanceRingColor());
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAlpha(0x7F);
 
@@ -158,7 +158,6 @@ public class GlideProfile {
          * Draw the shape
          */
         int stepSizeDirection = (int)(360 / DIRECTION_STEPS);
-        Path path = new Path();
 
         double dist = mDistanceTotal[0];
         double angle = 0;
@@ -176,16 +175,12 @@ public class GlideProfile {
             c = Projection.findStaticPoint(gpsParams.getLongitude(), gpsParams.getLatitude(), angle, dist);
             x = (float)origin.getOffsetX(c.getLongitude());
             y = (float)origin.getOffsetY(c.getLatitude());
-            path.moveTo(xlast, ylast);
-            path.lineTo(x, y);
+            canvas.drawLine(xlast, ylast, x, y, mPaint);
             xlast = x;
             ylast = y;
-            canvas.drawPath(path, mPaint);
         }
 
-        path.moveTo(xlast, ylast);
-        path.lineTo(firstX, firstY);
-        canvas.drawPath(path, mPaint);
+        canvas.drawLine(xlast, ylast, firstX, firstY, mPaint);
 
         /*
          * Restore some paint settings back to what they were so as not to
@@ -193,6 +188,9 @@ public class GlideProfile {
          */
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
+
+        mService.getShadowedText().draw(canvas, mPaint,
+                mWind, Color.BLACK, firstX, firstY);
 
     }
 

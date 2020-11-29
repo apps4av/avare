@@ -2046,12 +2046,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
 	<string-array name="DistanceRingTypePrompts">
         <item>None</item>
         <item>Dynamic</item>
         <item>Fixed at 2/5/10</item>
+        <item>Glide range</item>
     </string-array>
 
     <string-array name="DistanceRingColors">

@@ -192,11 +192,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/DrawGlideProfile"
-            android:summary="@string/DrawGlideProfileSummary"
-            android:title="@string/DrawGlideProfileLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="30"
             android:entries="@array/FuelTimerValues"

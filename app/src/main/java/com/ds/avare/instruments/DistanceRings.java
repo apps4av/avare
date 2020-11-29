@@ -100,8 +100,8 @@ public class DistanceRings {
     public void draw(Canvas canvas, Origin origin, Scale scale, Movement move, 
     		boolean trackUp, GpsParams gpsParams) {
 
-    	// If the preference to even draw these rings is not enabled, then return
-    	if (mPref.getDistanceRingType() == 0) {
+    	// If the preference to even draw these rings is not enabled / glide profile, then return
+    	if (mPref.getDistanceRingType() == 0 || mPref.getDistanceRingType() == 3) {
         	return;
         }
         
@@ -173,9 +173,9 @@ public class DistanceRings {
             mPaint.setStyle(Style.FILL);
             mPaint.setColor(Color.WHITE);
 
-            mService.getShadowedText().draw(canvas, mPaint, 
-            		String.format("%d", mPref.getTimerRingSize()), Color.BLACK, 
-            		x + mRings[DistanceRings.RING_SPEED] * adjX, 
+            mService.getShadowedText().draw(canvas, mPaint,
+            		String.format("%d", mPref.getTimerRingSize()), Color.BLACK,
+            		x + mRings[DistanceRings.RING_SPEED] * adjX,
             		y - mRings[DistanceRings.RING_SPEED] * adjY);
         }
     }
