@@ -140,6 +140,9 @@ public class WindsAloft {
             fac = 0;
         }
 
+        if (wstring1.equals("")) {
+            wstring1 = wstring2; // if lower wind not reported, assume same as upper wind
+        }
         // interpolate wind; if any of input winds has bad data, assume zero wind
         try {
             WindsAloftHelper.DirSpeed wind1 = WindsAloftHelper.DirSpeed.parseFrom(wstring1),

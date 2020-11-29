@@ -72,10 +72,7 @@ public class GlideProfile {
         double currentSpeed = gpsParams.getSpeed() * Preferences.feetConversion / 3600.0; //convert to feet per second
         double lon = gpsParams.getLongitude();
         double lat = gpsParams.getLatitude();
-        double altitudeGps = gpsParams.getAltitude() - elevation;
-        if(altitudeGps < 0) {
-            altitudeGps = 0;
-        }
+        double altitudeGps = gpsParams.getAltitude();
         double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         WindsAloft wa;
@@ -104,7 +101,6 @@ public class GlideProfile {
 
         // calculate airspeed from ground speed, direction, and wind speed.
         double[] waa = wa.getWindAtAltitude(altitudeGps);
-        mWind = String.format("%d@%dkt/%dft", (int)waa[1], (int)waa[0], (int)elevation);
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
         // wind triangle solution for airspeed from wind and ground vector.
@@ -114,8 +110,11 @@ public class GlideProfile {
             return;
         }
 
-        // put airspeed in the end for verify
-        mWind += "/" + (int)((double)as * 3600 / Preferences.feetConversion);
+        // Put wind/elevation/airspeed in string. this will be shown on the ring
+        mWind = String.format("%d@%dkt/%dft/%d", (int)waa[1],
+                (int)(waa[0] * Preferences.feetConversion / 3600),
+                (int)elevation,
+                (int)((double)as * 3600 / Preferences.feetConversion));
 
         // calculate winds from current altitude to ground.
         for(int alt = 0; alt < HEIGHT_STEPS; alt++) {
@@ -128,10 +127,11 @@ public class GlideProfile {
                 if (altitude < 0) {
                     altitude = 0;
                 }
-                int stepSizeHeight = (int)(altitude / HEIGHT_STEPS);
-                double wind[] = wa.getWindAtAltitude((double)alt * stepSizeHeight);
+                int stepSizeHeight = (int)((altitude - elevation) / HEIGHT_STEPS);
+                double thisAltitude = (double)alt * stepSizeHeight + elevation;
+                double wind[] = wa.getWindAtAltitude(thisAltitude);
                 wind[0] *= Preferences.feetConversion / 3600.0;
-                double tas = as - as * ((altitude - alt * stepSizeHeight) / 1000 * 2 / 100);
+                double tas = as - as * (thisAltitude / 1000 * 2 / 100); // 2% per 1000 foot approx
                 double gs = Math.sqrt(tas * tas + wind[0] * wind[0] - 2.0 * tas * wind[0] * Math.cos((dir * stepSizeDirection - wind[1]) * Math.PI / 180.0)); //fps
                 double timeInZone = stepSizeHeight / sinkRate; // how much time we spend in each zone, thermals not accounted for.
                 double distance = gs * timeInZone; //feet
@@ -211,7 +211,7 @@ public class GlideProfile {
         mPaint.setColor(Color.WHITE);
 
         mService.getShadowedText().draw(canvas, mPaint,
-                mWind, Color.BLACK, firstX, firstY);
+                mWind, Color.BLACK, firstX, firstY - mDipToPix * 16); // move up so it does not overlap the ring
 
     }
 
