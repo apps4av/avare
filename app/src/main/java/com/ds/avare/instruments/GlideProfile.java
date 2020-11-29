@@ -114,6 +114,9 @@ public class GlideProfile {
             return;
         }
 
+        // put airspeed in the end for verify
+        mWind += "/" + (int)((double)as * 3600 / Preferences.feetConversion);
+
         // calculate winds from current altitude to ground.
         for(int alt = 0; alt < HEIGHT_STEPS; alt++) {
             // calculate ground speed from airspeed, direction, and wind speed. This is approx 2 % change in tas per 1000 foot.
