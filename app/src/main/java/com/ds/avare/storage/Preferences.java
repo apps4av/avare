@@ -900,26 +900,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     /**
-     * 7 is the  glide ratio of most common aircraft like C172 and C182
-     *
-     * @return
-     */
-    public float getGlideRatio() {
-        String def = "7.0";
-        float mratio = Float.parseFloat(def);
-        String ratio = mPref.getString(mContext.getString(R.string.GlideRatio), def);
-        try {
-            mratio = Float.parseFloat(ratio);
-        } catch (Exception e) {
-            /*
-             * Save default
-             */
-            mPref.edit().putString(mContext.getString(R.string.GlideRatio), def).commit();
-        }
-        return (mratio);
-    }
-
-    /**
      * @return
      */
     public String getLists() {
@@ -1332,5 +1312,38 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             return 1;
         }
 
+    }
+
+    /**
+     * @return
+     */
+    public float getGlideRatio() {
+        return((float)(getBestGlideSpeed() * Preferences.feetConversion / 3600) / (getBestGlideSinkRate() / 60));
+    }
+
+    public int getBestGlideSinkRate() {
+        String in = mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
+        int val = 700;
+        try {
+            val = Integer.parseInt(in);
+        } catch (Exception e) {
+
+        }
+        return val;
+    }
+
+    public int getBestGlideSpeed() {
+        String in = mPref.getString(mContext.getString(R.string.BestGlideSpeed), "65");
+        int val = 65;
+        try {
+            val = Integer.parseInt(in);
+        } catch (Exception e) {
+
+        }
+        return val;
+    }
+
+    public boolean isDrawGlideProfile() {
+        return mPref.getBoolean(mContext.getString(R.string.DrawGlideProfile), false);
     }
 }

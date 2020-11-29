@@ -46,6 +46,7 @@ import com.ds.avare.instruments.DistanceRings;
 import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.FuelTimer;
+import com.ds.avare.instruments.GlideProfile;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.instruments.VNAV;
@@ -269,7 +270,8 @@ public class StorageService extends Service {
 
     // Distance ring instrument
     private DistanceRings mDistanceRings;
-    
+    private GlideProfile mGlideProfile;
+
     private DrawCapLines mCap;
 
     private ExternalPlanMgr mExternalPlanMgr;
@@ -478,6 +480,9 @@ public class StorageService extends Service {
         // Allocate a new DistanceRing instrument
         mDistanceRings = new DistanceRings(this, getApplicationContext(),
                 Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+
+        mGlideProfile = new GlideProfile(this, getApplicationContext(),
+                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -583,6 +588,8 @@ public class StorageService extends Service {
                     
                     // Let the odometer know how far we traveled
                     getOdometer().updateValue(mGpsParams);
+
+                    getGlideProfile().updateGlide(mGpsParams);
                     
                     // Vertical descent rate calculation
                     getVNAV().calcGlideSlope(mGpsParams, mDestination);
@@ -1351,7 +1358,11 @@ public class StorageService extends Service {
     public DistanceRings getDistanceRings() {
     	return mDistanceRings;
     }
-    
+
+    public GlideProfile getGlideProfile() {
+        return mGlideProfile;
+    }
+
     public ExternalPlanMgr getExternalPlanMgr() {
     	return mExternalPlanMgr;
     }

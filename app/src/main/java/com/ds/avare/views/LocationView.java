@@ -862,6 +862,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
+     * Draws profile around the airplane of glide distance.
+     * author: zkhan
+     *
+     * @param canvas upon which to draw the glide
+     */
+    private void drawGlideProfile(Canvas canvas) {
+        /*
+         * Some pre-conditions that would prevent us from drawing anything
+         */
+        if(null != mPointProjection){
+            return;
+        }
+
+        mService.getGlideProfile().draw(canvas, mOrigin, mGpsParams);
+    }
+
+    /**
      * Draw the tracks to show our previous positions. If tracking is enabled, there is
      * a linked list of gps coordinates attached to this view with the most recent one at the end
      * of that list. Start at the end value to begin the drawing and as soon as we find one that is 
@@ -1029,6 +1046,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         // Now draw the items that do NOT rotate with the chart
         drawDistanceRings(canvas);
+        drawGlideProfile(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
         drawStatusLines(canvas);

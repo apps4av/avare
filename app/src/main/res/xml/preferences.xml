@@ -192,6 +192,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTimerRingSize"
             android:summary="@string/TimerRingSizeSummary"
             android:title="@string/TimerRingSizeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/DrawGlideProfile"
+            android:summary="@string/DrawGlideProfileSummary"
+            android:title="@string/DrawGlideProfileLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="30"
             android:entries="@array/FuelTimerValues"
@@ -421,10 +426,16 @@ authors: zkhan, jlmcgraw
             android:key="@string/AircraftTAS"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/GlideRatioLabel"
-            android:summary="@string/GlideRatioSummary"
-            android:defaultValue="7.0"
-            android:key="@string/GlideRatio"/>
+            android:title="@string/BestGlideSinkRateLabel"
+            android:summary="@string/BestGlideSinkRateSummary"
+            android:defaultValue="700"
+            android:key="@string/BestGlideSinkRate"/>
+
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:title="@string/BestGlideSpeedLabel"
+            android:summary="@string/BestGlideSpeedSummary"
+            android:defaultValue="65"
+            android:key="@string/BestGlideSpeed"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/FuelRateLabel"
