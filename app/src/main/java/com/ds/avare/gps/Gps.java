@@ -37,7 +37,6 @@ import com.ds.avare.storage.Preferences;
 import android.content.Context;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
-import android.location.GpsStatus.NmeaListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -45,14 +44,18 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import static android.os.Build.VERSION.*;
+
 /**
  * @author zkhan
  *
  */
-public class Gps implements LocationListener, android.location.GpsStatus.Listener, NmeaListener {
+public class Gps implements LocationListener, android.location.GpsStatus.Listener {
 
     private Context mContext;
-    
+
+    Object mNmeaMessageListener;
+
     /**
      * App preferences
      */
@@ -185,8 +188,16 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
-                mLocationManager.addNmeaListener(this);
-                
+                if(SDK_INT >= 24) {
+                    mNmeaMessageListener = new android.location.OnNmeaMessageListener() {
+                        @Override
+                        public void onNmeaMessage(String nmea, long timestamp) {
+                            processNmea(nmea, timestamp);
+                        }
+                    };
+                    mLocationManager.addNmeaListener((android.location.OnNmeaMessageListener)mNmeaMessageListener);
+                }
+
                 /*
                  * Also obtain GSM based locations
                  */
@@ -225,7 +236,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         if(null != mLocationManager) {
             mLocationManager.removeUpdates(this);
             mLocationManager.removeGpsStatusListener(this);
-            mLocationManager.removeNmeaListener(this);
+            if(SDK_INT >= 24) {
+                mLocationManager.removeNmeaListener((android.location.OnNmeaMessageListener)mNmeaMessageListener);
+            }
             mLocationManager = null;
             return;
         }
@@ -381,8 +394,12 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         }
     }
 
-    @Override
-    public void onNmeaReceived(long timestamp, String nmea) {
+    /**
+     * Process nmea
+     * @param nmea
+     * @param timestamp
+     */
+    private void processNmea(String nmea, long timestamp) {
         /*
          * Use this for altitude and some GPS status values
          */

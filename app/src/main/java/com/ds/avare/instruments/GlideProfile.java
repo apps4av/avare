@@ -112,7 +112,7 @@ public class GlideProfile {
 
         // Put wind/elevation/airspeed in string. this will be shown on the ring
         mWind = String.format("%d@%dkt/%dft/%d", (int)waa[1],
-                (int)(waa[0] * Preferences.feetConversion / 3600),
+                (int)(waa[0] / Preferences.feetConversion * 3600),
                 (int)elevation,
                 (int)((double)as * 3600 / Preferences.feetConversion));
 

@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 18 // Required for lossless and transparent webp
-        targetSdkVersion 28
+        targetSdkVersion 29
     }
 
     dependencies {
