@@ -12,6 +12,8 @@ import android.graphics.Path;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
+import com.ds.avare.place.Area;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Projection;
@@ -29,9 +31,11 @@ public class GlideProfile {
     private Preferences mPref;
     double[] mDistanceTotal;
     private String mWind;
+    private long mLastTime;
 
     private static final int HEIGHT_STEPS = 10;
     private static final int DIRECTION_STEPS = 24;
+    private static final long UPDATE_TIME = 5000; //ms
 
     /***
      * Instrument to handle displaying of rings based on glide upon speed, glide ratio, wind speed, and terrain
@@ -50,14 +54,28 @@ public class GlideProfile {
         mPaint.setTextSize(textSize);
         mPaint.setTypeface(Helper.getTypeFace(context));
         mDistanceTotal = new double[DIRECTION_STEPS];
+        mLastTime = System.currentTimeMillis() + UPDATE_TIME;
     }
 
     public void updateGlide(GpsParams gpsParams) {
+        long time = System.currentTimeMillis();
+        long diff = time - mLastTime;
+        if(diff < UPDATE_TIME) {
+            return; // lots of calculations, slow down to 10 sec update.
+        }
+        mLastTime = time;
+
+        // find area elevation.
+        double elevation = mService.getArea().getNearestElevation();
+
         // units are feet and second
         double currentSpeed = gpsParams.getSpeed() * Preferences.feetConversion / 3600.0; //convert to feet per second
         double lon = gpsParams.getLongitude();
         double lat = gpsParams.getLatitude();
-        double altitudeGps = gpsParams.getAltitude();
+        double altitudeGps = gpsParams.getAltitude() - elevation;
+        if(altitudeGps < 0) {
+            altitudeGps = 0;
+        }
         double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         WindsAloft wa;
@@ -86,7 +104,7 @@ public class GlideProfile {
 
         // calculate airspeed from ground speed, direction, and wind speed.
         double[] waa = wa.getWindAtAltitude(altitudeGps);
-        mWind = String.format("%d@%dkt", (int)waa[1], (int)waa[0]);
+        mWind = String.format("%d@%dkt/%dft", (int)waa[1], (int)waa[0], (int)elevation);
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
         // wind triangle solution for airspeed from wind and ground vector.

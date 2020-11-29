@@ -120,6 +120,14 @@ public class Area {
         mDt.execute();
     }
 
+    public double getNearestElevation() {
+        try {
+            return Double.parseDouble(mAirports[0].getElevation().replace("ft", ""));
+        } catch (Exception e) {
+        }
+        return (0);
+    }
+
     /**
      * @author zkhan
      * Query for closest airports task
