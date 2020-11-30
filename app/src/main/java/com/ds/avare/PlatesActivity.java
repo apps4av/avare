@@ -297,6 +297,7 @@ public class PlatesActivity extends Activity implements Observer  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        mPlatesView.clearRotation();
                         setPlateFromPos(which);
                     }
                 };

@@ -127,6 +127,10 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mCurrentRotation = round(mCurrentRotation);
     }
 
+    public void clearRotation() {
+        mCurrentRotation = 0.0;
+    }
+
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
     private boolean shouldTrackUpRotate() {
         // XXX: Fix rotation
