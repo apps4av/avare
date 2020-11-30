@@ -75,6 +75,7 @@ public class PlatesActivity extends Activity implements Observer  {
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
+    private Button mRotateButton;
     private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private AlertDialog mPlatesPopup;
@@ -482,6 +483,19 @@ public class PlatesActivity extends Activity implements Observer  {
             }
         });
 
+        mRotateButton = (Button)view.findViewById(R.id.plates_button_rotate);
+        mRotateButton.getBackground().setAlpha(255);
+        mRotateButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlatesView.advancePlateRotationNinetyDegrees();
+            }
+        });
+        if(mPref.isTrackUpPlates()) {
+            mRotateButton.setVisibility(View.INVISIBLE);
+        } else {
+            mRotateButton.setVisibility(View.VISIBLE);
+        }
 
         mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
@@ -917,6 +931,12 @@ public class PlatesActivity extends Activity implements Observer  {
         }
         else {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
+
+        if(mPref.isTrackUpPlates()) {
+            mRotateButton.setVisibility(View.INVISIBLE);
+        } else {
+            mRotateButton.setVisibility(View.VISIBLE);
         }
     }
    

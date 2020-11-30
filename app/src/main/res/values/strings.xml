@@ -514,6 +514,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="WindsAloftCeilingSummary">&quot;Select Winds Aloft display ceiling in thousands of feet&quot;</string>
 
     <string name="Tag">Tag</string>
+    <string name="Rotate">Rotate</string>
     <string name="PointName">Name of point</string>
     <string name="Geotag">Geotag</string>
     <string name="Verify">Verify</string>

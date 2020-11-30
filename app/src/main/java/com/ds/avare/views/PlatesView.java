@@ -37,6 +37,8 @@ import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCa
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
+import static java.lang.Math.round;
+
 /**
  * 
  * @author zkhan
@@ -81,6 +83,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     private static final int SHADOW = 4;
 
+    private double mCurrentRotation;
+
     /**
      * 
      * @param context
@@ -110,10 +114,21 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mDipToPix = Helper.getDpiToPix(context);
 
+        mCurrentRotation = 0.0;
+    }
+
+    private boolean shouldShowRotateButton() {
+        return !mPref.isTrackUp() && (mShowingAD || null != mMatrix);
+    }
+
+    public void advancePlateRotationNinetyDegrees() {
+        mCurrentRotation += 270.0;
+        mCurrentRotation %= 360.0;
+        mCurrentRotation = round(mCurrentRotation);
     }
 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
-    private boolean shouldRotate() {
+    private boolean shouldTrackUpRotate() {
         // XXX: Fix rotation
         return mPref.isTrackUpPlates() && (mShowingAD || null != mMatrix);
     }
@@ -200,9 +215,16 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
         float x = mPan.getMoveX();
         float y = mPan.getMoveY();
-        if(shouldRotate()) {
+        if(shouldTrackUpRotate()) {
             double p[] = new double[2];
             double thetab = mGpsParams.getBearing();
+            p = Helper.rotateCoord(0, 0, -thetab, x, y);
+            objPosAndScaleOut.set((float)p[0],(float)p[1], true,
+                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+        }
+        else if(shouldShowRotateButton()) {
+            double p[] = new double[2];
+            double thetab = mCurrentRotation;
             p = Helper.rotateCoord(0, 0, -thetab, x, y);
             objPosAndScaleOut.set((float)p[0],(float)p[1], true,
                     mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
@@ -236,8 +258,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
-                if (shouldRotate()) {
+                if (shouldTrackUpRotate()) {
                     double thetab = mGpsParams.getBearing();
+                    double p[] = new double[2];
+                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
+                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
+                }
+                else if (shouldShowRotateButton()){
+                    double thetab = mCurrentRotation;
                     double p[] = new double[2];
                     p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
                     mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
@@ -255,8 +283,14 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             float x = newObjPosAndScale.getXOff();
             float y = newObjPosAndScale.getYOff();
 
-            if (shouldRotate()) {
+            if (shouldTrackUpRotate()) {
                 double thetab = mGpsParams.getBearing();
+                double p[] = new double[2];
+                p = Helper.rotateCoord(0, 0, thetab, x, y);
+                mPan.setMove((float) p[0], (float) p[1]);
+            }
+            else if (shouldShowRotateButton()) {
+                double thetab = mCurrentRotation;
                 double p[] = new double[2];
                 p = Helper.rotateCoord(0, 0, thetab, x, y);
                 mPan.setMove((float) p[0], (float) p[1]);
@@ -389,10 +423,15 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
             }
 
             // rotate only when showing AD, or showing geo tagged approach plate.
-            if(shouldRotate()) {
+            if(shouldTrackUpRotate()) {
                 canvas.save();
                 bRotated = true;
                 canvas.rotate(-(int) mGpsParams.getBearing(),getWidth() / 2,getHeight() / 2);
+            }
+            else if (shouldShowRotateButton()) {
+                canvas.save();
+                bRotated = true;
+                canvas.rotate(-(int) mCurrentRotation,getWidth() / 2,getHeight() / 2);
             }
 
             /*
