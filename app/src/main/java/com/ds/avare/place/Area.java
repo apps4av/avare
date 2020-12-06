@@ -121,11 +121,10 @@ public class Area {
     }
 
     public double getNearestElevation() {
-        try {
-            return Double.parseDouble(mAirports[0].getElevation().replace("ft", ""));
-        } catch (Exception e) {
+        if(mAirports[0] == null) {
+            return 0;
         }
-        return (0);
+        return mAirports[0].getElevationNumber();
     }
 
     /**
@@ -183,15 +182,6 @@ public class Area {
                         airports[d] = airports[d + 1];
                         airports[d + 1] = swap;
                     }
-                }
-            }
-
-            /*
-             * Now test if all airports are at glide-able distance.
-             */
-            for(int i = 0; i < n; i++) {
-                if(airports[i] != null) {
-                    airports[i].setHeight(mAltitude);
                 }
             }
 

@@ -324,7 +324,7 @@ public class NearestActivity extends Activity  implements Observer {
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
             elevation[id] = a.getElevation();
             runlen[id] = a.getLongestRunway();
-            glide[id] = a.canGlide(mPref);
+            glide[id] = a.canGlide();
         }
 
         for(int id = airportnum; id < Preferences.MAX_AREA_AIRPORTS; id++) {
@@ -413,7 +413,7 @@ public class NearestActivity extends Activity  implements Observer {
                     }                    
                     
                     mAnimateDest.animate(true);
-                    if(!a.canGlide(mPref)) {
+                    if(!a.canGlide()) {
                         mToast.setText(R.string.NotGlideRange);
                         mToast.show();
                     }

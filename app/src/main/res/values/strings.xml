@@ -246,7 +246,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
-    <string name="BestGlideSpeed">&quot;BestGlideSpeedAircraft&quot;</string>
     <string name="BestGlideSinkRate">&quot;BestGlideSinkRateAircraft&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
     <string name="prefLastPlateIndex">LastPlateIndex</string>
@@ -448,8 +447,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftHomeBase">Aircraft/Pilot Home Base</string>
     <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
 
-    <string name="BestGlideSpeedLabel">&quot;Aircraft Best Glide Speed&quot;</string>
-    <string name="BestGlideSpeedSummary">&quot;Aircraft best glide speed for calculating glide range&quot;</string>
     <string name="BestGlideSinkRateLabel">&quot;Aircraft Best Glide Sink Rate&quot;</string>
     <string name="BestGlideSinkRateSummary">&quot;Aircraft best glide sink rate for calculating glide range&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>

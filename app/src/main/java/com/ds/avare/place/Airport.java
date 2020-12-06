@@ -36,7 +36,7 @@ public class Airport {
     private String mFuel;
     private String mElevation;
     private String mLongestRunway;
-    private double mHeight;
+    private boolean mCanGlide;
    
     /**
      * @param params
@@ -52,7 +52,7 @@ public class Airport {
         mElevation = params.get("Elevation");
         mVariation = Helper.parseVariation(params.get(LocationContentProviderHelper.MAGNETIC_VARIATION));
         mLongestRunway = "";
-        mHeight = 0;
+        mCanGlide = false;
         
         mProj = new Projection(cLon, cLat, mLon, mLat);
     }
@@ -123,6 +123,18 @@ public class Airport {
     }
 
     /**
+     *
+     * @return
+     */
+    public double getElevationNumber() {
+        try {
+            return Double.parseDouble(getElevation().replace("ft", ""));
+        } catch (Exception e) {
+        }
+        return (0);
+    }
+
+    /**
      * 
      * @return
      */
@@ -139,30 +151,14 @@ public class Airport {
     }
     
     /**
-     * Set the height for required glide ratio to this airport in feet(altitude) / km,nm,mi
-     * @param altitude
      */
-    public void setHeight(double altitude) {
-        try {
-            mHeight = altitude - Double.parseDouble(getElevation().replace("ft", ""));
-        }
-        catch(Exception e) {
-        }        
+    public boolean canGlide() {
+        return mCanGlide;
     }
 
-    /**
-     * @param mPref
-     */
-    public boolean canGlide(Preferences mPref) {
-        /*
-         * Height * glide ratio (distance feet / height feet) = distance
-         */
-        double radius = mHeight * mPref.getGlideRatio() / Preferences.feetConversion;
-        
-        /*
-         * This is in glide distance
-         */
-        return radius > getDistance();
+    public void setCanGlide(boolean glide) {
+        mCanGlide = glide;
     }
+
 
 }

@@ -403,7 +403,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         /*
          * Use this for altitude and some GPS status values
          */
-        if(nmea.startsWith(GGAPacket.TAG)) {
+        if(nmea.startsWith(GGAPacket.TAG) || nmea.startsWith(GGAPacket.TAGN)) {
             // Horozontal dilution
             String val[] = nmea.split(",");
             if(val.length > GGAPacket.HD) {

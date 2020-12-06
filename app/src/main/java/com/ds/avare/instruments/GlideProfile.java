@@ -25,7 +25,6 @@ public class GlideProfile {
 
     // Members that get set at object construction
     private StorageService mService;
-    private Context mContext;
     private Paint mPaint;
     private float mDipToPix;
     private Preferences mPref;
@@ -46,7 +45,6 @@ public class GlideProfile {
      */
     public GlideProfile(StorageService service, Context context, float textSize) {
         mService = service;
-        mContext = context;
         mDipToPix = Helper.getDpiToPix(context);
         mPref = new Preferences(context);
         mPaint = new Paint();
@@ -104,7 +102,7 @@ public class GlideProfile {
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
         // wind triangle solution for airspeed from wind and ground vector.
-        Double as = Math.sqrt(waa[0] * waa[0] + currentSpeed * currentSpeed - 2.0 * waa[0] * currentSpeed * Math.cos((bearing - waa[1]) * Math.PI / 180.0));
+        Double as = Math.sqrt(waa[0] * waa[0] + currentSpeed * currentSpeed - 2.0 * waa[0] * currentSpeed * Math.cos((bearing - waa[1] - 180) * Math.PI / 180.0));
         if(as.isNaN()) {
             //unsolvable wind triangle
             return;
@@ -117,28 +115,22 @@ public class GlideProfile {
                 (int)((double)as * 3600 / Preferences.feetConversion));
 
         // calculate winds from current altitude to ground.
-        for(int alt = 0; alt < HEIGHT_STEPS; alt++) {
-            // calculate ground speed from airspeed, direction, and wind speed. This is approx 2 % change in tas per 1000 foot.
-            for(int dir = 0; dir < DIRECTION_STEPS; dir++) {
-                // correct altitude based on direction as turn loses altitude, assume 1 second per 3 degrees, and shortest dir turn
-                double turnAngle = distance(bearing, dir * stepSizeDirection);
-                double altLost = turnAngle / 3.0 * sinkRate;
-                double altitude = altitudeGps - altLost;
-                if (altitude < 0) {
-                    altitude = 0;
-                }
-                int stepSizeHeight = (int)((altitude - elevation) / HEIGHT_STEPS);
-                double thisAltitude = (double)alt * stepSizeHeight + elevation;
-                double wind[] = wa.getWindAtAltitude(thisAltitude);
-                wind[0] *= Preferences.feetConversion / 3600.0;
-                double tas = as - as * (thisAltitude / 1000 * 2 / 100); // 2% per 1000 foot approx
-                double gs = Math.sqrt(tas * tas + wind[0] * wind[0] - 2.0 * tas * wind[0] * Math.cos((dir * stepSizeDirection - wind[1]) * Math.PI / 180.0)); //fps
-                double timeInZone = stepSizeHeight / sinkRate; // how much time we spend in each zone, thermals not accounted for.
-                double distance = gs * timeInZone; //feet
-                mDistanceTotal[dir] += distance / Preferences.feetConversion; // miles
-                // now we know how far we can glide in each direction
-                //XXX: Fix ground elevation to include hills which are not easily available from tiles.
-            }
+        for(int dir = 0; dir < DIRECTION_STEPS; dir++) {
+            mDistanceTotal[dir] = findDistanceTo(bearing, dir * stepSizeDirection, sinkRate, altitudeGps, elevation, as, wa);
+            // now we know how far we can glide in each direction
+            //XXX: Fix ground elevation to include hills which are not easily available from tiles.
+        }
+
+        /*
+         * Now test which airports in the area are at glide-able distance.
+         */
+        int n = mService.getArea().getAirportsNumber();
+        for(int i = 0; i < n; i++) {
+            Airport airport = mService.getArea().getAirport(i);
+            double to = airport.getBearing();
+            elevation = airport.getElevationNumber();
+            double distance = findDistanceTo(bearing, to, sinkRate, altitudeGps, elevation, as, wa);
+            airport.setCanGlide(airport.getDistance() < distance);
         }
     }
 
@@ -150,6 +142,40 @@ public class GlideProfile {
         double phi = Math.abs(beta - alpha) % 360;       // This is either the distance or 360 - distance
         double distance = phi > 180 ? 360 - phi : phi;
         return distance;
+    }
+
+    /**
+     * Find distance covered when gliding from bearingAt to bearing arring at elevation from altitudeGps and at give sinkRate and winds aloft, airspeed
+     * @param bearing
+     * @param bearingAt
+     * @param sinkRate
+     * @param altitudeGps
+     * @param elevation
+     * @param as
+     * @param wa
+     * @return
+     */
+    public static double findDistanceTo(double bearing, double bearingAt, double sinkRate, double altitudeGps, double elevation, double as, WindsAloft wa) {
+        double distance = 0;
+        // calculate ground speed from airspeed, direction, and wind speed. This is approx 2 % change in tas per 1000 foot.
+        for(int alt = 0; alt < HEIGHT_STEPS; alt++) {
+            // correct altitude based on direction as turn loses altitude, assume 1 second per 3 degrees, and shortest dir turn
+            double turnAngle = distance(bearing, bearingAt);
+            double altLost = turnAngle / 3.0 * sinkRate;
+            double altitude = altitudeGps - altLost;
+            if (altitude < 0) {
+                altitude = 0;
+            }
+            int stepSizeHeight = (int)((altitude - elevation) / HEIGHT_STEPS);
+            double thisAltitude = (double)alt * stepSizeHeight + elevation;
+            double wind[] = wa.getWindAtAltitude(thisAltitude);
+            wind[0] *= Preferences.feetConversion / 3600.0;
+            double tas = as - as * (thisAltitude / 1000 * 2 / 100); // 2% per 1000 foot approx
+            double gs = Math.sqrt(tas * tas + wind[0] * wind[0] - 2.0 * tas * wind[0] * Math.cos((bearingAt - wind[1]) * Math.PI / 180.0)); //fps
+            double timeInZone = stepSizeHeight / sinkRate; // how much time we spend in each zone, thermals not accounted for.
+            distance += gs * timeInZone;
+        }
+        return  distance / Preferences.feetConversion; // miles;
     }
 
     /***
@@ -211,7 +237,7 @@ public class GlideProfile {
         mPaint.setColor(Color.WHITE);
 
         mService.getShadowedText().draw(canvas, mPaint,
-                mWind, Color.BLACK, firstX, firstY - mDipToPix * 16); // move up so it does not overlap the ring
+                mWind, Color.BLACK, firstX, firstY - mDipToPix * 32); // move up so it does not overlap the ring
 
     }
 

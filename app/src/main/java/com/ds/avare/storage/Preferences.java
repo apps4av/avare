@@ -1314,12 +1314,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     }
 
-    /**
-     * @return
-     */
-    public float getGlideRatio() {
-        return((float)(getBestGlideSpeed() * Preferences.feetConversion / 3600) / (getBestGlideSinkRate() / 60));
-    }
 
     public int getBestGlideSinkRate() {
         String in = mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
@@ -1332,15 +1326,5 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return val;
     }
 
-    public int getBestGlideSpeed() {
-        String in = mPref.getString(mContext.getString(R.string.BestGlideSpeed), "65");
-        int val = 65;
-        try {
-            val = Integer.parseInt(in);
-        } catch (Exception e) {
-
-        }
-        return val;
-    }
 
 }
