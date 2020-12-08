@@ -59,6 +59,9 @@ public class Area {
      * 
      */
     public Airport getAirport(int index) {
+        if(mAirports == null) {
+            return null;
+        }
         /*
          * Check for null.
          */
@@ -73,6 +76,9 @@ public class Area {
      * @return
      */
     public int getAirportsNumber() {
+        if(mAirports == null) {
+            return 0;
+        }
 
         /*
          * Get all airports in a string array in this area.
@@ -121,6 +127,10 @@ public class Area {
     }
 
     public double getNearestElevation() {
+        if(mAirports == null) {
+            return 0;
+        }
+
         if(mAirports[0] == null) {
             return 0;
         }
