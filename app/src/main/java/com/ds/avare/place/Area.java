@@ -127,14 +127,12 @@ public class Area {
     }
 
     public double getNearestElevation() {
-        if(mAirports == null) {
-            return 0;
-        }
+        Airport a = getAirport(0);
 
-        if(mAirports[0] == null) {
+        if(a == null) {
             return 0;
         }
-        return mAirports[0].getElevationNumber();
+        return a.getElevationNumber();
     }
 
     /**
