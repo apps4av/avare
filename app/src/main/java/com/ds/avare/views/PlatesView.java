@@ -121,8 +121,8 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         return !mPref.isTrackUp() && (mShowingAD || null != mMatrix);
     }
 
-    public void advancePlateRotationNinetyDegrees() {
-        mCurrentRotation += 270.0;
+    public void advancePlateRotationRDegrees(double r) {
+        mCurrentRotation += 360.0 - r;
         mCurrentRotation %= 360.0;
         mCurrentRotation = round(mCurrentRotation);
     }
