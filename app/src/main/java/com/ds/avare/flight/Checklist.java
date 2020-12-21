@@ -28,12 +28,6 @@
 
 package com.ds.avare.flight;
 
-import java.util.LinkedList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * All lists get stored and get retrieved in JSON format
  * @author zkhan

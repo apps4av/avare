@@ -22,12 +22,8 @@ import android.webkit.WebView;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.WeightAndBalance;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 

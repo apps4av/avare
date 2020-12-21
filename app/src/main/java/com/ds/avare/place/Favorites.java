@@ -14,7 +14,6 @@ package com.ds.avare.place;
 import android.graphics.Color;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.ShadowedText;

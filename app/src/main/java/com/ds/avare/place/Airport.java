@@ -12,12 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.place;
 
-import java.util.LinkedHashMap;
-
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.position.Projection;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
+
+import java.util.LinkedHashMap;
 
 
 /**

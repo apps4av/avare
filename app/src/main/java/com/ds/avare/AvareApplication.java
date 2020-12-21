@@ -17,7 +17,6 @@ import android.content.Context;
 
 import org.acra.ACRA;
 import org.acra.annotation.*;
-import org.acra.data.StringFormat;
 
 /**
  * Created by zkhan on 1/25/16.
