@@ -35,6 +35,7 @@ import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flight.WeightAndBalance;
+import com.ds.avare.flight.AircraftPrefflight;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
@@ -100,6 +101,8 @@ import java.util.TimerTask;
  * 
  * Also sends intent to display warning, since its too intrusive to show a 
  * warning every time activity starts.
+ *
+ * Modified by kbabbert for multiple aircraft preferences (ACP)
  */
 public class StorageService extends Service {
 
@@ -158,6 +161,7 @@ public class StorageService extends Service {
 
     private LinkedList<Checklist> mCheckLists;
     private LinkedList<WeightAndBalance> mWnbs;
+    private LinkedList<AircraftPrefflight> mAcps;
     String mOverrideListName;
 
     private MetarLayer mMetarLayer;
@@ -288,6 +292,7 @@ public class StorageService extends Service {
      */
     private Checklist mChecklist;
     private WeightAndBalance mWnb;
+    private AircraftPrefflight mAcp;
 
     // The edge distance tape instrument
     private EdgeDistanceTape mEdgeDistanceTape;
@@ -427,6 +432,7 @@ public class StorageService extends Service {
         mLastPlateIndex = 0;
         mCheckLists = null;
         mWnbs = null;
+        mAcps = null;
         mLastLocationUpdate = 0;
 
         mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
@@ -1328,12 +1334,21 @@ public class StorageService extends Service {
         mWnbs = wnb;
     }
 
+
+    public void setAcps(LinkedList<AircraftPrefflight> acp) {
+        mAcps = acp;
+    }
+
     /**
      *
      * @return
      */
     public LinkedList<WeightAndBalance> getWnbs() {
         return mWnbs;
+    }
+
+    public LinkedList<AircraftPrefflight> getAcps() {
+        return mAcps;
     }
 
     /**
@@ -1381,6 +1396,14 @@ public class StorageService extends Service {
 
     public WeightAndBalance getWnb() {
         return mWnb;
+    }
+
+    public void setAcp(AircraftPrefflight acp) {
+        mAcp = acp;
+    }
+
+    public AircraftPrefflight getAcp() {
+        return mAcp;
     }
 
     public void setChecklist(Checklist cl) {

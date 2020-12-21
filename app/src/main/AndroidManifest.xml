@@ -99,6 +99,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
         <activity android:name=".WnbActivity"/>
+        <activity android:name=".AcpActivity"/>
         <activity android:name=".MessageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
