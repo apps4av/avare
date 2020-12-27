@@ -1149,7 +1149,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getAircraftOtherInfo() {
-        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
+        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), "");
     }
 
     public String getAircraftSurveillanceEquipment() {
@@ -1183,7 +1183,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getstringAircraftICAOCode() {
-        return mPref.getString("Aircraft ICAO Code", "");
+        return mPref.getString(mContext.getString(R.string.AircraftICAOCode), "");
     }
 
     public String getAircraftTailNumber() {
@@ -1218,7 +1218,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getstringFuelBurn() {
-        return mPref.getString("Aircraft Fuel Burn Rate", "");
+        return mPref.getString("Aircraft Fuel Burn Rate", "10");
     }
 
     public boolean removeB1Plate() {
@@ -1289,7 +1289,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
 
     public String getAcps() {
-        return mPref.getString("ACP", "");
+        return mPref.getString(mContext.getString(R.string.Acp), "");
     }
     /**
      * @return
@@ -1299,7 +1299,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public void putAcps(String name) {
-        mPref.edit().putString("ACP", name).commit();
+        mPref.edit().putString(mContext.getString(R.string.Acp), name).commit();
     }
 
     public boolean isDefaultAFDImage() {
@@ -1344,7 +1344,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getstringBestGlideSinkRate() {
-        return mPref.getString("BestGlideSinkRateAircraft", "");
+        return mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
     }
 
     public void setPilotName(String pilotname) {
@@ -1401,6 +1401,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public void setEmergencyChecklist(String ec) {
         mPref.edit().putString(mContext.getString(R.string.EmergencyChecklist), ec).commit();
+    }
+
+    public void setACPName(String an) {
+        mPref.edit().putString(mContext.getString(R.string.ACPName), an).commit();
+    }
+
+    public String getACPName() {
+        return mPref.getString(mContext.getString(R.string.ACPName), "");
     }
 
 }

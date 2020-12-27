@@ -531,6 +531,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="GameTFRSummary">&quot;Select to show the location of known stadiums&quot;</string>
     <string name="WnbSummary">Weight and Balance</string>
     <string name="Wnb"><![CDATA[W&B]]></string>
+    <string name="Acp"><![CDATA[ACP]]></string>
     <string name="Calculate">Calculate</string>
 
     <string name="DefaultAFD">DefaultAFD</string>
@@ -568,4 +569,5 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ManageAircraftPreferences">Pilot and Aircraft</string>
     <string name="ACPApplyPref">Apply Preferences to Avare</string>
+    <string name="ACPName">ACP Name</string>
 </resources>

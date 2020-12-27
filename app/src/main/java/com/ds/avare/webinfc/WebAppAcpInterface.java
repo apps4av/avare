@@ -182,7 +182,7 @@ public class WebAppAcpInterface {
         updateAcp();
     }
 
-    /**
+     /**
      * 
      * @param name
      */
@@ -221,6 +221,7 @@ public class WebAppAcpInterface {
 
     @JavascriptInterface
     public void UpdateACPreferences (
+            String ACPName,
             String pilotname,
             String homebase,
             String tailnumber,
@@ -241,6 +242,7 @@ public class WebAppAcpInterface {
         /*
          * Save to preferences
          */
+        mPref.setACPName(ACPName);
         mPref.setPilotName(pilotname);
         mPref.setHomeBase(homebase);
         mPref.setTailNumber(tailnumber);
@@ -309,6 +311,7 @@ public class WebAppAcpInterface {
 
     @JavascriptInterface
     public String getAircraftOtherInfo() {
+
         return mPref.getAircraftOtherInfo();
     }
 
@@ -331,6 +334,74 @@ public class WebAppAcpInterface {
     public String getEmergencyChecklist() {
         return mPref.getEmergencyChecklist();
     }
+
+    @JavascriptInterface
+    public String getACPName() {
+        return mPref.getACPName();
+    }
+
+    @JavascriptInterface
+    public void updateACPName(String prefname) {
+        mPref.setACPName(prefname);
+    }
+
+    @JavascriptInterface
+    public void updatePilotContact(String prefname) {
+        mPref.setPilotName(prefname);    }
+
+    @JavascriptInterface
+    public void updateHomeBase(String prefname) {
+        mPref.setHomeBase(prefname);    }
+
+    @JavascriptInterface
+    public void updateTailNumber(String prefname) {
+        mPref.setTailNumber(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftType(String prefname) {
+        mPref.setAircraftType(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftColor1(String prefname) {
+        mPref.setAircraftColor1(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftColor2(String prefname) {
+        mPref.setAircraftColor2(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftEquipment(String prefname) {
+        mPref.setAircraftEquipment(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftSurveillance(String prefname) {
+        mPref.setAircraftSurveillance(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftOtherInfo(String prefname) {
+        mPref.setAircraftOtherInfo(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftTAS(String prefname) {
+        mPref.setAircraftTAS(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftBGSR(String prefname) {
+        mPref.setAircraftBGSR(prefname);    }
+
+    @JavascriptInterface
+    public void updateAircraftFuelBurn(String prefname) {
+        mPref.setAircraftFuelBurn(prefname);    }
+
+    @JavascriptInterface
+    public void updateEmergencyChecklist(String prefname) {
+        mPref.setEmergencyChecklist(prefname);    }
+
+    @JavascriptInterface
+    public String getDistanceUnit() {
+        return mPref.getDistanceUnit();
+    }
+
 
     /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.

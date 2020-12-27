@@ -143,7 +143,7 @@ public class AircraftPrefflight {
         return "{" +
                 "'name'  :'Sample 1'," +
                 "'t_0'   :'Pilot Contact'," +
-                "'w_0'   :'John Pilot'," +
+                "'w_0'   :'John Pilot 614-555-1234'," +
                 "'t_1'   :'Home Base'," +
                 "'w_1'   :'KABC'," +
                 "'t_2'   :'Tail Number'," +
@@ -161,7 +161,7 @@ public class AircraftPrefflight {
                 "'t_8'   :'Aircraft Surveillance'," +
                 "'w_8'   :'SU2'," +
                 "'t_9'   :'Aircraft Other Info'," +
-                "'w_9'   :''," +
+                "'w_9'   :'PBN/B2C2'," +
                 "'t_10'   :'Aircraft TAS'," +
                 "'w_10'   :'90'," +
                 "'t_11'   :'Aircraft Best Glide Sink Rate'," +
@@ -177,11 +177,11 @@ public class AircraftPrefflight {
         return "{" +
                 "'name'  :'Sample 2'," +
                 "'t_0'   :'Pilot Contact'," +
-                "'w_0'   :'Mary Pilot'," +
+                "'w_0'   :'Mary Pilot 614-555-1234'," +
                 "'t_1'   :'Home Base'," +
                 "'w_1'   :'KABC'," +
                 "'t_2'   :'Tail Number'," +
-                "'w_2'   :'N1234M'," +
+                "'w_2'   :'N1234P'," +
                 "'t_3'   :'Aircraft Type'," +
                 "'w_3'   :'PA24'," +
                 "'t_4'   :'Aircraft ICAO Code'," +
@@ -203,7 +203,7 @@ public class AircraftPrefflight {
                 "'t_12'   :'Aircraft Fuel Burn Rate'," +
                 "'w_12'   :'14'," +
                 "'t_13'   :'Emergency Checklist'," +
-                "'w_13'   :''" +
+                "'w_13'   :'Electrical'" +
                 "}";
     }
 

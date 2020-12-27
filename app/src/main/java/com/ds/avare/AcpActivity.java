@@ -56,7 +56,6 @@ public class AcpActivity extends Activity {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private Button mCalculateButton;
     private WebAppAcpInterface mInfc;
     private boolean mInited;
 
@@ -221,16 +220,6 @@ public class AcpActivity extends Activity {
         mWebView.setLongClickable(false);
 
         mWebView.loadUrl(Helper.getWebViewFile(getApplicationContext(), "acp"));
-
-        mCalculateButton = (Button)view.findViewById(R.id.acp_button_calculate);
-        mCalculateButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mInfc.calculate();
-            }
-        });
-
 
 
     }

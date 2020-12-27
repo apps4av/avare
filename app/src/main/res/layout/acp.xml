@@ -21,18 +21,9 @@ Redistribution and use in source and binary forms, with or without modification,
 		android:id="@+id/acp_mainpage"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:layout_above="@+id/acp_button_calculate"
 		android:layout_alignParentTop="true"
 		android:background="#FF000000" />
 
-	<Button
-		android:id="@+id/acp_button_calculate"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentBottom="true"
-		android:text="@string/ACPApplyPref"
-		android:background="@drawable/button_bg"
-		android:layout_margin="15dp"
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"/>
+
 
 </RelativeLayout>

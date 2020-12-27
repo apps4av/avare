@@ -41,7 +41,7 @@ function acp_set(data) {
 
     var obj = JSON.parse(data);
 
-    document.getElementById("acp_name").textContent = "ACP" + "[" + obj.name + "]";
+    document.getElementById("acp_name").textContent = obj.name;
 
     document.getElementById("w0").value = obj.w_0;
     document.getElementById("w1").value = obj.w_1;
@@ -69,15 +69,22 @@ function acp_set(data) {
 				}
     document.getElementById("w7").value = obj.w_7;
     document.getElementById("w8").value = obj.w_8;
+    document.getElementById("w9").value = obj.w_9;
     document.getElementById("w10").value = obj.w_10;
     document.getElementById("w11").value = obj.w_11;
     document.getElementById("w12").value = obj.w_12;
     document.getElementById("w13").value = obj.w_13;
 
+    acp_calculate();
 }
 
 // display current aircraft preferences on screen
 function acp_display() {
+    var acpname = AndroidAcp.getACPName();
+    if (acpname == '') {
+        acpname = "No Aircraft Profile Defined";
+    }
+    document.getElementById("acp_name").textContent = acpname;
 
     document.getElementById("w0").value = AndroidAcp.getPilotContact();
     document.getElementById("w1").value = AndroidAcp.getAircraftHomeBase();
@@ -109,6 +116,15 @@ function acp_display() {
     document.getElementById("w11").value = AndroidAcp.getstringBestGlideSinkRate();
     document.getElementById("w12").value = AndroidAcp.getstringFuelBurn();
     document.getElementById("w13").value = AndroidAcp.getEmergencyChecklist();
+
+    var du = AndroidAcp.getDistanceUnit();
+    if(du == 'kt') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (knots)';
+    } else if(du == 'mi') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (mph)';
+    } else if(du == 'km') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (kmh)';
+    }
 }
 
 
@@ -149,7 +165,6 @@ function acp_get(name) {
     obj.w_12 = document.getElementById("w12").value;
     obj.w_13 = document.getElementById("w13").value;
 
-
     return JSON.stringify(obj);
 
 }
@@ -170,6 +185,7 @@ function round100(num) {
 // apply preferences to avare button
 function acp_calculate() {
 
+    var w_name = document.getElementById("acp_name").textContent;
     var w_0 = document.getElementById("w0").value;
     var w_1 = document.getElementById("w1").value;
     var w_2 = document.getElementById("w2").value;
@@ -185,9 +201,79 @@ function acp_calculate() {
     var w_12 = document.getElementById("w12").value;
     var w_13 = document.getElementById("w13").value;
 
-    AndroidAcp.UpdateACPreferences(w_0,w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13);
+    AndroidAcp.UpdateACPreferences(w_name,w_0,w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13);
 
     toastr.success('Preferences Set');
+}
+
+function update_w0() {
+    var w_x = document.getElementById("w0").value;
+    AndroidAcp.updatePilotContact(w_x);
+    }
+
+function update_w1() {
+    var w_x = document.getElementById("w1").value;
+    AndroidAcp.updateHomeBase(w_x);
+    }
+
+function update_w2() {
+    var w_x = document.getElementById("w2").value;
+    AndroidAcp.updateTailNumber(w_x);
+}
+
+function update_w3() {
+    var w_x = document.getElementById("w3").value;
+    AndroidAcp.updateAircraftType(w_x);
+}
+
+function update_w4() {
+    var w_x = document.getElementById("w4").value;
+    AndroidAcp.updateAircraftICAOCode(w_x);
+}
+
+function update_w5() {
+    var w_x = document.getElementById("w5").value;
+    AndroidAcp.updateAircraftColor1(w_x);
+}
+
+function update_w6() {
+    var w_x = document.getElementById("w6").value;
+    AndroidAcp.updateAircraftColor2(w_x);
+}
+
+function update_w7() {
+    var w_x = document.getElementById("w7").value;
+    AndroidAcp.updateAircraftEquipment(w_x);
+}
+
+function update_w8() {
+    var w_x = document.getElementById("w8").value;
+    AndroidAcp.updateAircraftSurveillance(w_x);
+}
+
+function update_w9() {
+    var w_x = document.getElementById("w9").value;
+    AndroidAcp.updateAircraftOtherInfo(w_x);
+}
+
+function update_w10() {
+    var w_x = document.getElementById("w10").value;
+    AndroidAcp.updateAircraftTAS(w_x);
+}
+
+function update_w11() {
+    var w_x = document.getElementById("w11").value;
+    AndroidAcp.updateAircraftBGSR(w_x);
+}
+
+function update_w12() {
+    var w_x = document.getElementById("w12").value;
+    AndroidAcp.updateAircraftFuelBurn(w_x);
+}
+
+function update_w13() {
+    var w_x = document.getElementById("w13").value;
+    AndroidAcp.updateEmergencyChecklist(w_x);
 }
 
 
@@ -205,7 +291,7 @@ function save_delete(row) {
 		}
     	var acp_save = document.getElementById("save_table");
 	    AndroidAcp.saveDelete(acp_save.rows[row].cells[CELL_SAVE_NAME].textContent);
-	    toastr.success('ACP deleted');
+	    toastr.success('Aircraft preferences deleted');
 	});
 
 }
@@ -229,7 +315,10 @@ function save_acp_add() {
 
 	var data = acp_get(name);
 	AndroidAcp.saveAcp(data);
-	toastr.success('ACP saved to ' + name);
+	AndroidAcp.updateACPName(name);
+	acp_display();
+	$('[href="#acp"]').tab('show');
+	toastr.success('Preferences saved to ' + name);
 }
 
 
@@ -279,8 +368,7 @@ function acp_save_add(name) {
 $(document).ready(function(){
     $(".nav-tabs a").click(function(){
         $(this).tab('show');
-
-    });
+    })
 
 acp_display();
 
@@ -295,7 +383,7 @@ acp_display();
 
 
     <ul class="nav nav-tabs" style="display:inline-flex;">
-      <li class="active"><a href="#acp">Current ACP</a></li>
+      <li class="active"><a href="#acp">Current Preferences</a></li>
       <li><a href="#load">Load</a></li>
       <li><a href="#save">Save</a></li>
       <li><a href="#help">Help</a></li>
@@ -305,17 +393,17 @@ acp_display();
       <div id="acp" class="tab-pane fade in active">
           <table class="table">
               <tr>
-                  <td><h3 ><span id="acp_name" class="label label-success">ACP[]</span></h3></td>
+                  <td><h3 ><span id="acp_name" class="label label-success"></span></h3></td>
               </tr>
           </table>
           <table class="table" id="acp_table" >
-              <tr><td><label>Pilot Contact Info (name, phone)</label></td><td><input id="w0"></td></tr>
-              <tr><td><label>Home Base</label></td><td><input id="w1"></td></tr>
-              <tr><td><label>Tail Number</label></td><td><input id="w2"></td></tr>
-              <tr><td><label>Aircraft Type</label></td><td><input id="w3"></td></tr>
-              <tr><td><label>Mode-S Code (hex)</label></td><td><input id="w4"></td></tr>
+              <tr><td><label>Pilot Contact Info (name, phone)</label></td><td><input id="w0" onchange="update_w0()"></td></tr>
+              <tr><td><label>Home Base</label></td><td><input id="w1" onchange="update_w1()"></td></tr>
+              <tr><td><label>Tail Number</label></td><td><input id="w2" onchange="update_w2()"></td></tr>
+              <tr><td><label>Aircraft Type</label></td><td><input id="w3" onchange="update_w3()"></td></tr>
+              <tr><td><label>Mode-S Code (hex)</label></td><td><input id="w4" onchange="update_w4()"></td></tr>
               <tr><td><label>Aircraft Color-Primary</label></td>
-                  <td><select class="selectpicker" data-mobile="true" id="w5">
+                  <td><select class="selectpicker" data-mobile="true" id="w5" onchange="update_w5()">
                       <option value="A">Amber</option>
                       <option value="B">Blue</option>
                       <option value="BE">Beige</option>
@@ -339,7 +427,7 @@ acp_display();
                   </td>
               </tr>
               <tr><td><label>Aircraft Color-Secondary</label></td>
-                  <td><select class="selectpicker" data-mobile="true" id="w6">
+                  <td><select class="selectpicker" data-mobile="true" id="w6" onchange="update_w6()">
                       <option value="A">Amber</option>
                       <option value="B">Blue</option>
                       <option value="BE">Beige</option>
@@ -362,27 +450,27 @@ acp_display();
                   </select>
                   </td>
               </tr>
-              <tr><td><label>Aircraft Equipment</label></td><td><input id="w7"></td></tr>
-              <tr><td><label>Surveillance Equipment</label></td><td><input id="w8"></td></tr>
-              <tr><td><label>Other Info</label></td><td><input id="w9"></td></tr>
-              <tr><td><label>True Airspeed (knots)</label></td><td><input id="w10"></td></tr>
-              <tr><td><label>Best Glide Sink Rate (fpm)</label></td><td><input id="w11"></td></tr>
-              <tr><td><label>Fuel Burn Rate (gph)</label></td><td><input id="w12"></td></tr>
-              <tr><td><label>Emergency Checklist</label></td><td><input id="w13"></td></tr>
+              <tr><td><label>Aircraft Equipment</label></td><td><input id="w7" onchange="update_w7()"></td></tr>
+              <tr><td><label>Surveillance Equipment</label></td><td><input id="w8" onchange="update_w8()"></td></tr>
+              <tr><td><label>Other Info</label></td><td><input id="w9" onchange="update_w9()"></td></tr>
+              <tr><td><label id='du'>True Airspeed</label></td><td><input id="w10" onchange="update_w10()"></td></tr>
+              <tr><td><label>Best Glide Sink Rate (fpm)</label></td><td><input id="w11" onchange="update_w11()"></td></tr>
+              <tr><td><label>Fuel Burn Rate (per hr)</label></td><td><input id="w12" onchange="update_w12()"></td></tr>
+              <tr><td><label>Emergency Checklist</label></td><td><input id="w13" onchange="update_w13()"></td></tr>
           </table>
 
       </div>
 
 
       <div id="load" class="tab-pane fade">
-          <table class="table" id="save_table" ><th>Load an Aircraft Preference</th></table>
+          <table class="table" id="save_table" ><th>Load Aircraft Preferences</th></table>
       </div>
 
 
       <div id="save" class="tab-pane fade">
-          <table class="table"><th>Save Current ACP</th>
+          <table class="table"><th>Save Aircraft Preferences</th>
               <tr>
-                  <td><input id="save_name" spellcheck="false" placeholder="Enter ACP Name"/></td>
+                  <td><input id="save_name" spellcheck="false" placeholder="Enter Name" autofocus/></td>
                   <td><button class="btn btn-block" onclick="save_acp_add()">Save</button></td>
               </tr>
           </table>
@@ -398,34 +486,40 @@ acp_display();
               <br>
               <b>To Review and Update Aircraft Preferences</b>
               <ul>
-                  <li>Click the "Current ACP" tab at the top of the ACP screen to see a list of preferences that can be set.  Each field is populated with the current set of Avare preferences.</li>
-                  <li>Update pilot and aircraft specific information for each preference field as needed.</li>
-                  <li>Press the "Apply Preferences to Avare" button to update the Avare preferences for pilot and aircraft.</li>
-
-              </ul>
-
-              <b>To Save an ACP</b>
-              <ul>
-                  <li>After populating the preference fields, press the "Save" tab at the top of the screen.</li>
-                  <li>Enter a name in the text field next to the "Save" button and press the "Save" Button.</li>
-                  <li>Press the "Load" tab to confirm the ACP was saved.</li>
-                  <li>ACPs with the same name will create multiple entries and will become confusing. Use unique names for each ACP and delete those no longer needed.</li>
-              </ul>
-
-              <b>To Load or Delete a Saved ACP</b>
-              <ul>
-                  <li>Press the "Load" tab to show the saved ACPs.</li>
-                  <li>Press the desired "LD" button to load the ACP.  Press the "Apply Preferences to Avare" button to update the Avare preferences for your flight.</li>
-                  <li>You can delete a saved ACP by pressing the "Del" button to the right of its name in the Save ACP screen.</li>
-                  <li>If all saved ACPs are deleted, the two sample ACPs will be created again.</li>
-              </ul>
-
-              <b>To fly in a different aircraft</b>
-              <ul>
-                  <li>During your Avare preflight select Menu, Preferences, and "Pilot and Aircraft". Select the load tab at the top of the screen
-                      and press the "LD" button next to the desired saved preferences.</li>
-                  <li>Ensure your preferences are correctly shown on the Current ACP screen and press the "Apply Preferences to Avare" button at the bottom of the screen.</li>
+                  <li>From the map screen, select Menu>Preferences>Pilot and Aircraft</li>
+                  <li>The Current Preferences tab displayed is populated with the current set of Avare aircraft preferences.</li>
+                  <li>The title highlighted in green is the name of the saved aircraft preferences from which the current preferences were loaded.</li>
+                  <li>Update pilot and aircraft specific information as needed. The preference will be set in Avare once you click away from the text box.</li>
                   <li>Use the back button to return to the map screen.</li>
+
+              </ul>
+
+              <b>To Save a set of Aircraft Preferences</b>
+              <ul>
+                  <li>After updating the data on the "Current Preferences" tab, press the "Save" tab at the top of the screen.</li>
+                  <li>Enter a name in the text box and press the "Save" Button.</li>
+                  <li>The screen will be returned to the "Current Preferences" tab.</li>
+                  <li>Saved preferences with the same name will create multiple entries and will become confusing. Use unique names for each set of preferences and delete those no longer needed.</li>
+              </ul>
+
+              <b>To Load or Delete Saved Preferences</b>
+              <ul>
+                  <li>Press the "Load" tab to show the saved preferences.</li>
+                  <li>Press the desired "LD" button to load the preferences.  The saved preferences will be set in Avare.</li>
+                  <li>You can delete a saved set of preferences by pressing the "Del" button to the right of its name on the "Load" tab.</li>
+                  <li>If all saved preferences are deleted, the two sample sets will be created again.</li>
+              </ul>
+
+              <b>To begin flight planning in a different aircraft</b>
+              <ul>
+                  <li>During your Avare preflight, select Menu, Preferences, and "Pilot and Aircraft". Select the load tab at the top of the screen
+                      and press the "LD" button next to the desired saved preferences.</li>
+                  <li>Ensure your preferences are correctly shown on the "Current Preferences" screen.</li>
+                  <li>Use the back button to return to the map screen.</li>
+                  <li>Aircraft true airspeed (based on distance unit in Preferences) and fuel burn will be reflected on the Plan tab.  Fuel burn can be any unit.</li>
+                  <li>Aircraft best glide sink rate (fpm) will affect the calculated glide range selected in the distance ring preference.</li>
+                  <li>Emergency checklist will be loaded when the Menu>Emergency button is pressed.  Define the checklist in the "List" tab.</li>
+                  <li>All other pilot and aircraft preferences will be reflected in the FAA tab for filing.</li>
               </ul>
 
 
