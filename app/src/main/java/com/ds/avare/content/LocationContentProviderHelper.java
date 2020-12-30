@@ -621,11 +621,11 @@ public class LocationContentProviderHelper {
     public static String[] findMinimums(Context ctx, String airportId) {
 
         Cursor c = null;
+
+        LinkedList<String> ret = new LinkedList<String>();
         /**
          * Search Minimums plates for this airport
          */
-        String ret2[] = new String[2];
-        String ret[] = new String[1];
 
         /*
          * Silly that FAA gives K and P for some airports as ICAO
@@ -640,9 +640,11 @@ public class LocationContentProviderHelper {
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_ALTERNATE, null, qry, arguments, null);
             if(c != null) {
-                if(c.moveToNext()) {
-                    ret2[0] = c.getString(c.getColumnIndex(LocationContract.ALTERNATE_FILE));
-                    ret[0] = ret2[0];
+                while(c.moveToNext()) {
+                    String r = c.getString(c.getColumnIndex(LocationContract.ALTERNATE_FILE));
+                    if (r != null) {
+                        ret.add(r);
+                    }
                 }
             }
         }
@@ -658,9 +660,11 @@ public class LocationContentProviderHelper {
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_TAKEOFF, null, qry, arguments, null);
             if(c != null) {
-                if(c.moveToNext()) {
-                    ret2[1] = c.getString(c.getColumnIndex(LocationContract.TAKEOFF_FILE));
-                    ret[0] = ret2[1];
+                while(c.moveToNext()) {
+                    String r = c.getString(c.getColumnIndex(LocationContract.TAKEOFF_FILE));
+                    if(r != null) {
+                        ret.add(r);
+                    }
                 }
             }
         }
@@ -671,14 +675,11 @@ public class LocationContentProviderHelper {
         /*
          * Only return appropriate sized array
          */
-        if(ret[0] == null) {
+        if(ret.size() == 0) {
             return null;
         }
-        else if(ret2[0] == null || ret2[1] == null) {
-            return ret;
-        }
 
-        return ret2;
+        return ret.toArray(new String[ret.size()]);
     }
 
 
