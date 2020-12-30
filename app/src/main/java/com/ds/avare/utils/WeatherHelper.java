@@ -725,29 +725,25 @@ public class WeatherHelper {
 
         return "";
     }
-    
-    /**
-     * Returns best wind aligned runway from METAR
-     * @param metar
-     * @param runways
-     * @return
-     */
-    public static String getBestRunway(String metar, LinkedList<String> runways) {
-        
-        if(null == runways || null == metar) {
-            return "";
-        }
-        
-        String wind = "";
-        double dir = 0;
-        double spd0 = 0;
-        double spd1 = 0;
-        
+
+    public static double[] getWindFromMetar(String metar) {
+
         boolean windset = false;
-        
-        // parse time, temp, altitude setting 
+
+        if(null == metar) {
+            return null;
+        }
+
+        double wnd[] = new double[3];
+        wnd[0] = 0;
+        wnd[1] = 0;
+        wnd[2] = 0;
+
+        String wind = "";
+
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
-        
+
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
@@ -761,13 +757,12 @@ public class WeatherHelper {
                         // variable, almost calm
                         tmp = "000";
                     }
-                    dir = Double.parseDouble(tmp);
+                    wnd[0] = Double.parseDouble(tmp);
                     // next 2 digits are speed
-                    spd0 = Double.parseDouble(wind.substring(3, 5));
-                    // could be gusting
+                    wnd[1] = Double.parseDouble(wind.substring(3, 5));
                     if(wind.contains("G")) {
                         // gusting to
-                        spd1 = Double.parseDouble(wind.substring(6, 8));
+                        wnd[2] = Double.parseDouble(wind.substring(6, 8));
                     }
                     windset = true;
                     continue;
@@ -776,13 +771,38 @@ public class WeatherHelper {
         }
         catch (Exception e) {
         }
+        if(windset) {
+            return wnd;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns best wind aligned runway from METAR
+     * @param metar
+     * @param runways
+     * @return
+     */
+    public static String getBestRunway(String metar, LinkedList<String> runways) {
         
+        if(null == runways || null == metar) {
+            return "";
+        }
+        
+
+
         double head1 = 0;
         double head0 = 0;
         double cross1 = 0;
         double cross0 = 0;
-        
-        if(windset) {
+
+        double[] windset = getWindFromMetar(metar);
+        if(windset != null) {
+
+            double dir = windset[0];
+            double spd0 = windset[1];
+            double spd1 = windset[2];
+
             /*
              * Find best wind aligned runway
              */
