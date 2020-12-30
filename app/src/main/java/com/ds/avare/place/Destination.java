@@ -210,7 +210,7 @@ public class Destination extends Observable {
             double ws = 0;
             double wd = 0;
             if(mWinds != null) {
-                double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
+                double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), null);
                 ws = winds[0];
                 wd = winds[1];
                 mWindString = String.format(Locale.getDefault(),

@@ -19,6 +19,7 @@ import com.ds.avare.position.Origin;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.WeatherHelper;
 import com.ds.avare.weather.WindsAloft;
 
 public class GlideProfile {
@@ -74,6 +75,7 @@ public class GlideProfile {
         double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         WindsAloft wa;
+        double [] metarWinds;
 
         if(mPref.getDistanceRingType() != 3) {
             return;
@@ -85,9 +87,11 @@ public class GlideProfile {
 
         if(mPref.useAdsbWeather()) {
             wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
+            metarWinds = WeatherHelper.getWindFromMetar(mService.getAdsbWeather().getMETAR(wa.station).rawText);
         }
         else {
             wa = mService.getDBResource().getWindsAloft(lon, lat);
+            metarWinds = WeatherHelper.getWindFromMetar(mService.getDBResource().getMetar(wa.station).rawText);
         }
 
         if(null == wa) {
@@ -98,7 +102,7 @@ public class GlideProfile {
         int stepSizeDirection = (int)(360 / DIRECTION_STEPS);
 
         // calculate airspeed from ground speed, direction, and wind speed.
-        double[] waa = wa.getWindAtAltitude(altitudeGps);
+        double[] waa = wa.getWindAtAltitude(altitudeGps, metarWinds);
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
         // wind triangle solution for airspeed from wind and ground vector.
@@ -116,7 +120,7 @@ public class GlideProfile {
 
         // calculate winds from current altitude to ground.
         for(int dir = 0; dir < DIRECTION_STEPS; dir++) {
-            mDistanceTotal[dir] = findDistanceTo(bearing, dir * stepSizeDirection, sinkRate, altitudeGps, elevation, as, wa);
+            mDistanceTotal[dir] = findDistanceTo(bearing, dir * stepSizeDirection, sinkRate, altitudeGps, elevation, as, wa, metarWinds);
             // now we know how far we can glide in each direction
             //XXX: Fix ground elevation to include hills which are not easily available from tiles.
         }
@@ -129,7 +133,7 @@ public class GlideProfile {
             Airport airport = mService.getArea().getAirport(i);
             double to = airport.getBearing();
             elevation = airport.getElevationNumber();
-            double distance = findDistanceTo(bearing, to, sinkRate, altitudeGps, elevation, as, wa);
+            double distance = findDistanceTo(bearing, to, sinkRate, altitudeGps, elevation, as, wa, metarWinds);
             airport.setCanGlide(airport.getDistance() < distance);
         }
     }
@@ -155,7 +159,7 @@ public class GlideProfile {
      * @param wa
      * @return
      */
-    public static double findDistanceTo(double bearing, double bearingAt, double sinkRate, double altitudeGps, double elevation, double as, WindsAloft wa) {
+    public static double findDistanceTo(double bearing, double bearingAt, double sinkRate, double altitudeGps, double elevation, double as, WindsAloft wa, double[] metarWinds) {
         double distance = 0;
         // calculate ground speed from airspeed, direction, and wind speed. This is approx 2 % change in tas per 1000 foot.
         for(int alt = 0; alt < HEIGHT_STEPS; alt++) {
@@ -168,7 +172,7 @@ public class GlideProfile {
             }
             int stepSizeHeight = (int)((altitude - elevation) / HEIGHT_STEPS);
             double thisAltitude = (double)alt * stepSizeHeight + elevation;
-            double wind[] = wa.getWindAtAltitude(thisAltitude);
+            double wind[] = wa.getWindAtAltitude(thisAltitude, metarWinds);
             wind[0] *= Preferences.feetConversion / 3600.0;
             double tas = as - as * (thisAltitude / 1000 * 2 / 100); // 2% per 1000 foot approx
             double gs = Math.sqrt(tas * tas + wind[0] * wind[0] - 2.0 * tas * wind[0] * Math.cos((bearingAt - wind[1]) * Math.PI / 180.0)); //fps
