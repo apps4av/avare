@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.icu.util.Measure;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
@@ -20,6 +21,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.WindsAloft;
 
 public class GlideProfile {
@@ -75,7 +77,7 @@ public class GlideProfile {
         double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         WindsAloft wa;
-        double [] metarWinds;
+        double [] metarWinds = null;
 
         if(mPref.getDistanceRingType() != 3) {
             return;
@@ -85,18 +87,30 @@ public class GlideProfile {
             mDistanceTotal[dir] = 0; // clear
         }
 
+        Metar m = null;
         if(mPref.useAdsbWeather()) {
             wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
-            metarWinds = WeatherHelper.getWindFromMetar(mService.getAdsbWeather().getMETAR(wa.station).rawText);
+            if(null != wa) {
+                if(null != wa.station) {
+                    m = mService.getAdsbWeather().getMETAR(wa.station);
+                }
+            }
         }
         else {
             wa = mService.getDBResource().getWindsAloft(lon, lat);
-            metarWinds = WeatherHelper.getWindFromMetar(mService.getDBResource().getMetar(wa.station).rawText);
+            if(null != wa) {
+                if(null != wa.station) {
+                    m = mService.getDBResource().getMetar(wa.station);
+                }
+            }
         }
 
         if(null == wa) {
             wa = new WindsAloft();
             // no wind calc
+        }
+        if(null != m) {
+            metarWinds = WeatherHelper.getWindFromMetar(m.rawText);
         }
 
         int stepSizeDirection = (int)(360 / DIRECTION_STEPS);
