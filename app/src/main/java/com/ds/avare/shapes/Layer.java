@@ -32,16 +32,17 @@ import java.util.Locale;
  */
 public class Layer {
 
+    private static final int ANIMATE_IMAGES = 3;
     // Layers can hog memory, show only one hence static bitmap
-    private static BitmapHolder mBitmap;
+    //
+    private static BitmapHolder mBitmap[] = new BitmapHolder[ANIMATE_IMAGES];
     private float mLonL;
     private float mLatU;
     private float mLonR;
     private float mLatD;
     private long mDate;
-
-    private String mImage;
-    private String mText;
+    private int mIndex = 0;
+    private long mTime = System.currentTimeMillis();
 
 
     protected Layer() {
@@ -104,9 +105,11 @@ public class Layer {
      *
      */
     public void flush() {
-        if(mBitmap != null) {
-            mBitmap.recycle();
-            mBitmap = null;
+        for(int i = 0; i < mBitmap.length; i++) {
+            if (mBitmap[i] != null) {
+                mBitmap[i].recycle();
+                mBitmap[i] = null;
+            }
         }
         mLonR = mLatU = mLonL = mLatD = 0;
         mDate = 0;
@@ -117,10 +120,22 @@ public class Layer {
      */
     public void draw(Canvas canvas, Paint paint, Origin origin) {
 
-        if(null == mBitmap) {
+        // animate once a second
+        long now = System.currentTimeMillis();
+        if ((now - mTime) > 1000) {
+            mTime = now;
+            mIndex = (mIndex - 1);
+            if(mIndex < 0) {
+                mIndex = ANIMATE_IMAGES - 1;
+            }
+        }
+
+        BitmapHolder b = mBitmap[mIndex];
+
+        if(null == b) {
             return;
         }
-        if(null == mBitmap.getBitmap()) {
+        if(null == b.getBitmap()) {
             return;
         }
 
@@ -132,12 +147,12 @@ public class Layer {
         /*
          * Stretch out the image to fit the projection
          */
-        float scalex = (float)(x1 - x0) / mBitmap.getWidth();
-        float scaley = (float)(y1 - y0) / mBitmap.getHeight();
-        mBitmap.getTransform().setScale(scalex, scaley);
-        mBitmap.getTransform().postTranslate(x0, y0);
+        float scalex = (float)(x1 - x0) / b.getWidth();
+        float scaley = (float)(y1 - y0) / b.getHeight();
+        b.getTransform().setScale(scalex, scaley);
+        b.getTransform().postTranslate(x0, y0);
 
-        canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), paint);
+        canvas.drawBitmap(b.getBitmap(), b.getTransform(), paint);
     }
 
     /**
@@ -145,14 +160,12 @@ public class Layer {
      */
     public void parse(String imageName, String projName) {
         flush();
-        mImage = imageName;
-        mText = projName;
 
-        if(new File(mText).exists()) {
+        if(new File(projName).exists()) {
 
             try {
                 BufferedReader br;
-                br = new BufferedReader(new FileReader(mText));
+                br = new BufferedReader(new FileReader(projName));
 
                 /*
                  * Read lon/lat/date
@@ -177,7 +190,15 @@ public class Layer {
                 String dateText = br.readLine();
                 br.close();
 
-                mBitmap = new BitmapHolder(mImage);
+                // load all images, and if some not available, use the last one
+                // conventions is image image1 image2, and bigger the index, older the date
+                mBitmap[0] = new BitmapHolder(imageName);
+                for(int i = 1; i < ANIMATE_IMAGES; i++) {
+                    mBitmap[i] = new BitmapHolder(imageName + i);
+                    if (mBitmap[i] == null || mBitmap[i].getBitmap() == null) {
+                        mBitmap[i] = mBitmap[i - 1];
+                    }
+                }
 
                 /*
                  * Date format YYYYMMDD_HHmm
