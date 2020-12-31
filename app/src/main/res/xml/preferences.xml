@@ -134,11 +134,6 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/LeaveRunning"
-            android:summary="@string/LeaveRunningSummary"
-            android:title="@string/LeaveRunningLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"

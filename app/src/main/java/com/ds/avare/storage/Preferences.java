@@ -408,10 +408,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return ret;
     }
 
-    public boolean isLeaveRunning() {
-        return (mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
-    }
-
     /**
      * @return
      */

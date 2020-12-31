@@ -99,7 +99,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoShowAirportDiagramSummary">&quot;Select to automatically show airport diagrams on rollout&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">"Exit?"</string>
-    <string name="SendToBackground">"Close and send to background?"</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
@@ -107,9 +106,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectPlate">&quot;Select A Plate&quot;</string>
     <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
     <string name="Agree">&quot;I Agree&quot;</string>
-    <string name="LeaveRunning">&quot;Leave Running&quot;</string>
-    <string name="LeaveRunningLabel">&quot;Leave Running&quot;</string>
-    <string name="LeaveRunningSummary">&quot;Select to pause the application on Exit (instead of a complete exit)&quot;</string>
     <string name="TFRs">&quot;TFRs&quot;</string>
     <string name="NightMode">&quot;Night Mode&quot;</string>
     <string name="NightModeLabel">&quot;Night Mode (requires restart)&quot;</string>
