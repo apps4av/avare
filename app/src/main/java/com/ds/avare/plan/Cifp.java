@@ -175,6 +175,8 @@ public class Cifp {
             LinkedList<String> set = new LinkedList<String>();
             String last = "";
             String wps[] = ((String)vals[0]).split(" ");
+            // start from current position
+            set.add(service.getGpsParams().getLatitude() + "&" + service.getGpsParams().getLongitude());
             for (String wp : wps) {
                 if(last.equals(wp) || wp.equals("")) {
                     continue;
