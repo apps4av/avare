@@ -25,6 +25,8 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.CalendarHelper;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
+import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.WindsAloft;
 
 import java.util.LinkedHashMap;
@@ -70,7 +72,7 @@ public class Destination extends Observable {
     private float mFuelGallons;
     private String mEta;
 
-    protected WindsAloft mWinds;
+    private WindsAloft mWinds;
 
     /*
      * Track to dest.
@@ -115,6 +117,7 @@ public class Destination extends Observable {
      * Dozens of parameters in a linked map because simple map would rearrange the importance
      */
     protected LinkedHashMap <String, String>mParams;
+    private double mWindMetar[] = null;
 
     public Destination(StorageService service, String name) {
         mPref = new Preferences(service.getApplicationContext());
@@ -210,7 +213,7 @@ public class Destination extends Observable {
             double ws = 0;
             double wd = 0;
             if(mWinds != null) {
-                double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), null);
+                double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), mWindMetar);
                 ws = winds[0];
                 wd = winds[1];
                 mWindString = String.format(Locale.getDefault(),
@@ -568,5 +571,39 @@ public class Destination extends Observable {
 
     public String getCmt() {
         return null;
+    }
+
+    protected void updateWinds() {
+
+	    // call in async task from sub classes to populate winds
+
+        try {
+            // Find winds
+            Metar m = null;
+            WindsAloft w = null;
+            if (mPref.useAdsbWeather()) {
+                w = mService.getAdsbWeather().getWindsAloft(mLond, mLatd);
+                if (null != w) {
+                    if (null != w.station) {
+                        m = mService.getAdsbWeather().getMETAR(w.station);
+                    }
+                }
+            } else {
+                w = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                if (null != w) {
+                    if (null != w.station) {
+                        m = mService.getDBResource().getMetar(w.station);
+                    }
+                }
+            }
+            if (m != null) {
+                mWindMetar = WeatherHelper.getWindFromMetar(m.rawText);
+            }
+            mWinds = w;
+        } catch (Exception e) {
+            mWindMetar = null;
+            mWinds = null;
+        }
+
     }
 }

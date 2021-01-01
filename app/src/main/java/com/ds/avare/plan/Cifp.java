@@ -196,6 +196,7 @@ public class Cifp {
                     Coordinate c = service.getDBResource().findRunwayCoordinates(rw, mAirport);
                     if(c != null) {
                         Destination d = DestinationFactory.build(service, Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
+                        d.find();
                         service.getPlan().appendDestination(d);
                     }
                 }
