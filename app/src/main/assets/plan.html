@@ -43,15 +43,15 @@ var CELL_WINDT = 3;
 var CELL_HEADING = 4;
 var CELL_DISTANCE = 5;
 var CELL_GS = 6;
-var CELL_TIME = 7;
-var CELL_FUEL = 8;
-var CELL_LAST = 9;
+var CELL_ALTITUDE = 7;
+var CELL_TIME = 8;
+var CELL_FUEL = 9;
+var CELL_LAST = 10;
 
 var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second
 function loadplan() {
-	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102° 10.1";
 	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
@@ -59,7 +59,7 @@ function loadplan() {
 	for(var pl = 1; pl < (plans.length - 1); pl++) {
 		// split plan individual fields
 		var data = plans[pl].split(",");
-		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])) {
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10])) {
 			// mismatch in view and model, sync
 			AndroidPlan.refreshPlan();
 			return;
@@ -89,7 +89,7 @@ function onclick_row(row) {
 	AndroidPlan.moveTo(row - 1);
 }
 
-function set_plan_line(row, next, course, heading, distance, gs, time, id, type, fuel, windt) {
+function set_plan_line(row, next, course, heading, distance, gs, time, id, type, fuel, windt, alt) {
 	// rows here are 1 indexed
 // Set plan line
 	var plan_table = document.getElementById("plan_table");
@@ -121,6 +121,7 @@ function set_plan_line(row, next, course, heading, distance, gs, time, id, type,
 	plan_table.rows[row].cells[CELL_COURSE].textContent = course;
 	plan_table.rows[row].cells[CELL_WINDT].textContent = windt;
 	plan_table.rows[row].cells[CELL_GS].textContent = gs;
+	plan_table.rows[row].cells[CELL_ALTITUDE].textContent = alt;
 	plan_table.rows[row].cells[CELL_DISTANCE].textContent = distance;
 	plan_table.rows[row].cells[CELL_TIME].textContent = time;
 	plan_table.rows[row].cells[CELL_HEADING].textContent = heading;
@@ -158,6 +159,7 @@ function plan_add(id, type) {
 	cell[CELL_HEADING] = row.insertCell(CELL_HEADING);
 	cell[CELL_DISTANCE] = row.insertCell(CELL_DISTANCE);
 	cell[CELL_GS] = row.insertCell(CELL_GS);
+	cell[CELL_ALTITUDE] = row.insertCell(CELL_ALTITUDE);
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_FUEL] = row.insertCell(CELL_FUEL);
 
@@ -165,6 +167,7 @@ function plan_add(id, type) {
 	cell[CELL_TYPE].textContent = type;
 	cell[CELL_WINDT].textContent = "";
 	cell[CELL_GS].textContent = "";
+	cell[CELL_ALTITUDE].textContent = "";
 	cell[CELL_DISTANCE].textContent = "";
 	cell[CELL_TIME].textContent = "";
 	cell[CELL_COURSE].textContent = "";
@@ -568,7 +571,7 @@ $(document).ready(function(){
                 </td>
             </tr>
         </table>
-        <table class="table" id="plan_table"><th>Waypoint</th><th>Type</th><th>Course</th><th>Wind</th><th>Heading</th><th id="plan_total_distance">Distance</th><th>GS</th><th id="plan_total_time">Time</th><th id="plan_total_fuel">Fuel</th></table>
+        <table class="table" id="plan_table"><th>Waypoint</th><th>Type</th><th>Course</th><th>Wind</th><th>Heading</th><th id="plan_total_distance">Distance</th><th>GS</th><th>Altitude</th><th id="plan_total_time">Time</th><th id="plan_total_fuel">Fuel</th></table>
         <table class="table">
             <tr>
                 <td><button class="btn btn-block" onclick="plan_discard()">Clr</button></td>

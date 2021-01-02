@@ -703,7 +703,8 @@ public class WebAppPlanInterface implements Observer {
                     d.getID() + "," +
                     d.getDbType() + "," +
                     d.getFuel() + "," +
-                    d.getWinds() +
+                    d.getWinds() + "," +
+					d.getAltitude() +
                     "::::";
     	}
     	// add total

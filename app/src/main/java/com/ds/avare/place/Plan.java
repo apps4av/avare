@@ -322,7 +322,7 @@ public class Plan implements Observer {
         }
 
         /*
-         * Depends if it is active or plan
+         * Depends if it is active plan or destination
          */
         if (mActive) {
 
@@ -343,8 +343,8 @@ public class Plan implements Observer {
             for (int id = (np + 1); id < num; id++) {
                 Location l = mDestination[id - 1].getLocation();
                 l.setSpeed((float)GpsParams.speedConvert(params.getSpeed()));
-                l.setAltitude((float)GpsParams.altitudeConvert(params.getAltitude()));
-                l.setBearing((float)params.getBearing());
+                l.setAltitude((float)GpsParams.altitudeConvert(params.getAltitude())); //ignore plan altitude when active
+                l.setBearing((float)getBearing(id - 1, id)); // bearing from point to point
                 GpsParams p = new GpsParams(l);
                 mDestination[id].updateTo(p);
                 mDistance += mDestination[id].getDistance();

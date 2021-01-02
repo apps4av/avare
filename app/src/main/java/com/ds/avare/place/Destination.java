@@ -74,6 +74,7 @@ public class Destination extends Observable {
     private String mEta;
 
     private WindsAloft mWinds;
+    private int mAltitude;
 
     /*
      * Track to dest.
@@ -127,6 +128,7 @@ public class Destination extends Observable {
         mEte = "--:--";
         mEta = "--:--";
         mFuel = "-.-";
+        mAltitude = 0;
         mParams = new LinkedHashMap<String, String>();
 
         mEteSec = Long.MAX_VALUE;
@@ -183,6 +185,7 @@ public class Destination extends Observable {
         double mLon = params.getLongitude();
         double mLat = params.getLatitude();
         mDeclination = params.getDeclinition();
+        mAltitude = (int)params.getAltitude();
 
 		if(!mFound) {
 			return;
@@ -207,7 +210,7 @@ public class Destination extends Observable {
         mWca = 0;
         mCrs = mBearing;
         mWindString = "-";
-        double hd = 0;
+        double hd = mBearing;
         double wm[] = {0, 0};
         if(mWindMetar != null) {
             // if low altitude flight use correction with metar
@@ -216,10 +219,10 @@ public class Destination extends Observable {
         }
         double ws = 0;
         double wd = 0;
-        double tas = 0.0;
+        double tas = params.getSpeed();
         if(mWinds != null) {
             // wind calculation
-            double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), wm);
+            double winds[] = mWinds.getWindAtAltitude(mAltitude, wm);
             ws = winds[0];
             wd = winds[1];
             mWindString = String.format(Locale.getDefault(),
@@ -229,11 +232,7 @@ public class Destination extends Observable {
             mWindString = "-";
         }
 
-        if(mPref.isSimulationMode()) {
-            tas = (Double)(double)mPref.getAircraftTAS(); // in sim mode, use preferred TAS
-            hd = mBearing;
-        }
-        else {
+        if(!mPref.isSimulationMode()) {
             double t[] = WindTriagle.getTrueFromGroundAndWind(params.getSpeed(), params.getBearing(), ws, wd);
             tas = t[0];
             hd = t[1];
@@ -622,4 +621,8 @@ public class Destination extends Observable {
         }
 
     }
+    public int getAltitude() {
+        return mAltitude;
+    }
+
 }
