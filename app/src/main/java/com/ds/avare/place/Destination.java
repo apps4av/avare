@@ -264,7 +264,7 @@ public class Destination extends Observable {
     	 * ETA when speed != 0
     	 */
     	mEte = Helper.calculateEte(mDistance, mGroundSpeed, 0, true);
-        if(mGroundSpeed == 0) {
+        if(mGroundSpeed < 1) { // practically stationary
             mEteSec = Long.MAX_VALUE;
             mFuelGallons = Float.MAX_VALUE;
             mFuel = "-.-";
