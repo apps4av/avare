@@ -76,6 +76,7 @@ public class GlideProfile {
         double altitudeGps = gpsParams.getAltitude();
         double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
+        double declination = gpsParams.getDeclinition();
         WindsAloft wa;
         double [] metarWinds = null;
 
@@ -111,6 +112,7 @@ public class GlideProfile {
         }
         if(null != m) {
             metarWinds = WeatherHelper.getWindFromMetar(m.rawText);
+            metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
         }
 
         int stepSizeDirection = (int)(360 / DIRECTION_STEPS);

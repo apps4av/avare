@@ -209,11 +209,16 @@ public class Destination extends Observable {
         mWca = 0;
         mCrs = mBearing;
         mWindString = "-";
+        double wm[] = {0, 0};
+        if(mWindMetar != null) {
+            wm[1] = mWindMetar[1];
+            wm[0] = (mWindMetar[0] - mDeclination + 360) % 360;
+        }
         if(mPref.isSimulationMode()) {
             double ws = 0;
             double wd = 0;
             if(mWinds != null) {
-                double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), mWindMetar);
+                double winds[] = mWinds.getWindAtAltitude(params.getAltitude(), wm);
                 ws = winds[0];
                 wd = winds[1];
                 mWindString = String.format(Locale.getDefault(),
