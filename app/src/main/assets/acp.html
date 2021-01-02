@@ -1,0 +1,533 @@
+<html>
+<!--
+Copyright (c) 2017, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan  modified by kbabbert for aircraft preferences from wnb.html
+-->
+
+<head>
+
+    <!-- Latest compiled and minified CSS -->
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="bootstrap-select.min.js"></script>
+    <script src="bootbox.min.js"></script>
+    <script src="toastr.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-select.min.css">
+    <link rel="stylesheet" href="toastr.min.css">
+    <style type="text/css">
+        button {color: black; height:40px;}
+        input {height:40px; border-radius: 5px;}
+        .toast {opacity: 1 !important;}
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" >
+
+	toastr.options.timeOut = 3000;
+
+// get data from json and place into screen
+function acp_set(data) {
+
+    var obj = JSON.parse(data);
+
+    document.getElementById("acp_name").textContent = obj.name;
+
+    document.getElementById("w0").value = obj.w_0;
+    document.getElementById("w1").value = obj.w_1;
+    document.getElementById("w2").value = obj.w_2;
+    document.getElementById("w3").value = obj.w_3;
+    document.getElementById("w4").value = obj.w_4;
+    document.getElementById("w5").value = obj.w_5;
+    aircraftColor = obj.w_5;
+    var sel1 = document.getElementById("w5");
+				for(var i = 0; i < sel1.length; i++) {
+					if(aircraftColor == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#w5').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+    aircraftColor = obj.w_6;
+    var sel1 = document.getElementById("w6");
+				for(var i = 0; i < sel1.length; i++) {
+					if(aircraftColor == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#w6').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+    document.getElementById("w7").value = obj.w_7;
+    document.getElementById("w8").value = obj.w_8;
+    document.getElementById("w9").value = obj.w_9;
+    document.getElementById("w10").value = obj.w_10;
+    document.getElementById("w11").value = obj.w_11;
+    document.getElementById("w12").value = obj.w_12;
+    document.getElementById("w13").value = obj.w_13;
+
+    acp_calculate();
+}
+
+// display current aircraft preferences on screen
+function acp_display() {
+    var acpname = AndroidAcp.getACPName();
+    if (acpname == '') {
+        acpname = "No Aircraft Profile Defined";
+    }
+    document.getElementById("acp_name").textContent = acpname;
+
+    document.getElementById("w0").value = AndroidAcp.getPilotContact();
+    document.getElementById("w1").value = AndroidAcp.getAircraftHomeBase();
+    document.getElementById("w2").value = AndroidAcp.getAircraftTailNumber();
+    document.getElementById("w3").value = AndroidAcp.getAircraftType();
+    document.getElementById("w4").value = AndroidAcp.getstringAircraftICAOCode();
+    aircraftColor = AndroidAcp.getAircraftColorPrimary();
+    var sel1 = document.getElementById("w5");
+				for(var i = 0; i < sel1.length; i++) {
+					if(aircraftColor == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#w5').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+    aircraftColor = AndroidAcp.getAircraftColorSecondary();
+    var sel1 = document.getElementById("w6");
+				for(var i = 0; i < sel1.length; i++) {
+					if(aircraftColor == sel1.options[i].value) {
+						sel1.selectedIndex = i;
+						 $('#w6').val(sel1.options[i].value).change();
+						break;
+					}
+				}
+    document.getElementById("w7").value = AndroidAcp.getAircraftEquipment();
+    document.getElementById("w8").value = AndroidAcp.getAircraftSurveillanceEquipment();
+    document.getElementById("w9").value = AndroidAcp.getAircraftOtherInfo();
+    document.getElementById("w10").value = AndroidAcp.getAircraftTAS();
+    document.getElementById("w11").value = AndroidAcp.getstringBestGlideSinkRate();
+    document.getElementById("w12").value = AndroidAcp.getstringFuelBurn();
+    document.getElementById("w13").value = AndroidAcp.getEmergencyChecklist();
+
+    var du = AndroidAcp.getDistanceUnit();
+    if(du == 'kt') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (knots)';
+    } else if(du == 'mi') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (mph)';
+    } else if(du == 'km') {
+        document.getElementById("du").innerHTML = 'Aircraft TAS (kmh)';
+    }
+}
+
+
+// get data from screen and place into json object
+function acp_get(name) {
+
+    var obj = new Object();
+
+    obj.name = name;
+
+    obj.t_0 = "Pilot Contact"
+    obj.t_1 = "Home Base"
+    obj.t_2 = "Tail Number"
+    obj.t_3 = "Aircraft Type"
+    obj.t_4 = "Aircraft ICAO Code"
+    obj.t_5 = "Aircraft Color - First"
+    obj.t_6 = "Aircraft Color - Second"
+    obj.t_7 = "Aircraft Equipment"
+    obj.t_8 = "Aircraft Surveillance"
+    obj.t_9 = "Aircraft Other Info"
+    obj.t_10 = "Aircraft TAS"
+    obj.t_11 = "Aircraft Best Glide Sink Rate"
+    obj.t_12 = "Aircraft Fuel Burn Rate"
+    obj.t_13 = "Emergency Checklist"
+
+    obj.w_0 = document.getElementById("w0").value;
+    obj.w_1 = document.getElementById("w1").value;
+    obj.w_2 = document.getElementById("w2").value;
+    obj.w_3 = document.getElementById("w3").value;
+    obj.w_4 = document.getElementById("w4").value;
+    obj.w_5 = document.getElementById("w5").value;
+    obj.w_6 = document.getElementById("w6").value;
+    obj.w_7 = document.getElementById("w7").value;
+    obj.w_8 = document.getElementById("w8").value;
+    obj.w_9 = document.getElementById("w9").value;
+    obj.w_10 = document.getElementById("w10").value;
+    obj.w_11 = document.getElementById("w11").value;
+    obj.w_12 = document.getElementById("w12").value;
+    obj.w_13 = document.getElementById("w13").value;
+
+    return JSON.stringify(obj);
+
+}
+
+
+function process_input(inp) {
+    var fl = parseFloat(inp);
+    if(inp == '') {
+        return 0;
+    }
+    return fl;
+}
+
+function round100(num) {
+    return (Math.round(num * 100.0) / 100.0);
+}
+
+// apply preferences to avare button
+function acp_calculate() {
+
+    var w_name = document.getElementById("acp_name").textContent;
+    var w_0 = document.getElementById("w0").value;
+    var w_1 = document.getElementById("w1").value;
+    var w_2 = document.getElementById("w2").value;
+    var w_3 = document.getElementById("w3").value;
+    var w_4 = document.getElementById("w4").value;
+    var w_5 = document.getElementById("w5").value;
+    var w_6 = document.getElementById("w6").value;
+    var w_7 = document.getElementById("w7").value;
+    var w_8 = document.getElementById("w8").value;
+    var w_9 = document.getElementById("w9").value;
+    var w_10 = document.getElementById("w10").value;
+    var w_11 = document.getElementById("w11").value;
+    var w_12 = document.getElementById("w12").value;
+    var w_13 = document.getElementById("w13").value;
+
+    AndroidAcp.UpdateACPreferences(w_name,w_0,w_1,w_2,w_3,w_4,w_5,w_6,w_7,w_8,w_9,w_10,w_11,w_12,w_13);
+
+    toastr.success('Preferences Set');
+}
+
+function update_w0() {
+    var w_x = document.getElementById("w0").value;
+    AndroidAcp.updatePilotContact(w_x);
+    }
+
+function update_w1() {
+    var w_x = document.getElementById("w1").value;
+    AndroidAcp.updateHomeBase(w_x);
+    }
+
+function update_w2() {
+    var w_x = document.getElementById("w2").value;
+    AndroidAcp.updateTailNumber(w_x);
+}
+
+function update_w3() {
+    var w_x = document.getElementById("w3").value;
+    AndroidAcp.updateAircraftType(w_x);
+}
+
+function update_w4() {
+    var w_x = document.getElementById("w4").value;
+    AndroidAcp.updateAircraftICAOCode(w_x);
+}
+
+function update_w5() {
+    var w_x = document.getElementById("w5").value;
+    AndroidAcp.updateAircraftColor1(w_x);
+}
+
+function update_w6() {
+    var w_x = document.getElementById("w6").value;
+    AndroidAcp.updateAircraftColor2(w_x);
+}
+
+function update_w7() {
+    var w_x = document.getElementById("w7").value;
+    AndroidAcp.updateAircraftEquipment(w_x);
+}
+
+function update_w8() {
+    var w_x = document.getElementById("w8").value;
+    AndroidAcp.updateAircraftSurveillance(w_x);
+}
+
+function update_w9() {
+    var w_x = document.getElementById("w9").value;
+    AndroidAcp.updateAircraftOtherInfo(w_x);
+}
+
+function update_w10() {
+    var w_x = document.getElementById("w10").value;
+    AndroidAcp.updateAircraftTAS(w_x);
+}
+
+function update_w11() {
+    var w_x = document.getElementById("w11").value;
+    AndroidAcp.updateAircraftBGSR(w_x);
+}
+
+function update_w12() {
+    var w_x = document.getElementById("w12").value;
+    AndroidAcp.updateAircraftFuelBurn(w_x);
+}
+
+function update_w13() {
+    var w_x = document.getElementById("w13").value;
+    AndroidAcp.updateEmergencyChecklist(w_x);
+}
+
+
+var CELL_SAVE_NAME = 0;
+var CELL_SAVE_LOAD = 1;
+var CELL_SAVE_DELETE = 2;
+var CELL_SAVE_LAST = 3;
+
+// delete the saved acp
+function save_delete(row) {
+
+	bootbox.confirm("Delete Saved?", function(result) {
+		if(result == false) {
+			return;
+		}
+    	var acp_save = document.getElementById("save_table");
+	    AndroidAcp.saveDelete(acp_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	    toastr.success('Aircraft preferences deleted');
+	});
+
+}
+
+// load the saved acp
+function save_load(row) {
+	var acp_save = document.getElementById("save_table");
+	AndroidAcp.loadAcp(acp_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("acp_name").scrollIntoView();
+	$('[href="#acp"]').tab('show');
+}
+
+// save the current acp
+function save_acp_add() {
+	var name = document.getElementById("save_name").value;
+
+	if(name == "") {
+		toastr.error('Please specify a valid name');
+		return;
+	}
+
+	var data = acp_get(name);
+	AndroidAcp.saveAcp(data);
+	AndroidAcp.updateACPName(name);
+	acp_display();
+	$('[href="#acp"]').tab('show');
+	toastr.success('Preferences saved to ' + name);
+}
+
+
+// Sets buttons on each row
+function set_buttons_save() {
+	// Set buttons for each entry in acp
+	var acp_save = document.getElementById("save_table");
+	for(var i = 1; i < acp_save.rows.length; i++) {
+		acp_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML =
+			"<button class='btn btn-block' onclick='save_load(" + i.toString() + ")'>LD</button>";
+		acp_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML =
+			"<button class='btn btn-block' onclick='save_delete(" + i.toString() + ")'>Del</button>";
+	}
+
+		// clear save input
+	document.getElementById("save_name").value = "";
+}
+
+// clear the entire save list
+function acp_save_clear() {
+	// clear the table
+	var list_save = document.getElementById("save_table");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			list_save.deleteRow(row);
+	}
+}
+
+// add an item to the load acp tab
+function acp_save_add(name) {
+	var acp_save = document.getElementById("save_table");
+
+	var row = acp_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
+	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
+	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
+
+	cell[CELL_SAVE_NAME].textContent = name;
+
+	set_buttons_save();
+
+}
+
+$(document).ready(function(){
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    })
+
+acp_display();
+
+});
+
+
+</script>
+
+</head>
+
+<body>
+
+
+    <ul class="nav nav-tabs" style="display:inline-flex;">
+      <li class="active"><a href="#acp">Current Preferences</a></li>
+      <li><a href="#load">Load</a></li>
+      <li><a href="#save">Save</a></li>
+      <li><a href="#help">Help</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="acp" class="tab-pane fade in active">
+          <table class="table">
+              <tr>
+                  <td><h3 ><span id="acp_name" class="label label-success"></span></h3></td>
+              </tr>
+          </table>
+          <table class="table" id="acp_table" >
+              <tr><td><label>Pilot Contact Info (name, phone)</label></td><td><input id="w0" onchange="update_w0()"></td></tr>
+              <tr><td><label>Home Base</label></td><td><input id="w1" onchange="update_w1()"></td></tr>
+              <tr><td><label>Tail Number</label></td><td><input id="w2" onchange="update_w2()"></td></tr>
+              <tr><td><label>Aircraft Type</label></td><td><input id="w3" onchange="update_w3()"></td></tr>
+              <tr><td><label>Mode-S Code (hex)</label></td><td><input id="w4" onchange="update_w4()"></td></tr>
+              <tr><td><label>Aircraft Color-Primary</label></td>
+                  <td><select class="selectpicker" data-mobile="true" id="w5" onchange="update_w5()">
+                      <option value="A">Amber</option>
+                      <option value="B">Blue</option>
+                      <option value="BE">Beige</option>
+                      <option value="BK">Black</option>
+                      <option value="BR">Brown</option>
+                      <option value="G">Green</option>
+                      <option value="GD">Gold</option>
+                      <option value="GY">Gray</option>
+                      <option value="M">Maroon</option>
+                      <option value="O">Orange</option>
+                      <option value="P">Purple</option>
+                      <option value="PK">Pink</option>
+                      <option value="R">Red</option>
+                      <option value="S">Silver</option>
+                      <option value="TQ">Turquoise</option>
+                      <option value="T">Tan</option>
+                      <option value="V">Violet</option>
+                      <option value="W">White</option>
+                      <option value="Y">Yellow</option>
+                  </select>
+                  </td>
+              </tr>
+              <tr><td><label>Aircraft Color-Secondary</label></td>
+                  <td><select class="selectpicker" data-mobile="true" id="w6" onchange="update_w6()">
+                      <option value="A">Amber</option>
+                      <option value="B">Blue</option>
+                      <option value="BE">Beige</option>
+                      <option value="BK">Black</option>
+                      <option value="BR">Brown</option>
+                      <option value="G">Green</option>
+                      <option value="GD">Gold</option>
+                      <option value="GY">Gray</option>
+                      <option value="M">Maroon</option>
+                      <option value="O">Orange</option>
+                      <option value="P">Purple</option>
+                      <option value="PK">Pink</option>
+                      <option value="R">Red</option>
+                      <option value="S">Silver</option>
+                      <option value="TQ">Turquoise</option>
+                      <option value="T">Tan</option>
+                      <option value="V">Violet</option>
+                      <option value="W">White</option>
+                      <option value="Y">Yellow</option>
+                  </select>
+                  </td>
+              </tr>
+              <tr><td><label>Aircraft Equipment</label></td><td><input id="w7" onchange="update_w7()"></td></tr>
+              <tr><td><label>Surveillance Equipment</label></td><td><input id="w8" onchange="update_w8()"></td></tr>
+              <tr><td><label>Other Info</label></td><td><input id="w9" onchange="update_w9()"></td></tr>
+              <tr><td><label id='du'>True Airspeed</label></td><td><input id="w10" onchange="update_w10()"></td></tr>
+              <tr><td><label>Best Glide Sink Rate (fpm)</label></td><td><input id="w11" onchange="update_w11()"></td></tr>
+              <tr><td><label>Fuel Burn Rate (per hr)</label></td><td><input id="w12" onchange="update_w12()"></td></tr>
+              <tr><td><label>Emergency Checklist</label></td><td><input id="w13" onchange="update_w13()"></td></tr>
+          </table>
+
+      </div>
+
+
+      <div id="load" class="tab-pane fade">
+          <table class="table" id="save_table" ><th>Load Aircraft Preferences</th></table>
+      </div>
+
+
+      <div id="save" class="tab-pane fade">
+          <table class="table"><th>Save Aircraft Preferences</th>
+              <tr>
+                  <td><input id="save_name" spellcheck="false" placeholder="Enter Name" autofocus/></td>
+                  <td><button class="btn btn-block" onclick="save_acp_add()">Save</button></td>
+              </tr>
+          </table>
+      </div>
+
+
+      <div id="help" class="tab-pane fade">
+          <table class="table"><th>Help</th></table>
+          <div style="overflow: auto;">
+              <u>You may need to disable Predictive Typing in Android Settings!</u><p></p><br>The Aircraft Preferences screen allows you to establish preset Avare pilot and aircraft preferences for each aircraft you fly.
+              It then becomes a simple matter to switch to appropriate settings (tail number, aircraft type, true airspeed, etc.).  Two sample sets of preferences are created initially.  These samples may be deleted once you are familiar with the contents.
+              <br>
+              <br>
+              <b>To Review and Update Aircraft Preferences</b>
+              <ul>
+                  <li>From the map screen, select Menu>Preferences>Pilot and Aircraft</li>
+                  <li>The Current Preferences tab displayed is populated with the current set of Avare aircraft preferences.</li>
+                  <li>The title highlighted in green is the name of the saved aircraft preferences from which the current preferences were loaded.</li>
+                  <li>Update pilot and aircraft specific information as needed. The preference will be set in Avare once you click away from the text box.</li>
+                  <li>Use the back button to return to the map screen.</li>
+
+              </ul>
+
+              <b>To Save a set of Aircraft Preferences</b>
+              <ul>
+                  <li>After updating the data on the "Current Preferences" tab, press the "Save" tab at the top of the screen.</li>
+                  <li>Enter a name in the text box and press the "Save" Button.</li>
+                  <li>The screen will be returned to the "Current Preferences" tab.</li>
+                  <li>Saved preferences with the same name will create multiple entries and will become confusing. Use unique names for each set of preferences and delete those no longer needed.</li>
+              </ul>
+
+              <b>To Load or Delete Saved Preferences</b>
+              <ul>
+                  <li>Press the "Load" tab to show the saved preferences.</li>
+                  <li>Press the desired "LD" button to load the preferences.  The saved preferences will be set in Avare.</li>
+                  <li>You can delete a saved set of preferences by pressing the "Del" button to the right of its name on the "Load" tab.</li>
+                  <li>If all saved preferences are deleted, the two sample sets will be created again.</li>
+              </ul>
+
+              <b>To begin flight planning in a different aircraft</b>
+              <ul>
+                  <li>During your Avare preflight, select Menu, Preferences, and "Pilot and Aircraft". Select the load tab at the top of the screen
+                      and press the "LD" button next to the desired saved preferences.</li>
+                  <li>Ensure your preferences are correctly shown on the "Current Preferences" screen.</li>
+                  <li>Use the back button to return to the map screen.</li>
+                  <li>Aircraft true airspeed (based on distance unit in Preferences) and fuel burn will be reflected on the Plan tab.  Fuel burn can be any unit.</li>
+                  <li>Aircraft best glide sink rate (fpm) will affect the calculated glide range selected in the distance ring preference.</li>
+                  <li>Emergency checklist will be loaded when the Menu>Emergency button is pressed.  Define the checklist in the "List" tab.</li>
+                  <li>All other pilot and aircraft preferences will be reflected in the FAA tab for filing.</li>
+              </ul>
+
+
+              </div>
+          </div>
+      </div>
+
+
+
+</body>
+</html>

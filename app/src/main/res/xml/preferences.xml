@@ -10,8 +10,8 @@ Redistribution and use in source and binary forms, with or without modification,
     *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
     *
     *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-authors: zkhan, jlmcgraw    
+    * modified by kbabbert for multiple aircraft preferences
+authors: zkhan, jlmcgraw
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
@@ -352,88 +352,9 @@ authors: zkhan, jlmcgraw
             android:summary="@string/rubberBandSummary"/>
     </PreferenceScreen>
 
-    <PreferenceScreen
-        android:title="@string/userData"
-        android:icon="@android:drawable/ic_menu_manage" >
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/PilotContact"
-            android:summary="@string/PilotContactSummary"
-            android:key="@string/PilotContact"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftHomeBase"
-            android:summary="@string/AircraftHomeBaseSummary"
-            android:key="@string/AircraftHomeBase"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftTailNumber"
-            android:summary="@string/AircraftTailNumberSummary"
-            android:key="@string/AircraftTailNumber"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftType"
-            android:summary="@string/AircraftTypeSummary"
-            android:key="@string/AircraftType"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftICAOCode"
-            android:summary="@string/AircraftICAOCodeSummary"
-            android:key="@string/AircraftICAOCode"/>
-
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:entries="@array/ACColor"
-            android:entryValues="@array/ACColorValue"
-            android:key="@string/AircraftColorPrimary"
-            android:summary="@string/AircraftColorPrimarySummary"
-            android:title="@string/AircraftColorPrimary" />
-
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:entries="@array/ACColor"
-            android:entryValues="@array/ACColorValue"
-            android:key="@string/AircraftColorSecondary"
-            android:summary="@string/AircraftColorSecondarySummary"
-            android:title="@string/AircraftColorSecondary" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftEquipment"
-            android:summary="@string/AircraftEquipmentSummary"
-            android:title="@string/AircraftEquipment" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftSurveillance"
-            android:summary="@string/AircraftSurveillanceSummary"
-            android:title="@string/AircraftSurveillance" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftOtherInfo"
-            android:summary="@string/AircraftOtherInfoSummary"
-            android:title="@string/AircraftOtherInfo" />
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/AircraftTAS"
-            android:summary="@string/AircraftTASSummary"
-            android:key="@string/AircraftTAS"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/BestGlideSinkRateLabel"
-            android:summary="@string/BestGlideSinkRateSummary"
-            android:defaultValue="700"
-            android:key="@string/BestGlideSinkRate"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/FuelRateLabel"
-            android:summary="@string/FuelRateSummary"
-            android:defaultValue="10.0"
-            android:key="@string/FuelRateLabel"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/EmergencyChecklist"
-            android:summary="@string/EmergencyChecklistSummary"
-            android:defaultValue=""
-            android:key="@string/EmergencyChecklist"/>
-
-    </PreferenceScreen>
+    <com.ds.avare.utils.ACPActivityPreference
+        android:title="@string/ManageAircraftPreferences"
+        android:icon="@android:drawable/ic_menu_manage" />
 
     <PreferenceScreen
         android:title="@string/UIConfiguration"
@@ -478,7 +399,7 @@ authors: zkhan, jlmcgraw
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
-        </PreferenceScreen>
+            </PreferenceScreen>
 
         <CheckBoxPreference
             android:key="@string/b1map"
@@ -540,8 +461,8 @@ authors: zkhan, jlmcgraw
             />
     </PreferenceScreen>
 
-    <com.ds.avare.utils.ResetPreference
-        android:summary="@string/ResetDataSummary"
-        android:title="@string/ResetData" />
+        <com.ds.avare.utils.ResetPreference
+            android:summary="@string/ResetDataSummary"
+            android:title="@string/ResetData" />
 
 </PreferenceScreen>

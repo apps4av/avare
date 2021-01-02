@@ -40,6 +40,7 @@ import java.util.List;
 
 /**
  * Preferences for main activity
+ * Modified by kbabbert for aircraft preferences (ACP)
  */
 public class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -1135,7 +1136,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return aircraftTAS;
     }
 
-    public String getAircraftHomeBase() {
+       public String getAircraftHomeBase() {
         return mPref.getString(mContext.getString(R.string.AircraftHomeBase), "KSBA");
     }
 
@@ -1144,7 +1145,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getAircraftOtherInfo() {
-        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
+        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), "");
     }
 
     public String getAircraftSurveillanceEquipment() {
@@ -1177,6 +1178,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return code;
     }
 
+    public String getstringAircraftICAOCode() {
+        return mPref.getString(mContext.getString(R.string.AircraftICAOCode), "");
+    }
+
     public String getAircraftTailNumber() {
         return mPref.getString(mContext.getString(R.string.AircraftTailNumber), "N1TEST");
     }
@@ -1206,6 +1211,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         } catch (Exception x) {
             return 10;
         }
+    }
+
+    public String getstringFuelBurn() {
+        return mPref.getString("Aircraft Fuel Burn Rate", "10");
     }
 
     public boolean removeB1Plate() {
@@ -1274,11 +1283,19 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getString(mContext.getString(R.string.Wnb), "");
     }
 
+
+    public String getAcps() {
+        return mPref.getString(mContext.getString(R.string.Acp), "");
+    }
     /**
      * @return
      */
     public void putWnbs(String name) {
         mPref.edit().putString(mContext.getString(R.string.Wnb), name).commit();
+    }
+
+    public void putAcps(String name) {
+        mPref.edit().putString(mContext.getString(R.string.Acp), name).commit();
     }
 
     public boolean isDefaultAFDImage() {
@@ -1322,5 +1339,72 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return val;
     }
 
+    public String getstringBestGlideSinkRate() {
+        return mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
+    }
+
+    public void setPilotName(String pilotname) {
+        mPref.edit().putString(mContext.getString(R.string.PilotContact), pilotname).commit();
+    }
+
+    public void setHomeBase(String homebase) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftHomeBase), homebase).commit();
+    }
+
+    public void setTailNumber(String tn) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftTailNumber), tn).commit();
+    }
+
+    public void setAircraftType(String tp) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftType), tp).commit();
+    }
+
+    public void setAircraftICAOCode(String ic) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftICAOCode), ic).commit();
+    }
+
+    public void setAircraftColor1(String ac) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftColorPrimary), ac).commit();
+    }
+
+    public void setAircraftColor2(String ac) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftColorSecondary), ac).commit();
+    }
+
+    public void setAircraftEquipment(String eq) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftEquipment), eq).commit();
+    }
+
+    public void setAircraftSurveillance(String su) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftSurveillance), su).commit();
+    }
+
+    public void setAircraftOtherInfo(String ot) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftOtherInfo), ot).commit();
+    }
+
+    public void setAircraftTAS(String ta) {
+        mPref.edit().putString(mContext.getString(R.string.AircraftTAS), ta).commit();
+    }
+
+    public void setAircraftBGSR(String br) {
+        mPref.edit().putString(mContext.getString(R.string.BestGlideSinkRate), br).commit();
+    }
+
+    public void setAircraftFuelBurn(String fb) {
+        mPref.edit().putString(mContext.getString(R.string.FuelRateLabel), fb).commit();
+    }
+
+    public void setEmergencyChecklist(String ec) {
+        mPref.edit().putString(mContext.getString(R.string.EmergencyChecklist), ec).commit();
+    }
+
+    public void setACPName(String an) {
+        mPref.edit().putString(mContext.getString(R.string.ACPName), an).commit();
+    }
+
+    public String getACPName() {
+        return mPref.getString(mContext.getString(R.string.ACPName), "");
+    }
 
 }
