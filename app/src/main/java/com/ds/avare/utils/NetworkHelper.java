@@ -381,6 +381,7 @@ public class NetworkHelper {
         	 * Lets handle the case when year has just turned
         	 */
         	year--;
+            firstdate = getFirstDate(year);
         }
     	
     	// cycle's upper two digit are year

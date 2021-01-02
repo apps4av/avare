@@ -21,6 +21,7 @@ import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindTriagle;
 import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.WindsAloft;
 
@@ -121,12 +122,8 @@ public class GlideProfile {
         double[] waa = wa.getWindAtAltitude(altitudeGps, metarWinds);
         waa[0] = waa[0] * Preferences.feetConversion / 3600.0;
 
-        // wind triangle solution for airspeed from wind and ground vector.
-        Double as = Math.sqrt(waa[0] * waa[0] + currentSpeed * currentSpeed - 2.0 * waa[0] * currentSpeed * Math.cos((bearing - waa[1] - 180) * Math.PI / 180.0));
-        if(as.isNaN()) {
-            //unsolvable wind triangle
-            return;
-        }
+        double t[] = WindTriagle.getTrueFromGroundAndWind(currentSpeed, bearing, waa[0], waa[1]);
+        double as = t[0];
 
         // Put wind/elevation/airspeed in string. this will be shown on the ring
         mWind = String.format("%d@%dkt/%dft/%d", (int)waa[1],
