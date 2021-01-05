@@ -11,21 +11,14 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
-import androidx.core.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
@@ -994,9 +987,6 @@ public class StorageService extends Service {
                     }
                 }
                 if(0 == mCounter % 60) {
-                    if(null != mGpsParams) {
-                        mGameTfrLabels = mDataSource.findGameTFRs();
-                    }
                 }
                 mCounter++;
             }

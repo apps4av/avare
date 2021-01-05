@@ -174,6 +174,10 @@ public class FolderPreference extends DialogPreference {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
         }
+        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mContext,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+        }
 
         mButton.setOnClickListener(new OnClickListener() {
 
