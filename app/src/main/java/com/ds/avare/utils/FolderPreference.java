@@ -172,11 +172,7 @@ public class FolderPreference extends DialogPreference {
          */
         if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mContext,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
-        }
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mContext,
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
         }
 
         mButton.setOnClickListener(new OnClickListener() {
@@ -320,7 +316,7 @@ public class FolderPreference extends DialogPreference {
                     /*
                      * Filters based on whether the file is hidden or not, and is a folder
                      */
-                    return (!sel.isHidden());
+                    return (sel.canWrite() && sel.isDirectory() && sel.canRead() && sel.exists());
                 }
             };
 
