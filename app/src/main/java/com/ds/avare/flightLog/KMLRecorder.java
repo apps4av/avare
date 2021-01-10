@@ -39,11 +39,13 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Environment;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
 import com.ds.avare.shapes.Shape;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -98,7 +100,8 @@ public class KMLRecorder {
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
 	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
 	private GpsParams		mLastFix;				// the last time we wrote a position			
-	private CrumbsShape    mShape;
+	private CrumbsShape     mShape;
+	private String          mFolder;
 	
 	/**
 	 * Statics that all class instances share
@@ -176,10 +179,11 @@ public class KMLRecorder {
      * Default constructor. Allocate the list that holds our collection
      * of gps points
      */
-    public KMLRecorder(){
+    public KMLRecorder(Context ctx){
     	mPositionHistory = new LinkedList<GpsParams>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
+    	mFolder = new Preferences(ctx).getTracksLocation();
     }
     
     /** 
@@ -242,7 +246,7 @@ public class KMLRecorder {
                 true,   /* always remove tracks from display on start */
                 30,     /* Max of 30 seconds between position updates */
                 true,   /* use verbose details */
-                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
+                mFolder + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
                 3);     // Adjust down to 3 knots to capture taxi
         start(config);
 	}

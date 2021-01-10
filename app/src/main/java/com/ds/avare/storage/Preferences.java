@@ -957,7 +957,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      */
     public String getUDWLocation() {
         try {
-            return mPref.getString(mContext.getString(R.string.UDWLocation), "");
+            return mPref.getString(mContext.getString(R.string.UDWLocation), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
         } catch (Exception e) {
             return "";
         }
@@ -970,6 +970,24 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
     }
 
+
+    /**
+     * @return
+     */
+    public String getTracksLocation() {
+        try {
+            return mPref.getString(mContext.getString(R.string.TracksLocation), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * @param
+     */
+    public void setTracksLocation(String location) {
+        mPref.edit().putString(mContext.getString(R.string.TracksLocation), location).commit();
+    }
 
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {

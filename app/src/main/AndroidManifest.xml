@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="345"
-    android:versionName="9.0.2"
+    android:versionCode="346"
+    android:versionName="9.0.3"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -67,7 +67,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <provider
             android:name=".content.LocationProvider"
             android:authorities="com.ds.avare.provider.location" />
-        
+
         <service android:name=".StorageService"
             android:enabled="true"
             android:exported="false"

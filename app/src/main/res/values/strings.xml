@@ -306,11 +306,14 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ExtendInfoLines3DSummary">Select to show the configuable status area on the 3D screen</string>
     <string name="UDWLocation">&quot;UDWLocation&quot;</string>
     <string name="UDWSearch">User defined waypoint/plans files are found in: </string>
-    <string name="UDWLabel">&quot;User Defined Waypoints/Plans&quot;</string>
+    <string name="UDWLabel">&quot;User Defined Waypoints/Plans Folder&quot;</string>
     <string name="UDWSummary">&quot;Select the directory where user defined waypoint files/plans are stored.&quot;</string>
     <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
-
+    <string name="TracksLocation">&quot;TracksLocation&quot;</string>
+    <string name="TracksLabel">&quot;Tracks Folder&quot;</string>
+    <string name="TracksSearch">Track files are found in: </string>
+    <string name="TracksSummary">&quot;Select the directory where tracks are stored.&quot;</string>
     <string name="TabBarTitle">&quot;Tab Bar Content (requires restart)&quot;</string>
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar.&quot;</string>
     <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>

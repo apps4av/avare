@@ -400,7 +400,7 @@ public class StorageService extends Service {
         /*
          * Start up the KML recorder feature
          */
-        mKMLRecorder = new KMLRecorder();
+        mKMLRecorder = new KMLRecorder(getApplicationContext());
         
         /*
          * Internet nexrad

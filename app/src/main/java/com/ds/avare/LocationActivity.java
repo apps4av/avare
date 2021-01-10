@@ -770,6 +770,14 @@ public class LocationActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
 	            if(null != mService) {
+                    /*
+                     * Bring up permission
+                     */
+                    if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+                    }
+
                     boolean state = mService.getTracks();
                     setTrackState(!state);
                     mPref.setTrackingState(!state);

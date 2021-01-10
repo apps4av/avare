@@ -71,7 +71,7 @@ public class FolderPreference extends DialogPreference {
      */
     private void init(String path) {
     	if(path.length() == 0) {
-    		path = "/";
+    		path = mContext.getFilesDir().getAbsolutePath();
     	}
 
         mFirstLevel = path.equals("/");
@@ -102,10 +102,12 @@ public class FolderPreference extends DialogPreference {
         if(getKey().equals(mContext.getString(R.string.UDWLocation))) {
             init(mPref.getUDWLocation());
         }
-        
         // The chart/map location
         else if(getKey().equals(mContext.getString(R.string.Maps))) {
             init(mPref.mapsFolder());
+        }
+        else if(getKey().equals(mContext.getString(R.string.TracksLocation))) {
+            init(mPref.getTracksLocation());
         }
     }
 
@@ -148,6 +150,16 @@ public class FolderPreference extends DialogPreference {
                 	// Set our toast to success for setting the UDW directory
 	            	t = Toast.makeText(mContext, 
 	                        mContext.getString(R.string.UDWSearch) + absPath, Toast.LENGTH_LONG);               
+                }
+                // If this is for the UserDefinedWaypoints setting ...
+                else if (getKey().equals(mContext.getString(R.string.TracksLocation))) {
+
+                    // Save this in preferences for the tracks
+                    mPref.setTracksLocation(absPath);
+
+                    // Set our toast to success for setting the Tracks directory
+                    t = Toast.makeText(mContext,
+                            mContext.getString(R.string.TracksSearch) + absPath, Toast.LENGTH_LONG);
                 }
             }
             
