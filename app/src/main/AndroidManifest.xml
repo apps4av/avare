@@ -67,15 +67,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <provider
             android:name=".content.LocationProvider"
             android:authorities="com.ds.avare.provider.location" />
-
-        <activity android:name="org.acra.CrashReportDialog"
-            android:theme="@style/Theme.Dialog"
-            android:process=":error_report"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true" />
-
-        <service android:name=".StorageService"/>
+        
+        <service android:name=".StorageService"
+            android:enabled="true"
+            android:exported="false"
+            />
         <service
             android:name="com.ds.avare.IHelperService"
             android:exported="true">

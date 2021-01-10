@@ -192,16 +192,10 @@ public class MainActivity extends TabActivity {
     @Override 
     public void onDestroy() {
         /*
-         * Start service now, bind later. This will be no-op if service is already running
+         * Do not kill on orientation change
          */
-        if (isFinishing()) {
-            /*
-             * Do not kill on orientation change
-             */
-            Intent intent = new Intent(this, StorageService.class);
-            stopService(intent);
-        }
-        super.onDestroy();
+        Intent intent = new Intent(this, StorageService.class);
+        stopService(intent);
     }
     
     /**

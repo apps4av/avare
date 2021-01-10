@@ -1620,4 +1620,10 @@ public class StorageService extends Service {
         }
         return object.toString();
     }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        this.stopSelf();
+    }
 }
