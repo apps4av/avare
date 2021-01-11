@@ -32,6 +32,7 @@ import java.util.Locale;
  */
 public class Layer {
 
+    public static final int ANIMATE_SPEED_MS = 500;
     private static final int ANIMATE_IMAGES = 3;
     // Layers can hog memory, show only one hence static bitmap
     //
@@ -122,7 +123,7 @@ public class Layer {
 
         // animate once a second
         long now = System.currentTimeMillis();
-        if ((now - mTime) > 1000) {
+        if ((now - mTime) >= ANIMATE_SPEED_MS) {
             mTime = now;
             mIndex = (mIndex - 1);
             if(mIndex < 0) {

@@ -56,6 +56,7 @@ import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
+import com.ds.avare.shapes.Layer;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
@@ -1354,6 +1355,8 @@ public class LocationActivity extends Activity implements Observer {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         }
 
+        mAnimationLayerHandler.post(mAnimationRunnableCode);
+
     }
 
     /* (non-Javadoc)
@@ -1430,6 +1433,9 @@ public class LocationActivity extends Activity implements Observer {
          * Do this as switching from screen needs to hide its menu
          */
         hideMenu();
+
+        mAnimationLayerHandler.removeCallbacks(mAnimationRunnableCode);
+
     }
     
     /* (non-Javadoc)
@@ -1550,5 +1556,17 @@ public class LocationActivity extends Activity implements Observer {
         	h.postDelayed(r, ms);
         }
     }
+
+    // animate layers at 500 ms
+    Handler mAnimationLayerHandler = new Handler();
+    private Runnable mAnimationRunnableCode = new Runnable() {
+        @Override
+        public void run() {
+            if(mLocationView != null) {
+                mLocationView.postInvalidate();
+                mAnimationLayerHandler.postDelayed(this, Layer.ANIMATE_SPEED_MS);
+            }
+        }
+    };
 
 }
