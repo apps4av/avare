@@ -196,6 +196,7 @@ public class MainActivity extends TabActivity {
          */
         Intent intent = new Intent(this, StorageService.class);
         stopService(intent);
+        super.onDestroy();
     }
     
     /**
