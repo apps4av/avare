@@ -123,7 +123,12 @@ public class Layer {
 
         // animate once a second
         long now = System.currentTimeMillis();
-        if ((now - mTime) >= ANIMATE_SPEED_MS) {
+        boolean switched = (now - mTime) >= ANIMATE_SPEED_MS;
+        if(mIndex == 0) {
+            // delay 4 times at the end
+            switched = (now - mTime) >= (ANIMATE_SPEED_MS * 4);
+        }
+        if (switched) {
             mTime = now;
             mIndex = (mIndex - 1);
             if(mIndex < 0) {
