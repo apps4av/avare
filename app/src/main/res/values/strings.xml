@@ -564,5 +564,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ResetDataSummary">Reset app to default, and delete all user data in the app (plans, accounts, lists, WNB, way points etc.)?</string>
     <string name="ResetData">Reset</string>
+    <string name="open_settings">Touch to open settings</string>
 
 </resources>
