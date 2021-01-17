@@ -103,6 +103,7 @@ public class WebAppListInterface {
     public void newSaveList() {
     	clearListSave();
     	
+    	mService.setCheckLists(mService.getDBResource().getUserLists());
         LinkedList<Checklist> lists = mService.getCheckLists();
         if(lists == null) {
             return;

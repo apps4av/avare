@@ -91,6 +91,7 @@ public class WebAppWnbInterface {
     public void newSaveWnb() {
 
         clearWnbSave();
+        mService.setWnbs(mService.getDBResource().getUserWnbs());
         LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
         if(wnbs == null) {
             return;
