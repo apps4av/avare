@@ -156,11 +156,17 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         List<String> providers = lm.getProviders(false);
 
         Location l = null;
-        for (int i = providers.size() - 1; i >= 0; i--) {
-            l = lm.getLastKnownLocation(providers.get(i));
-            if (l != null) {
-                break;
+
+        try {
+            for (int i = providers.size() - 1; i >= 0; i--) {
+                l = lm.getLastKnownLocation(providers.get(i));
+                if (l != null) {
+                    break;
+                }
             }
+        }
+        catch (SecurityException e) {
+            return null;
         }
         return l;
     }
@@ -195,14 +201,17 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                             processNmea(nmea, timestamp);
                         }
                     };
-                    mLocationManager.addNmeaListener((android.location.OnNmeaMessageListener)mNmeaMessageListener);
+                    mLocationManager.addNmeaListener((android.location.OnNmeaMessageListener) mNmeaMessageListener);
                 }
 
                 /*
                  * Also obtain GSM based locations
                  */
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         0, 0, this);
+            }
+            catch (SecurityException e) {
+                mLocationManager = null;
             }
             catch (Exception e) {
                 mLocationManager = null;
@@ -271,7 +280,13 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         if(null == mLocationManager) {
             return;
         }
-        GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
+        GpsStatus gpsStatus;
+        try {
+            gpsStatus = mLocationManager.getGpsStatus(null);
+        }
+        catch (SecurityException e) {
+            return;
+        }
         mGpsCallback.statusCallback(gpsStatus);
         mSatCount = 0;
         for (GpsSatellite sat : gpsStatus.getSatellites()) {
