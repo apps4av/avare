@@ -9,6 +9,7 @@ import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.LabelCoordinate;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.weather.AirSigMet;
 import com.ds.avare.weather.Airep;
 import com.ds.avare.weather.Metar;
@@ -398,19 +399,19 @@ public class ContentProviderHelper {
         Cursor c = null;
         LinkedList<Checklist> ret = new LinkedList<>();
 
-        String[] proj = new String[] {UserContract.LIST_COLUMN_ID, UserContract.LIST_COLUMN_TEXT};
+        String[] proj = new String[]{UserContract.LIST_COLUMN_ID, UserContract.LIST_COLUMN_TEXT};
+        String order = UserContract.LIST_COLUMN_ID + " asc";
 
         try {
-            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, proj, null, null, null);
-            if(c != null) {
-                while(c.moveToNext()) {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, proj, null, null, order);
+            if (c != null) {
+                while (c.moveToNext()) {
                     String name = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_ID));
                     String text = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_TEXT));
                     ret.add(new Checklist(name, text));
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         CursorManager.close(c);
@@ -432,18 +433,18 @@ public class ContentProviderHelper {
         Cursor c = null;
         LinkedList<WeightAndBalance> ret = new LinkedList<>();
 
-        String[] proj = new String[] {UserContract.WNB_COLUMN_ID, UserContract.WNB_COLUMN_TEXT};
+        String[] proj = new String[]{UserContract.WNB_COLUMN_ID, UserContract.WNB_COLUMN_TEXT};
+        String order = UserContract.WNB_COLUMN_ID + " asc";
 
         try {
-            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, proj, null, null, null);
-            if(c != null) {
-                while(c.moveToNext()) {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, proj, null, null, order);
+            if (c != null) {
+                while (c.moveToNext()) {
                     String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
                     ret.add(new WeightAndBalance(text));
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         CursorManager.close(c);
@@ -465,23 +466,112 @@ public class ContentProviderHelper {
         Cursor c = null;
         LinkedHashMap<String, String> ret = new LinkedHashMap();
 
-        String[] proj = new String[] {UserContract.PLAN_COLUMN_ID, UserContract.PLAN_COLUMN_PATH};
+        String[] proj = new String[]{UserContract.PLAN_COLUMN_ID, UserContract.PLAN_COLUMN_PATH};
+        String order = UserContract.PLAN_COLUMN_ID + " asc";
 
         try {
-            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_PLAN, proj, null, null, null);
-            if(c != null) {
-                while(c.moveToNext()) {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_PLAN, proj, null, null, order);
+            if (c != null) {
+                while (c.moveToNext()) {
                     String name = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_ID));
                     String path = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_PATH));
                     ret.put(name, path);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         CursorManager.close(c);
         return ret;
     }
-}
 
+    public static String[] getUserRecents(Context ctx) {
+        Cursor c = null;
+        LinkedList<String> ret = new LinkedList<>();
+
+        String[] proj = new String[]{UserContract.RECENT_COLUMN_WID, UserContract.RECENT_COLUMN_DESTTYPE, UserContract.RECENT_COLUMN_DBTYPE, UserContract.RECENT_COLUMN_NAME};
+        String order = UserContract.RECENT_COLUMN_ID + " desc";
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_RECENT, proj, null, null, order);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    StringPreference s = new StringPreference(
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DESTTYPE)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DBTYPE)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_NAME)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_WID)));
+
+                    ret.add(s.getHashedName());
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+
+        return ret.toArray(new String[ret.size()]);
+    }
+
+    public static void setUserRecent(Context ctx, StringPreference s) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.RECENT_COLUMN_WID, s.getId());
+        newValues.put(UserContract.RECENT_COLUMN_DESTTYPE, s.getType());
+        newValues.put(UserContract.RECENT_COLUMN_DBTYPE, s.getDbType());
+        newValues.put(UserContract.RECENT_COLUMN_NAME, s.getName());
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_RECENT, newValues);
+    }
+
+    public static void setUserRecents(Context ctx, LinkedList<StringPreference> recents) {
+        for (StringPreference s : recents) {
+            setUserRecent(ctx, s);
+        }
+    }
+
+    public static void deleteUserRecent(Context ctx, String id) {
+        String selection = "(" + UserContract.RECENT_COLUMN_WID + " = ?)";
+        String[] selectionArg = new String[]{id};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_RECENT, selection, selectionArg);
+    }
+
+    /**
+     * @return
+     */
+    public static StringPreference getUserRecent(Context ctx, String id) {
+
+        Cursor c = null;
+        String qry = UserContract.RECENT_COLUMN_WID + " like ?";
+        StringPreference s = null;
+
+        String arguments[] = new String[]{id};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_RECENT, null, qry, arguments, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    s = new StringPreference(
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DESTTYPE)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DBTYPE)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_NAME)),
+                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_WID)));
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return s;
+    }
+
+    public static void replaceUserRecentName(Context ctx, String id, String newName) {
+        ContentValues newValues = new ContentValues();
+
+        String selection = UserContract.RECENT_COLUMN_WID + " = ?";
+        String selectionArg[] = new String[]{id};
+
+        newValues.put(UserContract.RECENT_COLUMN_WID, newName);
+        ctx.getContentResolver().update(UserContract.CONTENT_URI_RECENT, newValues, selection, selectionArg);
+    }
+}

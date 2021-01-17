@@ -38,6 +38,7 @@ import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 import java.util.Observable;
@@ -479,11 +480,13 @@ public class NearestActivity extends Activity  implements Observer {
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
+                Destination d = (Destination)arg0;
                 if(null != mService) {
-                    mService.setDestination((Destination)arg0);
+                    mService.setDestination(d);
                 }
-                mPref.addToRecent(((Destination)arg0).getStorageName());
-                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                StringPreference s = new StringPreference(d.getType(), d.getDbType(), d.getFacilityName(), d.getID());
+                mService.getDBResource().setUserRecent(s);
+                mToast.setText(getString(R.string.DestinationSet) + (d.getID()));
                 mToast.show();
                 ((MainActivity)this.getParent()).showMapTab();
             }

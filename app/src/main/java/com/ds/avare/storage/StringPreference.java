@@ -70,6 +70,18 @@ public class StringPreference {
     }
 
     /**
+     *
+     * @return
+     */
+    public String getDbType() {
+        return mDbType;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    /**
      * 
      * @return
      */

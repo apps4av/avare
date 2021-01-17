@@ -384,7 +384,7 @@ public class LocationContentProviderHelper {
         }
 
         // Search for this as a named GPS waypoint in our most recent used list
-        StringPreference sp = new Preferences(ctx).searchARecent(name);
+        StringPreference sp = ContentProviderHelper.getUserRecent(ctx, name);
         if(null != sp) {
             return sp;
         }

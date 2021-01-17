@@ -29,6 +29,14 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
                 "CREATE TABLE " + UserContract.TABLE_WNB + " (" +
                         UserContract.WNB_COLUMN_ID + " TEXT PRIMARY KEY UNIQUE ON CONFLICT REPLACE, " +
                         UserContract.WNB_COLUMN_TEXT + " TEXT NOT NULL);");
+        db.execSQL(
+                "CREATE TABLE " + UserContract.TABLE_RECENT + " (" +
+                        UserContract.RECENT_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        UserContract.RECENT_COLUMN_WID + " TEXT UNIQUE ON CONFLICT REPLACE, " +
+                        UserContract.RECENT_COLUMN_DESTTYPE + " TEXT, " +
+                        UserContract.RECENT_COLUMN_DBTYPE + " TEXT, " +
+                        UserContract.RECENT_COLUMN_NAME + " TEXT);");
+
     }
 
     @Override

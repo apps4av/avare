@@ -26,10 +26,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/UDWLocation"
             android:summary="@string/UDWSummary"
             android:title="@string/UDWLabel" />
-        <com.ds.avare.utils.FolderPreference
-            android:key="@string/TracksLocation"
-            android:summary="@string/TracksSummary"
-            android:title="@string/TracksLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/Server"

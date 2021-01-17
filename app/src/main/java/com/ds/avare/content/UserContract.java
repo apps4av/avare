@@ -43,4 +43,17 @@ public class UserContract {
         return ContentUris.withAppendedId(CONTENT_URI_WNB, id);
     }
 
+    public static final String BASE_RECENT = "recent";
+    public static final Uri CONTENT_URI_RECENT = Uri.withAppendedPath(AUTHORITY_URI, BASE_RECENT);
+    public static final String TABLE_RECENT = "recents";
+    public static final String RECENT_COLUMN_ID = "id";
+    public static final String RECENT_COLUMN_WID = "wid";
+    public static final String RECENT_COLUMN_DESTTYPE = "desttype";
+    public static final String RECENT_COLUMN_DBTYPE = "dbtype";
+    public static final String RECENT_COLUMN_NAME = "name";
+
+    public static Uri buildRecentsUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_RECENT, id);
+    }
+
 }

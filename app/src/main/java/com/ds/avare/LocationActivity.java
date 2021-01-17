@@ -421,18 +421,6 @@ public class LocationActivity extends Activity implements Observer {
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
 
-        // Need GPS permission right away
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
-        }
-
-        // Need storage permission
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
-        }
-
         mMenuOut = false;
 
         /*
@@ -1123,14 +1111,6 @@ public class LocationActivity extends Activity implements Observer {
 
             mService.getTiles().setOrientation();
 
-            /**
-             * XXX: Remove. Legacy import
-             */
-            mService.getDBResource().setUserPlans(mPref.getPlans());
-            mService.getDBResource().setUserLists(mPref.getLists());
-            mService.getDBResource().setUserWnbs(mPref.getWnbs());
-
-
             /*
              * Check if database needs upgrade
              */
@@ -1337,6 +1317,19 @@ public class LocationActivity extends Activity implements Observer {
         super.onResume();
         Helper.setOrientationAndOn(this);
 
+        // Need GPS permission right away
+        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+        }
+
+        // Need storage permission
+        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+        }
+
+
         /*
          * Registering our receiver
          * Bind now.
@@ -1497,7 +1490,8 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     return;                    
                 }
-                mPref.addToRecent(mDestination.getStorageName());
+                StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
+                mService.getDBResource().setUserRecent(s);
                 if(!mIsWaypoint) {
                     mLocationView.updateDestination();
                     if(mService != null) {

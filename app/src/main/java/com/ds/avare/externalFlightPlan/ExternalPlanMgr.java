@@ -45,7 +45,7 @@ public class ExternalPlanMgr {
 	 * @return
 	 */
 	private String getDir() {
-		return mPref.getUDWLocation();
+		return mPref.getExternalFolder();
 	}
 	
 	/***

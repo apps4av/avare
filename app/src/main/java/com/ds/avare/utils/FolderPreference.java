@@ -11,15 +11,9 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare.utils;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Environment;
 import android.preference.DialogPreference;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,8 +54,7 @@ public class FolderPreference extends DialogPreference {
     private ListAdapter mAdapter;
     private Boolean mFirstLevel;
     private TextView mPathView;
-    private Button mButton;
-    private Button mButtonSDCard;
+    private Button mButtonInternal;
     private Button mButtonExternal;
     private Preferences mPref;
     
@@ -70,7 +63,7 @@ public class FolderPreference extends DialogPreference {
      * @param path
      */
     private void init(String path) {
-    	if(path.length() == 0) {
+    	if(path.length() == 0 || (!new File(path).canWrite())) {
     		path = mContext.getFilesDir().getAbsolutePath();
     	}
 
@@ -100,14 +93,11 @@ public class FolderPreference extends DialogPreference {
         //
         // User defined Waypoints
         if(getKey().equals(mContext.getString(R.string.UDWLocation))) {
-            init(mPref.getUDWLocation());
+            init(mPref.getExternalFolder());
         }
         // The chart/map location
         else if(getKey().equals(mContext.getString(R.string.Maps))) {
             init(mPref.mapsFolder());
-        }
-        else if(getKey().equals(mContext.getString(R.string.TracksLocation))) {
-            init(mPref.getTracksLocation());
         }
     }
 
@@ -145,21 +135,7 @@ public class FolderPreference extends DialogPreference {
                 else if (getKey().equals(mContext.getString(R.string.UDWLocation))) {
                 	
                 	// Save this in preferences for the UDWaypoints
-                	mPref.setUDWLocation(absPath);
-                	
-                	// Set our toast to success for setting the UDW directory
-	            	t = Toast.makeText(mContext, 
-	                        mContext.getString(R.string.UDWSearch) + absPath, Toast.LENGTH_LONG);               
-                }
-                // If this is for the UserDefinedWaypoints setting ...
-                else if (getKey().equals(mContext.getString(R.string.TracksLocation))) {
-
-                    // Save this in preferences for the tracks
-                    mPref.setTracksLocation(absPath);
-
-                    // Set our toast to success for setting the Tracks directory
-                    t = Toast.makeText(mContext,
-                            mContext.getString(R.string.TracksSearch) + absPath, Toast.LENGTH_LONG);
+                	mPref.setExternalFolder(absPath);
                 }
             }
             
@@ -175,23 +151,14 @@ public class FolderPreference extends DialogPreference {
         
         mListView = (ListView)view.findViewById(R.id.folder_list);
         mPathView = (TextView)view.findViewById(R.id.folder_text_path);
-        mButton = (Button)view.findViewById(R.id.folder_button_internal);
-        mButtonSDCard = (Button)view.findViewById(R.id.folder_button_sdcard);
+        mButtonInternal = (Button)view.findViewById(R.id.folder_button_internal);
         mButtonExternal = (Button)view.findViewById(R.id.folder_button_external);
 
-        /*
-         * Bring up permission
-         */
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(mContext,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
-        }
-
-        mButton.setOnClickListener(new OnClickListener() {
+        mButtonInternal.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                init(mContext.getFilesDir().getAbsolutePath());
+                init(mPref.mapsFolder());
                 loadFileList();
                 mListView.setAdapter(mAdapter);
                 
@@ -207,38 +174,11 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + "com.ds.avare";
-                new File(path).mkdirs();
-                init(path);
+                init(mPref.getExternalFolder());
                 loadFileList();
                 mListView.setAdapter(mAdapter);
-                // Show help for kitkat+ users
-                Toast.makeText(mContext, mContext.getString(R.string.folderHelp), 
-                        Toast.LENGTH_LONG).show();
-                
             }
             
-        });
-
-        mButtonSDCard.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                /*
-                 * Bring up preferences
-                 */
-                String path = "/" + "sdcard" + "/Android/data/" + "com.ds.avare";
-                new File(path).mkdirs();
-                init(path);
-                loadFileList();
-                mListView.setAdapter(mAdapter);
-                // Show help for kitkat+ users
-                Toast.makeText(mContext, mContext.getString(R.string.folderHelp),
-                        Toast.LENGTH_LONG).show();
-
-            }
-
         });
 
         /*

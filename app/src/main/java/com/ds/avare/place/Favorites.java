@@ -13,6 +13,8 @@ package com.ds.avare.place;
 
 import android.graphics.Color;
 
+import com.ds.avare.StorageService;
+import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.ShadowedText;
@@ -24,8 +26,18 @@ import com.ds.avare.utils.ShadowedText;
  */
 public class Favorites {
 
-    public static void draw(DrawingContext ctx, boolean shouldShow) {
-        String vals[] = ctx.pref.getRecent();
+    private String mVals[];
+
+    public Favorites(StorageService service) {
+        mVals = service.getDBResource().getUserRecents();
+    }
+
+    public void update(StorageService service) {
+        mVals = service.getDBResource().getUserRecents();
+    }
+
+    public void draw(DrawingContext ctx, boolean shouldShow) {
+        String vals[] = mVals.clone();
         if((vals == null) || (!shouldShow)) {
             return;
         }

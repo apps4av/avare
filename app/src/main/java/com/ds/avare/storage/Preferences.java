@@ -209,123 +209,40 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     /**
      * @return
+     * XXX: Legacy
+     * Delete
      */
-    public String[] getRecent() {
-        String recent = mPref.getString(mContext.getString(R.string.Recent), "");
+    public LinkedList<StringPreference> getRecents() {
+        String recent = mPref.getString(mContext.getString(R.string.Recent), null);
+        LinkedList<StringPreference> ret = new LinkedList<>();
+        if(recent == null) {
+            return ret;
+        }
         String[] tokens = recent.split(",");
-        return tokens;
-    }
-
-    /**
-     * @return
-     */
-    public void modifyARecent(String name, String description) {
-        String[] tokens = getRecent();
-        description = description.replaceAll("[^A-Za-z0-9 ]", "");
-        description = description.replaceAll(";", " ");
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                String oldName = name;
-                String newName = null;
-                int desc = oldName.lastIndexOf("@");
-                if (desc < 0) {
-                    newName = description + "@" + oldName;
-                } else {
-                    newName = description + oldName.substring(desc, oldName.length());
-                }
-                l.set(id, newName);
-                break;
-            }
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public void deleteARecent(String name) {
-        String[] tokens = getRecent();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                l.remove(id);
-            }
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
-    }
-
-    public void searchARecent(String name, LinkedHashMap<String, String> params) {
-        String[] tokens = getRecent();
         for (String t : tokens) {
-            if (t.toUpperCase().startsWith(name.toUpperCase())) {
-                String[] wpd = t.split(";");
-                if (wpd[0].endsWith("::GPS")) {
-                    if (wpd[0].contains("@")) {
-                        String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                        String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                        StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
-                        s.putInHash(params);
-                    }
+            String[] wpd = t.split(";");
+            if (wpd[0].endsWith("::GPS")) {
+                if (wpd[0].contains("@")) {
+                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
+                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
+                    StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
+                    ret.add(s);
                 }
             }
-        }
-    }
-
-    public StringPreference searchARecent(String name) {
-        String[] tokens = getRecent();
-        for (String t : tokens) {
-            if (t.toUpperCase().startsWith(name.toUpperCase())) {
-                String[] wpd = t.split(";");
-                if (wpd[0].endsWith("::GPS")) {
-                    if (wpd[0].contains("@")) {
-                        String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                        String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                        return new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
-                    }
-                }
+            else {
+                StringPreference s =
+                        new StringPreference(
+                                StringPreference.parseHashedNameDestType(t),
+                                StringPreference.parseHashedNameDbType(t),
+                                StringPreference.parseHashedNameFacilityName(t),
+                                StringPreference.parseHashedNameId(t));
+                ret.add(s);
             }
         }
-        return null;
-    }
 
-    /**
-     * @return
-     */
-    public void addToRecent(String name) {
-        String[] tokens = getRecent();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                l.remove(id);
-            }
-        }
-        l.add(0, name);
-        if (l.size() > MAX_RECENT) {
-            l = l.subList(0, MAX_RECENT - 1);
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
+        //ID,destType,dbtype,name
+        //PWM::Base;AIRPORT;PORTLAND INTL JETPORT,PHILA::Fix;YWAYPOINT;PHILA , MORGANTOWN@39.6295&-79.9559::Maps;Maps;Maps,LURAY::Fix;YREP-PT;LURAY ,BVY::Base;AIRPORT;BEVERLY RGNL,BOS::Base;AIRPORT;GENERAL EDWARD LAWRENCE LOGAN INTL,ATL::Base;AIRPORT;HARTSFIELD - JACKSON ATLANTA INTL, JHOLA PAKISTAN@35.6831&75.9661::Maps;Maps;Maps, PAIJU PAKISTAN@35.7158&76.1186::Maps;Maps;Maps, HUSHE PAKISTAN@35.4504&76.3585::Maps;Maps;Maps, ASKOLE PAKISTAN@35.6824&75.8174::Maps;Maps;Maps,K2 PAKISTAN@35.88&76.5151::Maps;Maps;Maps, GONDOGORO LA@35.6481&76.4733::Maps;Maps;Maps,6B6::Base;AIRPORT;MINUTE MAN AIR FLD,42.8244&-71.027::GPS;GPS;GPS,42.7646&-71.2733::GPS;GPS;GPS,1B0::Base;AIRPORT;DEXTER RGNL,ANC::Base;AIRPORT;TED STEVENS ANCHORAGE INTL,BVY::Navaid;FAN MARKER;BEVERLY D,
+        return ret;
     }
 
     /**
@@ -337,7 +254,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
          * XXX: remove
          */
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        String plans = mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
+        String plans = mPref.getString(mContext.getString(R.string.Plan) + "v10", null);
+        if(null == plans) {
+            return map;
+        }
+
         // parse JSON from storage
         try {
             JSONObject json = new JSONObject(plans);
@@ -663,23 +584,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      */
     public String mapsFolder() {
         File path = mContext.getFilesDir();
-        /*
-         * Make it fail safe?
-         */
         if (path == null) {
-            path = mContext.getCacheDir();
-            if (path == null) {
-                path = mContext.getExternalCacheDir();
-                if (path == null) {
-                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    if (path == null) {
-                        path = Environment.getExternalStorageDirectory();
-                        if (null == path) {
-                            path = new File("/mnt/sdcard/avare");
-                        }
-                    }
-                }
-            }
+            path = new File(getExternalFolder());
         }
         /*
          * If no path, use internal folder.
@@ -922,7 +828,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
          * XXX: remove
          */
         LinkedList<Checklist> cl = new LinkedList<>();
-        String lists = mPref.getString(mContext.getString(R.string.List), "");
+        String lists = mPref.getString(mContext.getString(R.string.List), null);
+        if(null == lists) {
+            return cl;
+        }
         JSONArray jsonArr;
         try {
             jsonArr = new JSONArray(lists);
@@ -988,38 +897,21 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String getUDWLocation() {
+    public String getExternalFolder() {
         try {
-            return mPref.getString(mContext.getString(R.string.UDWLocation), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+            return mPref.getString(mContext.getString(R.string.UDWLocation),
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
+                    File.separator + mContext.getPackageName());
         } catch (Exception e) {
             return "";
         }
     }
 
     /**
-     * @param udwLocation
+     * @param location
      */
-    public void setUDWLocation(String udwLocation) {
-        mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
-    }
-
-
-    /**
-     * @return
-     */
-    public String getTracksLocation() {
-        try {
-            return mPref.getString(mContext.getString(R.string.TracksLocation), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    /**
-     * @param
-     */
-    public void setTracksLocation(String location) {
-        mPref.edit().putString(mContext.getString(R.string.TracksLocation), location).commit();
+    public void setExternalFolder(String location) {
+        mPref.edit().putString(mContext.getString(R.string.UDWLocation), location).commit();
     }
 
     // Read all the tab preference selections and return them in a single bitmapped long value
@@ -1323,9 +1215,12 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      * XXX: Legacy import. Delete.
      */
     public LinkedList<WeightAndBalance> getWnbs() {
-        String w = mPref.getString(mContext.getString(R.string.Wnb), "");
+        String w = mPref.getString(mContext.getString(R.string.Wnb), null);
         JSONArray jsonArr;
         LinkedList<WeightAndBalance> ret = new LinkedList<WeightAndBalance>();
+        if(w == null) {
+            return  ret;
+        }
         try {
             jsonArr = new JSONArray(w);
         } catch (JSONException e) {

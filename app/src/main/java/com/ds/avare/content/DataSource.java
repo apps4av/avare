@@ -191,6 +191,30 @@ public class DataSource {
         return ContentProviderHelper.getUserLists(mContext);
     }
 
+    public String[] getUserRecents() {
+        return ContentProviderHelper.getUserRecents(mContext);
+    }
+
+    public void setUserRecents(LinkedList<StringPreference> s) {
+        ContentProviderHelper.setUserRecents(mContext, s);
+    }
+
+    public void setUserRecent(StringPreference s) {
+        ContentProviderHelper.setUserRecent(mContext, s);
+    }
+
+    public StringPreference getUserRecent(String id) {
+        return ContentProviderHelper.getUserRecent(mContext, id);
+    }
+
+    public void deleteUserRecent(String id) {
+        ContentProviderHelper.deleteUserRecent(mContext, id);
+    }
+
+    public void replaceUserRecentName(String id, String newName) {
+        ContentProviderHelper.replaceUserRecentName(mContext, id, newName);
+    }
+
     public void setUserLists(LinkedList<Checklist> lists) {
         ContentProviderHelper.setUserLists(mContext, lists);
     }
@@ -234,6 +258,6 @@ public class DataSource {
     }
 
     public LinkedList<Cifp> findProcedure(String name, String approach) {
-        return  ContentProviderHelper.findProcedure(mContext, name, approach);
+        return ContentProviderHelper.findProcedure(mContext, name, approach);
     }
 }

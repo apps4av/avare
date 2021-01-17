@@ -568,7 +568,7 @@ public class AirportActivity extends Activity implements Observer {
             /*
              * Now add anything in the recently found list
              */
-            String [] vals = mPref.getRecent(); 
+            String [] vals = mService.getDBResource().getUserRecents();
             for(int pos=0; pos < vals.length; pos++) {
                 String destType = StringPreference.parseHashedNameDestType(vals[pos]);
                 if(destType != null && destType.equals(Destination.BASE)) {

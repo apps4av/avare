@@ -24,6 +24,8 @@ public class UserProvider extends MainProvider {
     public static final int LISTS_ID = 903;
     public static final int WNBS = 904;
     public static final int WNBS_ID = 905;
+    public static final int RECENTS = 906;
+    public static final int RECENTS_ID = 907;
 
     public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
             + "/rv-user";
@@ -38,6 +40,8 @@ public class UserProvider extends MainProvider {
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_LIST + "/#", LISTS_ID);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_WNB, WNBS);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_WNB + "/#", WNBS_ID);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_RECENT, RECENTS);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_RECENT + "/#", RECENTS_ID);
     }
 
     @Override
@@ -50,10 +54,80 @@ public class UserProvider extends MainProvider {
                 return CONTENT_TYPE;
             case WNBS:
                 return CONTENT_TYPE;
+            case RECENTS:
+                return CONTENT_TYPE;
             default:
                 return null;
         }
     }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+
+        String table = null;
+        int uriType = mURIMatcher.match(uri);
+        switch (uriType) {
+            case PLANS:
+                table = UserContract.TABLE_PLAN;
+                break;
+            case LISTS:
+                table = UserContract.TABLE_LIST;
+                break;
+            case WNBS:
+                table = UserContract.TABLE_WNB;
+                break;
+            case RECENTS:
+                table = UserContract.TABLE_RECENT;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+
+        int rows = 0;
+        try {
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+            rows = db.delete(table, selection, selectionArgs);
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            resetDatabase();
+        }
+        return rows;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        String table = null;
+        int uriType = mURIMatcher.match(uri);
+        int rows = 0;
+        switch (uriType) {
+            case PLANS:
+                table = UserContract.TABLE_PLAN;
+                break;
+            case LISTS:
+                table = UserContract.TABLE_LIST;
+                break;
+            case WNBS:
+                table = UserContract.TABLE_WNB;
+                break;
+            case RECENTS:
+                table = UserContract.TABLE_RECENT;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+
+        try {
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+            rows = db.update(table, values, selection, selectionArgs);
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            resetDatabase();
+        }
+        return rows;
+    }
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
@@ -71,6 +145,9 @@ public class UserProvider extends MainProvider {
                 break;
             case WNBS:
                 queryBuilder.setTables(UserContract.TABLE_WNB);
+                break;
+            case RECENTS:
+                queryBuilder.setTables(UserContract.TABLE_RECENT);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -104,6 +181,9 @@ public class UserProvider extends MainProvider {
             case WNBS:
                 table = UserContract.TABLE_WNB;
                 break;
+            case RECENTS:
+                table = UserContract.TABLE_RECENT;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
@@ -119,6 +199,8 @@ public class UserProvider extends MainProvider {
                         return UserContract.buildListsUri(id);
                     case WNBS:
                         return UserContract.buildWnbsUri(id);
+                    case RECENTS:
+                        return UserContract.buildRecentsUri(id);
                     default:
                         throw new IllegalArgumentException("Unknown URI");
                 }
@@ -137,8 +219,8 @@ public class UserProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        // user data goes in downloads
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + getContext().getPackageName();
+        // user data goes in external folders
+        String path = mPref.getExternalFolder();
         mDatabaseHelper = new UserDatabaseHelper(getContext(), path);
         return true;
     }

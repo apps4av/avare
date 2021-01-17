@@ -891,7 +891,10 @@ public class WebAppPlanInterface implements Observer {
 
             mService.getDBResource().search(srch, params, true);
 			mService.getUDWMgr().search(srch, params);			// From user defined points of interest
-			mPref.searchARecent(srch, params);			// From recently used locations (named GPS points)
+			StringPreference s = mService.getDBResource().getUserRecent(srch);
+			if (null != s) {
+				s.putInHash(params);
+			}
             if(params.size() > 0) {
                 selection = new String[params.size()];
                 int iterator = 0;

@@ -840,7 +840,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawFavorites(Canvas canvas, DrawingContext ctx) {
         // draw favorites from labeled recent searches
-        Favorites.draw(ctx, mPointProjection == null);
+        mService.getFavorites().draw(ctx, mPointProjection == null);
     }
 
     /**

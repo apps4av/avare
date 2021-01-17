@@ -59,6 +59,7 @@ import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Favorites;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.LabelCoordinate;
@@ -300,6 +301,8 @@ public class StorageService extends Service {
 
     // Timer for count up
     private UpTimer mUpTimer;
+
+    Favorites mFavorites;
 
     LinkedList<LabelCoordinate> mGameTfrLabels;
 
@@ -604,6 +607,8 @@ public class StorageService extends Service {
                     getVSI().updateValue(mGpsParams);
                     
                     getFlightStatus().updateLocation(mGpsParams);
+
+                    mFavorites.update(StorageService.this);
                     
                     if(mPlan.hasDestinationChanged()) {
                         /*
@@ -681,6 +686,18 @@ public class StorageService extends Service {
                 }
             }
         };
+
+        mFavorites = new Favorites(this);
+
+        /**
+         * XXX: 10.0.0 release Remove after next release. Legacy import
+         */
+        Preferences p = new Preferences(getApplicationContext());
+        getDBResource().setUserPlans(p.getPlans());
+        getDBResource().setUserLists(p.getLists());
+        getDBResource().setUserWnbs(p.getWnbs());
+        getDBResource().setUserRecents(p.getRecents());
+
     }
         
     /* (non-Javadoc)
@@ -830,7 +847,11 @@ public class StorageService extends Service {
     public Destination getLastAfdDestination() {
         return mLastAfdDestination;
     }
-    
+
+    public Favorites getFavorites() {
+        return mFavorites;
+    }
+
     /**
      * 
      * @param destination

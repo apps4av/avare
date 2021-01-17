@@ -97,7 +97,7 @@ public class UDWMgr {
 		Preferences pref = new Preferences(mContext);
 		
 		// Load them all in
-		populate(pref.getUDWLocation());
+		populate(pref.getExternalFolder());
 	}
 	
 	/***

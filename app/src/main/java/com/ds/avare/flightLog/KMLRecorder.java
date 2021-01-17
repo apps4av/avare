@@ -183,7 +183,7 @@ public class KMLRecorder {
     	mPositionHistory = new LinkedList<GpsParams>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
-    	mFolder = new Preferences(ctx).getTracksLocation();
+    	mFolder = new Preferences(ctx).getExternalFolder();
     }
     
     /** 

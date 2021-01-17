@@ -155,7 +155,7 @@ public class SearchActivity extends Activity implements Observer {
      * 
      */
     private void initList() {
-        String [] vals = mPref.getRecent();        
+        String [] vals = mService.getDBResource().getUserRecents();
         mAdapter = new SearchAdapter(SearchActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
     }
@@ -206,7 +206,7 @@ public class SearchActivity extends Activity implements Observer {
             @Override
             public void onClick(View v) {
                 if(null != mSelected) {
-                    mPref.deleteARecent(mSelected);
+                    mService.getDBResource().deleteUserRecent(StringPreference.parseHashedNameId(mSelected));
                     initList();
                     mSearchText.setText("");
                 }
@@ -248,8 +248,12 @@ public class SearchActivity extends Activity implements Observer {
                             /*
                              * Edit and save description field
                              */
-                            
-                            mPref.modifyARecent(mSelected, edit.getText().toString().toUpperCase());
+                            String nameid = StringPreference.parseHashedNameId(mSelected);
+                            String name = StringPreference.parseHashedNameIdBefore(nameid);
+                            String id = StringPreference.parseHashedNameIdAfter(nameid);
+                            String newName = edit.getText().toString().toUpperCase() + "@" + id;
+                            mService.getDBResource().replaceUserRecentName(nameid, newName);
+
                             initList();
                             mSelected = null;
                             dialog.dismiss();
@@ -592,8 +596,9 @@ public class SearchActivity extends Activity implements Observer {
                      */
                     return;                    
                 }
-                mPref.addToRecent(mDestination.getStorageName());
-                
+                StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
+                mService.getDBResource().setUserRecent(s);
+
                 if(!mIsWaypoint) {
                     if(mService != null) {
                         mService.setDestination((Destination)arg0);
@@ -649,7 +654,10 @@ public class SearchActivity extends Activity implements Observer {
                  */
                 mService.getDBResource().search(srch, params, false);
                 mService.getUDWMgr().search(srch, params);	// From user defined points of interest
-                mPref.searchARecent(srch, params);			// From recently used locations (named GPS points)
+                StringPreference s = mService.getDBResource().getUserRecent(srch);
+                if (null != s) {
+                    s.putInHash(params);
+                }
                 if(params.size() > 0) {
                     selection = new String[params.size()];
                     int iterator = 0;
