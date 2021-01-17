@@ -17,6 +17,8 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.NavAid;
@@ -95,6 +97,11 @@ public class DataSource {
         lprovider.resetDatabase();
         client.release();
 
+        client = resolver.acquireContentProviderClient(UserContract.AUTHORITY_URI);
+        UserProvider uprovider = (UserProvider) client.getLocalContentProvider();
+        uprovider.resetDatabase();
+        client.release();
+
     }
 
     // location helper
@@ -171,6 +178,30 @@ public class DataSource {
         return LocationContentProviderHelper.getNavaidOrFixFromCoordinate(mContext, c);
     }
 
+    //user
+    public LinkedHashMap<String, String> getUserPlans() {
+        return ContentProviderHelper.getUserPlans(mContext);
+    }
+
+    public void setUserPlans(LinkedHashMap<String, String> plans) {
+        ContentProviderHelper.setUserPlans(mContext, plans);
+    }
+
+    public LinkedList<Checklist> getUserLists() {
+        return ContentProviderHelper.getUserLists(mContext);
+    }
+
+    public void setUserLists(LinkedList<Checklist> lists) {
+        ContentProviderHelper.setUserLists(mContext, lists);
+    }
+
+    public LinkedList<WeightAndBalance> getUserWnbs() {
+        return ContentProviderHelper.getUserWnbs(mContext);
+    }
+
+    public void setUserWnbs(LinkedList<WeightAndBalance> wnbs) {
+        ContentProviderHelper.setUserWnbs(mContext, wnbs);
+    }
 
     // other helper
 
@@ -205,7 +236,4 @@ public class DataSource {
     public LinkedList<Cifp> findProcedure(String name, String approach) {
         return  ContentProviderHelper.findProcedure(mContext, name, approach);
     }
-
-
-
 }

@@ -1,8 +1,11 @@
 package com.ds.avare.content;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.plan.Cifp;
 import com.ds.avare.position.LabelCoordinate;
@@ -18,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -379,5 +383,105 @@ public class ContentProviderHelper {
         return ret;
     }
 
+    public static void setUserLists(Context ctx, LinkedList<Checklist> lists) {
+        for (Checklist l : lists) {
+            ContentValues newValues = new ContentValues();
+
+            newValues.put(UserContract.LIST_COLUMN_ID, l.getName());
+            newValues.put(UserContract.LIST_COLUMN_TEXT, l.getSteps());
+            ctx.getContentResolver().insert(UserContract.CONTENT_URI_LIST, newValues);
+        }
+
+    }
+
+    public static LinkedList<Checklist> getUserLists(Context ctx) {
+        Cursor c = null;
+        LinkedList<Checklist> ret = new LinkedList<>();
+
+        String[] proj = new String[] {UserContract.LIST_COLUMN_ID, UserContract.LIST_COLUMN_TEXT};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, proj, null, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+                    String name = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_ID));
+                    String text = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_TEXT));
+                    ret.add(new Checklist(name, text));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
+
+    public static void setUserWnbs(Context ctx, LinkedList<WeightAndBalance> wnbs) {
+        for (WeightAndBalance w : wnbs) {
+            ContentValues newValues = new ContentValues();
+
+            newValues.put(UserContract.WNB_COLUMN_ID, w.getName());
+            newValues.put(UserContract.WNB_COLUMN_TEXT, w.getJSON().toString());
+            ctx.getContentResolver().insert(UserContract.CONTENT_URI_WNB, newValues);
+        }
+
+    }
+
+    public static LinkedList<WeightAndBalance> getUserWnbs(Context ctx) {
+        Cursor c = null;
+        LinkedList<WeightAndBalance> ret = new LinkedList<>();
+
+        String[] proj = new String[] {UserContract.WNB_COLUMN_ID, UserContract.WNB_COLUMN_TEXT};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, proj, null, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+                    String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
+                    ret.add(new WeightAndBalance(text));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
+
+    public static void setUserPlans(Context ctx, LinkedHashMap<String, String> plans) {
+
+        for (String key : plans.keySet()) {
+            ContentValues newValues = new ContentValues();
+
+            newValues.put(UserContract.PLAN_COLUMN_ID, key);
+            newValues.put(UserContract.PLAN_COLUMN_PATH, plans.get(key));
+            ctx.getContentResolver().insert(UserContract.CONTENT_URI_PLAN, newValues);
+        }
+    }
+
+    public static LinkedHashMap<String, String> getUserPlans(Context ctx) {
+        Cursor c = null;
+        LinkedHashMap<String, String> ret = new LinkedHashMap();
+
+        String[] proj = new String[] {UserContract.PLAN_COLUMN_ID, UserContract.PLAN_COLUMN_PATH};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_PLAN, proj, null, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+                    String name = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_ID));
+                    String path = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_PATH));
+                    ret.put(name, path);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
 }
 

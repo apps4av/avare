@@ -28,12 +28,20 @@ import android.view.WindowManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
+import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -323,16 +331,25 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String getPlans() {
-        return mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
-    }
-
-
-    /**
-     * @return
-     */
-    public void putPlans(String name) {
-        mPref.edit().putString(mContext.getString(R.string.Plan) + "v10", name).commit();
+    public LinkedHashMap<String, String> getPlans() {
+        // import legacy plans
+        /**
+         * XXX: remove
+         */
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        String plans = mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
+        // parse JSON from storage
+        try {
+            JSONObject json = new JSONObject(plans);
+            Iterator<?> keys = json.keys();
+            while (keys.hasNext()) {
+                String name = (String) keys.next();
+                String destinations = json.getString(name);
+                map.put(name, destinations);
+            }
+        } catch (Exception e) {
+        }
+        return map;
     }
 
 
@@ -898,17 +915,33 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String getLists() {
-        return mPref.getString(mContext.getString(R.string.List), "");
-    }
+    public LinkedList<Checklist> getLists() {
 
-    /**
-     * @return
-     */
-    public void putLists(String name) {
-        mPref.edit().putString(mContext.getString(R.string.List), name).commit();
-    }
+        // Legacy lists import
+        /**
+         * XXX: remove
+         */
+        LinkedList<Checklist> cl = new LinkedList<>();
+        String lists = mPref.getString(mContext.getString(R.string.List), "");
+        JSONArray jsonArr;
+        try {
+            jsonArr = new JSONArray(lists);
+        } catch (JSONException e) {
+            return cl;
+        }
 
+        for(int i = 0; i < jsonArr.length(); i++) {
+            try {
+                JSONObject o = jsonArr.getJSONObject(i);
+                String name = o.getString("name");
+                String steps = o.getString("steps");
+                cl.add(new Checklist(name, steps));
+            } catch (JSONException e) {
+                continue;
+            }
+        }
+        return cl;
+    }
 
     /**
      * @return
@@ -1287,16 +1320,28 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     /**
      * @return
+     * XXX: Legacy import. Delete.
      */
-    public String getWnbs() {
-        return mPref.getString(mContext.getString(R.string.Wnb), "");
-    }
+    public LinkedList<WeightAndBalance> getWnbs() {
+        String w = mPref.getString(mContext.getString(R.string.Wnb), "");
+        JSONArray jsonArr;
+        LinkedList<WeightAndBalance> ret = new LinkedList<WeightAndBalance>();
+        try {
+            jsonArr = new JSONArray(w);
+        } catch (JSONException e) {
+            return ret;
+        }
 
-    /**
-     * @return
-     */
-    public void putWnbs(String name) {
-        mPref.edit().putString(mContext.getString(R.string.Wnb), name).commit();
+        for(int i = 0; i < jsonArr.length(); i++) {
+            try {
+                JSONObject o = jsonArr.getJSONObject(i);
+                ret.add(new WeightAndBalance(o));
+            } catch (JSONException e) {
+                continue;
+            }
+        }
+
+        return ret;
     }
 
     public boolean isDefaultAFDImage() {

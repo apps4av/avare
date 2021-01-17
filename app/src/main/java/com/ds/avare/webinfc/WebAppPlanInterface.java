@@ -28,6 +28,8 @@ import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.WebActivity;
+import com.ds.avare.content.ContentProviderHelper;
+import com.ds.avare.content.DataSource;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;
@@ -109,7 +111,7 @@ public class WebAppPlanInterface implements Observer {
         mService = s;
         
         // TODO: refactor in abstract plan management
-		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
 		setFilteredSize();
     }
 
@@ -274,7 +276,7 @@ public class WebAppPlanInterface implements Observer {
     public void refreshPlanList() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	mService.getExternalPlanMgr().forceReload();
-		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
 		setFilteredSize();
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -493,7 +495,7 @@ public class WebAppPlanInterface implements Observer {
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
-    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+    	mService.getDBResource().setUserPlans(Plan.putAllPlans(mService, mSavedPlans));
     	setFilteredSize();
     	
     	newSavePlan();
@@ -636,7 +638,7 @@ public class WebAppPlanInterface implements Observer {
     	if(true == mService.getExternalPlanMgr().isExternal(name)) {
     		mService.getExternalPlanMgr().delete(name);
     	} else {
-	    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+			mService.getDBResource().setUserPlans(Plan.putAllPlans(mService, mSavedPlans));
     	}
     	
     	setFilteredSize();

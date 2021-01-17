@@ -68,19 +68,6 @@ public class Checklist {
         mWorkingIndex = 0;
     }
 
-    /**
-     * From JSON
-     * @param json
-     */
-    public Checklist(JSONObject json) {
-        try {
-            mName = json.getString("name");
-            mSteps = json.getString("steps");
-        } catch (JSONException e) {
-            mName = "";
-            mSteps = "";
-        }
-    }
 
     /**
      * 
@@ -181,22 +168,7 @@ public class Checklist {
     }
     
     
-    /**
-     * Get in JSON format
-     * @return
-     */
-    public JSONObject getJSON() {
-        JSONObject jsonAdd = new JSONObject();
-        try {
-            jsonAdd.put("name", mName);
-            jsonAdd.put("steps", getSteps());
-        } catch (JSONException e) {
-            return null;
-        }
-        
-        return jsonAdd;
-    }
-    
+
     /**
      * 
      * @return
@@ -205,49 +177,6 @@ public class Checklist {
         return mName;
     }
 
-    /**
-     * Put a list of checklists in JSON array
-     * @param cls
-     * @return
-     */
-    public static String putCheckListsToStorageFormat(LinkedList<Checklist> cls) {
-        
-        JSONArray jsonArr = new JSONArray();
-        for(Checklist c : cls) {
-            
-            JSONObject o = c.getJSON();
-            jsonArr.put(o);
-        }
-        
-        return jsonArr.toString();
-    }
-    
-    /**
-     * Gets an array of check lists from storage JSON
-     * @return
-     */
-    public static LinkedList<Checklist> getCheckListsFromStorageFromat(String json) {
-        JSONArray jsonArr;
-        LinkedList<Checklist> ret = new LinkedList<Checklist>();
-        try {
-            jsonArr = new JSONArray(json);
-        } catch (JSONException e) {
-            return ret;
-        }
-        
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                ret.add(new Checklist(o));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-        
-        return ret;
-    }
-   
-    
     /**
      * Move index back
      */

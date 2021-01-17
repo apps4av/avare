@@ -1157,7 +1157,7 @@ public class StorageService extends Service {
      */
     public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
-            mKMLRecorder.start();
+            mKMLRecorder.start(getApplicationContext());
             return null;
         }
         else {

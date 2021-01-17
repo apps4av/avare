@@ -60,7 +60,7 @@ public class WebAppWnbInterface {
      */
     public void connect(StorageService s) {
         mService = s;
-        mService.setWnbs(WeightAndBalance.getWnbsFromStorageFromat(mPref.getWnbs()));
+        mService.setWnbs(s.getDBResource().getUserWnbs());
     }
 
     /**
@@ -143,8 +143,8 @@ public class WebAppWnbInterface {
         /*
          * Save to storage on save button
          */
-        mPref.putWnbs(WeightAndBalance.putWnbsToStorageFormat(wnbs));
-        
+        mService.getDBResource().setUserWnbs(wnbs);
+
         /*
          * Make a new working list since last one stored already 
          */
@@ -208,7 +208,7 @@ public class WebAppWnbInterface {
         /*
          * Save to storage on save button
          */
-        mPref.putWnbs(WeightAndBalance.putWnbsToStorageFormat(wnbs));
+        mService.getDBResource().setUserWnbs(wnbs);
 
         newSaveWnb();
 

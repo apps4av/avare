@@ -945,25 +945,9 @@ public class Plan implements Observer {
      * @return
      */
     public static LinkedHashMap<String, String> getAllPlans(
-            StorageService service, String plans) {
+            StorageService service, LinkedHashMap<String, String> map) {
 
-        // Linked hashmap as we want to keep the order of plans
-        // hashmap because that deals with updating plans
-        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-
-        // parse JSON from storage
-        try {
-            JSONObject json = new JSONObject(plans);
-            Iterator<?> keys = json.keys();
-            while (keys.hasNext()) {
-                String name = (String) keys.next();
-                String destinations = json.getString(name);
-                map.put(name, destinations);
-            }
-        } catch (Exception e) {
-        }
-
-        // Now fetch the external plans
+        // fetch the external plans
         if (null != service) {
             ExternalPlanMgr epm = service.getExternalPlanMgr();
             ArrayList<String> planNames = epm.getPlanNames(null);
@@ -985,10 +969,10 @@ public class Plan implements Observer {
      *            - the Storage service
      * @param map
      *            collection of known flight plans
-     * @return json string to save
+     * @return plans to save
      */
     @SuppressWarnings("unchecked")
-    public static String putAllPlans(StorageService service,
+    public static LinkedHashMap<String, String> putAllPlans(StorageService service,
             LinkedHashMap<String, String> map) {
 
         // We need to make a copy here to work on. "map" as passed in may
@@ -1012,9 +996,7 @@ public class Plan implements Observer {
             }
         }
 
-        // Put a collection of plans in storage format
-        JSONObject json = new JSONObject(localMap);
-        return json.toString();
+        return localMap;
     }
 
     /**

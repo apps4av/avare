@@ -68,6 +68,10 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name=".content.LocationProvider"
             android:authorities="com.ds.avare.provider.location" />
 
+        <provider
+            android:name=".content.UserProvider"
+            android:authorities="com.ds.avare.provider.user" />
+
         <service android:name=".StorageService"
             android:enabled="true"
             android:exported="false"

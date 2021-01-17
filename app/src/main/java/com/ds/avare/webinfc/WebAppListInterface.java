@@ -41,7 +41,6 @@ import android.webkit.WebView;
  */
 public class WebAppListInterface {
     private StorageService mService; 
-    private Preferences mPref;
     private WebView mWebView;
     private ImportTask mImportTask;
     private GenericCallback mCallback;
@@ -61,7 +60,6 @@ public class WebAppListInterface {
      * Instantiate the interface and set the context
      */
     public WebAppListInterface(Context c, WebView ww, GenericCallback cb) {
-        mPref = new Preferences(c);
         mWebView = ww;
         mCallback = cb;
     }
@@ -72,7 +70,7 @@ public class WebAppListInterface {
      */
     public void connect(StorageService s) { 
         mService = s;
-        mService.setCheckLists(Checklist.getCheckListsFromStorageFromat(mPref.getLists()));
+        mService.setCheckLists(s.getDBResource().getUserLists());
     }
 
     /**
@@ -258,8 +256,8 @@ public class WebAppListInterface {
         /*
          * Save to storage on save button
          */
-        mPref.putLists(Checklist.putCheckListsToStorageFormat(lists));
-        
+        mService.getDBResource().setUserLists(lists);
+
         /*
          * Make a new working list since last one stored already 
          */
@@ -320,7 +318,7 @@ public class WebAppListInterface {
         /*
          * Save to storage on save button
          */
-        mPref.putLists(Checklist.putCheckListsToStorageFormat(lists));
+        mService.getDBResource().setUserLists(lists);
 
     	newSaveList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);

@@ -77,6 +77,18 @@ public class WeightAndBalance {
     }
 
     /**
+     * From JSON
+     * @param json
+     */
+    public WeightAndBalance(String json) {
+        try {
+            mWnb = new JSONObject(json);
+        } catch (JSONException e) {
+            mWnb = null;
+        }
+    }
+
+    /**
      * Get in JSON format
      * @return
      */
@@ -94,48 +106,6 @@ public class WeightAndBalance {
         } catch (JSONException e) {
         }
         return "";
-    }
-
-    /**
-     * Put a list of WNBs in JSON array
-     * @param wnbs
-     * @return
-     */
-    public static String putWnbsToStorageFormat(LinkedList<WeightAndBalance> wnbs) {
-        
-        JSONArray jsonArr = new JSONArray();
-        for(WeightAndBalance w : wnbs) {
-            
-            JSONObject o = w.getJSON();
-            jsonArr.put(o);
-        }
-        
-        return jsonArr.toString();
-    }
-    
-    /**
-     * Gets an array of WNBs from storage JSON
-     * @return
-     */
-    public static LinkedList<WeightAndBalance> getWnbsFromStorageFromat(String json) {
-        JSONArray jsonArr;
-        LinkedList<WeightAndBalance> ret = new LinkedList<WeightAndBalance>();
-        try {
-            jsonArr = new JSONArray(json);
-        } catch (JSONException e) {
-            return ret;
-        }
-        
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                ret.add(new WeightAndBalance(o));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-        
-        return ret;
     }
 
     /**

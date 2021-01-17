@@ -241,12 +241,12 @@ public class KMLRecorder {
 	/**
 	 * Start with default config
 	 */
-	public void start() {
+	public void start(Context ctx) {
         KMLRecorder.Config config = this.new Config(
                 true,   /* always remove tracks from display on start */
                 30,     /* Max of 30 seconds between position updates */
                 true,   /* use verbose details */
-                mFolder + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
+                mFolder + File.separator + ctx.getPackageName(),
                 3);     // Adjust down to 3 knots to capture taxi
         start(config);
 	}
