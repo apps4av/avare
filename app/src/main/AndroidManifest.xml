@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="346"
-    android:versionName="9.0.3"
+    android:versionCode="345"
+    android:versionName="10.0.0"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->

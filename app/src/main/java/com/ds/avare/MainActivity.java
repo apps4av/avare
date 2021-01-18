@@ -50,6 +50,7 @@ public class MainActivity extends TabActivity {
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
     Preferences mPref;
+    TextView mTextView;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -68,6 +69,8 @@ public class MainActivity extends TabActivity {
     public static final int tabWnb = 11;
 
     public void setup() {
+        mTextView.setVisibility(View.INVISIBLE);
+
         // start service
         final Intent intent = new Intent(MainActivity.this, StorageService.class);
         startService(intent);
@@ -158,6 +161,7 @@ public class MainActivity extends TabActivity {
 
         setContentView(R.layout.main);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
+        mTextView = (TextView)findViewById(R.id.main_textview);
         ViewTreeObserver vto = mScrollView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -185,6 +189,7 @@ public class MainActivity extends TabActivity {
         }
         if (!granted) {
             ActivityCompat.requestPermissions(ctx, PERMISSIONS, PERMISSION_ALL);
+            mTextView.setVisibility(View.VISIBLE);
         }
         else {
             //granted
