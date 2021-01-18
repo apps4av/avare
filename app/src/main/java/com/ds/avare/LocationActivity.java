@@ -1317,19 +1317,6 @@ public class LocationActivity extends Activity implements Observer {
         super.onResume();
         Helper.setOrientationAndOn(this);
 
-        // Need GPS permission right away
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
-        }
-
-        // Need storage permission
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
-        }
-
-
         /*
          * Registering our receiver
          * Bind now.

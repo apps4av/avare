@@ -560,5 +560,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ResetDataSummary">Reset app to default, and delete all user data in the app (plans, accounts, lists, WNB, way points etc.)?</string>
     <string name="ResetData">Reset</string>
     <string name="open_settings">Touch to open settings</string>
+    <string name="permission">Permissions</string>
+    <string name="permission_message">The app needs the location permission to show your location on the map.\nThe app needs the file permission to share files with your desktop.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without these permissions.</string>
 
 </resources>

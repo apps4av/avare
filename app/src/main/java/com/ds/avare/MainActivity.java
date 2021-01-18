@@ -13,9 +13,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -28,6 +30,9 @@ import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+
+import androidx.core.app.ActivityCompat;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -62,10 +67,87 @@ public class MainActivity extends TabActivity {
     public static final int tabTools = 10;
     public static final int tabWnb = 11;
 
+    public void setup() {
+        // start service
+        final Intent intent = new Intent(MainActivity.this, StorageService.class);
+        startService(intent);
+
+        /*
+         * Make a tab host
+         */
+        mTabHost = getTabHost();
+
+        /*
+         * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
+         * also add the new tab to the preferences.getTabs() method.
+         */
+        long tabItems = mPref.getTabs();
+
+        // We will always show the main chart tab
+        setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
+
+        if (0 != (tabItems & (1 << tabNear))) {
+            setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabPfd))) {
+            setupTab(new TextView(this), getString(R.string.PFD), new Intent(this, PfdActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabThreeD))) {
+            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabChecklist))) {
+            setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabWXB))) {
+            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabTools))) {
+            setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabWnb))) {
+            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
+        }
+
+        // Hide keyboard from another tab
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            public void onTabChanged(String tabId) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+            }
+        });
+
+    }
+
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // all need to be 0
+        int res = 0;
+        if(permissions.length > 0) {
+            if(permissions.length > 0) {
+                for (int g : grantResults) {
+                    res = res + g;
+                }
+            }
+        }
+        if(0 == res) {
+            setup();
+        }
+    }
+
     /**
-     * 
+     *
      */
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         
         mPref = new Preferences(this);
@@ -73,7 +155,7 @@ public class MainActivity extends TabActivity {
         super.onCreate(savedInstanceState);
          
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-                
+
         setContentView(R.layout.main);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
         ViewTreeObserver vto = mScrollView.getViewTreeObserver();
@@ -87,63 +169,27 @@ public class MainActivity extends TabActivity {
             }
         });
 
-
-        final Intent intent = new Intent(MainActivity.this, StorageService.class);
-        startService(intent);
-
-        /*
-         * Make a tab host
-         */
-        mTabHost = getTabHost();
- 
-        /*
-         * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
-         * also add the new tab to the preferences.getTabs() method.
-         */
-        long tabItems = mPref.getTabs();
-
-        // We will always show the main chart tab
-    	setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
-
-        if(0 != (tabItems & (1 << tabNear))) {
-        	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabPfd))) {
-            setupTab(new TextView(this), getString(R.string.PFD), new Intent(this, PfdActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabThreeD))) {
-            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabChecklist))) {
-        	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabWXB))) {
-            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabTools))) {
-        	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabWnb))) {
-            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
-        }
-
-        // Hide keyboard from another tab
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            public void onTabChanged(String tabId) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+        // check permissions
+        final Activity ctx = MainActivity.this;
+        int PERMISSION_ALL = 101;
+        String[] PERMISSIONS = {
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+        };
+        boolean granted = true;
+        for (String permission : PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(ctx, permission) != PackageManager.PERMISSION_GRANTED) {
+                granted = false;
             }
-        });
+        }
+        if (!granted) {
+            ActivityCompat.requestPermissions(ctx, PERMISSIONS, PERMISSION_ALL);
+        }
+        else {
+            //granted
+            setup();
+        }
 
     }
     
