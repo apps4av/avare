@@ -160,8 +160,6 @@ public class StorageService extends Service {
     
     private boolean mDownloading;
 
-    private LinkedList<Checklist> mCheckLists;
-    private LinkedList<WeightAndBalance> mWnbs;
     String mOverrideListName;
 
     private MetarLayer mMetarLayer;
@@ -287,11 +285,6 @@ public class StorageService extends Service {
      */
     private FlightStatus mFlightStatus;
    
-    /*
-     * Current checklist
-     */
-    private Checklist mChecklist;
-    private WeightAndBalance mWnb;
 
     // The edge distance tape instrument
     private EdgeDistanceTape mEdgeDistanceTape;
@@ -434,8 +427,6 @@ public class StorageService extends Service {
         mAdsbTfrCache = new TfrCache(getApplicationContext());
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
-        mCheckLists = null;
-        mWnbs = null;
         mLastLocationUpdate = 0;
 
         mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
@@ -447,8 +438,6 @@ public class StorageService extends Service {
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
 
-        mChecklist = new Checklist("");
-        
         /*
          * Allocate a flight timer object
          */
@@ -1337,38 +1326,6 @@ public class StorageService extends Service {
        mDownloading = state; 
     }
     
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<Checklist> getCheckLists() {
-        return mCheckLists;
-    }
-    
-    /**
-     * 
-     * @param wnb
-     */
-    public void setWnbs(LinkedList<WeightAndBalance> wnb) {
-        mWnbs = wnb;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public LinkedList<WeightAndBalance> getWnbs() {
-        return mWnbs;
-    }
-
-    /**
-     *
-     * @param list
-     */
-    public void setCheckLists(LinkedList<Checklist> list) {
-        mCheckLists = list;
-    }
-
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
             mShadowedText = new ShadowedText(getApplicationContext());
@@ -1394,22 +1351,6 @@ public class StorageService extends Service {
     
     public NavComments getNavComments() {
     	return mNavComments;
-    }
-    
-    public Checklist getChecklist() {
-    	return mChecklist;
-    }
-    
-    public void setWnb(WeightAndBalance wnb) {
-    	mWnb = wnb;
-    }
-
-    public WeightAndBalance getWnb() {
-        return mWnb;
-    }
-
-    public void setChecklist(Checklist cl) {
-        mChecklist = cl;
     }
 
     public AutoPilot getAutoPilot() { return mAutoPilot; }

@@ -14,11 +14,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +29,7 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -51,6 +55,7 @@ public class MainActivity extends TabActivity {
     int      mScrollWidth;
     Preferences mPref;
     TextView mTextView;
+    Button mButton;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -70,6 +75,7 @@ public class MainActivity extends TabActivity {
 
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
+        mButton.setVisibility(View.INVISIBLE);
 
         // start service
         final Intent intent = new Intent(MainActivity.this, StorageService.class);
@@ -162,6 +168,16 @@ public class MainActivity extends TabActivity {
         setContentView(R.layout.main);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
         mTextView = (TextView)findViewById(R.id.main_textview);
+        mButton = (Button)findViewById(R.id.main_button);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
         ViewTreeObserver vto = mScrollView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -190,6 +206,7 @@ public class MainActivity extends TabActivity {
         if (!granted) {
             ActivityCompat.requestPermissions(ctx, PERMISSIONS, PERMISSION_ALL);
             mTextView.setVisibility(View.VISIBLE);
+            mButton.setVisibility(View.VISIBLE);
         }
         else {
             //granted

@@ -386,13 +386,47 @@ public class ContentProviderHelper {
 
     public static void setUserLists(Context ctx, LinkedList<Checklist> lists) {
         for (Checklist l : lists) {
-            ContentValues newValues = new ContentValues();
+            setUserList(ctx, l);
+        }
+    }
 
-            newValues.put(UserContract.LIST_COLUMN_ID, l.getName());
-            newValues.put(UserContract.LIST_COLUMN_TEXT, l.getSteps());
-            ctx.getContentResolver().insert(UserContract.CONTENT_URI_LIST, newValues);
+    public static void setUserList(Context ctx, Checklist list) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.LIST_COLUMN_ID, list.getName());
+        newValues.put(UserContract.LIST_COLUMN_TEXT, list.getSteps());
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_LIST, newValues);
+    }
+
+    public static void deleteUserList(Context ctx, String name) {
+        String selection = "(" + UserContract.LIST_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_LIST, selection, selectionArg);
+    }
+
+    public static Checklist getUserList(Context ctx, String name) {
+        Cursor c = null;
+        Checklist ret = null;
+
+        String selection = UserContract.LIST_COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[]{name};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, null, selection, selectionArgs, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String text = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_TEXT));
+                    String id = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_ID));
+                    ret = new Checklist(id, text);
+                    break;
+                }
+            }
+        } catch (Exception e) {
         }
 
+        CursorManager.close(c);
+        return ret;
     }
 
     public static LinkedList<Checklist> getUserLists(Context ctx) {
@@ -418,16 +452,26 @@ public class ContentProviderHelper {
         return ret;
     }
 
+    public static void setUserWnb(Context ctx, WeightAndBalance wnb) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.WNB_COLUMN_ID, wnb.getName());
+        newValues.put(UserContract.WNB_COLUMN_TEXT, wnb.getJSON().toString());
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_WNB, newValues);
+    }
+
     public static void setUserWnbs(Context ctx, LinkedList<WeightAndBalance> wnbs) {
         for (WeightAndBalance w : wnbs) {
-            ContentValues newValues = new ContentValues();
-
-            newValues.put(UserContract.WNB_COLUMN_ID, w.getName());
-            newValues.put(UserContract.WNB_COLUMN_TEXT, w.getJSON().toString());
-            ctx.getContentResolver().insert(UserContract.CONTENT_URI_WNB, newValues);
+            setUserWnb(ctx, w);
         }
-
     }
+
+    public static void deleteUserWnb(Context ctx, String name) {
+        String selection = "(" + UserContract.WNB_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_WNB, selection, selectionArg);
+    }
+
 
     public static LinkedList<WeightAndBalance> getUserWnbs(Context ctx) {
         Cursor c = null;
@@ -442,6 +486,29 @@ public class ContentProviderHelper {
                 while (c.moveToNext()) {
                     String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
                     ret.add(new WeightAndBalance(text));
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
+
+    public static WeightAndBalance getUserWnb(Context ctx, String name) {
+        Cursor c = null;
+        WeightAndBalance ret = null;
+
+        String selection = UserContract.WNB_COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[]{name};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, null, selection, selectionArgs, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
+                    ret = new WeightAndBalance(text);
+                    break;
                 }
             }
         } catch (Exception e) {

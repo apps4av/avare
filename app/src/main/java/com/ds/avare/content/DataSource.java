@@ -219,6 +219,18 @@ public class DataSource {
         ContentProviderHelper.setUserLists(mContext, lists);
     }
 
+    public void setUserList(Checklist cl) {
+        ContentProviderHelper.setUserList(mContext, cl);
+    }
+
+    public void deleteUserList(String name) {
+        ContentProviderHelper.deleteUserList(mContext, name);
+    }
+
+    public Checklist getUserList(String name) {
+        return ContentProviderHelper.getUserList(mContext, name);
+    }
+
     public LinkedList<WeightAndBalance> getUserWnbs() {
         return ContentProviderHelper.getUserWnbs(mContext);
     }
@@ -226,6 +238,19 @@ public class DataSource {
     public void setUserWnbs(LinkedList<WeightAndBalance> wnbs) {
         ContentProviderHelper.setUserWnbs(mContext, wnbs);
     }
+
+    public void setUserWnb(WeightAndBalance wnb) {
+        ContentProviderHelper.setUserWnb(mContext, wnb);
+    }
+
+    public void deleteUserWnb(String name) {
+        ContentProviderHelper.deleteUserWnb(mContext, name);
+    }
+
+    public WeightAndBalance getUserWnb(String name) {
+        return ContentProviderHelper.getUserWnb(mContext, name);
+    }
+
 
     // other helper
 
