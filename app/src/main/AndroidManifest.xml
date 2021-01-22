@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="345"
+    android:versionCode="350"
     android:versionName="10.0.0"
     android:installLocation="auto">
 
