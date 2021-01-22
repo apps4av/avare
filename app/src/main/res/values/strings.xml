@@ -167,7 +167,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NotAvailable">&quot;Not available&quot;</string>
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
-    <string name="AirSigTypeSummary">&quot;Select the type of weather to draw&quot;</string>
+    <string name="AirSigTypeSummary">&quot;Select which color coded polygons to show on Map&quot;</string>
     <string name="prefStorageAndDownloadsCategoryTitle">Storage and Downloads</string>
     <string name="prefGpsCategoryTitle">GPS</string>
     <string name="prefWeatherCategoryTitle">Weather</string>
@@ -231,7 +231,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
     <string name="LayerTransparency">LayerTransparency</string>
     <string name="LayerTransparencyLabel">&quot;Select Layer Transparency&quot;</string>
-    <string name="LayerTransparencySummary">&quot;Select how transparent a Map layer should be&quot;</string>
+    <string name="LayerTransparencySummary">&quot;Choose transparency of Map layers like NEXRAD&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
     <string name="AndLoad">&quot;and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>

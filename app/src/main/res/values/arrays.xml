@@ -2068,7 +2068,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="AutoPostTracksPrompts">
-        <item>None</item>
+        <item>Local file - no post</item>
         <item>Send email</item>
         <item>Send to all applications</item>
     </string-array>
@@ -2191,8 +2191,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="GpsPosition">
         <item>All Available</item>
-        <item>Internal Only</item>
-        <item>Avare IO Module Only</item>
+        <item>Built-in GPS Only</item>
+        <item>Avare Apps Only</item>
     </string-array>
 
     <string-array name="GpsPositionValues">
