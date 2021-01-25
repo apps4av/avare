@@ -196,7 +196,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (val.equals("0")) {
             return "http://www.apps4av.org/new/";
         } else if (val.equals("1")) {
-            return "http://avare.kitepilot.net/new/";
+            return "https://avare.bubble.org/";
         } else if (val.equals("2")) {
             val = mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
             if (!val.substring(val.length() - 1).equals("/")) {

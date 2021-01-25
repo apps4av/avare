@@ -276,6 +276,9 @@ public class WebAppListInterface {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
         mList = mService.getDBResource().getUserList(name);
+        if(null == mList) {
+            mList = new Checklist("");
+        }
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
