@@ -12,7 +12,6 @@
 #
 # Author: zkhan
 
-cd ~/mamba
 ./gengametfr.sh
 
 mv GameTFRs.zip ~/www
