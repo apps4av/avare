@@ -8,13 +8,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.icu.util.Measure;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
-import com.ds.avare.place.Area;
 import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Origin;
 import com.ds.avare.position.Projection;

@@ -40,7 +40,6 @@ import java.util.LinkedList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Environment;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;

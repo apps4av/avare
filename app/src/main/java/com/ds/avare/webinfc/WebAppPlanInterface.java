@@ -28,8 +28,6 @@ import com.ds.avare.PlanActivity;
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.WebActivity;
-import com.ds.avare.content.ContentProviderHelper;
-import com.ds.avare.content.DataSource;
 import com.ds.avare.externalFlightPlan.ExternalFlightPlan;
 import com.ds.avare.place.Airway;
 import com.ds.avare.place.Destination;

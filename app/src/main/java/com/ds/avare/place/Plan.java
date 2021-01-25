@@ -27,10 +27,8 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;

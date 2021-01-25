@@ -36,7 +36,6 @@ import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.Favorites;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
