@@ -10,7 +10,7 @@
      *
      *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  -->
-    <RelativeLayout
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,60 +20,83 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <RelativeLayout
-            android:background="@drawable/border"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#FF000000"
+        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        android:id="@+id/platestag_dialog_linearlayout">
+        <EditText
+            android:id="@+id/platestag_text_input"
+            android:layout_weight="0.8"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:hint="@string/PointName"
+            android:textSize="15sp"
+            />
+        <com.ds.avare.utils.OptionButton
+            android:id="@+id/platestag_spinner"
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:entries="@array/PointType"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
             android:layout_alignParentBottom="true"
-           android:id="@+id/platestag_view_tag"
-            android:layout_width="wrap_content"
+            android:id="@+id/platestag_view_tag"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-    	   <EditText
-    	       android:id="@+id/platestag_text_input"
-    	       android:layout_width="120dp"
-    	       android:layout_height="wrap_content"
-    	       android:layout_margin="5dp"
-    	       android:textSize="15sp"
-    	       android:layout_alignParentTop="true"
-               android:layout_alignParentLeft="true"
-    	       android:hint="@string/PointName"/>
-    	   <com.ds.avare.utils.OptionButton
-    	       android:id="@+id/platestag_spinner"
-    	       android:layout_width="80dp"
-               android:layout_height="wrap_content"
-    		   android:background="@drawable/button_bg"
-    		   android:layout_margin="5dp"
-               android:layout_alignParentTop="true"
-               android:layout_toRightOf="@+id/platestag_text_input"
-    	       android:entries="@array/PointType"/>
-    	   <Button
-    	       android:id="@+id/platestag_button_tag"
-               android:layout_below="@+id/platestag_spinner"
-    	       android:layout_width="120dp"
-    	       android:layout_height="wrap_content"
-               android:layout_alignParentLeft="true"
-    		   android:background="@drawable/button_bg"
-    		   android:layout_margin="5dp"
-    	       android:text="@string/Geotag"/>
-    	   	 <Button
-    	       android:id="@+id/platestag_button_verify"
-    	       android:layout_width="80dp"
-    	       android:layout_height="wrap_content"
-               android:layout_below="@+id/platestag_spinner"
-               android:layout_toRightOf="@+id/platestag_button_tag"
-    		 android:background="@drawable/button_bg"
-    		 android:layout_margin="5dp"
-    	       android:text="@string/Verify"/>
-    	</RelativeLayout>
+            <Button
+                android:id="@+id/platestag_button_tag1"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/Set1"
+                android:layout_margin="1dp"
+                />
 
-        <Button
-            android:id="@+id/platestag_button_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Clear"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-    		android:background="@drawable/button_small"
-    		android:layout_margin="5dp"
-            />
+            <Button
+                android:id="@+id/platestag_button_tag2"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/Set2"
+                android:layout_margin="1dp"
+                />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/platestag_button_process"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/Geotag"
+                android:layout_margin="1dp"
+                />
+            <Button
+                android:id="@+id/platestag_button_verify"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/Verify"
+                android:layout_margin="1dp"
+                />
+
+
+            <Button
+                android:id="@+id/platestag_button_clear"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/Clear"
+                android:layout_margin="1dp"
+                />
+
+        </LinearLayout>
+</RelativeLayout>

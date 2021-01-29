@@ -2183,10 +2183,11 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="PointType">
-        <item>Fix</item>
         <item>Navaid</item>
         <item>Base</item>
+        <item>Fix</item>
         <item>GPS</item>
+        <item>Maps</item>
     </string-array>
 
     <string-array name="GpsPosition">

@@ -506,20 +506,20 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="Tag">Tag</string>
     <string name="PointName">Name of point</string>
+    <string name="PointType">Type of point</string>
     <string name="Geotag">Geotag</string>
     <string name="Verify">Verify</string>
     <string name="Tagged">The plate is now tagged and saved, and should be verified before using.</string>
     <string name="Cleared">Cleared! Your Geo. tagging has been deleted for this plate.</string>
-    <string name="AlreadyTagged">his plate is already tagged and stored. Press clear to re-tag.</string>
+    <string name="AlreadyTagged">This plate is already tagged and stored. Press clear to re-tag.</string>
     <string name="InvalidPoint">Invalid Point specified.</string>
     <string name="PointNotFound">The Point is not found, please verify that the point type and its name matches the point on the plate.</string>
     <string name="AddedPoint">You have successfully tagged a point.</string>
     <string name="SelectOtherPoint">The selected points are not sufficiently apart. Please select another point, or press clear to re-tag.</string>
-    <string name="NotTagged">he plate is not tagged. Please tag it first.</string>
-    <string name="VerifyMessage">f the cross hair appears over the point to verify, the plate is correctly tagged.</string>
+    <string name="NotTagged">The plate is not tagged. Please tag it first.</string>
+    <string name="VerifyMessage">If the cross hair appears over the point to verify, the plate is correctly tagged.</string>
     <string name="ClearedPrompt">Are you sure you want to delete your Geo. tag information for this plate?</string>
-    <string name="ToTag">Plates are already tagged for users.\nTo geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.\nTo hide Tag button, use Preferences UI Configuration.</string>
-
+    <string name="ToTag">To geo-tag a custom plate, place a known point (Navaid, fix, airport, address) under the cross hair, then press Set 1 button. Enter point name, select its type, then press the Set button. Repeat for another point far away from the first point with Set 2 button. Press Geotag button to tag.</string>
     <string name="GameTFRLabel">&quot;Show Stadiums&quot;</string>
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of known stadiums&quot;</string>
@@ -560,5 +560,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="open_settings">Touch to open settings</string>
     <string name="permission">Permissions</string>
     <string name="permission_message">The app needs the location permission to show your location on the map.\nThe app needs the file permission to share files with your desktop.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without these permissions.</string>
+    <string name="restart">Restart</string>
+    <string name="Set1">Set 1</string>
+    <string name="Set2">Set 2</string>
+    <string name="VerifyMessageFailed">Unable to verify this point</string>
 
 </resources>

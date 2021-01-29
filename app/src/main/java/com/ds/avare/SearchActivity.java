@@ -155,6 +155,9 @@ public class SearchActivity extends Activity implements Observer {
      * 
      */
     private void initList() {
+        if(null == mService) {
+            return; // this could be called in race condition to get service
+        }
         String [] vals = mService.getDBResource().getUserRecents();
         mAdapter = new SearchAdapter(SearchActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
