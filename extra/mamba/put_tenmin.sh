@@ -14,9 +14,8 @@
 
 #weather
 
-cd ~/mamba
 ./weather.sh
-./radar.sh
+./radar.py
 ./gentfr.sh
 
 
