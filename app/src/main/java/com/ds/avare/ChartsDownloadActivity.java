@@ -205,7 +205,7 @@ public class ChartsDownloadActivity extends Activity {
             /**
              * Download database if it does not exists. Download sectional at current position as well.
              */
-            File dbase = new File(mPref.mapsFolder() + "/" + mChartAdapter.getDatabaseName());
+            File dbase = new File(mPref.getServerDataFolder() + "/" + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
                 mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
                 mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
@@ -277,7 +277,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
-        mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName, mChartAdapter.isStatic(mName));
+        mDownload.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -324,7 +324,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDelete = new Delete(mHandler);
-        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
+        mDelete.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);

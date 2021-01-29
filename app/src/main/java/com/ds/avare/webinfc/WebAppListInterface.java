@@ -348,7 +348,7 @@ public class WebAppListInterface {
             BufferedReader buffreader = null;
             InputStream instream = null;
             try {
-                instream = new FileInputStream(mPref.getExternalFolder() + File.separator + txt);
+                instream = new FileInputStream(mPref.getUserDataFolder() + File.separator + txt);
                 
                 InputStreamReader inputreader = new InputStreamReader(instream);
                 buffreader = new BufferedReader(inputreader);

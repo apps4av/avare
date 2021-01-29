@@ -217,7 +217,7 @@ public class UserProvider extends MainProvider {
     public boolean onCreate() {
         super.onCreate();
         // user data goes in external folders
-        String path = mPref.getExternalFolder();
+        String path = mPref.getUserDataFolder();
         mDatabaseHelper = new UserDatabaseHelper(getContext(), path);
         return true;
     }

@@ -22,6 +22,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
@@ -72,6 +73,19 @@ public class Helper {
          */
         return (((double)(px & 0x000000FF)) *
                 ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+    }
+
+    public static String getExternalFolder(Context context) {
+        try {
+            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+        } catch (Exception e) {
+            return getInternalFolder(context);
+        }
+
+    }
+
+    public static String getInternalFolder(Context context) {
+        return context.getFilesDir().getAbsolutePath();
     }
 
     /**
@@ -592,8 +606,8 @@ public class Helper {
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
 
-        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
-        String filenameManifest = new Preferences(ctx).mapsFolder() + "/TFRs";
+        String filename = new Preferences(ctx).getServerDataFolder() + "/tfr.txt";
+        String filenameManifest = new Preferences(ctx).getServerDataFolder() + "/TFRs";
         String data = readFromFile(filename);
         String dataManifest = readTimestampFromFile(filenameManifest);
         if(null != data && null != dataManifest) {

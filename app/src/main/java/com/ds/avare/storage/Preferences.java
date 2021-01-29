@@ -33,6 +33,7 @@ import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -579,52 +580,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String mapsFolder() {
-        File path = mContext.getFilesDir();
-        if (path == null) {
-            path = new File(getExternalFolder());
-        }
-        /*
-         * If no path, use internal folder.
-         * If cannot get internal folder, return / at least
-         */
-        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
-
-        /*
-         * XXX: Legacy for 5.1.0 and 5.1.1.
-         */
-        if (loc.equals("Internal")) {
-            loc = mContext.getFilesDir().getAbsolutePath() + "/data";
-        } else if (loc.equals("External")) {
-            loc = mContext.getExternalFilesDir(null) + "/data";
-        }
-
-        return (loc);
-    }
-
-    /**
-     * @return
-     */
-    public void setMapsFolder(String folder) {
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Maps), folder);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public String loadString(String name) {
-        return (mPref.getString(name, null));
-    }
-
-    public boolean isDrawTracks() {
-        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean useAdsbWeather() {
         return (mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
@@ -884,6 +839,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    public boolean isDrawTracks() {
+        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
+    }
+
     /**
      * @return
      */
@@ -894,22 +853,31 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String getExternalFolder() {
-        try {
-            return mPref.getString(mContext.getString(R.string.UDWLocation),
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                    File.separator + mContext.getPackageName());
-        } catch (Exception e) {
-            return "";
-        }
+    public String getUserDataFolder() {
+        return mPref.getString(mContext.getString(R.string.UDWLocation), Helper.getExternalFolder(mContext));
     }
 
     /**
-     * @param location
+     * @return
      */
-    public void setExternalFolder(String location) {
-        mPref.edit().putString(mContext.getString(R.string.UDWLocation), location).commit();
+    public String getServerDataFolder() {
+        return mPref.getString(mContext.getString(R.string.Maps), Helper.getInternalFolder(mContext));
     }
+
+
+    /**
+     */
+    public void setUserDataFolder(String folder) {
+        mPref.edit().putString(mContext.getString(R.string.UDWLocation), folder).commit();
+    }
+
+    /**
+     * @return
+     */
+    public void setServerDataFolder(String folder) {
+        mPref.edit().putString(mContext.getString(R.string.Maps), folder).commit();
+    }
+
 
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {

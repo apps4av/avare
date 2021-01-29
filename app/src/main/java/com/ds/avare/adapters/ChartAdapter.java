@@ -271,7 +271,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                     /*
                      * Read version from file and if it exists.
                      */
-                    File file = new File(mPref.mapsFolder() + "/" + mChildrenFiles[group][child]);
+                    File file = new File(mPref.getServerDataFolder() + "/" + mChildrenFiles[group][child]);
                     vers[group][child] = null;
                     if(file.exists()) {
                         try {

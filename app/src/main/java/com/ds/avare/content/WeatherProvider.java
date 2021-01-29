@@ -102,7 +102,7 @@ public class WeatherProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new WeatherDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new WeatherDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

@@ -182,7 +182,7 @@ public class KMLRecorder {
     	mPositionHistory = new LinkedList<GpsParams>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
-    	mFolder = new Preferences(ctx).getExternalFolder();
+    	mFolder = new Preferences(ctx).getUserDataFolder();
     }
     
     /** 
@@ -245,7 +245,7 @@ public class KMLRecorder {
                 true,   /* always remove tracks from display on start */
                 30,     /* Max of 30 seconds between position updates */
                 true,   /* use verbose details */
-                mFolder + File.separator + ctx.getPackageName(),
+                mFolder + File.separator + "tracks",
                 3);     // Adjust down to 3 knots to capture taxi
         start(config);
 	}

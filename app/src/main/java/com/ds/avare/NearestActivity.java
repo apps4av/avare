@@ -406,7 +406,7 @@ public class NearestActivity extends Activity  implements Observer {
                     mSelectedAirportId = a.getId();
                     mDestButton.setText(a.getId());
                     
-                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), a.getId())) {
+                    if(PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), a.getId())) {
                     	mAnimatePlates.animate(true);
                     }
                     else {

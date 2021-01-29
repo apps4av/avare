@@ -100,7 +100,7 @@ public class ShapeFetcher {
 
             try {
                 Preferences pref = new Preferences(mContext);
-                mShapes = ShapeFileShape.readFile(pref.mapsFolder() + "/" + pref.getShapeFileName());
+                mShapes = ShapeFileShape.readFile(pref.getServerDataFolder() + "/" + pref.getShapeFileName());
             }
             catch (Exception e) {
 

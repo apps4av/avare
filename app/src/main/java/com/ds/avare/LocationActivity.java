@@ -172,7 +172,7 @@ public class LocationActivity extends Activity implements Observer {
                          * Find the nearest airport and load its plate on rollout
                          */
                         Airport nearest = mService.getArea().getAirport(0);
-                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
+                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.getServerDataFolder(),
                                 nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
@@ -222,10 +222,10 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
-            else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
+            else if(!(new File(mPref.getServerDataFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
                 mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
-            else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
+            else if(!(new File(mPref.getServerDataFolder() + "/tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
             }
             else if(mPref.isSimulationMode()) {

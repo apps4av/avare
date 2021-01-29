@@ -353,7 +353,7 @@ public class SearchActivity extends Activity implements Observer {
                 // Don't display the plates button if there are no plates
                 String id = StringPreference.parseHashedNameId(mSelected);
                 
-                if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), id)) {
+                if(PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), id)) {
                 	mAnimatePlates.animate(true);
                 }
                 else {

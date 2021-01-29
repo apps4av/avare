@@ -172,10 +172,10 @@ public class PlatesActivity extends Activity implements Observer  {
                  * EXIF
                  */
                 if(name.startsWith(AREA)) {
-                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/area/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + "/area/" + aname);
                 }
                 else {
-                    ret = PngCommentReader.readPlate(mPref.mapsFolder() + "/plates/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + "/plates/" + aname);
                 }
 
                 if(null != ret) {
@@ -191,7 +191,7 @@ public class PlatesActivity extends Activity implements Observer  {
      * Add an airport to the airports list if it doesn't already exist
      */
     private void addAirport(String name) {
-        if(!mListAirports.contains(name) && doesAirportHavePlates(mPref.mapsFolder(), name)) {
+        if(!mListAirports.contains(name) && doesAirportHavePlates(mPref.getServerDataFolder(), name)) {
             mListAirports.add(name);
         }
     }
@@ -588,7 +588,7 @@ public class PlatesActivity extends Activity implements Observer  {
                 curDest = null;
             }
             if(airport.equals(mDestString)) {   
-                if(null != curDest && doesAirportHavePlates(mPref.mapsFolder(), curDest.getID())) {
+                if(null != curDest && doesAirportHavePlates(mPref.getServerDataFolder(), curDest.getID())) {
                     airport = curDest.getID();
                 }
                 else {
@@ -601,7 +601,7 @@ public class PlatesActivity extends Activity implements Observer  {
                 Airport nearest = null;
                 if(nearestNum > 0) {
                     nearest = mService.getArea().getAirport(0);
-                    if(doesAirportHavePlates(mPref.mapsFolder(), nearest.getId())) {
+                    if(doesAirportHavePlates(mPref.getServerDataFolder(), nearest.getId())) {
                         airport = nearest.getId();
                     }
                     else {
@@ -628,7 +628,7 @@ public class PlatesActivity extends Activity implements Observer  {
                 mDest.addObserver(PlatesActivity.this);
                 mDest.find();
 
-                String mapFolder = mPref.mapsFolder();
+                String mapFolder = mPref.getServerDataFolder();
 
                 /*
                  * Start with the plates in the /plates/ directory

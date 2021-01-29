@@ -13,6 +13,7 @@ package com.ds.avare.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Environment;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -93,11 +94,11 @@ public class FolderPreference extends DialogPreference {
         //
         // User defined Waypoints
         if(getKey().equals(mContext.getString(R.string.UDWLocation))) {
-            init(mPref.getExternalFolder());
+            init(mPref.getUserDataFolder());
         }
         // The chart/map location
         else if(getKey().equals(mContext.getString(R.string.Maps))) {
-            init(mPref.mapsFolder());
+            init(mPref.getServerDataFolder());
         }
     }
 
@@ -115,30 +116,31 @@ public class FolderPreference extends DialogPreference {
             // Create a default toast message that assumes failure
             Toast t = Toast.makeText(mContext, 
                     mContext.getString(R.string.FileStoreInvalid) + mPath.getAbsolutePath(), Toast.LENGTH_LONG);
-
             // Dir should be read/write to be a valid android folder.
             if(mPath.isDirectory() && mPath.canWrite() && mPath.canRead()) {
-            	String absPath = mPath.getAbsolutePath();
-
-            	// If this is for the charts, then set it and display some toast
+                // If this is for the charts, then set it and display some toast
                 if(getKey().equals(mContext.getString(R.string.Maps))) {
+                    String absPath = mPath.getAbsolutePath();
 
-                	// Save this in the preferences for maps
-                	mPref.setMapsFolder(absPath);
+                    // Save this in the preferences for maps
+                    mPref.setServerDataFolder(absPath);
 
-                	// Set our message to success for setting the maps folder
-                	t = Toast.makeText(mContext, 
-	                        mContext.getString(R.string.FileStore) + absPath, Toast.LENGTH_LONG);               
+                    // Set our message to success for setting the maps folder
+                    t = Toast.makeText(mContext,
+                            mContext.getString(R.string.FileStore) + absPath, Toast.LENGTH_LONG);
                 }
-                
                 // If this is for the UserDefinedWaypoints setting ...
                 else if (getKey().equals(mContext.getString(R.string.UDWLocation))) {
-                	
-                	// Save this in preferences for the UDWaypoints
-                	mPref.setExternalFolder(absPath);
+                    String absPath = mPath.getAbsolutePath();
+
+                    // Save this in preferences for the UDWaypoints
+                    mPref.setUserDataFolder(absPath);
+                    // Set our message to success for setting the user data folder
+                    t = Toast.makeText(mContext,
+                            mContext.getString(R.string.UDWSearch) + absPath, Toast.LENGTH_LONG);
                 }
             }
-            
+
             // Show our status
             t.show();
         }
@@ -158,7 +160,7 @@ public class FolderPreference extends DialogPreference {
 
             @Override
             public void onClick(View v) {
-                init(mPref.mapsFolder());
+                init(Helper.getInternalFolder(mContext));
                 loadFileList();
                 mListView.setAdapter(mAdapter);
                 
@@ -174,7 +176,7 @@ public class FolderPreference extends DialogPreference {
                 /*
                  * Bring up preferences
                  */
-                init(mPref.getExternalFolder());
+                init(Helper.getExternalFolder(mContext));
                 loadFileList();
                 mListView.setAdapter(mAdapter);
             }

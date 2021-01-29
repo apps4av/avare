@@ -1138,7 +1138,7 @@ public class WebAppPlanInterface implements Observer {
             // Read weather template
             String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
             // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = getWeatherStoreFileName(mPref.mapsFolder());
+            String fpath = getWeatherStoreFileName(mPref.getServerDataFolder());
             Helper.writeFile(html.replace("placeholder", weather), fpath);
             // Send to browser.
 
