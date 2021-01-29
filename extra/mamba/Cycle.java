@@ -1,5 +1,6 @@
 /*
  * Copied from Avare code
+ * To make exe, use gcj --main=Cycle Cycle.java -o Cycle
  */
 
 import java.util.Calendar;
@@ -131,7 +132,7 @@ public class Cycle {
     
 
 
-    public static final void main(String args[]) {
+    public static void main(String args[]) {
     
         String c = getCycle();
         String n = findCycleOffset(c, 1);
