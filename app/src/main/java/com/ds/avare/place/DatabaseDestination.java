@@ -135,7 +135,7 @@ public class DatabaseDestination extends Destination {
                         }
                     };
                     String afd[] = null;
-                    afd = new File(mPref.getServerDataFolder() + "/afd/").list(filter);
+                    afd = new File(mPref.getServerDataFolder() + File.separator + "afd" + File.separator).list(filter);
                     if(null != afd) {
                         java.util.Arrays.sort(afd);
                         int len1 = afd.length;
@@ -145,7 +145,7 @@ public class DatabaseDestination extends Destination {
                              * Add Chart Supplement
                              */
                             String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[count] = mPref.getServerDataFolder() + "/afd/" +
+                            tmp1[count] = mPref.getServerDataFolder() + File.separator + "afd" + File.separator +
                                     tokens[0];
                         }
                         if(len1 > 0) {

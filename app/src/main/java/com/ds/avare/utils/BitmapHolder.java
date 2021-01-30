@@ -178,7 +178,7 @@ public class BitmapHolder {
 
 
     private String getName(Preferences pref, String name) {
-        return getName(pref.getServerDataFolder() + "/" + name);
+        return getName(pref.getServerDataFolder() + File.separator + name);
     }
 
     private String getName(String name) {

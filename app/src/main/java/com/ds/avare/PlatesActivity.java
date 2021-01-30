@@ -172,10 +172,10 @@ public class PlatesActivity extends Activity implements Observer  {
                  * EXIF
                  */
                 if(name.startsWith(AREA)) {
-                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + "/area/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + File.separator + "area" + File.separator + aname);
                 }
                 else {
-                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + "/plates/" + aname);
+                    ret = PngCommentReader.readPlate(mPref.getServerDataFolder() + File.separator + "plates" + File.separator + aname);
                 }
 
                 if(null != ret) {

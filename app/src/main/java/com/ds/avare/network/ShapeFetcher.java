@@ -34,6 +34,7 @@ import android.os.AsyncTask;
 import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.storage.Preferences;
 
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -100,7 +101,7 @@ public class ShapeFetcher {
 
             try {
                 Preferences pref = new Preferences(mContext);
-                mShapes = ShapeFileShape.readFile(pref.getServerDataFolder() + "/" + pref.getShapeFileName());
+                mShapes = ShapeFileShape.readFile(pref.getUserDataFolder() + File.separator + pref.getShapeFileName());
             }
             catch (Exception e) {
 

@@ -161,6 +161,7 @@ public class SearchActivity extends Activity implements Observer {
         String [] vals = mService.getDBResource().getUserRecents();
         mAdapter = new SearchAdapter(SearchActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
+        mService.getFavorites().update(mService);
     }
     
     @Override
@@ -252,11 +253,9 @@ public class SearchActivity extends Activity implements Observer {
                              * Edit and save description field
                              */
                             String nameid = StringPreference.parseHashedNameId(mSelected);
-                            String name = StringPreference.parseHashedNameIdBefore(nameid);
                             String id = StringPreference.parseHashedNameIdAfter(nameid);
                             String newName = edit.getText().toString().toUpperCase() + "@" + id;
                             mService.getDBResource().replaceUserRecentName(nameid, newName);
-
                             initList();
                             mSelected = null;
                             dialog.dismiss();

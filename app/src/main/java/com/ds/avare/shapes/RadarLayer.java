@@ -15,6 +15,8 @@ import android.content.Context;
 
 import com.ds.avare.storage.Preferences;
 
+import java.io.File;
+
 /**
  * 
  * @author zkhan
@@ -38,7 +40,7 @@ public class RadarLayer extends Layer {
      */
     public void parse() {
         super.parse(
-                mPref.getServerDataFolder() + "/" + "latest_radaronly",
-                mPref.getServerDataFolder() + "/" + "latest.txt");
+                mPref.getServerDataFolder() + File.separator + "latest_radaronly",
+                mPref.getServerDataFolder() + File.separator + "latest.txt");
      }
 }

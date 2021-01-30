@@ -17,6 +17,7 @@ import com.ds.avare.shapes.MetShape;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -106,7 +107,7 @@ public class InternetWeatherCache {
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
 
-                String filenameManifest = new Preferences(mService).getServerDataFolder() + "/weather";
+                String filenameManifest = new Preferences(mService).getServerDataFolder() + File.separator + "weather";
                 String dataManifest = Helper.readTimestampFromFile(filenameManifest);
                 if(null != dataManifest) {
                     // Find date of TFRs of format 09_03_2015_15:30_UTC, first line in manifest

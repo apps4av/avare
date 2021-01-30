@@ -77,7 +77,7 @@ public class Helper {
 
     public static String getExternalFolder(Context context) {
         try {
-            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + context.getPackageName();
         } catch (Exception e) {
             return getInternalFolder(context);
         }
@@ -606,8 +606,8 @@ public class Helper {
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
 
-        String filename = new Preferences(ctx).getServerDataFolder() + "/tfr.txt";
-        String filenameManifest = new Preferences(ctx).getServerDataFolder() + "/TFRs";
+        String filename = new Preferences(ctx).getServerDataFolder() + File.separator + "tfr.txt";
+        String filenameManifest = new Preferences(ctx).getServerDataFolder() + File.separator + "TFRs";
         String data = readFromFile(filename);
         String dataManifest = readTimestampFromFile(filenameManifest);
         if(null != data && null != dataManifest) {

@@ -205,7 +205,7 @@ public class ChartsDownloadActivity extends Activity {
             /**
              * Download database if it does not exists. Download sectional at current position as well.
              */
-            File dbase = new File(mPref.getServerDataFolder() + "/" + mChartAdapter.getDatabaseName());
+            File dbase = new File(mPref.getServerDataFolder() + File.separator + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
                 mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
                 mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
