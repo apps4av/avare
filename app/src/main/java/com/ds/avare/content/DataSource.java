@@ -243,6 +243,22 @@ public class DataSource {
         ContentProviderHelper.setUserWnb(mContext, wnb);
     }
 
+    public void deleteUserTag(String name) {
+        ContentProviderHelper.deleteUserTag(mContext, name);
+    }
+
+    public String getUserTag(String name) {
+        return ContentProviderHelper.getUserTag(mContext, name);
+    }
+
+    public void setUserTag(String name, String tag) {
+        ContentProviderHelper.setUserTag(mContext, name, tag);
+    }
+
+    public void setUserTags(HashMap<String, String> tags) {
+        ContentProviderHelper.setUserTags(mContext, tags);
+    }
+
     public void deleteUserWnb(String name) {
         ContentProviderHelper.deleteUserWnb(mContext, name);
     }
@@ -250,7 +266,6 @@ public class DataSource {
     public WeightAndBalance getUserWnb(String name) {
         return ContentProviderHelper.getUserWnb(mContext, name);
     }
-
 
     // other helper
 

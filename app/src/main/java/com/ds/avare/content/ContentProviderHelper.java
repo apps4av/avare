@@ -641,4 +641,46 @@ public class ContentProviderHelper {
         newValues.put(UserContract.RECENT_COLUMN_WID, newName);
         ctx.getContentResolver().update(UserContract.CONTENT_URI_RECENT, newValues, selection, selectionArg);
     }
+
+    public static void setUserTag(Context ctx, String name, String tag) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.TAG_COLUMN_ID, name);
+        newValues.put(UserContract.TAG_COLUMN_TEXT, tag);
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_TAG, newValues);
+    }
+
+    public static void deleteUserTag(Context ctx, String name) {
+        String selection = "(" + UserContract.TAG_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_TAG, selection, selectionArg);
+    }
+
+    public static String getUserTag(Context ctx, String name) {
+        Cursor c = null;
+        String ret = null;
+
+        String selection = UserContract.TAG_COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[]{name};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_TAG, null, selection, selectionArgs, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    ret = c.getString(c.getColumnIndex(UserContract.TAG_COLUMN_TEXT));
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
+
+    public static void setUserTags(Context ctx, HashMap<String, String> tags) {
+        for (String key : tags.keySet()) {
+            setUserTag(ctx, key, tags.get(key));
+        }
+    }
 }

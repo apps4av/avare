@@ -23,6 +23,8 @@ public class UserProvider extends MainProvider {
     public static final int WNBS_ID = 905;
     public static final int RECENTS = 906;
     public static final int RECENTS_ID = 907;
+    public static final int TAGS = 908;
+    public static final int TAGS_ID = 909;
 
     public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
             + "/rv-user";
@@ -39,6 +41,8 @@ public class UserProvider extends MainProvider {
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_WNB + "/#", WNBS_ID);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_RECENT, RECENTS);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_RECENT + "/#", RECENTS_ID);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_TAG, TAGS);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_TAG + "/#", TAGS_ID);
     }
 
     @Override
@@ -52,6 +56,8 @@ public class UserProvider extends MainProvider {
             case WNBS:
                 return CONTENT_TYPE;
             case RECENTS:
+                return CONTENT_TYPE;
+            case TAGS:
                 return CONTENT_TYPE;
             default:
                 return null;
@@ -75,6 +81,9 @@ public class UserProvider extends MainProvider {
                 break;
             case RECENTS:
                 table = UserContract.TABLE_RECENT;
+                break;
+            case TAGS:
+                table = UserContract.TABLE_TAG;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -109,6 +118,9 @@ public class UserProvider extends MainProvider {
                 break;
             case RECENTS:
                 table = UserContract.TABLE_RECENT;
+                break;
+            case TAGS:
+                table = UserContract.TABLE_TAG;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -146,6 +158,9 @@ public class UserProvider extends MainProvider {
             case RECENTS:
                 queryBuilder.setTables(UserContract.TABLE_RECENT);
                 break;
+            case TAGS:
+                queryBuilder.setTables(UserContract.TABLE_TAG);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
@@ -181,6 +196,9 @@ public class UserProvider extends MainProvider {
             case RECENTS:
                 table = UserContract.TABLE_RECENT;
                 break;
+            case TAGS:
+                table = UserContract.TABLE_TAG;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
@@ -198,6 +216,8 @@ public class UserProvider extends MainProvider {
                         return UserContract.buildWnbsUri(id);
                     case RECENTS:
                         return UserContract.buildRecentsUri(id);
+                    case TAGS:
+                        return UserContract.buildTagsUri(id);
                     default:
                         throw new IllegalArgumentException("Unknown URI");
                 }

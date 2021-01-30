@@ -152,20 +152,18 @@ public class PlatesActivity extends Activity implements Observer  {
                 float ret[];
 
                 // find in user's own tags first
-                LinkedList<String> tags = PlatesTagActivity.getTagsStorageFromat(mPref.getGeotags());
-                for(String t : tags) {
-                    String toks[] = t.split(",");
-                    if(toks[0].equals(aname)) {
-                       /*
-                        * Found
-                        */
-                        float matrix[] = new float[4];
-                        matrix[0] = (float)Double.parseDouble(toks[1]);
-                        matrix[1] = (float)Double.parseDouble(toks[2]);
-                        matrix[2] = (float)Double.parseDouble(toks[3]);
-                        matrix[3] = (float)Double.parseDouble(toks[4]);
-                        return matrix;
-                    }
+                String tag = mService.getDBResource().getUserTag(aname);
+                if(null != tag) {
+                    String toks[] = tag.split(",");
+                   /*
+                    * Found
+                    */
+                    float matrix[] = new float[4];
+                    matrix[0] = (float)Double.parseDouble(toks[0]);
+                    matrix[1] = (float)Double.parseDouble(toks[1]);
+                    matrix[2] = (float)Double.parseDouble(toks[2]);
+                    matrix[3] = (float)Double.parseDouble(toks[3]);
+                    return matrix;
                 }
 
                 /*

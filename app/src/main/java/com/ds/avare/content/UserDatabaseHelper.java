@@ -37,6 +37,10 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
                         UserContract.RECENT_COLUMN_DBTYPE + " TEXT, " +
                         UserContract.RECENT_COLUMN_NAME + " TEXT);");
 
+        db.execSQL(
+                "CREATE TABLE " + UserContract.TABLE_TAG + " (" +
+                        UserContract.TAG_COLUMN_ID + " TEXT PRIMARY KEY UNIQUE ON CONFLICT REPLACE, " +
+                        UserContract.TAG_COLUMN_TEXT + " TEXT NOT NULL);");
     }
 
     @Override

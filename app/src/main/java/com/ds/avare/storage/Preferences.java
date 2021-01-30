@@ -40,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -1150,19 +1151,33 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
 
     /**
+     *
+     * XXX: Legacy import, delete
      * @return
      */
-    public String getGeotags() {
-        return mPref.getString(mContext.getString(R.string.Geotag), "");
+    public HashMap<String, String> getGeotags() {
+        String json = mPref.getString(mContext.getString(R.string.Geotag), "");
+
+        JSONArray jsonArr;
+        HashMap<String, String> ret = new HashMap<>();
+        try {
+            jsonArr = new JSONArray(json);
+        } catch (JSONException e) {
+            return ret;
+        }
+
+        for(int i = 0; i < jsonArr.length(); i++) {
+            try {
+                String tag = jsonArr.getString(i);
+                String tok[] = tag.split(",");
+                ret.put(tok[0], tok[1] + "," + tok[2] + "," + tok[3] + "," + tok[4]);
+            } catch (JSONException e) {
+                continue;
+            }
+        }
+        return ret;
     }
 
-
-    /**
-     * @param tags
-     */
-    public void setGeotags(String tags) {
-        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
-    }
 
     /**
      * @return

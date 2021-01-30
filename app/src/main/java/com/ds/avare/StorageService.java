@@ -684,6 +684,7 @@ public class StorageService extends Service {
         getDBResource().setUserLists(p.getLists());
         getDBResource().setUserWnbs(p.getWnbs());
         getDBResource().setUserRecents(p.getRecents());
+        getDBResource().setUserTags(p.getGeotags());
 
     }
         

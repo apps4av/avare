@@ -63,7 +63,6 @@ public class PlatesTagActivity extends Activity implements Observer {
     private Coordinate                   mPointLL[];
     private Toast                        mToast;
     private Preferences                  mPref;
-    private LinkedList<String>           mTags;
     private AlertDialog                  mAlertDialog;
     private Destination                  mDest;
     private Destination                  mDestVerify;
@@ -128,12 +127,6 @@ public class PlatesTagActivity extends Activity implements Observer {
      */
     private void store() {
         
-        
-        /*
-         * Add
-         */
-        mTags.add(mName + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
-        
         /*
          * Store and show message
          */
@@ -153,7 +146,7 @@ public class PlatesTagActivity extends Activity implements Observer {
             mAlertDialog.show();
         }
 
-        mPref.setGeotags(putTagsToStorageFormat(mTags));
+        mService.getDBResource().setUserTag(mName, mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
         mTagged = true;
 
         drawAirport();
@@ -179,13 +172,7 @@ public class PlatesTagActivity extends Activity implements Observer {
         mToast.show();
 
         clearParams();
-        for(String t : mTags) {
-            if(t.contains(mName)) {
-                mTags.remove(t);
-                mPref.setGeotags(putTagsToStorageFormat(mTags));
-                return;
-            }
-        }
+        mService.getDBResource().deleteUserTag(mName);
     }
 
     private void tagDone() {
@@ -309,7 +296,6 @@ public class PlatesTagActivity extends Activity implements Observer {
         /*
          * Get stored geotags
          */
-        mTags = getTagsStorageFromat(mPref.getGeotags());
         mName = mAirport = "";
         mTagged = false;
         
@@ -472,20 +458,16 @@ public class PlatesTagActivity extends Activity implements Observer {
             mDest.addObserver(PlatesTagActivity.this);
             mDest.find();
 
-            for(String t : mTags) {
-                if(t.contains(mName)) {
-                    /*
-                     * Already tagged. Get info
-                     */
-                    String tokens[] = t.split(",");
-                    mDx = Double.parseDouble(tokens[1]);
-                    mDy = Double.parseDouble(tokens[2]);
-                    mLonTopLeft = Double.parseDouble(tokens[3]);
-                    mLatTopLeft = Double.parseDouble(tokens[4]);
-                    mTagged = true;
-                }
+            String tag = mService.getDBResource().getUserTag(mName);
+            if(null != tag) {
+                String tokens[] = tag.split(",");
+                mDx = Double.parseDouble(tokens[1]);
+                mDy = Double.parseDouble(tokens[2]);
+                mLonTopLeft = Double.parseDouble(tokens[3]);
+                mLatTopLeft = Double.parseDouble(tokens[4]);
+                mTagged = true;
             }
-            
+
             /*
              * If the plate not tagged, show help
              */
@@ -523,7 +505,6 @@ public class PlatesTagActivity extends Activity implements Observer {
                     mAlertDialog.show();
                 }
             }
-
         }
 
         /* (non-Javadoc)
@@ -573,48 +554,6 @@ public class PlatesTagActivity extends Activity implements Observer {
          */
         Intent intent = new Intent(this, StorageService.class);
         getApplicationContext().bindService(intent, mConnection, 0);
-    }
-
-
-
-    /**
-     * Put a list of tags in JSON array
-     * @param tags
-     * @return
-     */
-    public static String putTagsToStorageFormat(LinkedList<String> tags) {
-
-        JSONArray jsonArr = new JSONArray();
-        for(String t : tags) {
-
-            jsonArr.put(t);
-        }
-
-        return jsonArr.toString();
-    }
-
-    /**
-     * Gets an array of tags from storage JSON
-     * @return
-     */
-    public static LinkedList<String> getTagsStorageFromat(String json) {
-        JSONArray jsonArr;
-        LinkedList<String> ret = new LinkedList<String>();
-        try {
-            jsonArr = new JSONArray(json);
-        } catch (JSONException e) {
-            return ret;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                ret.add(jsonArr.getString(i));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-
-        return ret;
     }
 
 

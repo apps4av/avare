@@ -56,4 +56,13 @@ public class UserContract {
         return ContentUris.withAppendedId(CONTENT_URI_RECENT, id);
     }
 
+    public static final String BASE_TAG = "tag";
+    public static final Uri CONTENT_URI_TAG = Uri.withAppendedPath(AUTHORITY_URI, BASE_TAG);
+    public static final String TABLE_TAG = "tags";
+    public static final String TAG_COLUMN_ID = "name";
+    public static final String TAG_COLUMN_TEXT = "text";
+
+    public static Uri buildTagsUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_TAG, id);
+    }
 }
