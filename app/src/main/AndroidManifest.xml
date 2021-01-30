@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="351"
-    android:versionName="10.0.1"
+    android:versionCode="352"
+    android:versionName="10.0.2"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -42,8 +42,9 @@ Redistribution and use in source and binary forms, with or without modification,
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
         android:name="AvareApplication"
-        android:backupAgent="com.ds.avare.AppBackupAgent"
-        android:restoreAnyVersion="true">
+        >
+        <!--android:backupAgent="com.ds.avare.AppBackupAgent"
+        android:restoreAnyVersion="true"-->
 
         <meta-data android:name="com.google.android.backup.api_key"
             android:value="unused" />
