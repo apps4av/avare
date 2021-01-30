@@ -461,10 +461,10 @@ public class PlatesTagActivity extends Activity implements Observer {
             String tag = mService.getDBResource().getUserTag(mName);
             if(null != tag) {
                 String tokens[] = tag.split(",");
-                mDx = Double.parseDouble(tokens[1]);
-                mDy = Double.parseDouble(tokens[2]);
-                mLonTopLeft = Double.parseDouble(tokens[3]);
-                mLatTopLeft = Double.parseDouble(tokens[4]);
+                mDx = Double.parseDouble(tokens[0]);
+                mDy = Double.parseDouble(tokens[1]);
+                mLonTopLeft = Double.parseDouble(tokens[2]);
+                mLatTopLeft = Double.parseDouble(tokens[3]);
                 mTagged = true;
             }
 

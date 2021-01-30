@@ -12,7 +12,7 @@ public class LocationDatabaseHelper extends MainDatabaseHelper {
     private static final String DBNAME = "main.db";
 
     public LocationDatabaseHelper(Context context, String folder) {
-        super(context, folder, DBNAME);
+        super(context, folder, DBNAME, 1);
     }
 
     @Override

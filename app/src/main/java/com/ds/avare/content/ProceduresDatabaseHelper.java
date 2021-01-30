@@ -12,7 +12,7 @@ public class ProceduresDatabaseHelper extends MainDatabaseHelper {
     private static final String DBNAME = "procedures.db";
 
     public ProceduresDatabaseHelper(Context context, String folder) {
-        super(context, folder, DBNAME);
+        super(context, folder, DBNAME, 1);
     }
 
     @Override

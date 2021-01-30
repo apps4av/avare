@@ -15,8 +15,8 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     private String mFolder; // save this as users can change
     private String mName; // this is available in newer OS
 
-    public MainDatabaseHelper(Context context, String folder, String name) {
-        super(context, folder + File.separator + name, null, 1);
+    public MainDatabaseHelper(Context context, String folder, String name, int version) {
+        super(context, folder + File.separator + name, null, version);
 
         mFolder = folder;
         mName = folder + File.separator + name;
