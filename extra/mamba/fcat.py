@@ -95,24 +95,24 @@ for row in c.execute("SELECT flight_category,longitude,latitude FROM metars"):
 
     # bound by limits of image
     if x < 0 or y < 0 or x > 1679 or y > 999:
-	continue
+        continue
     # set colors based on flight category (RGB)
     if row[0] == 'IFR':
-	    rasterArray1[y][x] = 255 
-	    rasterArray2[y][x] = 0
-	    rasterArray3[y][x] = 0
+        rasterArray1[y][x] = 255 
+        rasterArray2[y][x] = 0
+        rasterArray3[y][x] = 0
     elif row[0] == 'VFR':
-	    rasterArray1[y][x] = 0
-	    rasterArray2[y][x] = 127 
-	    rasterArray3[y][x] = 0
+        rasterArray1[y][x] = 0
+        rasterArray2[y][x] = 127 
+        rasterArray3[y][x] = 0
     elif row[0] == 'MVFR':
-	    rasterArray1[y][x] = 0
-	    rasterArray2[y][x] = 0
-	    rasterArray3[y][x] = 127 
+        rasterArray1[y][x] = 0
+        rasterArray2[y][x] = 0
+        rasterArray3[y][x] = 127 
     elif row[0] == 'LIFR':
-	    rasterArray1[y][x] = 127
-	    rasterArray2[y][x] = 0
-	    rasterArray3[y][x] = 127
+        rasterArray1[y][x] = 127
+        rasterArray2[y][x] = 0
+        rasterArray3[y][x] = 127
 
 conn.close()
 
