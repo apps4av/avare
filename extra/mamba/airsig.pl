@@ -76,19 +76,19 @@ sub initnew {
 
 # The Handlers
 sub hdl_start{
-	my ($p, $elt, %atts) = @_;
-	if($elt eq 'AIRSIGMET') {
+    my ($p, $elt, %atts) = @_;
+    if($elt eq 'AIRSIGMET') {
         initnew();
         $start = 1;
-	}
+    }
 
     if($start == 0) {
         return;
     }
 
-	if($elt eq 'raw_text') {
+    if($elt eq 'raw_text') {
         $p_raw_text = 1;
-	}
+    }
     if($elt eq 'valid_time_from') {
         $p_valid_time_from = 1;
     }
@@ -127,8 +127,8 @@ sub hdl_start{
 }
    
 sub hdl_end {
-	my ($p, $elt) = @_;
-	if($elt eq 'AIRSIGMET') {
+    my ($p, $elt) = @_;
+    if($elt eq 'AIRSIGMET') {
         $raw_text //= "";
         $raw_text =~ s/\n//g;
         $raw_text =~ s/,/;/g;
@@ -145,15 +145,15 @@ sub hdl_end {
         $severity =~ s/,/;/g;
         $airsigmet_type //= "";
         print "$raw_text,$valid_time_from,$valid_time_to,$point,$min_ft_msl,$max_ft_msl,$movement_dir_degrees,$movement_speed_kt,$hazard,$severity,$airsigmet_type\n";
-	}
+    }
     
     if($start == 0) {
         return;
     }
-	
+    
     if($elt eq 'raw_text') {
         $p_raw_text = 0;
-	}
+    }
     if($elt eq 'valid_time_from') {
         $p_valid_time_from = 0;
     }
@@ -185,7 +185,7 @@ sub hdl_end {
 }
   
 sub hdl_char {
-	my ($p, $str) = @_;
+    my ($p, $str) = @_;
 
     if($start == 0) {
         return;
@@ -193,7 +193,7 @@ sub hdl_char {
     
     if($p_raw_text != 0) {
         $raw_text .= $str;
-	}
+    }
     if($p_valid_time_from != 0) {
         $valid_time_from = $str;
     }

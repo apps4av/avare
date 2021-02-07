@@ -43,19 +43,19 @@ sub initnew {
 
 # The Handlers
 sub hdl_start{
-	my ($p, $elt, %atts) = @_;
-	if($elt eq 'TAF') {
+    my ($p, $elt, %atts) = @_;
+    if($elt eq 'TAF') {
         initnew();
         $start = 1;
-	}
+    }
 
     if($start == 0) {
         return;
     }
 
-	if($elt eq 'raw_text') {
+    if($elt eq 'raw_text') {
         $p_raw_text = 1;
-	}
+    }
     if($elt eq 'issue_time') {
         $p_issue_time = 1;
     }
@@ -65,23 +65,23 @@ sub hdl_start{
 }
    
 sub hdl_end {
-	my ($p, $elt) = @_;
-	if($elt eq 'TAF') {
+    my ($p, $elt) = @_;
+    if($elt eq 'TAF') {
         $raw_text //= "";
         $raw_text =~ s/\n//g;
         $raw_text =~ s/,/;/g;
         $issue_time //= "";
         $station_id //= "";
         print "$raw_text,$issue_time,$station_id\n";
-	}
+    }
     
     if($start == 0) {
         return;
     }
-	
-	if($elt eq 'raw_text') {
+    
+    if($elt eq 'raw_text') {
         $p_raw_text = 0;
-	}
+    }
     if($elt eq 'issue_time') {
         $p_issue_time = 0;
     }
@@ -92,7 +92,7 @@ sub hdl_end {
 }
   
 sub hdl_char {
-	my ($p, $str) = @_;
+    my ($p, $str) = @_;
 
     if($start == 0) {
         return;
@@ -100,7 +100,7 @@ sub hdl_char {
     
     if($p_raw_text != 0) {
         $raw_text .= $str;
-	}
+    }
     if($p_issue_time != 0) {
         $issue_time = $str;
     }

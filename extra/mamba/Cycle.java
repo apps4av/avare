@@ -49,10 +49,10 @@ public class Cycle {
         
         int cycle;
         try {
-        	cycle = Integer.parseInt(cycleName);
+            cycle = Integer.parseInt(cycleName);
         }
         catch (Exception e) {
-        	return cycleName;
+            return cycleName;
         }
         
         // like 1510 = 15, 10 (15 means 2015, 10 means #28 days)
@@ -60,7 +60,7 @@ public class Cycle {
         int cyclelower = cycle - (cycleupper * 100);
         int firstdate = getFirstDate(2000 + cycleupper);
         if(firstdate < 1) {
-        	return cycleName;
+            return cycleName;
         }
         
         // find cycle time with offset
@@ -69,10 +69,10 @@ public class Cycle {
         then.add(Calendar.DAY_OF_MONTH, 28 * (cyclelower - 1 + offset));
         
         // find upper two digits of cycle.
-    	cycleupper = (then.get(Calendar.YEAR) - 2000);
-    	
-    	// find cyclelower
-    	firstdate = getFirstDate(2000 + cycleupper);
+        cycleupper = (then.get(Calendar.YEAR) - 2000);
+        
+        // find cyclelower
+        firstdate = getFirstDate(2000 + cycleupper);
         GregorianCalendar first = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
         first.set(2000 + cycleupper, Calendar.JANUARY, firstdate, 9, 0, 0);
 
@@ -136,12 +136,12 @@ public class Cycle {
     
         String c = getCycle();
         String n = findCycleOffset(c, 1);
-    	if(args[0].equals("c")) {
-    		System.out.println(c);
-    	}
-    	if(args[0].equals("n")) {
-    		System.out.println(n);
-    	}
+        if(args[0].equals("c")) {
+            System.out.println(c);
+        }
+        if(args[0].equals("n")) {
+            System.out.println(n);
+        }
 
     }
     

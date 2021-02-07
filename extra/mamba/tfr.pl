@@ -36,132 +36,132 @@ my @linksXml;
 sub cb {
         my($tag, %links) = @_;
         my $lk = "@{[%links]}\n";
-	if ($lk and (-1 != index($lk, "save_pages"))) {
+    if ($lk and (-1 != index($lk, "save_pages"))) {
 #replace html to xml to get XML
-		$lk =~ s/\.html/.xml/g;
-		$lk =~ s/href\s*//g;
+        $lk =~ s/\.html/.xml/g;
+        $lk =~ s/href\s*//g;
 #put in an array
-		push(@linksXml, $lk);
-	}
+        push(@linksXml, $lk);
+    }
 }
    
 # The Handlers
 sub hdl_start{
-	my ($p, $elt, %atts) = @_;
-	if($elt eq 'TFRAreaGroup') {
-		$printareagroup = 1;
-		$tfr=$tfr."TFR:: ";
-	}
-	if($elt eq 'dateEffective') {
-		$printtimeeff = 1;
-	}
-	if($elt eq 'dateExpire') {
-		$printtimeexp = 1;
-	}
-	if( $elt eq 'valDistVerUpper') {
-		$printupper = 1;
-	}
-	if( $elt eq 'valDistVerLower') {
-		$printlower = 1;
-	}
-	if( $elt eq 'uomDistVerUpper') {
-		$printuomup = 1;
-	}
-	if( $elt eq 'uomDistVerLower') {
-		$printuomlo = 1;
-	}
-	if($elt eq 'abdMergedArea') {
-		$tfr=$tfr.",";
-		$printitarea = 1;
-	}
-	if($elt eq 'geoLat') {
-		$printit = 1;
-	}
-	if($elt eq 'geoLong') {
-		$printit = 1;
-	}
+    my ($p, $elt, %atts) = @_;
+    if($elt eq 'TFRAreaGroup') {
+        $printareagroup = 1;
+        $tfr=$tfr."TFR:: ";
+    }
+    if($elt eq 'dateEffective') {
+        $printtimeeff = 1;
+    }
+    if($elt eq 'dateExpire') {
+        $printtimeexp = 1;
+    }
+    if( $elt eq 'valDistVerUpper') {
+        $printupper = 1;
+    }
+    if( $elt eq 'valDistVerLower') {
+        $printlower = 1;
+    }
+    if( $elt eq 'uomDistVerUpper') {
+        $printuomup = 1;
+    }
+    if( $elt eq 'uomDistVerLower') {
+        $printuomlo = 1;
+    }
+    if($elt eq 'abdMergedArea') {
+        $tfr=$tfr.",";
+        $printitarea = 1;
+    }
+    if($elt eq 'geoLat') {
+        $printit = 1;
+    }
+    if($elt eq 'geoLong') {
+        $printit = 1;
+    }
 }
    
 sub hdl_end {
-	my ($p, $elt) = @_;
-	if($elt eq 'TFRAreaGroup') {
-		$tfr=$tfr.",";
-		$printareagroup = 0;
-	}
-	if($elt eq 'abdMergedArea') {
-		# remove , put by lat/lon
-		chop($tfr);
-		$printitarea = 0;
-	}
-	if($elt eq 'dateEffective') {
-		$printtimeeff = 0;
-	}
-	if($elt eq 'dateExpire') {
-		$printtimeexp = 0;
-	}
-	if( $elt eq 'valDistVerUpper') {
-		$printupper = 0;
-	}
-	if( $elt eq 'valDistVerLower') {
-		$printlower = 0;
-	}
-	if( $elt eq 'uomDistVerUpper') {
-		$printuomup = 0;
-	}
-	if( $elt eq 'uomDistVerLower') {
-		$printuomlo = 0;
-	}
-	if($elt eq 'geoLat') {
-		$printit = 0;
-	}
-	if($elt eq 'geoLong') {
-		$printit = 0;
-	}
+    my ($p, $elt) = @_;
+    if($elt eq 'TFRAreaGroup') {
+        $tfr=$tfr.",";
+        $printareagroup = 0;
+    }
+    if($elt eq 'abdMergedArea') {
+        # remove , put by lat/lon
+        chop($tfr);
+        $printitarea = 0;
+    }
+    if($elt eq 'dateEffective') {
+        $printtimeeff = 0;
+    }
+    if($elt eq 'dateExpire') {
+        $printtimeexp = 0;
+    }
+    if( $elt eq 'valDistVerUpper') {
+        $printupper = 0;
+    }
+    if( $elt eq 'valDistVerLower') {
+        $printlower = 0;
+    }
+    if( $elt eq 'uomDistVerUpper') {
+        $printuomup = 0;
+    }
+    if( $elt eq 'uomDistVerLower') {
+        $printuomlo = 0;
+    }
+    if($elt eq 'geoLat') {
+        $printit = 0;
+    }
+    if($elt eq 'geoLong') {
+        $printit = 0;
+    }
 }
   
 sub hdl_char {
-	my ($p, $str) = @_;
-	if($printareagroup == 0) {
-		return;
-	}
-	if($printtimeeff) {
-		$tfr = $tfr."Eff $str ";
-	}
-	if($printtimeexp) {
-		$tfr = $tfr."Exp $str ";
-	}
-	if($printupper) {
-		$tfr = $tfr."Top $str ";
-	}
-	if($printlower) {
-		$tfr = $tfr."Low $str ";
-	}
-	if($printuomup) {
-		$tfr = $tfr."$str ";
-	}
-	if($printuomlo) {
-		$tfr = $tfr."$str ";
-	}
+    my ($p, $str) = @_;
+    if($printareagroup == 0) {
+        return;
+    }
+    if($printtimeeff) {
+        $tfr = $tfr."Eff $str ";
+    }
+    if($printtimeexp) {
+        $tfr = $tfr."Exp $str ";
+    }
+    if($printupper) {
+        $tfr = $tfr."Top $str ";
+    }
+    if($printlower) {
+        $tfr = $tfr."Low $str ";
+    }
+    if($printuomup) {
+        $tfr = $tfr."$str ";
+    }
+    if($printuomlo) {
+        $tfr = $tfr."$str ";
+    }
 
-	if($printit and $printitarea) {
-		# now convert coords WGS to numbers and spit
-		if (index($str, "N") != -1) {
-			$str =~ s/N//g;
-		}
-		if (index($str, "S") != -1) {
-			$str =~ s/S//g;
-			$str = "-".$str;
-		}
-		if (index($str, "E") != -1) {
-			$str =~ s/E//g;
-		}
-		if (index($str, "W") != -1) {
-			$str =~ s/W//g;
-			$str = "-".$str;
-		}
-		my $sum = $str + 0.0;
-		$tfr = $tfr."$sum,";
-	}
+    if($printit and $printitarea) {
+        # now convert coords WGS to numbers and spit
+        if (index($str, "N") != -1) {
+            $str =~ s/N//g;
+        }
+        if (index($str, "S") != -1) {
+            $str =~ s/S//g;
+            $str = "-".$str;
+        }
+        if (index($str, "E") != -1) {
+            $str =~ s/E//g;
+        }
+        if (index($str, "W") != -1) {
+            $str =~ s/W//g;
+            $str = "-".$str;
+        }
+        my $sum = $str + 0.0;
+        $tfr = $tfr."$sum,";
+    }
 }
   
 my $filename = "/home/apps4av/tfr.zip";
@@ -185,10 +185,10 @@ my %hash = map { $_ => 1 } @linksXml;
 my @unique = keys %hash;
 # Now process each TFR XML
 for my $url( @{unique} ) {
-	$url =~ s/\/\.\.\//\//g;
-	if(my $data_xml = get($url)) {
-		$parser->parse($data_xml);
-	}
+    $url =~ s/\/\.\.\//\//g;
+    if(my $data_xml = get($url)) {
+        $parser->parse($data_xml);
+    }
 }
 
 # remove ,
