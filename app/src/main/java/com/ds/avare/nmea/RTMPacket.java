@@ -48,7 +48,7 @@ public class RTMPacket extends Packet {
         mPacket += sdf.format(date) + ",";
         
         //icao
-        mPacket += Integer.toString(icaoAddress) + ",";
+        mPacket += icaoAddress + ",";
 
         /*
          * Put latitude
