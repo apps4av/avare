@@ -116,6 +116,7 @@ public class Traffic {
                             BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
+        boolean circles = ctx.pref.shouldDrawTrafficCircles();
 
         /*
          * Get traffic to draw.
@@ -155,19 +156,6 @@ public class Traffic {
              * Find color from altitude
              */
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
-            BitmapHolder b = null;
-            if (color == Color.RED) {
-                b = bRed;
-            }
-            else if (color == Color.GREEN) {
-                b = bGreen;
-            }
-            else if (color == Color.BLUE) {
-                b = bBlue;
-            }
-            else {
-                b = bMagenta;
-            }
 
             int diff;
             String text = "";
@@ -192,15 +180,45 @@ public class Traffic {
                 }
             }
 
-            mMatrix.setRotate(t.mHeading, b.getWidth() / 2, b.getHeight() / 2);
-            mMatrix.postTranslate(x - b.getWidth() / 2, y - b.getHeight() / 2);
+            float radius;
+            if(circles) {
+                radius = ctx.dip2pix * 8;
+                /*
+                 * Draw outline to show it clearly
+                 */
+                ctx.paint.setColor((~color) | 0xFF000000);
+                ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
 
-            ctx.canvas.drawBitmap(b.getBitmap(), mMatrix, ctx.paint);
+                ctx.paint.setColor(color);
+                ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+            }
+            else {
+                BitmapHolder b = null;
+                if (color == Color.RED) {
+                    b = bRed;
+                }
+                else if (color == Color.GREEN) {
+                    b = bGreen;
+                }
+                else if (color == Color.BLUE) {
+                    b = bBlue;
+                }
+                else {
+                    b = bMagenta;
+                }
+
+                radius =  b.getBitmap().getWidth();
+                mMatrix.setRotate(t.mHeading, b.getWidth() / 2, b.getHeight() / 2);
+                mMatrix.postTranslate(x - b.getWidth() / 2, y - b.getHeight() / 2);
+
+                ctx.canvas.drawBitmap(b.getBitmap(), mMatrix, ctx.paint);
+                ctx.paint.setColor(color);
+            }
+
             /*
              * Show a barb for heading with length based on speed
              * Find distance target will travel in 1 min
              */
-            ctx.paint.setColor(color);
             float distance2 = (float)t.mHorizVelocity / 60.f;
             Coordinate c = Projection.findStaticPoint(t.mLon, t.mLat, t.mHeading, distance2);
             float xr = (float)ctx.origin.getOffsetX(c.getLongitude());
@@ -221,7 +239,7 @@ public class Traffic {
 
 
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    text, Color.BLACK, (float)x, (float)y + b.getBitmap().getWidth() + ctx.textPaint.getTextSize());
+                    text, Color.BLACK, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
 
 
             if (true == bRotated) {

@@ -565,4 +565,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Set2">Set 2</string>
     <string name="VerifyMessageFailed">Unable to verify this point</string>
 
+    <string name="drawTrafficCircles">drawTrafficCircles</string>
+    <string name="drawTrafficCirclesLabel">Traffic as Circles</string>
+    <string name="drawTrafficCirclesSummary">Select to show ADSB traffic as circles instead of triangles</string>
+
 </resources>

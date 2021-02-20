@@ -267,6 +267,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ADSBTrafficFilterSummary"
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/drawTrafficCircles"
+            android:summary="@string/drawTrafficCirclesSummary"
+            android:title="@string/drawTrafficCirclesLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/prefShowAdsbCallSign"
             android:summary="@string/ShowAdsbCallSignSummary"

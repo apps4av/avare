@@ -676,16 +676,6 @@ public class StorageService extends Service {
 
         mFavorites = new Favorites(this);
 
-        /**
-         * XXX: 10.0.0 release Remove after next release. Legacy import
-         */
-        Preferences p = new Preferences(getApplicationContext());
-        getDBResource().setUserPlans(p.getPlans());
-        getDBResource().setUserLists(p.getLists());
-        getDBResource().setUserWnbs(p.getWnbs());
-        getDBResource().setUserRecents(p.getRecents());
-        getDBResource().setUserTags(p.getGeotags());
-
     }
         
     /* (non-Javadoc)

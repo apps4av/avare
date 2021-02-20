@@ -206,72 +206,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return ("");
     }
 
-    /**
-     * @return
-     * XXX: Legacy
-     * Delete
-     */
-    public LinkedList<StringPreference> getRecents() {
-        String recent = mPref.getString(mContext.getString(R.string.Recent), null);
-        LinkedList<StringPreference> ret = new LinkedList<>();
-        if(recent == null) {
-            return ret;
-        }
-        String[] tokens = recent.split(",");
-        for (String t : tokens) {
-            String[] wpd = t.split(";");
-            if (wpd[0].endsWith("::GPS")) {
-                if (wpd[0].contains("@")) {
-                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                    StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
-                    ret.add(s);
-                }
-            }
-            else {
-                StringPreference s =
-                        new StringPreference(
-                                StringPreference.parseHashedNameDestType(t),
-                                StringPreference.parseHashedNameDbType(t),
-                                StringPreference.parseHashedNameFacilityName(t),
-                                StringPreference.parseHashedNameId(t));
-                ret.add(s);
-            }
-        }
-
-        //ID,destType,dbtype,name
-        //PWM::Base;AIRPORT;PORTLAND INTL JETPORT,PHILA::Fix;YWAYPOINT;PHILA , MORGANTOWN@39.6295&-79.9559::Maps;Maps;Maps,LURAY::Fix;YREP-PT;LURAY ,BVY::Base;AIRPORT;BEVERLY RGNL,BOS::Base;AIRPORT;GENERAL EDWARD LAWRENCE LOGAN INTL,ATL::Base;AIRPORT;HARTSFIELD - JACKSON ATLANTA INTL, JHOLA PAKISTAN@35.6831&75.9661::Maps;Maps;Maps, PAIJU PAKISTAN@35.7158&76.1186::Maps;Maps;Maps, HUSHE PAKISTAN@35.4504&76.3585::Maps;Maps;Maps, ASKOLE PAKISTAN@35.6824&75.8174::Maps;Maps;Maps,K2 PAKISTAN@35.88&76.5151::Maps;Maps;Maps, GONDOGORO LA@35.6481&76.4733::Maps;Maps;Maps,6B6::Base;AIRPORT;MINUTE MAN AIR FLD,42.8244&-71.027::GPS;GPS;GPS,42.7646&-71.2733::GPS;GPS;GPS,1B0::Base;AIRPORT;DEXTER RGNL,ANC::Base;AIRPORT;TED STEVENS ANCHORAGE INTL,BVY::Navaid;FAN MARKER;BEVERLY D,
-        return ret;
-    }
-
-    /**
-     * @return
-     */
-    public LinkedHashMap<String, String> getPlans() {
-        // import legacy plans
-        /**
-         * XXX: remove
-         */
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        String plans = mPref.getString(mContext.getString(R.string.Plan) + "v10", null);
-        if(null == plans) {
-            return map;
-        }
-
-        // parse JSON from storage
-        try {
-            JSONObject json = new JSONObject(plans);
-            Iterator<?> keys = json.keys();
-            while (keys.hasNext()) {
-                String name = (String) keys.next();
-                String destinations = json.getString(name);
-                map.put(name, destinations);
-            }
-        } catch (Exception e) {
-        }
-        return map;
-    }
-
 
     /**
      * @return
@@ -774,40 +708,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public LinkedList<Checklist> getLists() {
-
-        // Legacy lists import
-        /**
-         * XXX: remove
-         */
-        LinkedList<Checklist> cl = new LinkedList<>();
-        String lists = mPref.getString(mContext.getString(R.string.List), null);
-        if(null == lists) {
-            return cl;
-        }
-        JSONArray jsonArr;
-        try {
-            jsonArr = new JSONArray(lists);
-        } catch (JSONException e) {
-            return cl;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                String name = o.getString("name");
-                String steps = o.getString("steps");
-                cl.add(new Checklist(name, steps));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-        return cl;
-    }
-
-    /**
-     * @return
-     */
     public boolean useBearingForETEA() {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
@@ -1149,36 +1049,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
     }
 
-
-    /**
-     *
-     * XXX: Legacy import, delete
-     * @return
-     */
-    public HashMap<String, String> getGeotags() {
-        String json = mPref.getString(mContext.getString(R.string.Geotag), "");
-
-        JSONArray jsonArr;
-        HashMap<String, String> ret = new HashMap<>();
-        try {
-            jsonArr = new JSONArray(json);
-        } catch (JSONException e) {
-            return ret;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                String tag = jsonArr.getString(i);
-                String tok[] = tag.split(",");
-                ret.put(tok[0], tok[1] + "," + tok[2] + "," + tok[3] + "," + tok[4]);
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-        return ret;
-    }
-
-
     /**
      * @return
      */
@@ -1188,35 +1058,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public void enableGameTFRs() {
         mPref.edit().putBoolean(mContext.getString(R.string.GameTFR), true).commit();
-    }
-
-    /**
-     * @return
-     * XXX: Legacy import. Delete.
-     */
-    public LinkedList<WeightAndBalance> getWnbs() {
-        String w = mPref.getString(mContext.getString(R.string.Wnb), null);
-        JSONArray jsonArr;
-        LinkedList<WeightAndBalance> ret = new LinkedList<WeightAndBalance>();
-        if(w == null) {
-            return  ret;
-        }
-        try {
-            jsonArr = new JSONArray(w);
-        } catch (JSONException e) {
-            return ret;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                ret.add(new WeightAndBalance(o));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-
-        return ret;
     }
 
     public boolean isDefaultAFDImage() {
@@ -1261,4 +1102,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
 
+    public boolean shouldDrawTrafficCircles() {
+        return mPref.getBoolean(mContext.getString(R.string.drawTrafficCircles), false);
+    }
 }
