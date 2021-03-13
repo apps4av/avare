@@ -90,6 +90,7 @@ public class PlatesActivity extends Activity implements Observer  {
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
+    private String myString;
     private boolean mIsTimerOn;
     private long mTimerInit;
     private LinkedList<Cifp> mCifp;
@@ -272,7 +273,8 @@ public class PlatesActivity extends Activity implements Observer  {
         
         mDestString = "<" + getString(R.string.Destination) + ">";
         nearString = "<" + getString(R.string.Nearest) + ">";
-        
+        myString = "<" + getString(R.string.MyPlates) + ">";
+
         /*
          * Get views from XML
          */
@@ -569,7 +571,7 @@ public class PlatesActivity extends Activity implements Observer  {
         String airport = null;
         if(null != mService) {
             airport = mService.getLastPlateAirport();
-            if(null != airport && (airport.equals(mDestString) || airport.equals(nearString))) {
+            if(null != airport && (airport.equals(mDestString) || airport.equals(nearString) || airport.equals(myString))) {
                 airport = null;
             }
         }
@@ -621,26 +623,52 @@ public class PlatesActivity extends Activity implements Observer  {
             
             mPlateFound = null;
             if(null != airport) {
-                
-                mDest = DestinationFactory.build(mService, airport, Destination.BASE);
-                mDest.addObserver(PlatesActivity.this);
-                mDest.find();
 
-                String mapFolder = mPref.getServerDataFolder();
+                if(airport.equals("<" + getString(R.string.MyPlates) + ">")) {
+                    mPlatesView.setAirport(null, 0, 0);
+                    String mapFolder = mPref.getUserDataFolder();
 
-                /*
-                 * Start with the plates in the /plates/ directory
-                 */
-                if(null != airport) {
                     FilenameFilter filter = new FilenameFilter() {
                         public boolean accept(File directory, String fileName) {
                             return fileName.endsWith(Preferences.IMAGE_EXTENSION);
                         }
                     };
-                    
+
+                    String aplates[] = new File(mapFolder + "/myplates/").list(filter);
+                    TreeMap<String, String> plates = new TreeMap<String, String>();
+
+                    if (aplates != null) {
+                        for (String plate : aplates) {
+                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+                            plates.put(tokens[0], mapFolder + "/myplates/" + tokens[0]);
+                        }
+                    }
+
+                    if (plates.size() > 0) {
+                        mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
+                        mListPlates = new ArrayList<String>(plates.keySet());
+                    }
+                }
+
+                else {
+                    mDest = DestinationFactory.build(mService, airport, Destination.BASE);
+                    mDest.addObserver(PlatesActivity.this);
+                    mDest.find();
+
+                    String mapFolder = mPref.getServerDataFolder();
+
                     /*
-                     * TODO: RAS make this an async request (maybe just move all 
-                     * the loading to the background - especially if we get the last used 
+                     * Start with the plates in the /plates/ directory
+                     */
+                    FilenameFilter filter = new FilenameFilter() {
+                        public boolean accept(File directory, String fileName) {
+                            return fileName.endsWith(Preferences.IMAGE_EXTENSION);
+                        }
+                    };
+
+                    /*
+                     * TODO: RAS make this an async request (maybe just move all
+                     * the loading to the background - especially if we get the last used
                      * chart loaded immediately)
                      */
 
@@ -650,26 +678,26 @@ public class PlatesActivity extends Activity implements Observer  {
 
                     TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
                     if (dplates != null) {
-                    	for(String plate : dplates) {
-	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
-	                    	plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
-                    	}
+                        for (String plate : dplates) {
+                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+                            plates.put(tokens[0], mapFolder + "/plates/" + airport + "/" + tokens[0]);
+                        }
                     }
                     if (aplates != null) {
-	                    for(String plate : aplates) {
-	                        String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
-	                    	plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
-	                    }
+                        for (String plate : aplates) {
+                            String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
+                            plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
+                        }
                     }
-                    if(mins != null) {
-	                    for(String plate : mins) {
-	                        String folder = plate.substring(0, 1) + "/";
-	                    	plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
-	                    }
+                    if (mins != null) {
+                        for (String plate : mins) {
+                            String folder = plate.substring(0, 1) + "/";
+                            plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
+                        }
                     }
-                    if(plates.size() > 0) {
-                    	mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
-                        mListPlates = new ArrayList<String>(plates.keySet());                        
+                    if (plates.size() > 0) {
+                        mPlateFound = Arrays.asList(plates.values().toArray()).toArray(new String[plates.values().toArray().length]);
+                        mListPlates = new ArrayList<String>(plates.keySet());
                     }
                 }
             }
@@ -726,6 +754,7 @@ public class PlatesActivity extends Activity implements Observer  {
             mListAirports = new ArrayList<String>();
             mListAirports.add(mDestString);
             mListAirports.add(nearString);
+            mListAirports.add(myString);
 
             /*
              * Are we being told to load an airport?

@@ -568,5 +568,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="drawTrafficCircles">drawTrafficCircles</string>
     <string name="drawTrafficCirclesLabel">Traffic as Circles</string>
     <string name="drawTrafficCirclesSummary">Select to show ADSB traffic as circles instead of triangles</string>
+    <string name="MyPlates">My Plates</string>
 
 </resources>
