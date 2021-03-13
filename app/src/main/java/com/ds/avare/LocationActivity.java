@@ -37,6 +37,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
@@ -1055,8 +1057,9 @@ public class LocationActivity extends Activity implements Observer {
                         emailIntent.setType("application/kml");
                         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
                                 getString(R.string.AutoPostTracksSubject) + " " + fileName);
+                        emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                Uri.fromFile(new File(fileURI.getPath())));
+                                FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(fileURI.getPath())));
                         startActivity(emailIntent);
                     } catch (Exception e) {
                     }

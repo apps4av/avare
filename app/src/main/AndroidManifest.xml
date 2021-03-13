@@ -46,6 +46,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <!--android:backupAgent="com.ds.avare.AppBackupAgent"
         android:restoreAnyVersion="true"-->
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <meta-data android:name="com.google.android.backup.api_key"
             android:value="unused" />
 
