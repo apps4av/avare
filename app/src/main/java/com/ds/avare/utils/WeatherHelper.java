@@ -376,35 +376,54 @@ public class WeatherHelper {
      * @return
      */
     public static String formatPirepHTML(String weather, boolean translate) {
-        weather = weather.replaceAll("UA", "UA" + (translate ? "(Upper Air)" : ""));
-        weather = weather.replaceAll("UUA", "UUA" + (translate ? "(Urgent)" : ""));
-        weather = weather.replaceAll("/OV", "/OV" + (translate ? "(Location)" : ""));
-        weather = weather.replaceAll("/TM", "/TM" + (translate ? "(Time UTC)" : ""));
-        weather = weather.replaceAll("/FL", "/FL" + (translate ? "(Altimeter MSL)" : ""));
-        weather = weather.replaceAll("UNKN", "UNKN" + (translate ? "(Unknown)" : ""));
+        weather = weather.replaceAll("ARP", "ARP" + (translate ? "(Airline Report)" : ""));
+        /** search UA<space> so AIREPs for UAL don't translate to UA(Upper Air)L */
+        weather = weather.replaceAll("UA ", "UA" + (translate ? "(Upper Air)" : ""));
+        weather = weather.replaceAll("UUA", "<font color='#ff2a00'>UUA" + (translate ? "(Urgent Upper Air)" : "") + "</font>");
+        weather = weather.replaceAll("/OV", "/OV" + (translate ? "(Over Location)" : ""));
+        weather = weather.replaceAll("/TM", " /TM" + (translate ? "(Time UTC)" : ""));
+        weather = weather.replaceAll("/FL", " /FL" + (translate ? "(Altimeter MSL)" : ""));
+        weather = weather.replaceAll("UNKN", " UNKN" + (translate ? "(Unknown) " : ""));
         weather = weather.replaceAll("DURC", "DURC" + (translate ? "(During Climb)" : ""));
+        weather = weather.replaceAll("DURGD", "DURGC" + (translate ? "(During Climb)" : ""));
         weather = weather.replaceAll("DURD", "DURD" + (translate ? "(During Descent)" : ""));
-        weather = weather.replaceAll("/TP", "/TP" + (translate ? "(Aircraft Type)" : ""));
-        weather = weather.replaceAll("/SK", "/SK" + (translate ? "(Sky Condition)" : ""));
-        weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
-        weather = weather.replaceAll("BKN", "BKN" + (translate ? "(Broken)" : ""));
-        weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
-        weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
-        weather = weather.replaceAll("/WX", "/WX" + (translate ? "(Weather)" : ""));
-        weather = weather.replaceAll("/TA", "/TA" + (translate ? "(Temperature)" : ""));
-        weather = weather.replaceAll("/WV", "/WV" + (translate ? "(Wind Velocity)" : ""));
-        weather = weather.replaceAll("/IAS", "/IAS" + (translate ? "(Indicated Airspeed)" : ""));
-        weather = weather.replaceAll("/IC", "/IC" + (translate ? "(Ice)" : ""));
-        weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear)" : ""));
-        weather = weather.replaceAll("MXD", "MXD" + (translate ? "(Mixed)" : ""));
+        weather = weather.replaceAll("DURGD", "DURGD" + (translate ? "(During Descent)" : ""));
+        weather = weather.replaceAll("/TP", " /TP" + (translate ? "(Aircraft Type)" : ""));
+        weather = weather.replaceAll("/SK", " /SK" + (translate ? "(Sky Condition)" : ""));
+        weather = weather.replaceAll("SKC", " SKC" + (translate ? "(Sky Clear)" : ""));
+        weather = weather.replaceAll("BKN", " BKN" + (translate ? "(Broken)" : ""));
+        weather = weather.replaceAll("SCT", " SCT" + (translate ? "(Scattered)" : ""));
+        weather = weather.replaceAll("OVC", " OVC" + (translate ? "(Overcast)" : ""));
+        weather = weather.replaceAll("/WX", " /WX" + (translate ? "(Weather)" : ""));
+        weather = weather.replaceAll("/TA", " /TA" + (translate ? "(Temperature)" : ""));
+        weather = weather.replaceAll("/WV", " /WV" + (translate ? "(Wind Velocity)" : ""));
+        weather = weather.replaceAll("/IAS", " /IAS" + (translate ? "(Indicated Airspeed)" : ""));
+        weather = weather.replaceAll("/IC", " /IC" + (translate ? "(Ice)" : ""));
+        weather = weather.replaceAll("CLR", " CLR" + (translate ? "(Clear)" : ""));
+        weather = weather.replaceAll("MXD", " MXD" + (translate ? "(Mixed)" : ""));
+        /** to prevent RIM(Rime)E */
+        weather = weather.replaceAll("RIME", "RIme");
         weather = weather.replaceAll("RIM", "RIM" + (translate ? "(Rime)" : ""));
+        weather = weather.replaceAll("RIme", "RIME");
         weather = weather.replaceAll("TRC", "TRC" + (translate ? "(Trace)" : ""));
+        /** to prevent MOD(moderate)ERATE */
+        weather = weather.replaceAll("MODER", "MOder");
         weather = weather.replaceAll("MOD", "MOD" + (translate ? "(Moderate)" : ""));
+        weather = weather.replaceAll("MOder", "MODER");
         weather = weather.replaceAll("LGT", "LGT" + (translate ? "(Light)" : ""));
-        weather = weather.replaceAll("SVR", "SVR" + (translate ? "(Severe)" : ""));
-        weather = weather.replaceAll("HVY", "HVY" + (translate ? "(Heavy)" : ""));
-        weather = weather.replaceAll("/RM", "/RM" + (translate ? "(Remarks)" : ""));
-        weather = weather.replaceAll("/TB", "/TB" + (translate ? "(Turbulence)" : ""));
+        weather = weather.replaceAll("SVR", "<font color='#ff2a00'>SVR" + (translate ? "(Severe)" : "") + "</font>");
+        weather = weather.replaceAll("HVY", "<font color='#ff2a00'>HVY" + (translate ? "(Heavy)" : "") + "</font>");
+        weather = weather.replaceAll("/RM", " /RM" + (translate ? "(Remarks)" : ""));
+        weather = weather.replaceAll("/TB", " /TB" + (translate ? "(Turbulence)" : ""));
+        weather = weather.replaceAll("LLWS", "LLWS" + (translate ? "(Low Level Wind Shear)" : ""));
+        weather = weather.replaceAll("CONS", "CONS" + (translate ? "(Constant)" : ""));
+        weather = weather.replaceAll("OCNL", "OCNL" + (translate ? "(Occasional)" : ""));
+        weather = weather.replaceAll("BLO ", "BLO" + (translate ? "(Below) " : ""));
+        weather = weather.replaceAll("SEV", "<font color='#ff2a00'>SEV" + (translate ? "(Severe)" : "") + "</font>");
+        weather = weather.replaceAll("FDC ", "FDC" + (translate ? "(Flight Data Center) " : ""));
+        /** to remove any double spaces */
+        weather = weather.replaceAll("  ", " ");
+
 
         return weather;
     }
