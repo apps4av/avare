@@ -378,14 +378,14 @@ public class WeatherHelper {
     public static String formatPirepHTML(String weather, boolean translate) {
         weather = weather.replaceAll("ARP", "ARP" + (translate ? "(Airline Report)" : ""));
         /** search UA<space> so AIREPs for UAL don't translate to UA(Upper Air)L */
-        weather = weather.replaceAll("UA ", "UA" + (translate ? "(Upper Air)" : ""));
+        weather = weather.replaceAll(" UA ", " UA" + (translate ? "(Upper Air)" : ""));
         weather = weather.replaceAll("UUA", "<font color='#ff2a00'>UUA" + (translate ? "(Urgent Upper Air)" : "") + "</font>");
         weather = weather.replaceAll("/OV", "/OV" + (translate ? "(Over Location)" : ""));
         weather = weather.replaceAll("/TM", " /TM" + (translate ? "(Time UTC)" : ""));
         weather = weather.replaceAll("/FL", " /FL" + (translate ? "(Altimeter MSL)" : ""));
         weather = weather.replaceAll("UNKN", " UNKN" + (translate ? "(Unknown) " : ""));
         weather = weather.replaceAll("DURC", "DURC" + (translate ? "(During Climb)" : ""));
-        weather = weather.replaceAll("DURGD", "DURGC" + (translate ? "(During Climb)" : ""));
+        weather = weather.replaceAll("DURGC", "DURGC" + (translate ? "(During Climb)" : ""));
         weather = weather.replaceAll("DURD", "DURD" + (translate ? "(During Descent)" : ""));
         weather = weather.replaceAll("DURGD", "DURGD" + (translate ? "(During Descent)" : ""));
         weather = weather.replaceAll("/TP", " /TP" + (translate ? "(Aircraft Type)" : ""));
@@ -401,6 +401,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("/IC", " /IC" + (translate ? "(Ice)" : ""));
         weather = weather.replaceAll("CLR", " CLR" + (translate ? "(Clear)" : ""));
         weather = weather.replaceAll("MXD", " MXD" + (translate ? "(Mixed)" : ""));
+        weather = weather.replaceAll("MX", " MX" + (translate ? "(Mix)" : ""));
         /** to prevent RIM(Rime)E */
         weather = weather.replaceAll("RIME", "RIme");
         weather = weather.replaceAll("RIM", "RIM" + (translate ? "(Rime)" : ""));
@@ -413,14 +414,20 @@ public class WeatherHelper {
         weather = weather.replaceAll("LGT", "LGT" + (translate ? "(Light)" : ""));
         weather = weather.replaceAll("SVR", "<font color='#ff2a00'>SVR" + (translate ? "(Severe)" : "") + "</font>");
         weather = weather.replaceAll("HVY", "<font color='#ff2a00'>HVY" + (translate ? "(Heavy)" : "") + "</font>");
+        weather = weather.replaceAll("+RA", "+RA" + (translate ? "(Heavy Rain)" : ""));
         weather = weather.replaceAll("/RM", " /RM" + (translate ? "(Remarks)" : ""));
         weather = weather.replaceAll("/TB", " /TB" + (translate ? "(Turbulence)" : ""));
         weather = weather.replaceAll("LLWS", "LLWS" + (translate ? "(Low Level Wind Shear)" : ""));
         weather = weather.replaceAll("CONS", "CONS" + (translate ? "(Constant)" : ""));
         weather = weather.replaceAll("OCNL", "OCNL" + (translate ? "(Occasional)" : ""));
         weather = weather.replaceAll("BLO ", "BLO" + (translate ? "(Below) " : ""));
+        weather = weather.replaceAll("CAT ", "CAT" + (translate ? "(Clear Air Turbulence) " : ""));
+        /** to prevent SEV(Severe)ERE */
+        weather = weather.replaceAll("SEVERE", "SEvere");
         weather = weather.replaceAll("SEV", "<font color='#ff2a00'>SEV" + (translate ? "(Severe)" : "") + "</font>");
-        weather = weather.replaceAll("FDC ", "FDC" + (translate ? "(Flight Data Center) " : ""));
+        weather = weather.replaceAll("SEvere", "<font color='#ff2a00'>SEVERE" + (translate ? " " : "") + "</font>");
+        weather = weather.replaceAll("FDC", "FDC" + (translate ? "(Flight Data Center)" : ""));
+        weather = weather.replaceAll("AWC", "AWC" + (translate ? "(Aviation Weather Center)" : ""));
         /** to remove any double spaces */
         weather = weather.replaceAll("  ", " ");
 

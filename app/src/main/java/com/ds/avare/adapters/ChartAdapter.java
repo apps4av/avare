@@ -349,7 +349,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mChildrenFiles[group][child].equals(name)) {
-                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
+                    return (group == GROUP_ONC || group == GROUP_WAC || group == GROUP_VFRA || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
                 }
             }
         }
@@ -463,7 +463,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_WAC) && (group != GROUP_VFRA) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
     }
 
     /**
