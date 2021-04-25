@@ -187,6 +187,11 @@ public class DataSource {
         ContentProviderHelper.setUserPlans(mContext, plans);
     }
 
+
+    public void deleteUserPlan(String name) {
+        ContentProviderHelper.deleteUserPlan(mContext, name);
+    }
+
     public LinkedList<Checklist> getUserLists() {
         return ContentProviderHelper.getUserLists(mContext);
     }

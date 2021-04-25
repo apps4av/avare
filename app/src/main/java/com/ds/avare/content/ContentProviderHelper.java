@@ -518,6 +518,12 @@ public class ContentProviderHelper {
         return ret;
     }
 
+    public static void deleteUserPlan(Context ctx, String name) {
+        String selection = "(" + UserContract.PLAN_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_PLAN, selection, selectionArg);
+    }
+
     public static void setUserPlans(Context ctx, LinkedHashMap<String, String> plans) {
 
         for (String key : plans.keySet()) {

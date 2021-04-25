@@ -636,7 +636,7 @@ public class WebAppPlanInterface implements Observer {
     	if(true == mService.getExternalPlanMgr().isExternal(name)) {
     		mService.getExternalPlanMgr().delete(name);
     	} else {
-			mService.getDBResource().setUserPlans(Plan.putAllPlans(mService, mSavedPlans));
+			mService.getDBResource().deleteUserPlan(name);
     	}
     	
     	setFilteredSize();
