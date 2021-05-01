@@ -10,9 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 public class WeatherDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "weather.db";
+    private static final int DB_VERSION = 1;
 
     public WeatherDatabaseHelper(Context context, String folder) {
-        super(context, folder, DBNAME, 1);
+        super(context, folder, DBNAME, DB_VERSION);
     }
 
     @Override

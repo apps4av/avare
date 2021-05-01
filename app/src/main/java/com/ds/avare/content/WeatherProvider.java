@@ -1,8 +1,10 @@
 package com.ds.avare.content;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
@@ -57,6 +59,138 @@ public class WeatherProvider extends MainProvider {
                 return null;
         }
     }
+
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+
+        String table = null;
+        int uriType = mURIMatcher.match(uri);
+        switch (uriType) {
+            case AIRMET:
+                table = WeatherContract.TABLE_AIRMET;
+                break;
+            case PIREP:
+                table = WeatherContract.TABLE_PIREP;
+                break;
+            case TAF:
+                table = WeatherContract.TABLE_TAF;
+                break;
+            case METAR:
+                table = WeatherContract.TABLE_METAR;
+                break;
+            case WIND:
+                table = WeatherContract.TABLE_WIND;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+
+        int rows = 0;
+        try {
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+            rows = db.delete(table, selection, selectionArgs);
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            resetDatabase();
+        }
+        return rows;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        String table = null;
+        int uriType = mURIMatcher.match(uri);
+        int rows = 0;
+        switch (uriType) {
+            case AIRMET:
+                table = WeatherContract.TABLE_AIRMET;
+                break;
+            case PIREP:
+                table = WeatherContract.TABLE_PIREP;
+                break;
+            case TAF:
+                table = WeatherContract.TABLE_TAF;
+                break;
+            case METAR:
+                table = WeatherContract.TABLE_METAR;
+                break;
+            case WIND:
+                table = WeatherContract.TABLE_WIND;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+
+        try {
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+            rows = db.update(table, values, selection, selectionArgs);
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            resetDatabase();
+        }
+        return rows;
+    }
+
+
+
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+
+        String table = null;
+        int uriType = mURIMatcher.match(uri);
+        switch (uriType) {
+            case AIRMET:
+                table = WeatherContract.TABLE_AIRMET;
+                break;
+            case PIREP:
+                table = WeatherContract.TABLE_PIREP;
+                break;
+            case TAF:
+                table = WeatherContract.TABLE_TAF;
+                break;
+            case METAR:
+                table = WeatherContract.TABLE_METAR;
+                break;
+            case WIND:
+                table = WeatherContract.TABLE_WIND;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI");
+        }
+
+        try {
+            SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
+            long id = db.insert(table, null, values);
+            if (id > 0) {
+                switch (uriType) {
+                    case AIRMET:
+                        return WeatherContract.buildAirmetUri(id);
+                    case PIREP:
+                        return WeatherContract.buildPirepUri(id);
+                    case TAF:
+                        return WeatherContract.buildTafUri(id);
+                    case METAR:
+                        return WeatherContract.buildMetarUri(id);
+                    case WIND:
+                        return WeatherContract.buildWindUri(id);
+                    default:
+                        throw new IllegalArgumentException("Unknown URI");
+                }
+            }
+            else {
+                throw new android.database.SQLException("Failed to insert row into: " + uri);
+            }
+        }
+        catch (Exception e) {
+            // Something wrong, missing or deleted database from download
+            resetDatabase();
+        }
+        return null;
+    }
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
