@@ -31,7 +31,7 @@ public class WifiUtil {
      * @return
      */
     public static String getIpAddr(Context ctx) {
-        WifiManager wifiManager = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager)ctx.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ip = wifiInfo.getIpAddress();
 
