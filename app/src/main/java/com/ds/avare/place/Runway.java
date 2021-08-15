@@ -19,6 +19,7 @@ import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -315,7 +316,8 @@ public class Runway {
             return;
         }
 
-        LinkedList<Runway> runways = destination.getRunways();
+        // Concurrent modification exception - use array list
+        ArrayList<Runway> runways = new ArrayList<Runway>(destination.getRunways());
         if (runways != null) {
             int xfactor;
             int yfactor;

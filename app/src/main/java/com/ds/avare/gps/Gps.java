@@ -277,6 +277,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onGpsStatusChanged(int event) {
+        mSatCount = 0;
         if(null == mLocationManager) {
             return;
         }
@@ -287,8 +288,13 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         catch (SecurityException e) {
             return;
         }
+        if (null == gpsStatus) {
+            return;
+        }
         mGpsCallback.statusCallback(gpsStatus);
-        mSatCount = 0;
+        if (null == gpsStatus.getSatellites()) {
+            return;
+        }
         for (GpsSatellite sat : gpsStatus.getSatellites()) {
             if(sat.usedInFix()) {
                 mSatCount++;
