@@ -78,10 +78,6 @@ public class GlideProfile {
         WindsAloft wa;
         double [] metarWinds = null;
 
-        if(mPref.getDistanceRingType() != 3) {
-            return;
-        }
-
         for(int dir = 0; dir < DIRECTION_STEPS; dir++) {
             mDistanceTotal[dir] = 0; // clear
         }

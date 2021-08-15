@@ -68,8 +68,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
-    <string name="longitude">&quot;'W&quot;</string>
-    <string name="latitude">&quot;'N&quot;</string>
+    <string name="longitude">&quot;\'W&quot;</string>
+    <string name="latitude">&quot;\'N&quot;</string>
     <string name="accuracy">&quot;Accuracy ft.&quot;</string>
     <string name="degree">&quot;\u00B0&quot;</string>
     <string name="Done">&quot;Done&quot;</string>
@@ -442,7 +442,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
 
     <string name="BestGlideSinkRateLabel">&quot;Aircraft Best Glide Sink Rate&quot;</string>
-    <string name="BestGlideSinkRateSummary">&quot;Aircraft best glide sink rate for calculating glide range&quot;</string>
+    <string name="BestGlideSinkRateSummary">&quot;Aircraft best glide sink rate (feet per minute) for calculating glide range&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
 
     <string name="FuelRateLabel">Aircraft Fuel Burn Rate</string>
