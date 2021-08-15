@@ -203,12 +203,6 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                     };
                     mLocationManager.addNmeaListener((android.location.OnNmeaMessageListener) mNmeaMessageListener);
                 }
-
-                /*
-                 * Also obtain GSM based locations
-                 */
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        0, 0, this);
             }
             catch (SecurityException e) {
                 mLocationManager = null;
