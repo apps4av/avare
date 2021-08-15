@@ -14,50 +14,68 @@ Redistribution and use in source and binary forms, with or without modification,
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-        
-    <ExpandableListView
-        android:id="@+id/chart_download_list"
-        android:layout_below="@+id/chart_download_button_lo"
-        android:layout_width="wrap_content"
-        android:cacheColorHint="#00000000"
-        android:layout_height="wrap_content"/> 
 
-	   <LinearLayout android:orientation="horizontal"
-           android:id="@+id/chart_download_button_lo"
-	       android:layout_width="fill_parent"
-	       android:layout_height="wrap_content">
-	       <Button
-			    android:layout_weight="1"
-			    android:layout_height="wrap_content"
-			    android:layout_width="0dp"
-			    android:id="@+id/chart_download_button_dl"
-			    android:background="@drawable/button_bg"
-			    android:layout_margin="5dp"
-			    android:text="@string/Get"
-			    android:drawableLeft="@drawable/add"
-			    android:visibility="visible" />
-	
-    	   <Button
-		       android:layout_weight="1"
-		       android:layout_height="wrap_content"
-		       android:layout_width="0dp"
-		       android:id="@+id/chart_download_button_update"
-			   android:background="@drawable/button_bg"
-			   android:drawableLeft="@drawable/check_red"
-			   android:layout_margin="5dp"
-		       android:text="@string/update"
-		       android:visibility="visible" />
-    	   
-           <Button
-               android:layout_weight="1"
-               android:layout_height="wrap_content"
-               android:layout_width="0dp"
-               android:id="@+id/chart_download_button_delete"
-			   android:background="@drawable/button_bg"
-			   android:layout_margin="5dp"
-			   android:drawableLeft="@drawable/delete"
-               android:text="@string/Delete"
-               android:visibility="visible" />
-    	   	   
-	  </LinearLayout> 
+	<ExpandableListView
+		android:id="@+id/chart_download_list"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/chart_download_button_lo"
+		android:cacheColorHint="#00000000" />
+
+	<LinearLayout android:orientation="horizontal"
+	   android:id="@+id/chart_download_button_lo"
+	   android:layout_width="fill_parent"
+	   android:layout_height="wrap_content">
+		<Button
+			android:layout_weight="1"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:id="@+id/chart_download_button_dl"
+			android:background="@drawable/button_bg"
+			android:layout_margin="5dp"
+			android:text="@string/Get"
+			android:drawableLeft="@drawable/add"
+			android:visibility="visible" />
+
+		<Button
+		   android:layout_weight="1"
+		   android:layout_height="wrap_content"
+		   android:layout_width="0dp"
+		   android:id="@+id/chart_download_button_update"
+		   android:background="@drawable/button_bg"
+		   android:drawableLeft="@drawable/check_red"
+		   android:layout_margin="5dp"
+		   android:text="@string/update"
+		   android:visibility="visible" />
+
+		<Button
+		   android:layout_weight="1"
+		   android:layout_height="wrap_content"
+		   android:layout_width="0dp"
+		   android:id="@+id/chart_download_button_delete"
+		   android:background="@drawable/button_bg"
+		   android:layout_margin="5dp"
+		   android:drawableLeft="@drawable/delete"
+		   android:text="@string/Delete"
+		   android:visibility="visible" />
+
+		<Button
+			android:layout_weight="0.5"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:id="@+id/chart_download_button_legend"
+			android:background="@drawable/button_bg"
+			android:layout_margin="5dp"
+			android:drawableLeft="@drawable/maps"
+			android:visibility="visible" />
+
+	</LinearLayout>
+
+	<WebView
+		android:layout_below="@+id/chart_download_button_lo"
+		android:id="@+id/chart_download_webview"
+		android:layout_width="fill_parent"
+		android:visibility="invisible"
+		android:layout_height="fill_parent"/>
+
 </RelativeLayout>

@@ -30,6 +30,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -66,7 +67,10 @@ public class ChartsDownloadActivity extends Activity {
     private Button mDLButton;
     private Button mUpdateButton;
     private Button mDeleteButton;
-    
+    private Button mLegendButton;
+
+    private WebView mWebview;
+
     /**
      * Shows warning message about Avare
      */
@@ -140,6 +144,10 @@ public class ChartsDownloadActivity extends Activity {
             }
         });
 
+        mWebview = (WebView)view.findViewById(R.id.chart_download_webview);
+        mWebview.loadUrl((com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "chart")));
+        mWebview.getSettings().setBuiltInZoomControls(true);
+
         mDLButton = (Button)view.findViewById(R.id.chart_download_button_dl);
         mDLButton.setOnClickListener(new OnClickListener() {
 
@@ -149,7 +157,22 @@ public class ChartsDownloadActivity extends Activity {
             }
             
         });
-        
+
+        mLegendButton = (Button)view.findViewById(R.id.chart_download_button_legend);
+        mLegendButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mWebview.getVisibility() == View.INVISIBLE) {
+                    mWebview.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mWebview.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
         mUpdateButton = (Button)view.findViewById(R.id.chart_download_button_update);
         mUpdateButton.setOnClickListener(new OnClickListener() {
 
