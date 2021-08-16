@@ -317,8 +317,9 @@ public class Runway {
         }
 
         // Concurrent modification exception - use array list
-        ArrayList<Runway> runways = new ArrayList<Runway>(destination.getRunways());
-        if (runways != null) {
+        LinkedList<Runway> rx = destination.getRunways();
+        if (rx != null) {
+            ArrayList<Runway> runways = new ArrayList<Runway>(rx);
             int xfactor;
             int yfactor;
 
