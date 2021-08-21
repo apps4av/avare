@@ -180,7 +180,14 @@ public class Traffic {
                     continue;
                 }
                 diff = (int)Math.round(diff / 100.0);
-                text += (diff > 0 ? "+" : "") + diff;
+                
+                if(diff > 0) {
+                    text += "+" + (diff < 10 ? "0" : "") + diff;
+                } else if(diff < 0) {
+                    text += "-" + (diff > -10 ? "0" : "") + Math.abs(diff);
+                } else {
+                    text += "0" + diff;
+                }
             }
 
             float radius;
