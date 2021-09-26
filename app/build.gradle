@@ -28,14 +28,15 @@ android {
     lintOptions {
         abortOnError false // for Travis CI
     }
+
     testOptions {
         unitTests.returnDefaultValues = true
 
         unitTests {
                 includeAndroidResources = true
         }
-
     }
+    useLibrary 'android.test.mock'
 
     applicationVariants.all { variant ->
         def productFlavor = variant.productFlavors[0] != null ? "${variant.productFlavors[0].name.capitalize()}" : ""
