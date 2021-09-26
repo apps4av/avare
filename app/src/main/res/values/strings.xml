@@ -569,5 +569,13 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="drawTrafficCirclesLabel">Traffic as Circles</string>
     <string name="drawTrafficCirclesSummary">Select to show ADSB traffic as circles instead of triangles</string>
     <string name="MyPlates">My Plates</string>
+    <string name="importExportSummary">Import / Export files to / from user data and map folders</string>
+    <string name="importExport">Import/Export files</string>
+    <string name="importToUserData">Import to user data folder</string>
+    <string name="importToMaps">Import to maps folder</string>
+    <string name="importPath">Path to append while importing</string>
+    <string name="copying">Copying...</string>
+    <string name="done">Done</string>
+    <string name="failed">Failed</string>
 
 </resources>
