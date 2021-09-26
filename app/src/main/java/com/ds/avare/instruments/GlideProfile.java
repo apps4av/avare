@@ -106,7 +106,12 @@ public class GlideProfile {
         }
         if(null != m) {
             metarWinds = WeatherHelper.getWindFromMetar(m.rawText);
-            metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
+            if (metarWinds != null && metarWinds.length > 0) {
+                metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
+            }
+            else {
+                metarWinds = null;
+            }
         }
 
         int stepSizeDirection =

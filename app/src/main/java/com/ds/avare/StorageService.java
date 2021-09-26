@@ -88,6 +88,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -757,7 +758,7 @@ public class StorageService extends Service {
     /**
      * @return
      */
-    public LinkedList<ShapeFileShape> getShapeShapes() {
+    public ArrayList<ShapeFileShape> getShapeShapes() {
         return mShapeFetcher.getShapes();
     }
 

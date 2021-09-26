@@ -35,6 +35,7 @@ import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.storage.Preferences;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -46,14 +47,14 @@ public class ShapeFetcher {
 
 
     private ShapeTask mTask;
-    private LinkedList<ShapeFileShape> mShapes;
+    private ArrayList<ShapeFileShape> mShapes;
     private Context mContext;
 
     /**
      *
      */
     public ShapeFetcher(Context ctx) {
-        mShapes = new LinkedList<ShapeFileShape>();
+        mShapes = new ArrayList<ShapeFileShape>();
         mContext = ctx;
     }
 
@@ -81,7 +82,7 @@ public class ShapeFetcher {
      * This will be non null if we have recieved shapes from internet
      * @return
      */
-    public LinkedList<ShapeFileShape> getShapes() {
+    public ArrayList<ShapeFileShape> getShapes() {
         return mShapes;
     }
 

@@ -88,6 +88,11 @@
  <a href="https://play.google.com/store/apps/details?id=com.apps4av.avarehelper&amp;hl=en">Avare External I/O Plugin</a><br>
 
  <h3>Avare Releases</h3>
+ <b>10.0.8</b><br>
+ <ul>
+  <li>Stop bug fix</li>
+  <li>Memory optimization for shape file</li>
+ </ul>
  <b>10.0.7</b><br>
  <ul>
   <li>(Near) now works without glide ring enabled</li>
@@ -125,26 +130,6 @@
  <b>10.0.1</b><br>
  <ul>
   <li>Stop bug fix in Checklists</li>
- </ul>
- <b>10.0.0</b><br>
- <ul>
-  <li>All user data is stored in user selectable folder</li>
-  <li>Bug fixes in W&B, Checklists</li>
- </ul>
- <b>9.0.2</b><br>
- <ul>
-  <li>Fixed weather in Plan</li>
- </ul>
- <b>9.0.1</b><br>
- <ul>
-  <li>Fixed chart update date issue</li>
- </ul>
- <b>9.0.0</b><br>
- <ul>
-  <li>Added moving nexrad</li>
-  <li>Improved glide profile</li>
-  <li>Added missing ODPs</li>
-  <li>Will not run in background anymore</li>
  </ul>
 
  <h3>Avare Help Choices</h3>
@@ -754,11 +739,11 @@ The Layer slide out button on the right side on Map screen allows users to selec
 
  <p>• <b>Loading and Displaying Esri Shape Files</b><br>
   Avare can load and display an Esri shape file (.shp) from the charts download folder. The user will place
-  the shape file to be loaded in the charts download folder (the folder in which Avare stores its charts). The shape
+  the shape file to be loaded in the user data folder (see Preferences). The shape
   file name must be specified in Preferences->Display->Shape File Name. The user must then restart Avare to load the shape file.
   Avare can be restarted by restarting the device, by using Avare preference "Leave Running", or from Android App Settings.
   An example countries shape file can be downloaded from <a href="http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip">Natural Earth</a>.
-  Note that large shape files may crash the app due to memory starvation.
+  Note that maximum points in a shape are limited to 1024, and maximum shapes in a file are limited to 256.
  </p>
 
  <p>• <b>Backing up data</b><br>
