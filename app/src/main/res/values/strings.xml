@@ -559,7 +559,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="open_settings">Touch to open settings</string>
     <string name="permission">Permissions</string>
-    <string name="permission_message">The app needs the location permission to show your location on the map.\nThe app needs the file permission to share files with your desktop.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without these permissions.</string>
+    <string name="permission_message">The app needs the location permission to show your location on the map.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without the permissions.</string>
     <string name="restart">Restart</string>
     <string name="Set1">Set 1</string>
     <string name="Set2">Set 2</string>
@@ -570,10 +570,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="drawTrafficCirclesSummary">Select to show ADSB traffic as circles instead of triangles</string>
     <string name="MyPlates">My Plates</string>
     <string name="importExportSummary">Import / Export files to / from user data and map folders</string>
-    <string name="importExport">Import/Export files</string>
-    <string name="importToUserData">Import to user data folder</string>
-    <string name="importToMaps">Import to maps folder</string>
-    <string name="importPath">Path to append while importing</string>
+    <string name="importExport">Import/Export app data</string>
+    <string name="importData">Import data</string>
+    <string name="exportData">Export data</string>
     <string name="copying">Copying...</string>
     <string name="done">Done</string>
     <string name="failed">Failed</string>

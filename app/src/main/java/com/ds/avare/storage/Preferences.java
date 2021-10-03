@@ -755,28 +755,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      * @return
      */
     public String getUserDataFolder() {
-        return mPref.getString(mContext.getString(R.string.UDWLocation), Helper.getExternalFolder(mContext));
+        return Helper.getExternalFolder(mContext);
     }
 
     /**
      * @return
      */
     public String getServerDataFolder() {
-        return mPref.getString(mContext.getString(R.string.Maps), Helper.getInternalFolder(mContext));
-    }
-
-
-    /**
-     */
-    public void setUserDataFolder(String folder) {
-        mPref.edit().putString(mContext.getString(R.string.UDWLocation), folder).commit();
-    }
-
-    /**
-     * @return
-     */
-    public void setServerDataFolder(String folder) {
-        mPref.edit().putString(mContext.getString(R.string.Maps), folder).commit();
+        return Helper.getInternalFolder(mContext);
     }
 
 

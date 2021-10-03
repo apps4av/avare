@@ -30,6 +30,7 @@ import android.view.WindowManager;
 import com.ds.avare.R;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
+import com.sromku.polygon.Line;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -76,12 +77,8 @@ public class Helper {
     }
 
     public static String getExternalFolder(Context context) {
-        try {
-            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + File.separator + context.getPackageName();
-        } catch (Exception e) {
-            return getInternalFolder(context);
-        }
-
+        // Since scoped storage there is no external folder
+        return getInternalFolder(context);
     }
 
     public static String getInternalFolder(Context context) {
@@ -537,6 +534,28 @@ public class Helper {
         catch (Exception e) {
             
         }
+    }
+
+    /**
+     * Recursively get dir contents
+     * @param dir
+     * @return
+     */
+    public static LinkedList<File> getDirectoryContents(File dir) throws Exception {
+        LinkedList<File> list = new LinkedList();
+        try {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(getDirectoryContents(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return list;
     }
 
     /**

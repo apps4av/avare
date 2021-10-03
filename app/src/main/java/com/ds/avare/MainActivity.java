@@ -192,8 +192,6 @@ public class MainActivity extends TabActivity {
         final Activity ctx = MainActivity.this;
         int PERMISSION_ALL = 101;
         String[] PERMISSIONS = {
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
         };
         boolean granted = true;

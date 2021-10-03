@@ -4,22 +4,26 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/import_export_edittext_import_path"
-        android:hint="@string/importPath"/>
+        android:layout_margin="10dp"
+        android:id="@+id/import_export_button_import"
+        android:text="@string/importData"/>
 
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/import_export_button_import_maps"
-        android:text="@string/importToMaps"/>
+        android:layout_margin="10dp"
+        android:id="@+id/import_export_button_export"
+        android:text="@string/exportData"/>
 
-    <Button
+    <ProgressBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/import_export_button_import_userdata"
-        android:text="@string/importToUserData"/>
+        android:max="100"
+        android:layout_margin="10dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/import_export_progress_bar"/>
 
 </LinearLayout>

@@ -30,12 +30,12 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/main_button"
             android:layout_below="@id/main_textview"
             android:text="@string/permission"/>
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
-            android:layout_above="@+id/tabscroll"
-            android:layout_height="fill_parent">
-        </FrameLayout>
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/tabscroll"></FrameLayout>
         <HorizontalScrollView 
             android:id="@+id/tabscroll"
             android:fillViewport="true"
