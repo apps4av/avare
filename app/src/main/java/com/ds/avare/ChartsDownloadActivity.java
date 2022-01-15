@@ -45,6 +45,8 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.RateApp;
+import com.ds.avare.utils.Telemetry;
+import com.ds.avare.utils.TelemetryParams;
 
 import java.io.File;
 
@@ -447,7 +449,12 @@ public class ChartsDownloadActivity extends Activity {
             DataSource.reset(getApplicationContext());
 
             if(msg.obj instanceof Download) {
+                Telemetry t = new Telemetry(getApplicationContext());
+                TelemetryParams p = new TelemetryParams();
                 if(Download.FAILED == result) {
+                    p.add(TelemetryParams.CHART_NAME, mName);
+                    p.add(TelemetryParams.STATUS, TelemetryParams.FAILED);
+                    t.sendEvent(Telemetry.CHART_DOWNLOAD, p);
                     try {
                         mProgressDialog.dismiss();
                     }
@@ -485,6 +492,9 @@ public class ChartsDownloadActivity extends Activity {
 
                 }
                 else if (Download.SUCCESS == result) {
+                    p.add(TelemetryParams.CHART_NAME, mName);
+                    p.add(TelemetryParams.STATUS, TelemetryParams.SUCCESS);
+                    t.sendEvent(Telemetry.CHART_DOWNLOAD, p);
                     try {
                         mProgressDialog.dismiss();
                     }

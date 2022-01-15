@@ -96,11 +96,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".ThreeDActivity"/>
         <activity android:name=".WnbActivity"/>
         <activity android:name=".ImportExportActivity" />
-        <activity android:name=".MessageActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
         <activity
             android:name="com.ds.avare.MainActivity"
             android:launchMode="singleTask"
