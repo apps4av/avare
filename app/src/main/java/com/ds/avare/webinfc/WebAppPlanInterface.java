@@ -85,7 +85,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_PREV_HIDE = 16;
     private static final int MSG_NEXT_HIDE = 17;
     private static final int MSG_PLAN_COUNT = 18;
-    		
+	private static final int MSG_UPDATE_WEATHER = 19;
+
     private static final int MAX_PLANS_SHOWN = 5;
     
     /** 
@@ -737,6 +738,7 @@ public class WebAppPlanInterface implements Observer {
         mWeatherThread.start();
     }
 
+
 	/**
      * Create a plan, guessing the types
      */
@@ -996,9 +998,14 @@ public class WebAppPlanInterface implements Observer {
             	String func = "javascript:set_plan_count(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
         	}
-        	else if(MSG_ERROR == msg.what) {	
+			else if(MSG_UPDATE_WEATHER == msg.what) {
+				String func = "javascript:update_weather(" + (String)msg.obj + ")";
+				mWebView.loadUrl(func);
+			}
+			else if(MSG_ERROR == msg.what) {
         		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
         	}
+
         }
     };
 
@@ -1134,17 +1141,9 @@ public class WebAppPlanInterface implements Observer {
             String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;
 
-
-            // Read weather template
-            String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
-            // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = getWeatherStoreFileName(mPref.getServerDataFolder());
-            Helper.writeFile(html.replace("placeholder", weather), fpath);
-            // Send to browser.
-
-			Intent intent = new Intent(mContext, WebActivity.class);
-			intent.putExtra("url", "file://" + fpath);
-			mContext.startActivity(intent);
+            // now send to webview
+			Message m = mHandler.obtainMessage(MSG_UPDATE_WEATHER, (Object)("'" + Helper.formatJsArgs(weather) + "'"));
+			mHandler.sendMessage(m);
 
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         	
@@ -1152,14 +1151,6 @@ public class WebAppPlanInterface implements Observer {
         }        
     }
     
-    /**
-     * Make a file where weather is put
-     * @return
-     */
-    private String getWeatherStoreFileName(String path) {
-    	return path + "/briefing.html";
-    }
-
 	/**
      * 
      */
