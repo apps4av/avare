@@ -45,11 +45,9 @@ public class MsfsConnection extends Connection {
      */
     private MsfsConnection() {
         super("MSFS Input");
-
         setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
-                byte[] buffer = new byte[16384];
 
                 com.ds.avare.nmea.DataBuffer nbuffer =
                         new com.ds.avare.nmea.DataBuffer(16384);

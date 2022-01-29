@@ -47,8 +47,6 @@ public class XplaneConnection extends Connection {
         setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
-                byte[] buffer = new byte[1024];
-
 
                 /*
                  * This state machine will keep trying to connect to

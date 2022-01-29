@@ -27,6 +27,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_toRightOf="@+id/main_connectwifi_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         android:text ="@string/DescDump1090"
         />
 
@@ -47,6 +48,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_below="@+id/main_connectwifi_image"
         android:layout_toRightOf="@+id/main_ip_address"
         android:layout_width="wrap_content"
+        android:textColor="#FFFFFF"
         android:layout_margin="10dp"
         android:layout_height="wrap_content"
         android:text="@string/Start"/>

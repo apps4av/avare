@@ -28,6 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_toRightOf="@+id/main_image_connect_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         android:text ="@string/DescAP"
         />
     <Spinner
@@ -52,6 +53,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_margin="10dp"
         android:layout_width="wrap_content"
         android:checked="true"
+        android:textColor="#FFFFFF"
         android:text="@string/Secure"
         android:layout_height="wrap_content"/>
     

@@ -88,6 +88,7 @@ public class BlueToothOutFragment extends Fragment {
                 String val = (String) mSpinner.getSelectedItem();
                 if (null != val && (!mBt.isConnected())) {
                     mConnectButton.setText(getString(R.string.Connect));
+                    mBt.setHelper(((IOActivity)getActivity()).getService());
                     mBt.connect(val, mSecureCb.isChecked());
                     if (mBt.isConnected()) {
                         mBt.start(new Preferences(getActivity()));

@@ -50,9 +50,6 @@ public class FileConnectionIn extends Connection {
             public Object callback(Object o, Object o1) {
                 BufferProcessor bp = new BufferProcessor();
 
-
-                byte[] buffer = new byte[8192];
-
                 /*
                  * This state machine will keep trying to connect to
                  * ADBS/GPS receiver

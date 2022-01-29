@@ -46,7 +46,7 @@ public class IOActivity extends Activity {
 
     private Preferences mPref;
 
-    private Fragment[] mFragments = new Fragment[11];
+    private Fragment[] mFragments = new Fragment[9];
 
     private WifiManager.MulticastLock mMulticastLock;
 
@@ -76,6 +76,10 @@ public class IOActivity extends Activity {
         public void enabledCallback(boolean enabled) {
         }
     };
+
+    public StorageService getService() {
+        return mService;
+    }
 
     /** Defines callbacks for service binding, passed to bindService() */
     /**
@@ -130,7 +134,6 @@ public class IOActivity extends Activity {
         mFragments[pos++] = new FileFragment();
         mFragments[pos++] = new GPSSimulatorFragment();
         mFragments[pos++] = new USBInFragment();
-        mFragments[pos++] = new PreferencesFragment();
         mFragments[pos++] = new Dump1090Fragment();
 
         for(int i = 0; i < pos; i++) {
@@ -162,7 +165,6 @@ public class IOActivity extends Activity {
                 getString(R.string.Play), 
                 getString(R.string.GPSSIM), 
                 getString(R.string.USBIN),
-                getString(R.string.Preferences),
                 "Dump1090"
                 });
         mIO.setAdapter(adapter);
@@ -237,10 +239,6 @@ public class IOActivity extends Activity {
                     fragmentTransaction.replace(R.id.detailFragment, usbin);
                     break;
                 case 8:
-                    PreferencesFragment pref = (PreferencesFragment) mFragments[id];
-                    fragmentTransaction.replace(R.id.detailFragment, pref);
-                    break;
-                case 9:
                     Dump1090Fragment d1090 = (Dump1090Fragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, d1090);
             }

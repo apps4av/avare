@@ -25,6 +25,7 @@ Redistribution and use in source and binary forms, with or without modification,
         />
     <TextView
         android:layout_margin="10dp"
+        android:textColor="#FFFFFF"
         android:layout_toRightOf="@+id/main_connect_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,6 +54,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:text="@string/Secure"
         android:checked="true"
+        android:textColor="#FFFFFF"
         android:layout_height="wrap_content"/>
            
     <Button

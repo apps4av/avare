@@ -84,6 +84,7 @@ public class GPSSimulatorFragment extends Fragment {
                     mGPSSim.disconnect();
                 }
                 else {
+                    mGPSSim.setHelper(((IOActivity)getActivity()).getService());
                     mGPSSim.connect(
                             getValidValue(mTextLat.getText().toString()) + "," +
                                     getValidValue(mTextLon.getText().toString()) + "," +

@@ -37,8 +37,6 @@ public class USBConnectionIn extends Connection {
     private static UsbManager mUsbManager;
     private String mParams;
     private UsbSerialDriver mDriver = null;
-
-
     /**
      * 
      */
@@ -48,8 +46,6 @@ public class USBConnectionIn extends Connection {
             @Override
             public Object callback(Object o, Object o1) {
                 BufferProcessor bp = new BufferProcessor();
-
-                byte[] buffer = new byte[8192];
 
                 /*
                  * This state machine will keep trying to connect to

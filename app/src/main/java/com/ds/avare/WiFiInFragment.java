@@ -63,6 +63,7 @@ public class WiFiInFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (((CheckBox) v).isChecked()) {
+                    mWifi.setHelper(((IOActivity)getActivity()).getService());
                     mWifi.connect(mTextWifiPort.getText().toString(), false);
                     mWifi.start(new Preferences(getActivity()));
                 }

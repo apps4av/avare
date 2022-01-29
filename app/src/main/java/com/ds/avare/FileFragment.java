@@ -68,6 +68,7 @@ public class FileFragment extends Fragment {
             Uri uri = null;
             if (resultData != null) {
                 mUri = resultData.getData();
+                mFile.setHelper(((IOActivity)getActivity()).getService());
                 mFile.connect(mUri.toString(), false);
                 if(mFile.isConnected()) {
                     mFile.start(new Preferences(getActivity()));

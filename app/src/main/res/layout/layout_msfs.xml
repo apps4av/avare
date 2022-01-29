@@ -28,6 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/main_msfs_ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         android:text ="@string/DescMSFS"
         />
     <com.ds.avare.storage.SavedEditText
@@ -44,6 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_toRightOf="@+id/main_msfs_port"
         android:layout_below="@+id/main_image_msfs"
         android:layout_margin="10dp"
+        android:textColor="#FFFFFF"
         android:layout_height="wrap_content"
         android:text="@string/Listen"/>
 </RelativeLayout>

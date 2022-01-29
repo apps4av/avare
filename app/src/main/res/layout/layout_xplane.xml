@@ -29,6 +29,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text ="@string/DescFS"
+        android:textColor="#FFFFFF"
         />
     <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_xplane_port"
@@ -45,5 +46,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_below="@+id/main_image_xplane"
         android:layout_margin="10dp"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         android:text="@string/Listen"/>
 </RelativeLayout>

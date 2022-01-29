@@ -28,6 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text ="@string/DescExtWifi"
+        android:textColor="#FFFFFF"
         />
     <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_wifi_port"
@@ -37,12 +38,14 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_below="@+id/main_connectwifi_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
     <CheckBox
         android:id="@+id/main_button_connectwifi"
         android:layout_below="@+id/main_connectwifi_image"
         android:layout_toRightOf="@+id/main_wifi_port"
         android:layout_width="wrap_content"
         android:layout_margin="10dp"
+        android:textColor="#FFFFFF"
         android:layout_height="wrap_content"
         android:text="@string/Listen"/>
     
