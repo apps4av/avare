@@ -1,0 +1,159 @@
+<!--  
+Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/main_gpssim"
+    android:background="@drawable/border_green_small">
+
+    <ImageView
+        android:contentDescription="@string/GPSSIM"
+        android:id="@+id/main_image_gpssim"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/gps_sim"
+        />
+    <TextView
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@+id/main_image_gpssim"
+        android:id="@+id/main_gpssim_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text ="@string/DescGPSSim"
+        />
+    
+    <LinearLayout
+        android:id="@+id/lat_layout"
+        android:layout_marginLeft="10dp"
+		android:layout_below="@+id/main_image_gpssim"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+
+	    <TextView
+	        android:id="@+id/main_gpssim_heading_lat"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text ="@string/Lat"
+	        />    
+	    <com.apps4av.avarehelper.storage.SavedEditText
+	        android:id="@+id/main_gpssim_lat"
+			android:text="42.14"
+	        android:inputType="numberDecimal|numberSigned"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>
+	    
+	    <TextView
+            android:id="@+id/main_gpssim_heading_lon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text ="@string/Lon"
+            />    
+        <com.apps4av.avarehelper.storage.SavedEditText
+            android:id="@+id/main_gpssim_lon"
+			android:text="-71.22"
+            android:inputType="numberDecimal|numberSigned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+	    
+    </LinearLayout>    
+    
+    
+    <LinearLayout
+        android:id="@+id/heading_layout"
+		android:layout_below="@+id/lat_layout"
+        android:layout_marginLeft="10dp"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+
+	    <TextView
+	        android:id="@+id/main_gpssim_heading_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text ="@string/Heading"
+	        />    
+	    <com.apps4av.avarehelper.storage.SavedEditText
+	        android:id="@+id/main_gpssim_heading"
+	        android:inputType="number"
+			android:text="45"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>
+	    
+	    <TextView
+            android:id="@+id/main_gpssim_speed_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text ="@string/Speed"
+            />     
+        <com.apps4av.avarehelper.storage.SavedEditText
+            android:id="@+id/main_gpssim_speed"
+            android:inputType="number"
+			android:text="150"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>   
+	    
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/altitude_layout"
+		android:layout_below="@+id/heading_layout"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">    
+		
+	    <TextView
+	        android:layout_margin="10dp"
+	        android:id="@+id/main_gpssim_altitude_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text ="@string/Altitude"
+	        />     
+	    <com.apps4av.avarehelper.storage.SavedEditText
+	        android:id="@+id/main_gpssim_altitude"
+	        android:inputType="number"
+			android:text="4000"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"/>   
+    </LinearLayout>    
+    
+	<com.apps4av.avarehelper.storage.SavedCheckbox
+		android:id="@+id/main_button_gpssim_fly_to"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/altitude_layout"
+		android:text="@string/FlyTo"/>	
+		
+	<com.apps4av.avarehelper.storage.SavedCheckbox
+		android:id="@+id/main_button_gpssim_land_at"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/main_button_gpssim_fly_to"
+		android:text="@string/LandAt"/>	
+		
+    <LinearLayout
+        android:id="@+id/buttons_layout"
+		android:layout_below="@+id/main_button_gpssim_land_at"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">  
+		
+	    <Button
+	        android:id="@+id/main_button_gpssim_start"
+	        android:layout_width="wrap_content"
+	        android:layout_margin="10dp"
+	        android:layout_height="wrap_content"
+	        android:text="@string/Start"/>
+	</LinearLayout>
+</RelativeLayout>
+    
