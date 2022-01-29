@@ -30,7 +30,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text ="@string/DescUSBIN"
         />
     
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/usbin_params_text"
         android:layout_margin="10dp"
         android:inputType="text"
@@ -58,7 +58,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Save"/>
     
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/usbin_file_name_save"
         android:layout_margin="10dp"
         android:inputType="textUri"

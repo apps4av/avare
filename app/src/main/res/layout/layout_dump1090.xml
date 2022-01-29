@@ -30,7 +30,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text ="@string/DescDump1090"
         />
 
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_ip_address"
         android:layout_width="230dp"
         android:layout_height="wrap_content"

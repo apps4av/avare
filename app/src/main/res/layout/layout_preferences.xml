@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:layout_width="match_parent"
         android:id="@+id/preferences_edittext"
         android:hint="@string/filter_hint"

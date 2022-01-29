@@ -46,7 +46,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_height="wrap_content"
 	        android:text ="@string/Lat"
 	        />    
-	    <com.apps4av.avarehelper.storage.SavedEditText
+	    <com.ds.avare.storage.SavedEditText
 	        android:id="@+id/main_gpssim_lat"
 			android:text="42.14"
 	        android:inputType="numberDecimal|numberSigned"
@@ -59,7 +59,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:text ="@string/Lon"
             />    
-        <com.apps4av.avarehelper.storage.SavedEditText
+        <com.ds.avare.storage.SavedEditText
             android:id="@+id/main_gpssim_lon"
 			android:text="-71.22"
             android:inputType="numberDecimal|numberSigned"
@@ -83,7 +83,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_height="wrap_content"
 	        android:text ="@string/Heading"
 	        />    
-	    <com.apps4av.avarehelper.storage.SavedEditText
+	    <com.ds.avare.storage.SavedEditText
 	        android:id="@+id/main_gpssim_heading"
 	        android:inputType="number"
 			android:text="45"
@@ -96,7 +96,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_height="wrap_content"
             android:text ="@string/Speed"
             />     
-        <com.apps4av.avarehelper.storage.SavedEditText
+        <com.ds.avare.storage.SavedEditText
             android:id="@+id/main_gpssim_speed"
             android:inputType="number"
 			android:text="150"
@@ -119,7 +119,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_height="wrap_content"
 	        android:text ="@string/Altitude"
 	        />     
-	    <com.apps4av.avarehelper.storage.SavedEditText
+	    <com.ds.avare.storage.SavedEditText
 	        android:id="@+id/main_gpssim_altitude"
 	        android:inputType="number"
 			android:text="4000"
@@ -127,14 +127,14 @@ Redistribution and use in source and binary forms, with or without modification,
 	        android:layout_height="wrap_content"/>   
     </LinearLayout>    
     
-	<com.apps4av.avarehelper.storage.SavedCheckbox
+	<com.ds.avare.storage.SavedCheckbox
 		android:id="@+id/main_button_gpssim_fly_to"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/altitude_layout"
 		android:text="@string/FlyTo"/>	
 		
-	<com.apps4av.avarehelper.storage.SavedCheckbox
+	<com.ds.avare.storage.SavedCheckbox
 		android:id="@+id/main_button_gpssim_land_at"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

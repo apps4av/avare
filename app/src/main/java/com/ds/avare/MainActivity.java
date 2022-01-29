@@ -71,6 +71,7 @@ public class MainActivity extends TabActivity {
     public static final int tabWXB = 9;
     public static final int tabTools = 10;
     public static final int tabWnb = 11;
+    public static final int tabIo = 12;
 
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
@@ -124,6 +125,10 @@ public class MainActivity extends TabActivity {
 
         if (0 != (tabItems & (1 << tabWnb))) {
             setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabIo))) {
+            setupTab(new TextView(this), getString(R.string.Io), new Intent(this, IOActivity.class), getIntent());
         }
 
         // Hide keyboard from another tab

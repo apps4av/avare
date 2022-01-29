@@ -30,7 +30,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:text ="@string/DescFile"
         />
 
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_file_name"
         android:layout_margin="10dp"
         android:inputType="textUri"

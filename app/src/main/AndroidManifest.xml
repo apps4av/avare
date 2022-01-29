@@ -84,6 +84,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".LocationActivity" />
         <activity android:name=".NearestActivity" />
         <activity android:name=".PlatesActivity" />
+        <activity android:name=".IOActivity" />
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".FaaFileActivity" />

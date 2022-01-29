@@ -45,7 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Connect"/>
 
-    <com.apps4av.avarehelper.storage.SavedCheckbox
+    <com.ds.avare.storage.SavedCheckbox
         android:id="@+id/main_cb_btout"
         android:layout_toRightOf="@+id/main_button_connect_out"
         android:layout_below="@+id/main_spinner_out"

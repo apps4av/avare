@@ -334,6 +334,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
+    <string name="prefTabIo">&quot;prefTabIo&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -619,4 +620,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Secure">Secure</string>
     <string name="Preferences">Preferences</string>
     <string name="filter_hint">Filter messages</string>
+    <string name="Io">IO</string>
+    <string name="IoSummary">Input/Output</string>
 </resources>

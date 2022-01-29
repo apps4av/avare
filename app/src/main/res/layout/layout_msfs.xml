@@ -30,7 +30,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text ="@string/DescMSFS"
         />
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_msfs_port"
         android:layout_margin="10dp"
         android:inputType="number"

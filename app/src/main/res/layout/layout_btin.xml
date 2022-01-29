@@ -45,7 +45,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Connect"/>
 
-    <com.apps4av.avarehelper.storage.SavedCheckbox
+    <com.ds.avare.storage.SavedCheckbox
         android:id="@+id/main_cb_btin"
         android:layout_below="@+id/main_spinner"
         android:layout_toRightOf="@+id/main_button_connect"
@@ -63,7 +63,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_height="wrap_content"
         android:text="@string/Save"/>
     
-    <com.apps4av.avarehelper.storage.SavedEditText
+    <com.ds.avare.storage.SavedEditText
         android:id="@+id/main_file_name_save"
         android:layout_margin="10dp"
         android:inputType="textUri"
