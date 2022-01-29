@@ -37,16 +37,23 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.Logger;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.TimeZone;
+
 public class IOActivity extends Activity {
     
     private TextView mTextLog;
     private Spinner mIO;
     private StorageService mService;
+    private Location mCurrentLocation;
+    private GpsStatus mCurrentGpsStatus;
 
 
     private Preferences mPref;
 
-    private Fragment[] mFragments = new Fragment[9];
+    private Fragment[] mFragments = new Fragment[10];
 
     private WifiManager.MulticastLock mMulticastLock;
 
@@ -62,23 +69,36 @@ public class IOActivity extends Activity {
 
         @Override
         public void statusCallback(GpsStatus gpsStatus) {
+            mCurrentGpsStatus = gpsStatus;
         }
 
         @Override
         public void locationCallback(Location location) {
+            mCurrentLocation = location;
         }
 
         @Override
         public void timeoutCallback(boolean timeout) {
+            if(timeout) {
+                mCurrentLocation = null;
+                mCurrentGpsStatus = null;
+            }
         }
 
         @Override
         public void enabledCallback(boolean enabled) {
+
         }
     };
 
     public StorageService getService() {
         return mService;
+    }
+    public Location getLocation() {
+        return mCurrentLocation;
+    }
+    public GpsStatus getGpsStatus() {
+        return mCurrentGpsStatus;
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -99,6 +119,7 @@ public class IOActivity extends Activity {
             StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
+
         }
 
         /* (non-Javadoc)
@@ -106,6 +127,7 @@ public class IOActivity extends Activity {
          */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
+            mService = null;
         }
     };
 
@@ -121,7 +143,6 @@ public class IOActivity extends Activity {
         Logger.setContext(this);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(view);
-
         mPref = new Preferences(getApplicationContext());
 
         Bundle args = new Bundle();
@@ -135,6 +156,7 @@ public class IOActivity extends Activity {
         mFragments[pos++] = new GPSSimulatorFragment();
         mFragments[pos++] = new USBInFragment();
         mFragments[pos++] = new Dump1090Fragment();
+        mFragments[pos++] = new ToolsFragment();
 
         for(int i = 0; i < pos; i++) {
             mFragments[i].setArguments(args);
@@ -165,7 +187,8 @@ public class IOActivity extends Activity {
                 getString(R.string.Play), 
                 getString(R.string.GPSSIM), 
                 getString(R.string.USBIN),
-                "Dump1090"
+                "Dump1090",
+                getString(R.string.Tools)
                 });
         mIO.setAdapter(adapter);
         mIO.setSelection(mPref.getFragmentIndex());
@@ -241,6 +264,9 @@ public class IOActivity extends Activity {
                 case 8:
                     Dump1090Fragment d1090 = (Dump1090Fragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, d1090);
+                case 9:
+                    ToolsFragment tools = (ToolsFragment) mFragments[id];
+                    fragmentTransaction.replace(R.id.detailFragment, tools);
             }
 
             fragmentTransaction.commit();

@@ -331,7 +331,6 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
-    <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
     <string name="prefTabIo">&quot;prefTabIo&quot;</string>
@@ -587,8 +586,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="LandAt">Land at Destination (if available)</string>
     <string name="Heading">Hdg.\u00b0</string>
     <string name="Speed">Spd. kt</string>
-    <string name="File">/sdcard/Download/</string>
-    <string name="FileSave">/sdcard/Download/out.bin</string>
+    <string name="FileRead">in.bin</string>
+    <string name="FileSave">out.bin</string>
     <string name="Output">---- Output ----\n</string>
     <string name="Disconnect">Disconnect</string>
     <string name="Listen">Listen</string>

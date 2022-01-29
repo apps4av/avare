@@ -802,10 +802,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             mTabs |= 1 << MainActivity.tabChecklist;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
             mTabs |= 1 << MainActivity.tabPfd;
         }

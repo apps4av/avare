@@ -79,7 +79,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".SearchActivity" />
         <activity android:name=".PlanActivity" />
         <activity android:name=".AirportActivity" />
-        <activity android:name=".SatelliteActivity" />
         <activity android:name=".WebActivity" />
         <activity android:name=".LocationActivity" />
         <activity android:name=".NearestActivity" />
