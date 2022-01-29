@@ -264,9 +264,11 @@ public class IOActivity extends Activity {
                 case 8:
                     Dump1090Fragment d1090 = (Dump1090Fragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, d1090);
+                    break;
                 case 9:
                     ToolsFragment tools = (ToolsFragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, tools);
+                    break;
             }
 
             fragmentTransaction.commit();

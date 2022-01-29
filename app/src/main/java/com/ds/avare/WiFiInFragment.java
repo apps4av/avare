@@ -27,6 +27,8 @@ import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedEditText;
 
+import java.io.File;
+
 /**
  * 
  * @author zkhan
@@ -85,7 +87,8 @@ public class WiFiInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    mWifi.setFileSave(val);
+                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    mWifi.setFileSave(fl);
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

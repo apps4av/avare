@@ -28,6 +28,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedCheckbox;
 import com.ds.avare.storage.SavedEditText;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -115,7 +116,8 @@ public class BlueToothInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    mBt.setFileSave(val);
+                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    mBt.setFileSave(fl);
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

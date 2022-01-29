@@ -26,6 +26,8 @@ import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedEditText;
 
+import java.io.File;
+
 /**
  * 
  * @author zkhan
@@ -100,7 +102,8 @@ public class USBInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    mUSB.setFileSave(val);
+                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    mUSB.setFileSave(fl);
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

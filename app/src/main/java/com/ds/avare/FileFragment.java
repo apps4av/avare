@@ -30,6 +30,8 @@ import com.ds.avare.connections.FileConnectionIn;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedEditText;
 
+import java.io.File;
+
 /**
  * 
  * @author zkhan
@@ -108,9 +110,10 @@ public class FileFragment extends Fragment {
                  * Connect to the given file
                  */
                 String val = mTextFile.getText().toString();
+                String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
                 if(null != val && (!mFile.isConnected())) {                    
                     mConnectButton.setText(mContext.getString(R.string.Start));
-                    openFile(Uri.parse(val));
+                    openFile(Uri.parse(fl));
                 }
             }
         });
