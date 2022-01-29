@@ -535,19 +535,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>
     <string name="UseNmeaAltitudeSummary">Select to use NMEA altitude from the internal GPS, when internal GPS is used as source</string>
-    <string name="ConnectHelp">
-        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then restart the app.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
-    </string>
-    <string name="WIFI">WiFi</string>
-    <string name="ConnectWIFI">Connect WiFi</string>
-    <string name="WIFIPort">WIFIPort</string>
-    <string name="WIFIPortLabel">External WiFi Port</string>
-    <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>
 
-    <string name="BTOut">BTOut</string>
-    <string name="AutopilotBTDevice">APBTDevice</string>
-    <string name="AutopilotBTDeviceLabel">Autopilot Bluetooth Device</string>
-    <string name="AutopilotBTDeviceSummary">Select a bluetooth device to receive NMEA autopilot data</string>
 
     <string name="ReverseAhrsRoll">ReverseAhrsRoll</string>
     <string name="ReverseAhrsRollLabel">AHRS Roll Reverse</string>
@@ -622,4 +610,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="filter_hint">Filter messages</string>
     <string name="Io">IO</string>
     <string name="IoSummary">Input/Output</string>
+    <string name="WIFI">WiFi</string>
 </resources>

@@ -152,7 +152,6 @@ public class LocationActivity extends Activity implements Observer {
     private String mAirportPressed;
     private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
-    private WifiConnection mWifi;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -404,10 +403,6 @@ public class LocationActivity extends Activity implements Observer {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
-
-        mWifi = WifiConnection.getInstance(this);
-        mWifi.connect(mPref.getWiFiPort(),false);
-        mWifi.start(mPref);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -1213,8 +1208,6 @@ public class LocationActivity extends Activity implements Observer {
                 setTrackState(false);
             }
 
-            mWifi.setHelper(mService);
-
         }
 
         /* (non-Javadoc)
@@ -1445,9 +1438,6 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        mWifi.stop();
-        mWifi.disconnect();
     }
 
     /**

@@ -32,7 +32,6 @@ import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.Logger;
 import com.ds.avare.views.MemView;
 import com.ds.avare.views.SatelliteView;
 
@@ -176,8 +175,6 @@ public class SatelliteActivity extends Activity  {
 
         mService = null;
 
-        Logger.setContext(this);
-        Logger.setTextView((TextView)view.findViewById(R.id.satellite_textview_logger));
 
     }
 

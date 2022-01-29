@@ -1054,13 +1054,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
     }
 
-    public String getWiFiPort() {
-        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
-    }
-
-    public String getAutopilotBluetoothDevice() {
-        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
-    }
+//    public String getAutopilotBluetoothDevice() {
+//        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
+//    }
 
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
