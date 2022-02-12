@@ -577,7 +577,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="USBIN">USB In</string>
     <string name="DUMP1090">Dump 1090</string>
     <string name="XPlanePort">49002</string>
-    <string name="WifiPort">43211</string>
+    <string name="WifiPort">4000</string>
     <string name="Apply">Apply</string>
     <string name="FlyTo">Fly To Destination (if available)</string>
     <string name="LandAt">Land at Destination (if available)</string>
