@@ -15,18 +15,22 @@ import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.ds.avare.connections.Connection;
 import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedCheckbox;
 import com.ds.avare.storage.SavedEditText;
+import com.ds.avare.utils.Logger;
 
 import java.io.File;
 import java.util.List;
@@ -66,13 +70,19 @@ public class BlueToothInFragment extends Fragment {
          * List of BT devices is same
          */
         mBt = ConnectionFactory.getConnection("BlueToothConnectionIn", mContext);
-        
-        mList = mBt.getDevices();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-                android.R.layout.simple_spinner_item, mList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpinner.setAdapter(adapter);
+        mList = mBt.getDevices();
+        if(mList.size() != 0) {
+            // visual artifact avoid
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
+                    android.R.layout.simple_spinner_item, mList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            mSpinner.setAdapter(adapter);
+        }
+        else {
+            Logger.Logit(getString(R.string.NoBtDevice));
+        }
 
         mSecureCb = (SavedCheckbox) view.findViewById(R.id.main_cb_btin);
         mConnectButton = (Button) view.findViewById(R.id.main_button_connect);

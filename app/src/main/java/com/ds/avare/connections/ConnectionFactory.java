@@ -35,7 +35,7 @@ public class ConnectionFactory {
             return BlueToothConnectionIn.getInstance(ctx);
         }
         if(type.equals("BlueToothConnectionOut")) {
-            return BTOutConnection.getInstance(ctx);
+            return BlueToothConnectionOut.getInstance(ctx);
         }
         if(type.equals("FileConnectionIn")) {
             return FileConnectionIn.getInstance(ctx);

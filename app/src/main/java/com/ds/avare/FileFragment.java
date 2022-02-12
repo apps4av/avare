@@ -43,42 +43,6 @@ public class FileFragment extends Fragment {
     private Context mContext;
     private Button mConnectButton;
     private SavedEditText mTextFile;
-    private Uri mUri;
-
-    // Request code for selecting a document.
-    private static final int PICK_FILE = 2;
-
-    private void openFile(Uri pickerInitialUri) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/octet-stream");
-
-        // Optionally, specify a URI for the file that should appear in the
-        // system file picker when it loads.
-        intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
-
-        startActivityForResult(intent, PICK_FILE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent resultData) {
-        if (requestCode == PICK_FILE
-                && resultCode == Activity.RESULT_OK) {
-            // The result data contains a URI for the document or directory that
-            // the user selected.
-            Uri uri = null;
-            if (resultData != null) {
-                mUri = resultData.getData();
-                mFile.setHelper(((IOActivity)getActivity()).getService());
-                mFile.connect(mUri.toString(), false);
-                if(mFile.isConnected()) {
-                    mFile.start(new Preferences(getActivity()));
-                }
-                setStates();
-            }
-        }
-    }
 
 
     @Override
@@ -110,10 +74,16 @@ public class FileFragment extends Fragment {
                  * Connect to the given file
                  */
                 String val = mTextFile.getText().toString();
-                String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                Preferences pref = new Preferences(getActivity());
+                String fl = pref.getUserDataFolder() + File.separatorChar + val;
                 if(null != val && (!mFile.isConnected())) {                    
                     mConnectButton.setText(mContext.getString(R.string.Start));
-                    openFile(Uri.parse(fl));
+                    mFile.setHelper(((IOActivity)getActivity()).getService());
+                    mFile.connect(fl, false);
+                    if(mFile.isConnected()) {
+                        mFile.start(pref);
+                    }
+                    setStates();
                 }
             }
         });

@@ -19,6 +19,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Logger;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -133,8 +134,7 @@ public class FileConnectionIn extends Connection {
         Logger.Logit("Getting input stream");
 
         try {
-            Uri uri = Uri.parse(mFileName);
-            mStream = mContext.getContentResolver().openInputStream(uri);
+            mStream = new FileInputStream(mFileName);
         }
         catch (Exception e) {
             Logger.Logit("Failed! Input stream error");

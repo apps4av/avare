@@ -26,6 +26,7 @@ import com.ds.avare.connections.Connection;
 import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedCheckbox;
+import com.ds.avare.utils.Logger;
 
 import java.util.List;
 
@@ -58,13 +59,18 @@ public class BlueToothOutFragment extends Fragment {
         mBt = ConnectionFactory.getConnection("BlueToothConnectionOut", mContext);
 
         mList = mBt.getDevices();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
-                android.R.layout.simple_spinner_item, mList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if(mList.size() != 0) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
+                    android.R.layout.simple_spinner_item, mList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpinner = (Spinner)view.findViewById(R.id.main_spinner_out);
+            mSpinner = (Spinner) view.findViewById(R.id.main_spinner_out);
 
-        mSpinner.setAdapter(adapter);
+            mSpinner.setAdapter(adapter);
+        }
+        else {
+            Logger.Logit(getString(R.string.NoBtDevice));
+        }
 
         mSecureCb = (SavedCheckbox) view.findViewById(R.id.main_cb_btout);
         

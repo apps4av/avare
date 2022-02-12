@@ -610,4 +610,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Io">IO</string>
     <string name="IoSummary">Input/Output</string>
     <string name="WIFI">WiFi</string>
+    <string name="NoBtDevice">Enable Bluetooth, and pair a device first.</string>
 </resources>
