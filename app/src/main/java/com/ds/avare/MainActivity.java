@@ -68,9 +68,8 @@ public class MainActivity extends TabActivity {
     public static final int tabPfd = 6;
     public static final int tabThreeD = 7;
     public static final int tabChecklist = 8;
-    public static final int tabWXB = 9;
-    public static final int tabWnb = 10;
-    public static final int tabIo = 11;
+    public static final int tabWnb = 9;
+    public static final int tabIo = 10;
 
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
@@ -112,10 +111,6 @@ public class MainActivity extends TabActivity {
 
         if (0 != (tabItems & (1 << tabChecklist))) {
             setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
-        }
-
-        if (0 != (tabItems & (1 << tabWXB))) {
-            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
         }
 
         if (0 != (tabItems & (1 << tabWnb))) {
