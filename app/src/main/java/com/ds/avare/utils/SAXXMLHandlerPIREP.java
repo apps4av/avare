@@ -12,12 +12,11 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * 
@@ -40,7 +39,7 @@ public class SAXXMLHandlerPIREP extends DefaultHandler {
  
     // Event Handlers
     public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException {
+            Attributes attributes) {
         mTempVal = "";
         if(qName.equalsIgnoreCase("PIREP")) {
             mTempText = new String();
@@ -48,13 +47,11 @@ public class SAXXMLHandlerPIREP extends DefaultHandler {
         }
     }
  
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) {
         mTempVal += new String(ch, start, length);
     }
  
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         if (qName.equalsIgnoreCase("raw_text")) {
             mTempText = mTempVal;
         }

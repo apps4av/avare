@@ -13,13 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Build;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,14 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
+
+
+import androidx.core.app.ActivityCompat;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -48,6 +53,8 @@ public class MainActivity extends TabActivity {
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
     Preferences mPref;
+    TextView mTextView;
+    Button mButton;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -62,13 +69,93 @@ public class MainActivity extends TabActivity {
     public static final int tabThreeD = 7;
     public static final int tabChecklist = 8;
     public static final int tabWXB = 9;
-    public static final int tabTools = 10;
-    public static final int tabWnb = 11;
+    public static final int tabWnb = 10;
+    public static final int tabIo = 11;
+
+    public void setup() {
+        mTextView.setVisibility(View.INVISIBLE);
+        mButton.setVisibility(View.INVISIBLE);
+
+        // start service
+        final Intent intent = new Intent(MainActivity.this, StorageService.class);
+        startService(intent);
+
+        /*
+         * Make a tab host
+         */
+        mTabHost = getTabHost();
+
+        /*
+         * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
+         * also add the new tab to the preferences.getTabs() method.
+         */
+        long tabItems = mPref.getTabs();
+
+        // We will always show the main chart tab
+        setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
+        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
+
+        if (0 != (tabItems & (1 << tabNear))) {
+            setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabPfd))) {
+            setupTab(new TextView(this), getString(R.string.PFD), new Intent(this, PfdActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabThreeD))) {
+            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabChecklist))) {
+            setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabWXB))) {
+            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabWnb))) {
+            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
+        }
+
+        if (0 != (tabItems & (1 << tabIo))) {
+            setupTab(new TextView(this), getString(R.string.Io), new Intent(this, IOActivity.class), getIntent());
+        }
+
+        // Hide keyboard from another tab
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            public void onTabChanged(String tabId) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+            }
+        });
+
+    }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // all need to be 0
+        int res = 0;
+        if(permissions.length > 0) {
+            if(permissions.length > 0) {
+                for (int g : grantResults) {
+                    res = res + g;
+                }
+            }
+        }
+        if(0 == res) {
+            setup();
+        }
+    }
+
     /**
-     * 
+     *
      */
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         
         mPref = new Preferences(this);
@@ -76,9 +163,20 @@ public class MainActivity extends TabActivity {
         super.onCreate(savedInstanceState);
          
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-                
+
         setContentView(R.layout.main);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
+        mTextView = (TextView)findViewById(R.id.main_textview);
+        mButton = (Button)findViewById(R.id.main_button);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        });
         ViewTreeObserver vto = mScrollView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -90,63 +188,27 @@ public class MainActivity extends TabActivity {
             }
         });
 
-
-        final Intent intent = new Intent(MainActivity.this, StorageService.class);
-        startService(intent);
-
-        /*
-         * Make a tab host
-         */
-        mTabHost = getTabHost();
- 
-        /*
-         * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
-         * also add the new tab to the preferences.getTabs() method.
-         */
-        long tabItems = mPref.getTabs();
-
-        // We will always show the main chart tab
-    	setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Plates), new Intent(this, PlatesActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.AFD), new Intent(this, AirportActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Find), new Intent(this, SearchActivity.class), getIntent());
-        setupTab(new TextView(this), getString(R.string.Plan), new Intent(this, PlanActivity.class), getIntent());
-
-        if(0 != (tabItems & (1 << tabNear))) {
-        	setupTab(new TextView(this), getString(R.string.Near), new Intent(this, NearestActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabPfd))) {
-            setupTab(new TextView(this), getString(R.string.PFD), new Intent(this, PfdActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabThreeD))) {
-            setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabChecklist))) {
-        	setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabWXB))) {
-            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabTools))) {
-        	setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
-        }
-
-        if(0 != (tabItems & (1 << tabWnb))) {
-            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
-        }
-
-        // Hide keyboard from another tab
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            public void onTabChanged(String tabId) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+        // check permissions
+        final Activity ctx = MainActivity.this;
+        int PERMISSION_ALL = 101;
+        String[] PERMISSIONS = {
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+        };
+        boolean granted = true;
+        for (String permission : PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(ctx, permission) != PackageManager.PERMISSION_GRANTED) {
+                granted = false;
             }
-        });
+        }
+        if (!granted) {
+            ActivityCompat.requestPermissions(ctx, PERMISSIONS, PERMISSION_ALL);
+            mTextView.setVisibility(View.VISIBLE);
+            mButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            //granted
+            setup();
+        }
 
     }
     
@@ -195,17 +257,10 @@ public class MainActivity extends TabActivity {
     @Override 
     public void onDestroy() {
         /*
-         * Start service now, bind later. This will be no-op if service is already running
+         * Do not kill on orientation change
          */
-        if(!mPref.isLeaveRunning()) {
-            if (isFinishing()) {
-                /*
-                 * Do not kill on orientation change
-                 */
-                Intent intent = new Intent(this, StorageService.class);
-                stopService(intent);
-            }
-        }
+        Intent intent = new Intent(this, StorageService.class);
+        stopService(intent);
         super.onDestroy();
     }
     

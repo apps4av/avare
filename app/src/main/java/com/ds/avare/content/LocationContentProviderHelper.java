@@ -363,6 +363,7 @@ public class LocationContentProviderHelper {
 
         int len = name.length();
 
+        // Check if this is an explicit GPS coordinate
         if(name.contains("&")) {
             /*
              * GPS
@@ -380,6 +381,12 @@ public class LocationContentProviderHelper {
                 }
             }
             return null;
+        }
+
+        // Search for this as a named GPS waypoint in our most recent used list
+        StringPreference sp = ContentProviderHelper.getUserRecent(ctx, name);
+        if(null != sp) {
+            return sp;
         }
 
         /*
@@ -468,19 +475,44 @@ public class LocationContentProviderHelper {
 
     public static StringPreference getNavaidOrFixFromCoordinate(Context ctx, Coordinate coordinate) {
 
-        // Find Fix here first
-        String qry =
-                "(" + LocationContract.FIX_LONGITUDE + " - ? )*" +
-                "(" + LocationContract.FIX_LONGITUDE + " - ? )+" +
-                "(" + LocationContract.FIX_LATITUDE +  " - ? )*" +
-                "(" + LocationContract.FIX_LATITUDE +  " - ? )"  + " < 0.0000000001";
+        Cursor c = null;
+        String qry = null;
 
         String v0 = String.valueOf(coordinate.getLongitude());
         String v1 = String.valueOf(coordinate.getLatitude());
 
         String arguments[] = new String[] {v0, v0, v1, v1};
 
-        Cursor c = null;
+        // Find Navaid
+        qry =
+                "(" + LocationContract.NAV_LONGITUDE + " - ? )*" +
+                        "(" + LocationContract.NAV_LONGITUDE + " - ? )+" +
+                        "(" + LocationContract.NAV_LATITUDE +  " - ? )*" +
+                        "(" + LocationContract.NAV_LATITUDE +  " - ? )"  + " < 0.0000000001 and (Type != 'VOT')"; // no VOT
+
+        try {
+            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
+            if (c != null) {
+                if(c.moveToFirst()) {
+                    StringPreference s = new StringPreference(Destination.NAVAID,
+                            c.getString(c.getColumnIndex(LocationContract.NAV_TYPE)),
+                            c.getString(c.getColumnIndex(LocationContract.NAV_FACILITY_NAME)),
+                            c.getString(c.getColumnIndex(LocationContract.NAV_LOCATION_ID)));
+                    return s;
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        CursorManager.close(c);
+
+
+        // Find Fix if navaid not found
+        qry =
+                "(" + LocationContract.FIX_LONGITUDE + " - ? )*" +
+                "(" + LocationContract.FIX_LONGITUDE + " - ? )+" +
+                "(" + LocationContract.FIX_LATITUDE +  " - ? )*" +
+                "(" + LocationContract.FIX_LATITUDE +  " - ? )"  + " < 0.0000000001";
 
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_FIX, null, qry, arguments, null);
@@ -498,29 +530,6 @@ public class LocationContentProviderHelper {
         }
         CursorManager.close(c);
 
-
-        // Find Navaid
-        qry =
-                "(" + LocationContract.NAV_LONGITUDE + " - ? )*" +
-                "(" + LocationContract.NAV_LONGITUDE + " - ? )+" +
-                "(" + LocationContract.NAV_LATITUDE +  " - ? )*" +
-                "(" + LocationContract.NAV_LATITUDE +  " - ? )"  + " < 0.0000000001 and (Type != 'VOT')"; // no VOT
-
-        try {
-            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_NAV, null, qry, arguments, null);
-            if (c != null) {
-                if(c.moveToFirst()) {
-                    StringPreference s = new StringPreference(Destination.NAVAID,
-                            c.getString(c.getColumnIndex(LocationContract.NAV_TYPE)),
-                            c.getString(c.getColumnIndex(LocationContract.NAV_FACILITY_NAME)),
-                            c.getString(c.getColumnIndex(LocationContract.NAV_LOCATION_ID)));
-                    return s;
-                }
-            }
-        }
-        catch (Exception e) {
-        }
-        CursorManager.close(c);
 
         return null;
     }
@@ -612,11 +621,11 @@ public class LocationContentProviderHelper {
     public static String[] findMinimums(Context ctx, String airportId) {
 
         Cursor c = null;
+
+        LinkedList<String> ret = new LinkedList<String>();
         /**
          * Search Minimums plates for this airport
          */
-        String ret2[] = new String[2];
-        String ret[] = new String[1];
 
         /*
          * Silly that FAA gives K and P for some airports as ICAO
@@ -631,9 +640,11 @@ public class LocationContentProviderHelper {
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_ALTERNATE, null, qry, arguments, null);
             if(c != null) {
-                if(c.moveToNext()) {
-                    ret2[0] = c.getString(c.getColumnIndex(LocationContract.ALTERNATE_FILE));
-                    ret[0] = ret2[0];
+                while(c.moveToNext()) {
+                    String r = c.getString(c.getColumnIndex(LocationContract.ALTERNATE_FILE));
+                    if (r != null) {
+                        ret.add(r);
+                    }
                 }
             }
         }
@@ -649,9 +660,11 @@ public class LocationContentProviderHelper {
         try {
             c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_TAKEOFF, null, qry, arguments, null);
             if(c != null) {
-                if(c.moveToNext()) {
-                    ret2[1] = c.getString(c.getColumnIndex(LocationContract.TAKEOFF_FILE));
-                    ret[0] = ret2[1];
+                while(c.moveToNext()) {
+                    String r = c.getString(c.getColumnIndex(LocationContract.TAKEOFF_FILE));
+                    if(r != null) {
+                        ret.add(r);
+                    }
                 }
             }
         }
@@ -662,14 +675,11 @@ public class LocationContentProviderHelper {
         /*
          * Only return appropriate sized array
          */
-        if(ret[0] == null) {
+        if(ret.size() == 0) {
             return null;
         }
-        else if(ret2[0] == null || ret2[1] == null) {
-            return ret;
-        }
 
-        return ret2;
+        return ret.toArray(new String[ret.size()]);
     }
 
 

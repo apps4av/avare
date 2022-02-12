@@ -16,7 +16,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -81,7 +80,7 @@ public class MemView extends View {
 
     /**
      * 
-     * @param status
+     * @param fraction
      */
     public void updateMemStatus(float fraction) {
     	mFraction = fraction;

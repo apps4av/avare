@@ -3,7 +3,6 @@ package com.ds.avare.place;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.utils.Helper;
 
@@ -75,7 +74,7 @@ public class GpsDestination extends Destination {
         @Override
         protected Void doInBackground(Void... vals) {
             Thread.currentThread().setName("Destination");
-            mWinds = ContentProviderHelper.getWindsAloft(mService.getApplicationContext(), mLond, mLatd);
+            updateWinds();
             return null;
         }
 

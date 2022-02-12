@@ -36,7 +36,6 @@ import com.ds.avare.adsb.Traffic;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
-import com.ds.avare.place.Favorites;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Runway;
@@ -205,7 +204,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private Tile mGpsTile;
 
     private String mOnChart = "";
-    
+
+    private BitmapHolder mTrafficRed;
+    private BitmapHolder mTrafficGreen;
+    private BitmapHolder mTrafficBlue;
+    private BitmapHolder mTrafficMagenta;
+
     /*
      * Text on screen color
      */
@@ -286,7 +290,13 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
         mMultiTouchC = new MultiTouchController<Object>(this);
         mCurrTouchPoint = new PointInfo();
-        
+
+        mTrafficRed = new BitmapHolder(context, R.drawable.tr_red);
+        mTrafficGreen = new BitmapHolder(context, R.drawable.tr_green);
+        mTrafficBlue = new BitmapHolder(context, R.drawable.tr_blue);
+        mTrafficMagenta = new BitmapHolder(context, R.drawable.tr_magenta);
+
+
         mGestureDetector = new GestureDetector(context, new GestureListener());
         
         // We're going to give the user twice the slop as normal
@@ -743,7 +753,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawTraffic(Canvas canvas, DrawingContext ctx) {
         Traffic.draw(ctx, mService.getTrafficCache().getTraffic(),
-                mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection);
+                mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection,
+                mTrafficRed, mTrafficGreen, mTrafficBlue, mTrafficMagenta);
     }
 
     /**
@@ -828,7 +839,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
      */
     private void drawFavorites(Canvas canvas, DrawingContext ctx) {
         // draw favorites from labeled recent searches
-        Favorites.draw(ctx, mPointProjection == null);
+        mService.getFavorites().draw(ctx, mPointProjection == null);
     }
 
     /**
@@ -847,6 +858,23 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         // Tell the rings to draw themselves
         mService.getDistanceRings().draw(canvas, mOrigin, mScale, mMovement, mPref.isTrackUp(), mGpsParams);
+    }
+
+    /**
+     * Draws profile around the airplane of glide distance.
+     * author: zkhan
+     *
+     * @param canvas upon which to draw the glide
+     */
+    private void drawGlideProfile(Canvas canvas) {
+        /*
+         * Some pre-conditions that would prevent us from drawing anything
+         */
+        if(null != mPointProjection){
+            return;
+        }
+
+        mService.getGlideProfile().draw(canvas, mOrigin, mGpsParams);
     }
 
     /**
@@ -919,7 +947,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
                 mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y,
                         (int) mService.getInfoLines().getHeight(), getWidth(), getHeight(),
-                        mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
+                        //mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
+                        TEXT_COLOR_OPPOSITE);
             }
         }
     }
@@ -941,7 +970,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
         mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
-                TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
+                //TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
+                TEXT_COLOR,  TEXT_COLOR_OPPOSITE, 4,
                 getWidth(), getHeight(), mErrorStatus, getPriorityMessage());
     }
 
@@ -1017,6 +1047,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         
         // Now draw the items that do NOT rotate with the chart
         drawDistanceRings(canvas);
+        drawGlideProfile(canvas);
         drawCDI(canvas);
         drawVASI(canvas);
         drawStatusLines(canvas);
@@ -1053,7 +1084,20 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void forceReload() {
         loadTiles();
     }
-        
+
+    /**
+     *
+     */
+    public void forceReloadAfterChartChange(String oldChart, String newChart) {
+        // get old vs new chart pan, scale
+        // mPan will change since charts are of different sizes
+        float ratio = Boundaries.getInstance().zoomRatio(oldChart, newChart);
+        float x = mPan.getMoveX();
+        float y = mPan.getMoveY();
+        mPan.setMove(x * ratio, y * ratio);
+        loadTiles();
+    }
+
     /**
      * @param params
      */

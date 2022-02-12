@@ -30,6 +30,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -44,6 +45,8 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.RateApp;
+import com.ds.avare.utils.Telemetry;
+import com.ds.avare.utils.TelemetryParams;
 
 import java.io.File;
 
@@ -66,7 +69,10 @@ public class ChartsDownloadActivity extends Activity {
     private Button mDLButton;
     private Button mUpdateButton;
     private Button mDeleteButton;
-    
+    private Button mLegendButton;
+
+    private WebView mWebview;
+
     /**
      * Shows warning message about Avare
      */
@@ -140,6 +146,10 @@ public class ChartsDownloadActivity extends Activity {
             }
         });
 
+        mWebview = (WebView)view.findViewById(R.id.chart_download_webview);
+        mWebview.loadUrl((com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "chart")));
+        mWebview.getSettings().setBuiltInZoomControls(true);
+
         mDLButton = (Button)view.findViewById(R.id.chart_download_button_dl);
         mDLButton.setOnClickListener(new OnClickListener() {
 
@@ -149,7 +159,22 @@ public class ChartsDownloadActivity extends Activity {
             }
             
         });
-        
+
+        mLegendButton = (Button)view.findViewById(R.id.chart_download_button_legend);
+        mLegendButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(mWebview.getVisibility() == View.INVISIBLE) {
+                    mWebview.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mWebview.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
         mUpdateButton = (Button)view.findViewById(R.id.chart_download_button_update);
         mUpdateButton.setOnClickListener(new OnClickListener() {
 
@@ -205,7 +230,7 @@ public class ChartsDownloadActivity extends Activity {
             /**
              * Download database if it does not exists. Download sectional at current position as well.
              */
-            File dbase = new File(mPref.mapsFolder() + "/" + mChartAdapter.getDatabaseName());
+            File dbase = new File(mPref.getServerDataFolder() + File.separator + mChartAdapter.getDatabaseName());
             if(!dbase.exists()) {
                 mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
                 mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
@@ -277,7 +302,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
-        mDownload.start((new Preferences(getApplicationContext())).mapsFolder(), mName, mChartAdapter.isStatic(mName));
+        mDownload.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -324,7 +349,7 @@ public class ChartsDownloadActivity extends Activity {
         }
         
         mDelete = new Delete(mHandler);
-        mDelete.start((new Preferences(getApplicationContext())).mapsFolder(), mName);
+        mDelete.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -424,7 +449,12 @@ public class ChartsDownloadActivity extends Activity {
             DataSource.reset(getApplicationContext());
 
             if(msg.obj instanceof Download) {
+                Telemetry t = new Telemetry(getApplicationContext());
+                TelemetryParams p = new TelemetryParams();
                 if(Download.FAILED == result) {
+                    p.add(TelemetryParams.CHART_NAME, mName);
+                    p.add(TelemetryParams.STATUS, TelemetryParams.FAILED);
+                    t.sendEvent(Telemetry.CHART_DOWNLOAD, p);
                     try {
                         mProgressDialog.dismiss();
                     }
@@ -462,6 +492,9 @@ public class ChartsDownloadActivity extends Activity {
 
                 }
                 else if (Download.SUCCESS == result) {
+                    p.add(TelemetryParams.CHART_NAME, mName);
+                    p.add(TelemetryParams.STATUS, TelemetryParams.SUCCESS);
+                    t.sendEvent(Telemetry.CHART_DOWNLOAD, p);
                     try {
                         mProgressDialog.dismiss();
                     }

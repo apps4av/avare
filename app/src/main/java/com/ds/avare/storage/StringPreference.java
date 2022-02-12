@@ -70,6 +70,18 @@ public class StringPreference {
     }
 
     /**
+     *
+     * @return
+     */
+    public String getDbType() {
+        return mDbType;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    /**
      * 
      * @return
      */
@@ -156,7 +168,7 @@ public class StringPreference {
 
     /**
      * 
-     * @param hashedDesc
+     * @param hashedName
      * @return
      */
     static public String parseHashedNameDesc(String hashedName) {

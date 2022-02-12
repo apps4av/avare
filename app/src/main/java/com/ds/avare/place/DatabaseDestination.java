@@ -3,7 +3,6 @@ package com.ds.avare.place;
 import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
@@ -136,7 +135,7 @@ public class DatabaseDestination extends Destination {
                         }
                     };
                     String afd[] = null;
-                    afd = new File(mPref.mapsFolder() + "/afd/").list(filter);
+                    afd = new File(mPref.getServerDataFolder() + File.separator + "afd" + File.separator).list(filter);
                     if(null != afd) {
                         java.util.Arrays.sort(afd);
                         int len1 = afd.length;
@@ -146,7 +145,7 @@ public class DatabaseDestination extends Destination {
                              * Add Chart Supplement
                              */
                             String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[count] = mPref.mapsFolder() + "/afd/" +
+                            tmp1[count] = mPref.getServerDataFolder() + File.separator + "afd" + File.separator +
                                     tokens[0];
                         }
                         if(len1 > 0) {
@@ -160,12 +159,13 @@ public class DatabaseDestination extends Destination {
                 // Find winds
                 mLond = Double.parseDouble(mParams.get(LocationContentProviderHelper.LONGITUDE));
                 mLatd = Double.parseDouble(mParams.get(LocationContentProviderHelper.LATITUDE));
-                mWinds = ContentProviderHelper.getWindsAloft(mService.getApplicationContext(), mLond, mLatd);
             }
             catch (Exception e) {
                 return false;
                 // Bad find
             }
+
+            updateWinds();
 
             return(!mParams.isEmpty());
         }

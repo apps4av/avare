@@ -17,9 +17,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -43,7 +41,6 @@ import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.WeatherHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -88,7 +85,8 @@ public class WebAppPlanInterface implements Observer {
     private static final int MSG_PREV_HIDE = 16;
     private static final int MSG_NEXT_HIDE = 17;
     private static final int MSG_PLAN_COUNT = 18;
-    		
+	private static final int MSG_UPDATE_WEATHER = 19;
+
     private static final int MAX_PLANS_SHOWN = 5;
     
     /** 
@@ -112,7 +110,7 @@ public class WebAppPlanInterface implements Observer {
         mService = s;
         
         // TODO: refactor in abstract plan management
-		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
 		setFilteredSize();
     }
 
@@ -277,7 +275,7 @@ public class WebAppPlanInterface implements Observer {
     public void refreshPlanList() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
     	mService.getExternalPlanMgr().forceReload();
-		mSavedPlans = Plan.getAllPlans(mService, mPref.getPlans());
+		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
 		setFilteredSize();
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -301,11 +299,9 @@ public class WebAppPlanInterface implements Observer {
      */
     private boolean isSame(Location l0, Location l1) {
     	double dist = Projection.getStaticDistance(l0.getLongitude(), l0.getLatitude(), l1.getLongitude(), l1.getLatitude());
-    	if(dist < 0.01) {
-    		return true;
-    	}
-    	return false;
-    }
+
+    	return dist < 0.01;
+	}
     
     /**
      * New dest
@@ -516,7 +512,7 @@ public class WebAppPlanInterface implements Observer {
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
-    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+    	mService.getDBResource().setUserPlans(Plan.putAllPlans(mService, mSavedPlans));
     	setFilteredSize();
     	
     	newSavePlan();
@@ -659,7 +655,7 @@ public class WebAppPlanInterface implements Observer {
     	if(true == mService.getExternalPlanMgr().isExternal(name)) {
     		mService.getExternalPlanMgr().delete(name);
     	} else {
-	    	mPref.putPlans(Plan.putAllPlans(mService, mSavedPlans));
+			mService.getDBResource().deleteUserPlan(name);
     	}
     	
     	setFilteredSize();
@@ -726,7 +722,8 @@ public class WebAppPlanInterface implements Observer {
                     d.getID() + "," +
                     d.getDbType() + "," +
                     d.getFuel() + "," +
-                    d.getWinds() +
+                    d.getWinds() + "," +
+					d.getAltitude() +
                     "::::";
     	}
     	// add total
@@ -758,6 +755,7 @@ public class WebAppPlanInterface implements Observer {
         mWeatherThread = new Thread(mWeatherTask);
         mWeatherThread.start();
     }
+
 
 	/**
      * Create a plan, guessing the types
@@ -910,7 +908,11 @@ public class WebAppPlanInterface implements Observer {
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
 
             mService.getDBResource().search(srch, params, true);
-            mService.getUDWMgr().search(srch, params);			// From user defined points of interest
+			mService.getUDWMgr().search(srch, params);			// From user defined points of interest
+			StringPreference s = mService.getDBResource().getUserRecent(srch);
+			if (null != s) {
+				s.putInHash(params);
+			}
             if(params.size() > 0) {
                 selection = new String[params.size()];
                 int iterator = 0;
@@ -1014,9 +1016,14 @@ public class WebAppPlanInterface implements Observer {
             	String func = "javascript:set_plan_count(" + (String)msg.obj + ")";
             	mWebView.loadUrl(func);
         	}
-        	else if(MSG_ERROR == msg.what) {	
+			else if(MSG_UPDATE_WEATHER == msg.what) {
+				String func = "javascript:update_weather(" + (String)msg.obj + ")";
+				mWebView.loadUrl(func);
+			}
+			else if(MSG_ERROR == msg.what) {
         		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
         	}
+
         }
     };
 
@@ -1152,17 +1159,9 @@ public class WebAppPlanInterface implements Observer {
             String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;
 
-
-            // Read weather template
-            String html = Helper.readFromAssetsFile("weather" + mContext.getString(R.string.lang) + ".html", mContext);
-            // Fill in weather where the placeholder is then write to a file in download folder
-            String fpath = getWeatherStoreFileName(mPref.mapsFolder());
-            Helper.writeFile(html.replace("placeholder", weather), fpath);
-            // Send to browser.
-
-			Intent intent = new Intent(mContext, WebActivity.class);
-			intent.putExtra("url", "file://" + fpath);
-			mContext.startActivity(intent);
+            // now send to webview
+			Message m = mHandler.obtainMessage(MSG_UPDATE_WEATHER, (Object)("'" + Helper.formatJsArgs(weather) + "'"));
+			mHandler.sendMessage(m);
 
         	mHandler.sendEmptyMessage(MSG_NOTBUSY);
         	
@@ -1170,14 +1169,6 @@ public class WebAppPlanInterface implements Observer {
         }        
     }
     
-    /**
-     * Make a file where weather is put
-     * @return
-     */
-    private String getWeatherStoreFileName(String path) {
-    	return path + "/briefing.html";
-    }
-
 	/**
      * 
      */

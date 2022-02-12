@@ -22,12 +22,8 @@ import android.webkit.WebView;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.WeightAndBalance;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.LinkedList;
 
@@ -38,7 +34,7 @@ import java.util.LinkedList;
  */
 public class WebAppWnbInterface {
     private StorageService mService;
-    private Preferences mPref;
+    private WeightAndBalance mWnb;
     private WebView mWebView;
 
     private static final int MSG_UPDATE_WNB = 1;
@@ -50,7 +46,6 @@ public class WebAppWnbInterface {
      * Instantiate the interface and set the context
      */
     public WebAppWnbInterface(Context c, WebView ww, GenericCallback cb) {
-        mPref = new Preferences(c);
         mWebView = ww;
     }
 
@@ -60,7 +55,9 @@ public class WebAppWnbInterface {
      */
     public void connect(StorageService s) {
         mService = s;
-        mService.setWnbs(WeightAndBalance.getWnbsFromStorageFromat(mPref.getWnbs()));
+        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_C172R));
+        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
+        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
     }
 
     /**
@@ -91,24 +88,12 @@ public class WebAppWnbInterface {
     public void newSaveWnb() {
 
         clearWnbSave();
-        LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
-        if(wnbs == null) {
-            return;
-        }
-        if(wnbs.size() == 0) {
-            init(wnbs);
-        }
+        LinkedList<WeightAndBalance> wnbs = mService.getDBResource().getUserWnbs();
 
         for (WeightAndBalance wnb : wnbs) {
             Message m = mHandler.obtainMessage(MSG_ADD_WNB_SAVE, (Object)("'" + Helper.formatJsArgs(wnb.getName()) + "'"));
             mHandler.sendMessage(m);
         }
-    }
-
-    private void init(LinkedList<WeightAndBalance> wnbs) {
-        wnbs.add(new WeightAndBalance(WeightAndBalance.WNB_C172R));
-        wnbs.add(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
-        wnbs.add(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
     }
 
     /**
@@ -118,37 +103,8 @@ public class WebAppWnbInterface {
     @JavascriptInterface
     public void saveWnb(String data) {
 
-        // get current
-        JSONObject obj;
-        try {
-            obj = new JSONObject(data);
-        } catch (JSONException e) {
-            return;
-        }
-
-
-        WeightAndBalance wnb = new WeightAndBalance(obj);
-        mService.setWnb(wnb);
-
-        LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
-        if(wnbs == null) {
-            return;
-        }
-        if(wnbs.size() == 0) {
-            init(wnbs);
-        }
-
-        wnbs.add(mService.getWnb());
-
-        /*
-         * Save to storage on save button
-         */
-        mPref.putWnbs(WeightAndBalance.putWnbsToStorageFormat(wnbs));
-        
-        /*
-         * Make a new working list since last one stored already 
-         */
-        mService.setWnb(new WeightAndBalance(mService.getWnb().getJSON()));
+        mWnb = new WeightAndBalance(data);
+        mService.getDBResource().setUserWnb(mWnb);
 
         newSaveWnb();
     }
@@ -159,20 +115,7 @@ public class WebAppWnbInterface {
      */
     @JavascriptInterface
     public void loadWnb(String name) {
-        LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
-        if(wnbs == null) {
-            return;
-        }
-        if(wnbs.size() == 0) {
-            init(wnbs);
-        }
-
-
-        for (WeightAndBalance wnb : wnbs) {
-        	if(wnb.getName().equals(name)) {
-        		mService.setWnb(new WeightAndBalance(wnb.getJSON()));
-        	}
-        }
+        mWnb = mService.getDBResource().getUserWnb(name);
 
         updateWnb();
     }
@@ -183,32 +126,7 @@ public class WebAppWnbInterface {
      */
     @JavascriptInterface
     public void saveDelete(String name) {
-    	int toremove = -1;
-        int i = 0;
-        LinkedList<WeightAndBalance> wnbs = mService.getWnbs();
-        if(wnbs == null) {
-            return;
-        }
-        if(wnbs.size() == 0) {
-            init(wnbs);
-        }
-
-
-        // Find and remove
-        for (WeightAndBalance wnb : wnbs) {
-        	if(wnb.getName().equals(name)) {
-        		toremove = i;
-        	}
-        	i++;
-        }
-        if(toremove > -1) {
-        	wnbs.remove(toremove);
-        }
-        
-        /*
-         * Save to storage on save button
-         */
-        mPref.putWnbs(WeightAndBalance.putWnbsToStorageFormat(wnbs));
+        mService.getDBResource().deleteUserWnb(name);
 
         newSaveWnb();
 
@@ -228,8 +146,8 @@ public class WebAppWnbInterface {
                  * Now update HTML with latest wnb stuff, do this every time we start the List screen as
                  * things might have changed.
                  */
-                if(null != mService.getWnb()) {
-                    String data = mService.getWnb().getJSON().toString();
+                if(null != mWnb) {
+                    String data = mWnb.getJSON().toString();
 
                     if (null != data) {
                         mWebView.loadUrl("javascript:wnb_set('" + data + "')");

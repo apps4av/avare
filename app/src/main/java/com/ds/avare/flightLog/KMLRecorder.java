@@ -1,14 +1,31 @@
-/*
-Copyright (c) 2013, Avare software (apps4av.com) 
-All rights reserved.
+/*-
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2013, Apps4Av Inc. (apps4av.com)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice unmodified, this list of conditions, and the following
+ *    disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    *
-    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 package com.ds.avare.flightLog;
 
 import java.io.BufferedWriter;
@@ -22,11 +39,12 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import android.annotation.SuppressLint;
-import android.os.Environment;
+import android.content.Context;
 
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
 import com.ds.avare.shapes.Shape;
+import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
 /**
@@ -81,7 +99,8 @@ public class KMLRecorder {
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
 	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
 	private GpsParams		mLastFix;				// the last time we wrote a position			
-	private CrumbsShape    mShape;
+	private CrumbsShape     mShape;
+	private String          mFolder;
 	
 	/**
 	 * Statics that all class instances share
@@ -159,10 +178,11 @@ public class KMLRecorder {
      * Default constructor. Allocate the list that holds our collection
      * of gps points
      */
-    public KMLRecorder(){
+    public KMLRecorder(Context ctx){
     	mPositionHistory = new LinkedList<GpsParams>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
+    	mFolder = new Preferences(ctx).getUserDataFolder();
     }
     
     /** 
@@ -220,12 +240,12 @@ public class KMLRecorder {
 	/**
 	 * Start with default config
 	 */
-	public void start() {
+	public void start(Context ctx) {
         KMLRecorder.Config config = this.new Config(
                 true,   /* always remove tracks from display on start */
                 30,     /* Max of 30 seconds between position updates */
                 true,   /* use verbose details */
-                Environment.getExternalStorageDirectory().getAbsolutePath() + File.separatorChar + "com.ds.avare" + File.separatorChar + "Tracks",
+                mFolder + File.separator + "tracks",
                 3);     // Adjust down to 3 knots to capture taxi
         start(config);
 	}

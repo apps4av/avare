@@ -56,7 +56,7 @@ public class UDWMgr {
 	/***
 	 * public constructor for user defined waypoints collection
 	 * @param service the storage service
-	 * @param application context
+	 * @param context context
 	 */
 	public UDWMgr(StorageService service, Context context) {
 		mService = service;
@@ -97,7 +97,7 @@ public class UDWMgr {
 		Preferences pref = new Preferences(mContext);
 		
 		// Load them all in
-		populate(pref.getUDWLocation());
+		populate(pref.getUserDataFolder());
 	}
 	
 	/***

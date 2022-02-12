@@ -1,14 +1,30 @@
-/*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    *
-    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+/*-
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice unmodified, this list of conditions, and the following
+ *    disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.ds.avare.adapters;
 
 import android.content.Context;
@@ -255,7 +271,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                     /*
                      * Read version from file and if it exists.
                      */
-                    File file = new File(mPref.mapsFolder() + "/" + mChildrenFiles[group][child]);
+                    File file = new File(mPref.getServerDataFolder() + File.separator + mChildrenFiles[group][child]);
                     vers[group][child] = null;
                     if(file.exists()) {
                         try {
@@ -305,9 +321,6 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     * Toggle the checked state of a chart
-     * @param group
-     * @param child
      */
     public String getDatabaseName() {
         return mChildrenFiles[GROUP_DATABASE][0];
@@ -336,7 +349,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mChildrenFiles[group][child].equals(name)) {
-                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
+                    return (group == GROUP_ONC || group == GROUP_WAC || group == GROUP_VFRA || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
                 }
             }
         }
@@ -375,7 +388,9 @@ public class ChartAdapter extends BaseExpandableListAdapter {
 
     /**
      * Toggle the checked state of a chart
-     * @param name
+     *
+     * @param group
+     * @param child
      */
     public void toggleChecked(int group, int child) {
         if(mChecked[group][child] == STATE_CHECKED) {
@@ -448,7 +463,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_WAC) && (group != GROUP_VFRA) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
     }
 
     /**

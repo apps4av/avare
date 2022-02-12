@@ -12,7 +12,7 @@ public class GameTfrDatabaseHelper extends MainDatabaseHelper {
     private static final String DBNAME = "gametfr.db";
 
     public GameTfrDatabaseHelper(Context context, String folder) {
-        super(context, folder, DBNAME);
+        super(context, folder, DBNAME, 1);
     }
 
     @Override

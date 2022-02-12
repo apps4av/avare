@@ -16,7 +16,6 @@ package com.ds.avare.place;
 import android.location.Location;
 
 import com.ds.avare.StorageService;
-import com.ds.avare.content.ContentProviderHelper;
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
@@ -26,6 +25,9 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.CalendarHelper;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.TwilightCalculator;
+import com.ds.avare.utils.WeatherHelper;
+import com.ds.avare.utils.WindTriagle;
+import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.WindsAloft;
 
 import java.util.LinkedHashMap;
@@ -71,7 +73,8 @@ public class Destination extends Observable {
     private float mFuelGallons;
     private String mEta;
 
-    protected WindsAloft mWinds;
+    private WindsAloft mWinds;
+    private int mAltitude;
 
     /*
      * Track to dest.
@@ -116,6 +119,7 @@ public class Destination extends Observable {
      * Dozens of parameters in a linked map because simple map would rearrange the importance
      */
     protected LinkedHashMap <String, String>mParams;
+    private double mWindMetar[] = null;
 
     public Destination(StorageService service, String name) {
         mPref = new Preferences(service.getApplicationContext());
@@ -124,6 +128,7 @@ public class Destination extends Observable {
         mEte = "--:--";
         mEta = "--:--";
         mFuel = "-.-";
+        mAltitude = 0;
         mParams = new LinkedHashMap<String, String>();
 
         mEteSec = Long.MAX_VALUE;
@@ -179,8 +184,8 @@ public class Destination extends Observable {
 	     */
         double mLon = params.getLongitude();
         double mLat = params.getLatitude();
-        double speed = params.getSpeed();
         mDeclination = params.getDeclinition();
+        mAltitude = (int)params.getAltitude();
 
 		if(!mFound) {
 			return;
@@ -202,31 +207,43 @@ public class Destination extends Observable {
     	mBearing = p.getBearing();
 
 
-        // in flying mode, calculate time based on ground speed from GPS
-        mGroundSpeed = speed;
         mWca = 0;
         mCrs = mBearing;
         mWindString = "-";
-        if(mPref.isSimulationMode()) {
-            double ws = 0;
-            double wd = 0;
-            if(mWinds != null) {
-                double winds[] = mWinds.getWindAtAltitude(params.getAltitude());
-                ws = winds[0];
-                wd = winds[1];
-                mWindString = String.format(Locale.getDefault(),
-                        ws >= 100 ? "%03d@%03d" : "%03d@%02d", Math.round(wd), Math.round(ws));
-            }
-
-            // in sim mode, do planning with winds
-            speed = mPref.getAircraftTAS(); // in sim mode, use preferred TAS
-            // from aviation formulary
-            double hd = mBearing;
-            mGroundSpeed = Math.sqrt(ws * ws + speed * speed - 2 * ws * speed * Math.cos((hd - wd) * Math.PI / 180.0));
-            mWca = -Math.toDegrees(Math.atan2(ws * Math.sin((hd - wd) * Math.PI / 180.0), speed - ws * Math.cos((hd - wd) * Math.PI / 180.0)));
-            mCrs = (hd + mWca + 360) % 360;
+        double hd = mBearing;
+        double wm[] = {0, 0};
+        if(mWindMetar != null) {
+            // if low altitude flight use correction with metar
+            wm[1] = mWindMetar[1];
+            wm[0] = (mWindMetar[0] - mDeclination + 360) % 360;
         }
-        else if(mPref.useBearingForETEA() && (!mService.getPlan().isActive())) {
+        double ws = 0;
+        double wd = 0;
+        double tas = params.getSpeed();
+        if(mWinds != null) {
+            // wind calculation
+            double winds[] = mWinds.getWindAtAltitude(mAltitude, wm);
+            ws = winds[0];
+            wd = winds[1];
+            mWindString = String.format(Locale.getDefault(),
+                    ws >= 100 ? "%03d@%03d" : "%03d@%02d", Math.round(wd), Math.round(ws));
+        }
+        else {
+            mWindString = "-";
+        }
+
+        if(!mPref.isSimulationMode()) {
+            double t[] = WindTriagle.getTrueFromGroundAndWind(params.getSpeed(), params.getBearing(), ws, wd);
+            tas = t[0];
+            hd = t[1];
+        }
+
+        // from wind triangle
+        mGroundSpeed = Math.sqrt(ws * ws + tas * tas - 2 * ws * tas * Math.cos((hd - wd) * Math.PI / 180.0));
+        mWca = -Math.toDegrees(Math.atan2(ws * Math.sin((hd - wd) * Math.PI / 180.0), tas - ws * Math.cos((hd - wd) * Math.PI / 180.0)));
+        mCrs = (hd + mWca + 360) % 360;
+
+        if(mPref.useBearingForETEA() && (!mService.getPlan().isActive())) {
             // This is just when we have a destination set and no plan is active
             // We can't assume that we are heading DIRECTLY for the destination, so
             // we need to figure out the multiply factor by taking the COS of the difference
@@ -247,7 +264,7 @@ public class Destination extends Observable {
     	 * ETA when speed != 0
     	 */
     	mEte = Helper.calculateEte(mDistance, mGroundSpeed, 0, true);
-        if(mGroundSpeed == 0) {
+        if(mGroundSpeed < 1) { // practically stationary
             mEteSec = Long.MAX_VALUE;
             mFuelGallons = Float.MAX_VALUE;
             mFuel = "-.-";
@@ -570,4 +587,42 @@ public class Destination extends Observable {
     public String getCmt() {
         return null;
     }
+
+    protected void updateWinds() {
+
+	    // call in async task from sub classes to populate winds
+
+        try {
+            // Find winds
+            Metar m = null;
+            WindsAloft w = null;
+            if (mPref.useAdsbWeather()) {
+                w = mService.getAdsbWeather().getWindsAloft(mLond, mLatd);
+                if (null != w) {
+                    if (null != w.station) {
+                        m = mService.getAdsbWeather().getMETAR(w.station);
+                    }
+                }
+            } else {
+                w = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                if (null != w) {
+                    if (null != w.station) {
+                        m = mService.getDBResource().getMetar(w.station);
+                    }
+                }
+            }
+            if (m != null) {
+                mWindMetar = WeatherHelper.getWindFromMetar(m.rawText);
+            }
+            mWinds = w;
+        } catch (Exception e) {
+            mWindMetar = null;
+            mWinds = null;
+        }
+
+    }
+    public int getAltitude() {
+        return mAltitude;
+    }
+
 }

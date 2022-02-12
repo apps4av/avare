@@ -1,14 +1,10 @@
 package com.ds.avare.content;
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-
-import com.ds.avare.storage.Preferences;
 
 /**
  * Created by zkhan on 3/10/17.
@@ -74,7 +70,7 @@ public class ProceduresProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

@@ -10,8 +10,6 @@ import androidx.annotation.Nullable;
 
 import com.ds.avare.storage.Preferences;
 
-import java.io.File;
-
 /**
  * Created by zkhan on 3/10/17.
  */

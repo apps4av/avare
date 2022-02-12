@@ -17,6 +17,8 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Airport;
 import com.ds.avare.place.Awos;
 import com.ds.avare.place.NavAid;
@@ -95,6 +97,11 @@ public class DataSource {
         lprovider.resetDatabase();
         client.release();
 
+        client = resolver.acquireContentProviderClient(UserContract.AUTHORITY_URI);
+        UserProvider uprovider = (UserProvider) client.getLocalContentProvider();
+        uprovider.resetDatabase();
+        client.release();
+
     }
 
     // location helper
@@ -171,6 +178,99 @@ public class DataSource {
         return LocationContentProviderHelper.getNavaidOrFixFromCoordinate(mContext, c);
     }
 
+    //user
+    public LinkedHashMap<String, String> getUserPlans() {
+        return ContentProviderHelper.getUserPlans(mContext);
+    }
+
+    public void setUserPlans(LinkedHashMap<String, String> plans) {
+        ContentProviderHelper.setUserPlans(mContext, plans);
+    }
+
+
+    public void deleteUserPlan(String name) {
+        ContentProviderHelper.deleteUserPlan(mContext, name);
+    }
+
+    public LinkedList<Checklist> getUserLists() {
+        return ContentProviderHelper.getUserLists(mContext);
+    }
+
+    public String[] getUserRecents() {
+        return ContentProviderHelper.getUserRecents(mContext);
+    }
+
+    public void setUserRecents(LinkedList<StringPreference> s) {
+        ContentProviderHelper.setUserRecents(mContext, s);
+    }
+
+    public void setUserRecent(StringPreference s) {
+        ContentProviderHelper.setUserRecent(mContext, s);
+    }
+
+    public StringPreference getUserRecent(String id) {
+        return ContentProviderHelper.getUserRecent(mContext, id);
+    }
+
+    public void deleteUserRecent(String id) {
+        ContentProviderHelper.deleteUserRecent(mContext, id);
+    }
+
+    public void replaceUserRecentName(String id, String newName) {
+        ContentProviderHelper.replaceUserRecentName(mContext, id, newName);
+    }
+
+    public void setUserLists(LinkedList<Checklist> lists) {
+        ContentProviderHelper.setUserLists(mContext, lists);
+    }
+
+    public void setUserList(Checklist cl) {
+        ContentProviderHelper.setUserList(mContext, cl);
+    }
+
+    public void deleteUserList(String name) {
+        ContentProviderHelper.deleteUserList(mContext, name);
+    }
+
+    public Checklist getUserList(String name) {
+        return ContentProviderHelper.getUserList(mContext, name);
+    }
+
+    public LinkedList<WeightAndBalance> getUserWnbs() {
+        return ContentProviderHelper.getUserWnbs(mContext);
+    }
+
+    public void setUserWnbs(LinkedList<WeightAndBalance> wnbs) {
+        ContentProviderHelper.setUserWnbs(mContext, wnbs);
+    }
+
+    public void setUserWnb(WeightAndBalance wnb) {
+        ContentProviderHelper.setUserWnb(mContext, wnb);
+    }
+
+    public void deleteUserTag(String name) {
+        ContentProviderHelper.deleteUserTag(mContext, name);
+    }
+
+    public String getUserTag(String name) {
+        return ContentProviderHelper.getUserTag(mContext, name);
+    }
+
+    public void setUserTag(String name, String tag) {
+        ContentProviderHelper.setUserTag(mContext, name, tag);
+    }
+
+    public void setUserTags(HashMap<String, String> tags) {
+        ContentProviderHelper.setUserTags(mContext, tags);
+    }
+
+    public void deleteUserWnb(String name) {
+        ContentProviderHelper.deleteUserWnb(mContext, name);
+    }
+
+    public WeightAndBalance getUserWnb(String name) {
+        return ContentProviderHelper.getUserWnb(mContext, name);
+    }
 
     // other helper
 
@@ -203,9 +303,6 @@ public class DataSource {
     }
 
     public LinkedList<Cifp> findProcedure(String name, String approach) {
-        return  ContentProviderHelper.findProcedure(mContext, name, approach);
+        return ContentProviderHelper.findProcedure(mContext, name, approach);
     }
-
-
-
 }

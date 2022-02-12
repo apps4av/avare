@@ -16,7 +16,6 @@ import android.content.Context;
 
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
-import com.ds.avare.weather.WindsAloft;
 
 import java.util.HashMap;
 import java.util.LinkedList;

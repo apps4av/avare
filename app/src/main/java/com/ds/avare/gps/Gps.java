@@ -1,14 +1,30 @@
-/*
-Copyright (c) 2012, Apps4Av Inc. (apps4av.com) 
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-    *
-    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+/*-
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2012, Apps4Av Inc. (apps4av.com)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice unmodified, this list of conditions, and the following
+ *    disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package com.ds.avare.gps;
 
 import java.util.List;
@@ -21,7 +37,6 @@ import com.ds.avare.storage.Preferences;
 import android.content.Context;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
-import android.location.GpsStatus.NmeaListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,14 +44,18 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import static android.os.Build.VERSION.*;
+
 /**
  * @author zkhan
  *
  */
-public class Gps implements LocationListener, android.location.GpsStatus.Listener, NmeaListener {
+public class Gps implements LocationListener, android.location.GpsStatus.Listener {
 
     private Context mContext;
-    
+
+    Object mNmeaMessageListener;
+
     /**
      * App preferences
      */
@@ -137,11 +156,17 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         List<String> providers = lm.getProviders(false);
 
         Location l = null;
-        for (int i = providers.size() - 1; i >= 0; i--) {
-            l = lm.getLastKnownLocation(providers.get(i));
-            if (l != null) {
-                break;
+
+        try {
+            for (int i = providers.size() - 1; i >= 0; i--) {
+                l = lm.getLastKnownLocation(providers.get(i));
+                if (l != null) {
+                    break;
+                }
             }
+        }
+        catch (SecurityException e) {
+            return null;
         }
         return l;
     }
@@ -169,13 +194,18 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         mGpsPeriod / 4, 0, this);
                 mLocationManager.addGpsStatusListener(this);
-                mLocationManager.addNmeaListener(this);
-                
-                /*
-                 * Also obtain GSM based locations
-                 */
-                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-                        0, 0, this);
+                if(SDK_INT >= 24) {
+                    mNmeaMessageListener = new android.location.OnNmeaMessageListener() {
+                        @Override
+                        public void onNmeaMessage(String nmea, long timestamp) {
+                            processNmea(nmea, timestamp);
+                        }
+                    };
+                    mLocationManager.addNmeaListener((android.location.OnNmeaMessageListener) mNmeaMessageListener);
+                }
+            }
+            catch (SecurityException e) {
+                mLocationManager = null;
             }
             catch (Exception e) {
                 mLocationManager = null;
@@ -209,7 +239,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         if(null != mLocationManager) {
             mLocationManager.removeUpdates(this);
             mLocationManager.removeGpsStatusListener(this);
-            mLocationManager.removeNmeaListener(this);
+            if(SDK_INT >= 24) {
+                mLocationManager.removeNmeaListener((android.location.OnNmeaMessageListener)mNmeaMessageListener);
+            }
             mLocationManager = null;
             return;
         }
@@ -239,12 +271,24 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      */
     @Override
     public void onGpsStatusChanged(int event) {
+        mSatCount = 0;
         if(null == mLocationManager) {
             return;
         }
-        GpsStatus gpsStatus = mLocationManager.getGpsStatus(null);
+        GpsStatus gpsStatus;
+        try {
+            gpsStatus = mLocationManager.getGpsStatus(null);
+        }
+        catch (SecurityException e) {
+            return;
+        }
+        if (null == gpsStatus) {
+            return;
+        }
         mGpsCallback.statusCallback(gpsStatus);
-        mSatCount = 0;
+        if (null == gpsStatus.getSatellites()) {
+            return;
+        }
         for (GpsSatellite sat : gpsStatus.getSatellites()) {
             if(sat.usedInFix()) {
                 mSatCount++;
@@ -365,12 +409,16 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
         }
     }
 
-    @Override
-    public void onNmeaReceived(long timestamp, String nmea) {
+    /**
+     * Process nmea
+     * @param nmea
+     * @param timestamp
+     */
+    private void processNmea(String nmea, long timestamp) {
         /*
          * Use this for altitude and some GPS status values
          */
-        if(nmea.startsWith(GGAPacket.TAG)) {
+        if(nmea.startsWith(GGAPacket.TAG) || nmea.startsWith(GGAPacket.TAGN)) {
             // Horozontal dilution
             String val[] = nmea.split(",");
             if(val.length > GGAPacket.HD) {

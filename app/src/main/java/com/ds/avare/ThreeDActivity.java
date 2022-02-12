@@ -324,7 +324,7 @@ public class ThreeDActivity extends Activity {
                                                 mTempBitmap.recycle();
                                             }
                                             mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
-                                            if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                            if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.getServerDataFolder())) {
                                                 mVertices = null;
                                             }
                                             else {
@@ -338,7 +338,7 @@ public class ThreeDActivity extends Activity {
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
-                                                if(!mAreaMapper.getMapTile().load(mTempBitmap, mPref.mapsFolder())) {
+                                                if(!mAreaMapper.getMapTile().load(mTempBitmap, mPref.getServerDataFolder())) {
                                                     mTempBitmap.recycle();
                                                 }
                                                 mRenderer.setAltitude(256); // this tells shader to skip palette for texture

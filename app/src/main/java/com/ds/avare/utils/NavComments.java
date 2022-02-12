@@ -12,14 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.utils;
 
-import com.ds.avare.R;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.view.View;
 import android.widget.Button;
+
+import com.ds.avare.R;
 
 /***
  * This class is about the bottom are of the display panel that exists between the left,
@@ -63,7 +62,7 @@ public class NavComments {
 	
 	/***
 	 * Set the text of what is displayed on the right side
-	 * @param leftComment string to display at right bottom
+	 * @param rightComment string to display at right bottom
 	 */
 	public void setRight(String rightComment) {
 		mRightComment = rightComment;

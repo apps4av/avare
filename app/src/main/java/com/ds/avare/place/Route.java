@@ -48,7 +48,6 @@ public class Route {
     
     /**
      * 
-     * @param d
      */
     public void clear() {
         mDestinations.clear();
@@ -71,7 +70,7 @@ public class Route {
         Coordinate coords[] = new Coordinate[len];
         loop = 0;
         for (Destination d : mDestinations) {
-            coords[loop] = new Coordinate(d.getLocation().getLongitude(), d.getLocation().getLatitude());;
+            coords[loop] = new Coordinate(d.getLocation().getLongitude(), d.getLocation().getLatitude());
             loop++;
         }
         

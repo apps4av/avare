@@ -18,34 +18,34 @@ import java.util.Locale;
 
 
 public class WeatherHelper {
-        
+
     /**
-     * 
+     *
      * @param type
      * @return
      */
     public static int metarColor(String type) {
         if(type.equals("VFR")) {
-        	//green
+            //green
             return(0xff78e825);
         }
         else if(type.equals("IFR")) {
-        	// red
-            return(0xffff2a00);                        
+            // red
+            return(0xffff2a00);
         }
         else if(type.equals("MVFR")) {
-        	// blue
-            return(0xff4884ff);                        
+            // blue
+            return(0xff4884ff);
         }
         else if(type.equals("LIFR")) {
-        	// magenta
-            return(0xffff54f9);                       
+            // magenta
+            return(0xffff54f9);
         }
-        return(0xffffffff);
+        return(0xff333333);
     }
-    
+
     /**
-     * 
+     *
      * @param type
      * @return
      */
@@ -54,19 +54,19 @@ public class WeatherHelper {
             return("#78e825");
         }
         else if(type.equals("IFR")) {
-            return("#ff2a00");                        
+            return("#ff2a00");
         }
         else if(type.equals("MVFR")) {
-            return("#008aff");                        
+            return("#008aff");
         }
         else if(type.equals("LIFR")) {
-            return("#ff54f9");                       
+            return("#ff54f9");
         }
         return("white");
     }
-    
+
     /**
-     * 
+     *
      * @param weather
      * @return
      */
@@ -75,12 +75,12 @@ public class WeatherHelper {
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
-        weather = weather.replace("BECMG", "\nBECMG"); 
+        weather = weather.replace("BECMG", "\nBECMG");
         return weather;
     }
-    
+
     /**
-     * 
+     *
      * @param weather
      * @return
      */
@@ -100,7 +100,7 @@ public class WeatherHelper {
     }
 
     /**
-     * Color code weather type 
+     * Color code weather type
      * @param weatherAll
      * @param translate
      * @return
@@ -115,7 +115,7 @@ public class WeatherHelper {
          */
         weather = weather.replaceAll("\\+", "<font color='#ff54f9'>+" + (translate ? "(Heavy)" : "") + "</font>");
         weather = weather.replaceAll("\\-", "<font color='#ff2a00'>-" + (translate ? "(Light)" : "") + "</font>");
-        
+
         /*
          * Description
          */
@@ -129,7 +129,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("PR", "<font color='#008aff'>PR" + (translate ? "(Partial)" : "") + "</font>");
         weather = weather.replaceAll("AMD", "AMD" + (translate ? "(Amended)" : ""));
         weather = weather.replaceAll("WSCONDS", "WSCONDS" + (translate ? "(Wind Shear Possible)" : ""));
-        
+
         /*
          * Precip
          */
@@ -174,15 +174,15 @@ public class WeatherHelper {
         weather = weather.replaceAll("VV", "<font color='#ff2a00'>VV" + (translate ? "(Vertical Visibility)" : "") + "</font>");
         weather = weather.replaceAll("CB", "<font color='#ff2a00'>CB" + (translate ? "(Cumulonimbus)" : "") + "</font>");
         weather = weather.replaceAll("WS", "<font color='#ff54f9'>WS" + (translate ? "(Wind Shear)" : "") + "</font>");
-        
+
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
         weather = weather.replaceAll("QNH", "QNH" + (translate ? "(Minimum Altimeter)" : ""));
         weather = weather.replaceAll("INS", "INS" + (translate ? "(Inches)" : ""));
 
         for(int i = 1 ; i < strip.length; i++) {
-            
+
             String weather1 = strip[i];
-            
+
             weather += " RMK" + (translate ? "(Remark) " : " ") + weather1;
         }
 
@@ -208,7 +208,7 @@ public class WeatherHelper {
      * @return
      */
     public static String formatMetarHTML(String weatherAll, boolean translate) {
-        
+
         String strip[] = weatherAll.split("RMK");
 
         // a bit of a simplification but typically first 2 items are identifier and time; they need no translation
@@ -233,7 +233,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("LTG", "LTG" + (translate ? "(Lightning)" : ""));
         weather = weather.replaceAll("TCU","TCU" + (translate ? "(Towering Cumulus)" : ""));
         weather = weather.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
-        
+
         weather = weather.replaceAll("AUTO", "AUTO" + (translate ? "(Automated)" : ""));
         weather = weather.replaceAll("COR", "COR" + (translate ? "(Corrected)" : ""));
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
@@ -296,11 +296,11 @@ public class WeatherHelper {
         /*
          * These are remarks
          */
-        
+
         for(int i = 1 ; i < strip.length; i++) {
-        
+
             String weather1 = strip[i];
-            
+
             weather1 = weather1.replaceAll("AO", "AO" + (translate ? "(Station Type)" : ""));
             weather1 = weather1.replaceAll("RAB", "RAB" + (translate ? "(Rain Began)" : ""));
             weather1 = weather1.replaceAll("RAE", "RAE" + (translate ? "(Rain Ended)" : ""));
@@ -315,7 +315,7 @@ public class WeatherHelper {
             weather1 = weather1.replaceAll("PRESRR", "PRESFR" + (translate ? "(Pressure Raising Rapidly)" : ""));
             weather1 = weather1.replaceAll("PRESFR", "PRESFR" + (translate ? "(Pressure Falling Rapidly)" : ""));
             weather1 = weather1.replaceAll("\\$", "\\$" + (translate ? "(Station Maintenance Needed)" : ""));
-            
+
             weather += " RMK" + (translate ? "(Remark)" : " ") + weather1;
         }
 
@@ -342,7 +342,7 @@ public class WeatherHelper {
                 String portion = weather.substring(0, start);
                 String windString = portion.substring(portion.length() - 2, portion.length());
                 int winds = Integer.parseInt(windString);
-                 
+
                 if(winds < 10) {
                     portion = portion.substring(0, portion.length() - 2) + "<font color='#78e825'>" + windString + "</font>" + "KT";
                 }
@@ -369,7 +369,7 @@ public class WeatherHelper {
         output = output.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
         return output;
     }
-    
+
     /**
      * Color code PIREPs
      * @param weather
@@ -408,7 +408,7 @@ public class WeatherHelper {
 
         return weather;
     }
-    
+
     /**
      * Color code winds
      * @param weather
@@ -438,7 +438,7 @@ public class WeatherHelper {
                  */
                 if(subportion.matches(".* P6")) {
                     visstart = portionlen - 2;
-                    vis = 6;  
+                    vis = 6;
                     P6 = true;
                 }
                 else if(subportion.matches(".* [1-9]{1} [1-3]{1}\\/[2-4]{1}")) {
@@ -446,34 +446,34 @@ public class WeatherHelper {
                      * Like " 1 1/4"
                      */
                     visstart = portionlen - 5;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
                 else if(subportion.matches(".* [1]{1}[1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 11/4"
                      */
                     visstart = portionlen - 4;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
                 else if(subportion.matches(".* [1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 3/4"
                      */
                     visstart = portionlen - 3;
-                    vis = 0;  
+                    vis = 0;
                 }
                 else {
                     /*
                      * Like " 3"
                      */
                     visstart = portionlen - 1;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
 
                 visString = portion.substring(visstart);
-                
+
                 if(P6) {
-                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + "P6" + "</font>" + "SM";                    
+                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + "P6" + "</font>" + "SM";
                 }
                 else if(vis >= 5) {
                     portion = portion.substring(0, visstart) + "<font color='#78e825'>" + visString + "</font>" + "SM";
@@ -507,21 +507,21 @@ public class WeatherHelper {
      * @return
      */
     public static String decodeWind(String wind) {
-        
+
         if(wind.length() < 4) {
             return "";
         }
-        
+
         int dir;
         int speed;
         try {
-            dir = Integer.parseInt(wind.substring(0, 2)) * 10; 
+            dir = Integer.parseInt(wind.substring(0, 2)) * 10;
             speed = Integer.parseInt(wind.substring(2, 4));
         }
         catch(Exception e) {
-            return "";            
+            return "";
         }
-        
+
         if(wind.length() == 4) {
 
             if(dir == 990 && speed == 0) {
@@ -555,7 +555,7 @@ public class WeatherHelper {
 
             String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
             return(out);
-            
+
         }
 
         if(wind.length() == 6) {
@@ -616,12 +616,12 @@ public class WeatherHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static String getNamMosLegend() {
         /*
-         * Legend 
+         * Legend
          */
         return
                 "<a href='http://www.nws.noaa.gov/mdl/synop/namcard.php'>NAM Forecast Legend</a><br>";
@@ -635,12 +635,12 @@ public class WeatherHelper {
      */
     public static String getMetarTime(String metar) {
         String time = "";
-        // parse time, temp, altitude setting 
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
         if(tokens.length > 1) {
             time = tokens[1];
         }
-        
+
         return time;
     }
 
@@ -651,28 +651,28 @@ public class WeatherHelper {
      * @return
      */
     public static String getDensityAltitude(String metar, String elev) {
-        
+
         if(null == elev || null == metar) {
             return "";
         }
-        
+
         double da = 0;
         double temp = 0;
         double as = 0;
-        
+
         double st = 0;
         double at = 0;
-       
+
         double pa = 0;
         double elevation = 0;
-        
+
         boolean tmpset = false;
         boolean aset = false;
         boolean melev = false;
-        
-        // parse time, temp, altitude setting 
+
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
-        
+
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
@@ -702,12 +702,12 @@ public class WeatherHelper {
         }
         catch (Exception e) {
         }
-        
+
         if(tmpset && aset && melev) {
-            
+
             // pressure altitude, correct for non standard
             pa = elevation + (29.92 - as) * 1000.0;
-            
+
             // standard temp Kelvin
             st = 273.15 - (15 - 0.0019812 * pa);
 
@@ -716,38 +716,34 @@ public class WeatherHelper {
 
             // density altitude, aviation formulary
             da = pa + 118.6 * (st - at);
-            
+
             // round to nearest 100
             da = ((int)(da / 100)) * 100;
-            
+
             return "" + (int)da + " ft";
         }
 
         return "";
     }
-    
-    /**
-     * Returns best wind aligned runway from METAR
-     * @param metar
-     * @param runways
-     * @return
-     */
-    public static String getBestRunway(String metar, LinkedList<String> runways) {
-        
-        if(null == runways || null == metar) {
-            return "";
-        }
-        
-        String wind = "";
-        double dir = 0;
-        double spd0 = 0;
-        double spd1 = 0;
-        
+
+    public static double[] getWindFromMetar(String metar) {
+
         boolean windset = false;
-        
-        // parse time, temp, altitude setting 
+
+        if(null == metar) {
+            return null;
+        }
+
+        double wnd[] = new double[3];
+        wnd[0] = 0;
+        wnd[1] = 0;
+        wnd[2] = 0;
+
+        String wind = "";
+
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
-        
+
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
@@ -761,13 +757,12 @@ public class WeatherHelper {
                         // variable, almost calm
                         tmp = "000";
                     }
-                    dir = Double.parseDouble(tmp);
+                    wnd[0] = Double.parseDouble(tmp);
                     // next 2 digits are speed
-                    spd0 = Double.parseDouble(wind.substring(3, 5));
-                    // could be gusting
+                    wnd[1] = Double.parseDouble(wind.substring(3, 5));
                     if(wind.contains("G")) {
                         // gusting to
-                        spd1 = Double.parseDouble(wind.substring(6, 8));
+                        wnd[2] = Double.parseDouble(wind.substring(6, 8));
                     }
                     windset = true;
                     continue;
@@ -776,13 +771,38 @@ public class WeatherHelper {
         }
         catch (Exception e) {
         }
-        
+        if(windset) {
+            return wnd;
+        }
+        return null;
+    }
+
+    /**
+     * Returns best wind aligned runway from METAR
+     * @param metar
+     * @param runways
+     * @return
+     */
+    public static String getBestRunway(String metar, LinkedList<String> runways) {
+
+        if(null == runways || null == metar) {
+            return "";
+        }
+
+
+
         double head1 = 0;
         double head0 = 0;
         double cross1 = 0;
         double cross0 = 0;
-        
-        if(windset) {
+
+        double[] windset = getWindFromMetar(metar);
+        if(windset != null) {
+
+            double dir = windset[0];
+            double spd0 = windset[1];
+            double spd1 = windset[2];
+
             /*
              * Find best wind aligned runway
              */
@@ -814,14 +834,14 @@ public class WeatherHelper {
                         if(spd1 != 0) {
                             best += "G" + Math.abs((int)cross1);
                         }
-                        
+
                         best += (cross0 < 0 ? "KT Left X" : "KT Right X");
                     }
                 }
                 catch (Exception e) {
                     continue;
                 }
-                
+
             }
             return best;
         }

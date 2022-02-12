@@ -14,13 +14,13 @@ package com.ds.avare.webinfc;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 import com.ds.avare.ChecklistActivity;
-import com.ds.avare.PlanActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.storage.Preferences;
@@ -42,10 +42,11 @@ import android.webkit.WebView;
  */
 public class WebAppListInterface {
     private StorageService mService; 
-    private Preferences mPref;
     private WebView mWebView;
     private ImportTask mImportTask;
     private GenericCallback mCallback;
+    private Preferences mPref;
+    private Checklist mList;
     
     private static final int MSG_UPDATE_LIST = 1;
     private static final int MSG_CLEAR_LIST = 2;
@@ -62,9 +63,10 @@ public class WebAppListInterface {
      * Instantiate the interface and set the context
      */
     public WebAppListInterface(Context c, WebView ww, GenericCallback cb) {
-        mPref = new Preferences(c);
         mWebView = ww;
         mCallback = cb;
+        mPref = new Preferences(c);
+        mList = new Checklist("");
     }
 
     /**
@@ -73,7 +75,6 @@ public class WebAppListInterface {
      */
     public void connect(StorageService s) { 
         mService = s;
-        mService.setCheckLists(Checklist.getCheckListsFromStorageFromat(mPref.getLists()));
     }
 
     /**
@@ -106,7 +107,7 @@ public class WebAppListInterface {
     public void newSaveList() {
     	clearListSave();
     	
-        LinkedList<Checklist> lists = mService.getCheckLists();
+        LinkedList<Checklist> lists = mService.getDBResource().getUserLists();
         if(lists == null) {
             return;
         }
@@ -123,7 +124,7 @@ public class WebAppListInterface {
     public void newList() {
         clearList();
         
-        String steps[] = mService.getChecklist().getStepsArray();
+        String steps[] = mList.getStepsArray();
         if(steps == null) {
             updateList();
             return;
@@ -137,7 +138,6 @@ public class WebAppListInterface {
 
     /**
      * Update the passed point on the List page
-     * @param passed
      */
     public void updateList() {
         mHandler.sendEmptyMessage(MSG_UPDATE_LIST);
@@ -148,7 +148,7 @@ public class WebAppListInterface {
      * on long list. Hence do from Android widgets 
      */
     public void moveBack() {
-    	mService.getChecklist().moveBack();
+    	mList.moveBack();
 		updateList();
     }
 
@@ -157,7 +157,7 @@ public class WebAppListInterface {
      * on long list. Hence do from Android widgets 
      */
     public void moveForward() {
-    	mService.getChecklist().moveForward();
+    	mList.moveForward();
 		updateList();
     }
 
@@ -170,7 +170,7 @@ public class WebAppListInterface {
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mService.getChecklist().moveItemUp();
+    	mList.moveItemUp();
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -180,7 +180,7 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void moveTo(int item) {
-    	mService.getChecklist().moveTo(item);
+    	mList.moveTo(item);
 		updateList();
     }
 
@@ -192,7 +192,7 @@ public class WebAppListInterface {
     	// surround JS each call with busy indication / not busy 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mService.getChecklist().moveItemDown();
+    	mList.moveItemDown();
     	
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -204,29 +204,27 @@ public class WebAppListInterface {
     @JavascriptInterface
     public void discardList() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
-        mService.setChecklist(new Checklist(""));
+        mList = new Checklist("");
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
      * 
-     * @param num
      */
     @JavascriptInterface
     public void deleteItem() {
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// remove current item, change working index to not overflow
-    	mService.getChecklist().deleteItem();
+    	mList.deleteItem();
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
 
     /**
      * 
-     * @param id
-     * @param type
+     * @param item
      */	
     @JavascriptInterface
     public void addToList(String item) {
@@ -235,7 +233,7 @@ public class WebAppListInterface {
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	mService.getChecklist().addStep(item);
+    	mList.addStep(item);
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
     }
@@ -246,28 +244,24 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void saveList(String name) {
-    	if(mService.getChecklist().getStepsArray().length < 1) {
+    	if(mList.getStepsArray().length < 1) {
     		// Anything less than 1 is not a list
     		return;
     	}
-    	mService.getChecklist().changeName(name);
-        LinkedList<Checklist> lists = mService.getCheckLists();
-        if(lists == null) {
-            return;
-        }
+
+    	mList.changeName(name);
 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-        lists.add(mService.getChecklist());
         /*
          * Save to storage on save button
          */
-        mPref.putLists(Checklist.putCheckListsToStorageFormat(lists));
-        
+        mService.getDBResource().setUserList(mList);
+
         /*
          * Make a new working list since last one stored already 
          */
-        mService.setChecklist(new Checklist(mService.getChecklist().getName(), mService.getChecklist().getSteps()));
+        mList = new Checklist(mList.getName(), mList.getSteps());
 
         newSaveList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -275,21 +269,15 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param index
+     * @param name
      */
     @JavascriptInterface
     public void loadList(String name) {
-        LinkedList<Checklist> lists = mService.getCheckLists();
-        if(lists == null) {
-            return;
-        }
-
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-        for (Checklist cl : lists) {
-        	if(cl.getName().equals(name)) {
-        		mService.setChecklist(new Checklist(cl.getName(), cl.getSteps()));
-        	}
+        mList = mService.getDBResource().getUserList(name);
+        if(null == mList) {
+            mList = new Checklist("");
         }
     	newList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -297,34 +285,14 @@ public class WebAppListInterface {
 
     /**
      * 
-     * @param num
+     * @param name
      */
     @JavascriptInterface
     public void saveDelete(String name) {
-    	int toremove = -1;
-        int i = 0;
-        LinkedList<Checklist> lists = mService.getCheckLists();
-        if(lists == null) {
-            return;
-        }
 
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-        // Find and remove
-        for (Checklist cl : lists) {
-        	if(cl.getName().equals(name)) {
-        		toremove = i;
-        	}
-        	i++;
-        }
-        if(toremove > -1) {
-        	lists.remove(toremove);
-        }
-        
-        /*
-         * Save to storage on save button
-         */
-        mPref.putLists(Checklist.putCheckListsToStorageFormat(lists));
+    	mService.getDBResource().deleteUserList(name);
 
     	newSaveList();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -357,7 +325,7 @@ public class WebAppListInterface {
         /*
          * New list add from file
          */
-        mService.setChecklist(new Checklist(""));
+        mList = new Checklist("");
         mImportTask = new ImportTask();
         mImportTask.execute(path);
     }
@@ -380,7 +348,7 @@ public class WebAppListInterface {
             BufferedReader buffreader = null;
             InputStream instream = null;
             try {
-                instream = new FileInputStream(txt);
+                instream = new FileInputStream(mPref.getUserDataFolder() + File.separator + txt);
                 
                 InputStreamReader inputreader = new InputStreamReader(instream);
                 buffreader = new BufferedReader(inputreader);
@@ -442,7 +410,7 @@ public class WebAppListInterface {
                 return;
             }
             
-            mService.getChecklist().addStep(values[0]);
+            mList.addStep(values[0]);
             // keep adding lines
         }
     }
@@ -459,16 +427,16 @@ public class WebAppListInterface {
                  * Now update HTML with latest list stuff, do this every time we start the List screen as
                  * things might have changed.
                  */
-        		String[] steps = mService.getChecklist().getStepsArray();
+        		String[] steps = mList.getStepsArray();
             	for(int num = 0; num < steps.length; num++) {
             		String url = "javascript:set_list_line(" + 
             				num + "," +
-            				(mService.getChecklist().isSelected(num) ? 1 : 0) + ",'" + steps[num] + "')";
+            				(mList.isSelected(num) ? 1 : 0) + ",'" + steps[num] + "')";
             		mWebView.loadUrl(url);
             	}
             	
-            	if(null != mService.getChecklist().getName()) {
-            		mWebView.loadUrl("javascript:list_setname('" + mService.getChecklist().getName() + "')");
+            	if(null != mList.getName()) {
+            		mWebView.loadUrl("javascript:list_setname('" + mList.getName() + "')");
             	}
         	}
         	else if(MSG_CLEAR_LIST == msg.what) {

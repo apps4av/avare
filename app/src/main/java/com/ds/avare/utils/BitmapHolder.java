@@ -178,7 +178,7 @@ public class BitmapHolder {
 
 
     private String getName(Preferences pref, String name) {
-        return getName(pref.mapsFolder() + "/" + name);
+        return getName(pref.getServerDataFolder() + File.separator + name);
     }
 
     private String getName(String name) {
@@ -377,8 +377,6 @@ public class BitmapHolder {
         if(null != mBitmap) {
             mWidth = mBitmap.getWidth();
             mHeight = mBitmap.getHeight();
-        }
-        else {
         }
     }
 

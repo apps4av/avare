@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <!--
 Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
 All rights reserved.
@@ -14,7 +15,6 @@ authors: zkhan
 -->
 
 <head>
-
 
     <!-- Latest compiled and minified CSS -->
     <script src="file:///android_asset/jquery.min.js"></script>
@@ -34,6 +34,141 @@ authors: zkhan
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" >
 
+
+function zeroPad(num) {
+	var out = num.toString();
+	if(out.length == 2) {
+		return out;
+	}
+	else {
+		return '0' + out;
+	}
+}
+
+function refresh() {
+	location.reload(true);
+}
+
+function getImageWinds(type, level, ftime) {
+	var elem = document.getElementById('weatherImageWinds');
+	if     (level == '030') level = '900';
+	else if(level == '060') level = '800';
+	else if(level == '090') level = '725';
+	else if(level == '120') level = '650';
+	else if(level == '150') level = '575';
+	else if(level == '180') level = '500';
+	else if(level == '240') level = '400';
+	else if(level == '300') level = '300';
+	else if(level == '360') level = '225';
+	else if(level == '420') level = '175';
+	else if(level == '480') level = '125';
+
+	var filename = 'https://aviationweather.gov/data/products/wind/' + ftime + '_' + level + '_' + type + '.gif';
+	elem.src = filename;
+}
+
+function updateImageWinds() {
+	var telem = document.getElementById('type');
+	var type = telem.options[telem.selectedIndex].value;
+	var lelem = document.getElementById('level');
+	var level = lelem.options[lelem.selectedIndex].value;
+	var felem = document.getElementById('fore');
+	var ftime = felem.options[felem.selectedIndex].value;
+	getImageWinds(type, level, ftime);
+}
+
+function getImageTurb(level, ftime) {
+	var elem = document.getElementById('weatherImageTurb');
+	var filename = 'https://aviationweather.gov/data/products/turbulence/F' + ftime + '_gtg_' + level + '_total.gif';
+	elem.src = filename;
+}
+
+function updateImageTurb() {
+	var lelem = document.getElementById('levelTurb');
+	var level = lelem.options[lelem.selectedIndex].value;
+	var felem = document.getElementById('foreTurb');
+	var fore = felem.options[felem.selectedIndex].value;
+	getImageTurb(level, fore);
+}
+
+function getImageIcing(type, level, ftime) {
+	var elem = document.getElementById('weatherImageIcing');
+	var prod = '';
+	if (type == 'frz') {
+	    prod = '_rap_frz_hght';
+	}
+	else {
+	    prod = (ftime == '00' ? '_cip_' : '_fip_') + level + '_' + type;
+	}
+
+	var filename = 'https://aviationweather.gov/data/products/icing/F' + ftime + prod + '.gif';
+	elem.src = filename;
+}
+
+function updateImageIcing() {
+	var lelem = document.getElementById('levelIce');
+	var level = lelem.options[lelem.selectedIndex].value;
+	var felem = document.getElementById('foreIce');
+	var fore = felem.options[felem.selectedIndex].value;
+	var telem = document.getElementById('typeIce');
+	var type = telem.options[telem.selectedIndex].value;
+	getImageIcing(type, level, fore);
+}
+
+function getImageMisc(type) {
+	var elem = document.getElementById('weatherImageMisc');
+	elem.src = type;
+}
+
+function updateImageMisc() {
+	var melem = document.getElementById('typeMisc');
+	var misc = melem.options[melem.selectedIndex].value;
+	getImageMisc(misc);
+}
+
+function getImageProg(type) {
+	var elem = document.getElementById('weatherImageProg');
+	elem.src = type;
+}
+
+function updateImageProg() {
+	var elem = document.getElementById('typeProg');
+	var prog = elem.options[elem.selectedIndex].value;
+	getImageProg(prog);
+}
+
+function settext() {
+	var txt = document.getElementById('timetxt');
+	var now = new Date();
+	var utc =  (now.getUTCMonth()) + 1 + '/' + now.getUTCDate() + ' ' + zeroPad(now.getUTCHours()) + '' + zeroPad(now.getUTCMinutes()) + ' UTC';
+
+	txt.value = utc;
+	getData();
+
+}
+
+function getData() {
+	AndroidWeather.getWeather();
+}
+
+function updateData(weather) {
+	var table = document.getElementById('plantable');
+	table.innerHTML = weather;
+}
+
+window.onload = settext;
+
+$(document).ready(function(){
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    });
+    updateImageMisc();
+    updateImageProg();
+    updateImageWinds();
+    updateImageTurb();
+    updateImageIcing();
+});
+
 	toastr.options.timeOut = 2000;
 
 var CELL_WP = 0;
@@ -43,15 +178,15 @@ var CELL_WINDT = 3;
 var CELL_HEADING = 4;
 var CELL_DISTANCE = 5;
 var CELL_GS = 6;
-var CELL_TIME = 7;
-var CELL_FUEL = 8;
-var CELL_LAST = 9;
+var CELL_ALTITUDE = 7;
+var CELL_TIME = 8;
+var CELL_FUEL = 9;
+var CELL_LAST = 10;
 
 var plan_poll_timer = setInterval(function () {loadplan()}, 1000);
 
 // load plan from Android then display every second
 function loadplan() {
-	//var str = "myplanname::::1,102,18,BOS,NAVAID--:--::::0,5,23,--:--BVY,AIRPORT::::Total  82nm --:-- 102° 10.1";
 	var str = AndroidPlan.getPlanData();
 	// split plan data encoded in ::
 	var plans = str.split("::::");
@@ -59,7 +194,7 @@ function loadplan() {
 	for(var pl = 1; pl < (plans.length - 1); pl++) {
 		// split plan individual fields
 		var data = plans[pl].split(",");
-		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])) {
+		if(!set_plan_line(pl, data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10])) {
 			// mismatch in view and model, sync
 			AndroidPlan.refreshPlan();
 			return;
@@ -83,13 +218,18 @@ function plan_setname(name) {
 	plan.textContent = "Plan" + "[" + name + "]";
 }
 
+// set weather
+function update_weather(weather) {
+    updateData(weather);
+}
+
 
 // This will move to a particular row on click
 function onclick_row(row) {
 	AndroidPlan.moveTo(row - 1);
 }
 
-function set_plan_line(row, next, course, heading, distance, gs, time, id, type, fuel, windt) {
+function set_plan_line(row, next, course, heading, distance, gs, time, id, type, fuel, windt, alt) {
 	// rows here are 1 indexed
 // Set plan line
 	var plan_table = document.getElementById("plan_table");
@@ -121,6 +261,7 @@ function set_plan_line(row, next, course, heading, distance, gs, time, id, type,
 	plan_table.rows[row].cells[CELL_COURSE].textContent = course;
 	plan_table.rows[row].cells[CELL_WINDT].textContent = windt;
 	plan_table.rows[row].cells[CELL_GS].textContent = gs;
+	plan_table.rows[row].cells[CELL_ALTITUDE].textContent = alt;
 	plan_table.rows[row].cells[CELL_DISTANCE].textContent = distance;
 	plan_table.rows[row].cells[CELL_TIME].textContent = time;
 	plan_table.rows[row].cells[CELL_HEADING].textContent = heading;
@@ -158,6 +299,7 @@ function plan_add(id, type) {
 	cell[CELL_HEADING] = row.insertCell(CELL_HEADING);
 	cell[CELL_DISTANCE] = row.insertCell(CELL_DISTANCE);
 	cell[CELL_GS] = row.insertCell(CELL_GS);
+	cell[CELL_ALTITUDE] = row.insertCell(CELL_ALTITUDE);
 	cell[CELL_TIME] = row.insertCell(CELL_TIME);
 	cell[CELL_FUEL] = row.insertCell(CELL_FUEL);
 
@@ -165,6 +307,7 @@ function plan_add(id, type) {
 	cell[CELL_TYPE].textContent = type;
 	cell[CELL_WINDT].textContent = "";
 	cell[CELL_GS].textContent = "";
+	cell[CELL_ALTITUDE].textContent = "";
 	cell[CELL_DISTANCE].textContent = "";
 	cell[CELL_TIME].textContent = "";
 	cell[CELL_COURSE].textContent = "";
@@ -173,6 +316,9 @@ function plan_add(id, type) {
 
     // clear search input
     document.getElementById("search_input").value = "";
+
+    //each time plan updates, update "create new plan" for faster plan editing
+    document.getElementById("create_input").value += id.substring(0, 6) + " ";
 }
 
 // Delete a waypoint in Plan
@@ -215,6 +361,9 @@ function plan_clear() {
 			plan_table.deleteRow(row);
 	}
     document.getElementById('plan_altitude').selectedIndex = 0;
+
+    //clear Create New Plan box as well
+    document.getElementById("create_input").value = "";
 }
 
 // remove the entire plan
@@ -489,20 +638,21 @@ $(document).ready(function(){
 </head>
 <body>
 
-  <ul class="nav nav-tabs" style="display:inline-flex;">
+<ul class="nav nav-tabs" style="display:inline-flex;">
     <li class="active"><a href="#plan">Plan</a></li>
     <li><a href="#load">Load</a></li>
     <li><a href="#save">Save</a></li>
     <li><a href="#new">New</a></li>
+    <li><a href="#brief">Brief</a></li>
     <li><a href="#help">Help</a></li>
-  </ul>
+</ul>
 
-  <div class="tab-content">
+<div class="tab-content">
 
     <div id="plan" class="tab-pane fade in active">
         <table class="table">
             <tr>
-                <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3> <a onclick="plan_get_weather()">Get Briefing</a></td>
+                <td><h3 ><span class="label label-success" id="plan_name">Plan[]</span></h3> </td>
             </tr>
             <tr>
                 <td>@<select id="plan_altitude" onchange="plan_set_altitude()" data-mobile="true" class="selectpicker">
@@ -563,7 +713,7 @@ $(document).ready(function(){
                 </td>
             </tr>
         </table>
-        <table class="table" id="plan_table"><th>Waypoint</th><th>Type</th><th>Course</th><th>Wind</th><th>Heading</th><th id="plan_total_distance">Distance</th><th>GS</th><th id="plan_total_time">Time</th><th id="plan_total_fuel">Fuel</th></table>
+        <table class="table" id="plan_table"><th>Waypoint</th><th>Type</th><th>Course</th><th>Wind</th><th>Heading</th><th id="plan_total_distance">Distance</th><th>GS</th><th>Altitude</th><th id="plan_total_time">Time</th><th id="plan_total_fuel">Fuel</th></table>
         <table class="table">
             <tr>
                 <td><button class="btn btn-block" onclick="plan_discard()">Clr</button></td>
@@ -604,10 +754,10 @@ $(document).ready(function(){
                 <td id="plan_count"></td>
             </tr>
             <tr>
-                <td><button class="btn btn-block" id="list_first" onclick="first()"><<</button></td>
-                <td><button class="btn btn-block" id="list_prev" onclick="prev()"><</button></td>
-                <td><button class="btn btn-block" id="list_next" onclick="next()">></button></td>
-                <td><button class="btn btn-block" id="list_last" onclick="last()">>></button></td>
+                <td><button class="btn btn-block" id="list_first" onclick="first()">&lt;&lt;</button></td>
+                <td><button class="btn btn-block" id="list_prev" onclick="prev()">&lt;</button></td>
+                <td><button class="btn btn-block" id="list_next" onclick="next()">&gt;</button></td>
+                <td><button class="btn btn-block" id="list_last" onclick="last()">&gt;&gt;</button></td>
             </tr>
         </table>
         <table class="table">
@@ -626,7 +776,6 @@ $(document).ready(function(){
         </table>
     </div>
 
-
     <div id="save" class="tab-pane fade">
         <table class="table"><th>Save Current Plan</th>
             <tr>
@@ -636,6 +785,190 @@ $(document).ready(function(){
         </table>
     </div>
 
+    <div id="brief" class="tab-pane fade">
+        <ul class="nav nav-tabs" style="display:inline-flex;">
+            <li class="active"><a href="#textual">Textual</a></li>
+            <li><a href="#misc">Misc</a></li>
+            <li><a href="#prog">Prog</a></li>
+            <li><a href="#windstemp">Winds/Temp</a></li>
+            <li><a href="#turb">Turb</a></li>
+            <li><a href="#icing">Icing</a></li>
+        </ul>
+
+
+        <div class="tab-content">
+            <div id="misc" class="tab-pane fade">
+                <h3>Misc. Charts</h3>
+                <select class="selectpicker" id='typeMisc' data-mobile="true"  name='typeMisc' onChange='updateImageMisc()'>
+                    <option value='https://aviationweather.gov/data/obs/pirep/pireps_turb_us.gif'>PIREPs Turbulence</option>
+                    <option value='https://aviationweather.gov/data/obs/pirep/pireps_ice_us.gif'>PIREPs Icing</option>
+                    <option value='https://aviationweather.gov/data/obs/pirep/pireps_wx_us.gif'>PIREPs Weather</option>
+                    <option value='https://aviationweather.gov/data/products/gairmet/F00_gairmet_sierra_us.gif'>AIRMET Sierra</option>
+                    <option value='https://aviationweather.gov/data/products/gairmet/F00_gairmet_tango_us.gif'>AIRMET Tango</option>
+                    <option value='https://aviationweather.gov/data/products/gairmet/F00_gairmet_zulu-f_us.gif'>AIRMET Zulu</option>
+                    <option value='https://aviationweather.gov/data/products/sigmet/sigmet_all.gif'>SIGMETs</option>
+                    <option value='https://aviationweather.gov/data/obs/metar/metars_us.gif'>METAR</option>
+                    <option value='https://aviationweather.gov/data/obs/radar/rcm_tops.gif'>Radar</option>
+                    <option value='https://aviationweather.gov/data/obs/sat/us/sat_vis_us.jpg'>Satellite</option>
+                    <option value='http://www.ospo.noaa.gov/data/land/fire/currenthms.jpg'>Fire and Smoke</option>
+                </select>
+                <br><img id='weatherImageMisc'><br>
+            </div>
+            <div id="prog" class="tab-pane fade">
+                <h3>Prognostic Charts</h3>
+                <select class="selectpicker" id='typeProg' data-mobile="true" name='typeProg' onChange='updateImageProg()'>
+                    <option value='https://aviationweather.gov/data/products/progs/F000_wpc_sfc.gif'>WPC Surface Analysis</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F006_wpc_prog.gif'>WPC 6 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F012_wpc_prog.gif'>WPC 12 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F018_wpc_prog.gif'>WPC 18 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F024_wpc_prog.gif'>WPC 24 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F030_wpc_prog.gif'>WPC 30 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F036_wpc_prog.gif'>WPC 36 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F048_wpc_prog.gif'>WPC 48 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F060_wpc_prog.gif'>WPC 60 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F072_wpc_prog.gif'>WPC 72 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F096_wpc_prog.gif'>WPC 96 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F120_wpc_prog.gif'>WPC 120 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F144_wpc_prog.gif'>WPC 144 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/progs/F168_wpc_prog.gif'>WPC 168 HR Prognostic</option>
+                    <option value='https://aviationweather.gov/data/products/swl/00_sigwx_lo_us.gif'>Low Level Significant 0000Z</option>
+                    <option value='https://aviationweather.gov/data/products/swl/06_sigwx_lo_us.gif'>Low Level Significant 0600Z</option>
+                    <option value='https://aviationweather.gov/data/products/swl/12_sigwx_lo_us.gif'>Low Level Significant 1200Z</option>
+                    <option value='https://aviationweather.gov/data/products/swl/18_sigwx_lo_us.gif'>Low Level Significant 1800Z</option>
+                    <option value='https://aviationweather.gov/data/products/swm/00_sigwx_mid_nat.gif'>Mid Level Significant 0000Z</option>
+                    <option value='https://aviationweather.gov/data/products/swm/06_sigwx_mid_nat.gif'>Mid Level Significant 0600Z</option>
+                    <option value='https://aviationweather.gov/data/products/swm/12_sigwx_mid_nat.gif'>Mid Level Significant 1200Z</option>
+                    <option value='https://aviationweather.gov/data/products/swm/18_sigwx_mid_nat.gif'>Mid Level Significant 1800Z</option>
+                </select>
+                <br><img id='weatherImageProg'><br>
+            </div>
+            <div id="windstemp" class="tab-pane fade">
+                <h3>Winds/Temperature Charts</h3>
+                <select class="selectpicker" id='type' name='type' data-mobile="true" onChange='updateImageWinds()'>
+                    <OPTION VALUE='wind'>Wind Speed</OPTION>
+                    <OPTION VALUE='temp'>Temperature</OPTION>
+                    <OPTION VALUE='isa'>Temp. Difference</OPTION>
+                    <OPTION VALUE='windstrm'>Streamlines</OPTION>
+                </select>
+                <select class="selectpicker" id='level' name='level' data-mobile="true"  onChange='updateImageWinds()'>
+                    <OPTION VALUE='sfc'>sfc</OPTION>
+                    <OPTION VALUE='900'>3,000</OPTION>
+                    <OPTION VALUE='800'>6,000</OPTION>
+                    <OPTION VALUE='725'>9,000</OPTION>
+                    <OPTION VALUE='650'>12,000</OPTION>
+                    <OPTION VALUE='575'>15,000</OPTION>
+                    <OPTION VALUE='500'>FL180</OPTION>
+                    <OPTION VALUE='400'>FL240</OPTION>
+                    <OPTION VALUE='300'>FL300</OPTION>
+                    <OPTION VALUE='225'>FL360</OPTION>
+                    <OPTION VALUE='175'>FL420</OPTION>
+                    <OPTION VALUE='125'>FL480</OPTION>
+                </select>
+                <select class="selectpicker" id='fore' name='fore' data-mobile="true"  onChange='updateImageWinds()'>
+                    <option value='F00_rap'>0hr</option>
+                    <option value='F01_rap'>1hr</option>
+                    <option value='F02_rap'>2hr</option>
+                    <option value='F03_rap'>3hr</option>
+                    <option value='F04_rap'>4hr</option>
+                    <option value='F05_rap'>5hr</option>
+                    <option value='F06_rap'>6hr</option>
+                    <option value='F07_rap'>7hr</option>
+                    <option value='F08_rap'>8hr</option>
+                    <option value='F09_rap'>9hr</option>
+                    <option value='F10_rap'>10hr</option>
+                    <option value='F11_rap'>11hr</option>
+                    <option value='F12_rap'>12hr</option>
+                    <option value='F13_rap'>13hr</option>
+                    <option value='F14_rap'>14hr</option>
+                    <option value='F15_rap'>15hr</option>
+                    <option value='F16_rap'>16hr</option>
+                    <option value='F17_rap'>17hr</option>
+                    <option value='F18_rap'>18hr</option>
+                </select>
+                <br><img id='weatherImageWinds'><br>
+            </div>
+            <div id="turb" class="tab-pane fade">
+                <h3>Turbulence Charts</h3>
+                <select class="selectpicker" id='levelTurb' data-mobile="true"  name='levelTurb' onChange='updateImageTurb()'>
+                    <OPTION VALUE='010'>1,000</OPTION>
+                    <OPTION VALUE='030'>3,000</OPTION>
+                    <OPTION VALUE='050'>5,000</OPTION>
+                    <OPTION VALUE='070'>7,000</OPTION>
+                    <OPTION VALUE='090'>9,000</OPTION>
+                    <OPTION VALUE='110'>11,000</OPTION>
+                    <OPTION VALUE='130'>13,000</OPTION>
+                    <OPTION VALUE='150'>15,000</OPTION>
+                    <OPTION VALUE='170'>17,000</OPTION>
+                    <OPTION VALUE='190'>FL190</OPTION>
+                    <OPTION VALUE='210'>FL210</OPTION>
+                    <OPTION VALUE='230'>FL230</OPTION>
+                    <OPTION VALUE='250'>FL250</OPTION>
+                    <OPTION VALUE='270'>FL270</OPTION>
+                    <OPTION VALUE='290'>FL290</OPTION>
+                    <OPTION VALUE='310'>FL310</OPTION>
+                    <OPTION VALUE='330'>FL330</OPTION>
+                    <OPTION VALUE='350'>FL350</OPTION>
+                    <OPTION VALUE='370'>FL370</OPTION>
+                    <OPTION VALUE='390'>FL390</OPTION>
+                    <OPTION VALUE='410'>FL410</OPTION>
+                    <OPTION VALUE='430'>FL430</OPTION>
+                    <OPTION VALUE='450'>FL450</OPTION>
+                </select>
+                <select class="selectpicker" id='foreTurb' data-mobile="true"  name='foreTurb' onChange='updateImageTurb()'>
+                    <option value='00'>0hr</option>
+                    <option value='01'>1hr</option>
+                    <option value='02'>2hr</option>
+                    <option value='03'>3hr</option>
+                    <option value='06'>6hr</option>
+                    <option value='09'>9hr</option>
+                    <option value='12'>12hr</option>
+                </select>
+                <br><img id='weatherImageTurb'><br>
+            </div>
+            <div id="icing" class="tab-pane fade">
+                <h3>Icing Charts</h3>
+                <select class="selectpicker" id='typeIce' data-mobile="true"  name='typeIce' onChange='updateImageIcing()'>
+                    <OPTION VALUE='sev'>Severity</OPTION>
+                    <OPTION VALUE='sev25'>Severity(Prob>25%)</OPTION>
+                    <OPTION VALUE='sev50'>Severity(Prob>50%)</OPTION>
+                    <OPTION VALUE='prob'>Probability</OPTION>
+                    <OPTION VALUE='frz'>Freezing Levels</OPTION>
+                </select>
+                <select class="selectpicker" id='levelIce' data-mobile="true"  name='levelIce' onChange='updateImageIcing()'>
+                    <OPTION VALUE='010'>1,000</OPTION>
+                    <OPTION VALUE='030'>3,000</OPTION>
+                    <OPTION VALUE='050'>5,000</OPTION>
+                    <OPTION VALUE='070'>7,000</OPTION>
+                    <OPTION VALUE='090'>9,000</OPTION>
+                    <OPTION VALUE='110'>11,000</OPTION>
+                    <OPTION VALUE='130'>13,000</OPTION>
+                    <OPTION VALUE='150'>15,000</OPTION>
+                    <OPTION VALUE='170'>17,000</OPTION>
+                    <OPTION VALUE='190'>FL190</OPTION>
+                    <OPTION VALUE='210'>FL210</OPTION>
+                    <OPTION VALUE='230'>FL230</OPTION>
+                    <OPTION VALUE='250'>FL250</OPTION>
+                    <OPTION VALUE='270'>FL270</OPTION>
+                    <OPTION VALUE='290'>FL290</OPTION>
+                    <OPTION VALUE='max'>max</OPTION>
+                </select>
+                <select class="selectpicker" id='foreIce' data-mobile="true"  name='foreIce' onChange='updateImageIcing()'>
+                    <option value='00'>0hr</option>
+                    <option value='02'>2hr</option>
+                    <option value='03'>3hr</option>
+                    <option value='06'>6hr</option>
+                    <option value='09'>9hr</option>
+                    <option value='12'>12hr</option>
+                </select><br>
+                <br><img id='weatherImageIcing'><br>
+            </div>
+            <div id="textual" class="tab-pane fade in active">
+                <h3>Textual Weather/NOTAMS</h3><br>
+                <a onclick="plan_get_weather()"><u>Get Briefing</u></a><br></br>
+                <p id='plantable'></p>
+            </div>
+        </div>
+    </div>
 
 
     <div id="help" class="tab-pane fade">
@@ -779,16 +1112,11 @@ $(document).ready(function(){
                 <li>Once a plan is entered, you can get the latest briefing for that plan area.</li>
                 <li>Enter a plan with at least two points, at least one of which is an airport.</li>
                 <li>Make sure you are connected to the Internet.</li>
-                <li>Press "Get Briefing" link next to the Plan name.</li>
+                <li>Press "Get Briefing" link under the Brief tag.</li>
                 <li>After a few seconds, the briefing will be shown.</li>
             </ul>
         </div>
     </div>
-
-
-
-
-
-
+</div>
 </body>
 </html>

@@ -388,8 +388,8 @@ public class Metar {
 			return visibilityMeters;
 		} else if (visibilityKilometers != null) {
 			return new Float(visibilityKilometers.floatValue() * 1000);
-		} else if (visibilityKilometers != null) {
-			return new Float(visibilityKilometers.floatValue() * 1609.344);
+		} else if (visibilityMiles != null) {
+			return new Float(visibilityMiles.floatValue() * 1609.344);
 		}
 		return null;
 	}

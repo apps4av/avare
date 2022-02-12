@@ -54,8 +54,14 @@ public class NexradImage {
     }
     
     /**
-     * 
-     * @param product
+     *
+     * @param time
+     * @param block
+     * @param empty
+     * @param isConus
+     * @param data
+     * @param cols
+     * @param rows
      */
     public void putImg(long time, int block, int empty[], boolean isConus, int data[], int cols, int rows) {
         
@@ -107,11 +113,9 @@ public class NexradImage {
      */
     public boolean isOld() {
         long diff = Helper.getMillisGMT();
-        diff -= mUpdated; 
-        if(diff > EXPIRES) {
-            return true;
-        }
-        return false;
+        diff -= mUpdated;
+
+        return diff > EXPIRES;
     }
 
     /**

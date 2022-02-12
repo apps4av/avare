@@ -42,7 +42,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>METARs, TAFs, AIRMETs, SIGMETs, PIREPs, Winds/Temp. Aloft</item>
         <item>NEXRAD</item>
         <item>TFRs</item>
-        <item>Stadiums (Contact FSS)</item>
     </string-array>
 
     <string-array name="resNameAFD">
@@ -139,6 +138,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Denver TAC</item>
         <item>Detroit TAC</item>
         <item>Fairbanks TAC</item>
+        <item>Honolulu Inset</item>
         <item>Houston TAC</item>
         <item>Kansas City TAC</item>
         <item>Las Vegas TAC</item>
@@ -1509,7 +1509,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>weather</item>
         <item>conus</item>
         <item>TFRs</item>
-        <item>GameTFRs</item>
     </string-array>
 
     <string-array name="resFilesIFRLE">
@@ -1606,6 +1605,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>DenverTAC</item>
         <item>DetroitTAC</item>
         <item>FairbanksTAC</item>
+        <item>HonoluluInset</item>
         <item>HoustonTAC</item>
         <item>KansasCityTAC</item>
         <item>LasVegasTAC</item>
@@ -1968,7 +1968,7 @@ Redistribution and use in source and binary forms, with or without modification,
     
     <string-array name="Server">
         <item>Apps4av.org</item>
-        <item>Kitepilot.net</item>
+        <item>Bubble.org</item>
         <item>Private Server</item>
     </string-array>
 
@@ -2044,12 +2044,14 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
 	<string-array name="DistanceRingTypePrompts">
         <item>None</item>
         <item>Dynamic</item>
         <item>Fixed at 2/5/10</item>
+        <item>Glide range</item>
     </string-array>
 
     <string-array name="DistanceRingColors">
@@ -2066,7 +2068,7 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
 	<string-array name="AutoPostTracksPrompts">
-        <item>None</item>
+        <item>Local file - no post</item>
         <item>Send email</item>
         <item>Send to all applications</item>
     </string-array>
@@ -2099,7 +2101,7 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string-array name="AdsOptions">
         <item>Select a category</item>
         <item>Aviation apps</item>
-        <item>Aircrafts for sale</item>
+        <item>Aircraft for sale</item>
         <item>Miscellaneous</item>
     </string-array>
 		    
@@ -2181,16 +2183,17 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="PointType">
-        <item>Fix</item>
         <item>Navaid</item>
         <item>Base</item>
+        <item>Fix</item>
         <item>GPS</item>
+        <item>Maps</item>
     </string-array>
 
     <string-array name="GpsPosition">
         <item>All Available</item>
-        <item>Internal Only</item>
-        <item>Avare IO Module Only</item>
+        <item>Built-in GPS Only</item>
+        <item>Avare Apps Only</item>
     </string-array>
 
     <string-array name="GpsPositionValues">

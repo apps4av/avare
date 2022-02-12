@@ -22,6 +22,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
@@ -29,6 +30,7 @@ import android.view.WindowManager;
 import com.ds.avare.R;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
+import com.sromku.polygon.Line;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -72,6 +74,15 @@ public class Helper {
          */
         return (((double)(px & 0x000000FF)) *
                 ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+    }
+
+    public static String getExternalFolder(Context context) {
+        // Since scoped storage there is no external folder
+        return getInternalFolder(context);
+    }
+
+    public static String getInternalFolder(Context context) {
+        return context.getFilesDir().getAbsolutePath();
     }
 
     /**
@@ -526,6 +537,28 @@ public class Helper {
     }
 
     /**
+     * Recursively get dir contents
+     * @param dir
+     * @return
+     */
+    public static LinkedList<File> getDirectoryContents(File dir) throws Exception {
+        LinkedList<File> list = new LinkedList();
+        try {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    list.addAll(getDirectoryContents(file));
+                } else {
+                    list.add(file);
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return list;
+    }
+
+    /**
      * 
      * @param heading
      * @param variation
@@ -592,8 +625,8 @@ public class Helper {
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
 
-        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
-        String filenameManifest = new Preferences(ctx).mapsFolder() + "/TFRs";
+        String filename = new Preferences(ctx).getServerDataFolder() + File.separator + "tfr.txt";
+        String filenameManifest = new Preferences(ctx).getServerDataFolder() + File.separator + "TFRs";
         String data = readFromFile(filename);
         String dataManifest = readTimestampFromFile(filenameManifest);
         if(null != data && null != dataManifest) {

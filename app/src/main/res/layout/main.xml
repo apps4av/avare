@@ -17,13 +17,25 @@ Redistribution and use in source and binary forms, with or without modification,
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:id="@+id/main_textview"
+            android:text="@string/permission_message"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:id="@+id/main_button"
+            android:layout_below="@id/main_textview"
+            android:text="@string/permission"/>
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
-            android:layout_above="@+id/tabscroll"
-            android:layout_height="fill_parent">
-        </FrameLayout>
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/tabscroll"></FrameLayout>
         <HorizontalScrollView 
             android:id="@+id/tabscroll"
             android:fillViewport="true"

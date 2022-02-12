@@ -122,8 +122,12 @@ public class TrackShape extends Shape {
 
     /**
      * @param ctx
-     * @param shapes
-     * @param shouldShow
+     * @param plan
+     * @param destination
+     * @param params
+     * @param line
+     * @param heading
+     * @param shouldDraw
      */
     public static void draw(DrawingContext ctx, Plan plan, Destination destination, GpsParams params, BitmapHolder line, BitmapHolder heading, boolean shouldDraw) {
         if((!shouldDraw) || (destination == null)) {

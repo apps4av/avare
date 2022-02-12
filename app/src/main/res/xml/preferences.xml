@@ -18,10 +18,6 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
-        <com.ds.avare.utils.FolderPreference
-            android:key="@string/Maps"
-            android:summary="@string/MapsSummary"
-            android:title="@string/MapsLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/Server"
@@ -41,10 +37,9 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-        <com.ds.avare.utils.FolderPreference
-            android:key="@string/UDWLocation"
-            android:summary="@string/UDWSummary"
-            android:title="@string/UDWLabel" />
+        <com.ds.avare.utils.ImportExportActivityPreference
+            android:summary="@string/importExportSummary"
+            android:title="@string/importExport" />
         </PreferenceScreen>
 
     <PreferenceScreen 
@@ -72,14 +67,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/externalGps"
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/WIFIPortLabel"
-            android:summary="@string/WIFIPortSummary"
-            android:key="@string/WIFIPort"/>
-        <com.ds.avare.utils.BTListPreferenceWithSummary
-            android:key="@string/AutopilotBTDevice"
-            android:summary="@string/AutopilotBTDeviceSummary"
-            android:title="@string/AutopilotBTDeviceLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ReverseAhrsRoll"
@@ -134,14 +121,6 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
-        <com.ds.avare.utils.SyncActivityPreference
-            android:summary="@string/syncSummary"
-            android:title="@string/sync" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/LeaveRunning"
-            android:summary="@string/LeaveRunningSummary"
-            android:title="@string/LeaveRunningLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"
@@ -274,6 +253,11 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ADSBTrafficFilterSummary"
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/drawTrafficCircles"
+            android:summary="@string/drawTrafficCirclesSummary"
+            android:title="@string/drawTrafficCirclesLabel" />
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/prefShowAdsbCallSign"
             android:summary="@string/ShowAdsbCallSignSummary"
@@ -364,27 +348,27 @@ authors: zkhan, jlmcgraw
         android:title="@string/userData"
         android:icon="@android:drawable/ic_menu_manage" >
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/PilotContact"
             android:summary="@string/PilotContactSummary"
             android:key="@string/PilotContact"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftHomeBase"
             android:summary="@string/AircraftHomeBaseSummary"
             android:key="@string/AircraftHomeBase"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftTailNumber"
             android:summary="@string/AircraftTailNumberSummary"
             android:key="@string/AircraftTailNumber"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftType"
             android:summary="@string/AircraftTypeSummary"
             android:key="@string/AircraftType"/>
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:title="@string/AircraftICAOCode"
             android:summary="@string/AircraftICAOCodeSummary"
             android:key="@string/AircraftICAOCode"/>
@@ -403,15 +387,20 @@ authors: zkhan, jlmcgraw
             android:summary="@string/AircraftColorSecondarySummary"
             android:title="@string/AircraftColorSecondary" />
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:key="@string/AircraftEquipment"
             android:summary="@string/AircraftEquipmentSummary"
             android:title="@string/AircraftEquipment" />
 
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
             android:key="@string/AircraftSurveillance"
             android:summary="@string/AircraftSurveillanceSummary"
             android:title="@string/AircraftSurveillance" />
+
+        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
+            android:key="@string/AircraftOtherInfo"
+            android:summary="@string/AircraftOtherInfoSummary"
+            android:title="@string/AircraftOtherInfo" />
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/AircraftTAS"
@@ -419,10 +408,10 @@ authors: zkhan, jlmcgraw
             android:key="@string/AircraftTAS"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/GlideRatioLabel"
-            android:summary="@string/GlideRatioSummary"
-            android:defaultValue="7.0"
-            android:key="@string/GlideRatio"/>
+            android:title="@string/BestGlideSinkRateLabel"
+            android:summary="@string/BestGlideSinkRateSummary"
+            android:defaultValue="700"
+            android:key="@string/BestGlideSinkRate"/>
 
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:title="@string/FuelRateLabel"
@@ -473,14 +462,14 @@ authors: zkhan, jlmcgraw
                 android:title="@string/WXB" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabTools"
-                android:summary="@string/GPSSummary"
-                android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabIo"
+                android:summary="@string/IoSummary"
+                android:title="@string/Io" />
         </PreferenceScreen>
 
         <CheckBoxPreference

@@ -12,7 +12,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -20,7 +19,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -28,8 +26,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +36,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
@@ -56,6 +54,7 @@ import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.place.Plan;
+import com.ds.avare.shapes.Layer;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
@@ -153,7 +152,6 @@ public class LocationActivity extends Activity implements Observer {
     private String mAirportPressed;
     private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
-    private WifiConnection mWifi;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -175,7 +173,7 @@ public class LocationActivity extends Activity implements Observer {
                          * Find the nearest airport and load its plate on rollout
                          */
                         Airport nearest = mService.getArea().getAirport(0);
-                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
+                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.getServerDataFolder(),
                                 nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
                             mService.setLastPlateAirport(nearest.getId());
                             mService.setLastPlateIndex(0);
@@ -225,10 +223,10 @@ public class LocationActivity extends Activity implements Observer {
             if(null == mService) {
                 mLocationView.updateErrorStatus(getString(R.string.Init));
             }
-            else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
+            else if(!(new File(mPref.getServerDataFolder() + File.separator + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
                 mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
-            else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
+            else if(!(new File(mPref.getServerDataFolder() + File.separator + "tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
             }
             else if(mPref.isSimulationMode()) {
@@ -329,11 +327,7 @@ public class LocationActivity extends Activity implements Observer {
          * And may exit
          */
         mAlertDialogExit = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
-        if (mPref.isLeaveRunning()) {
-            mAlertDialogExit.setTitle(getString(R.string.SendToBackground));
-        } else {
-            mAlertDialogExit.setTitle(getString(R.string.Exit));
-        }
+        mAlertDialogExit.setTitle(getString(R.string.Exit));
         mAlertDialogExit.setCanceledOnTouchOutside(true);
         mAlertDialogExit.setCancelable(true);
         mAlertDialogExit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.Yes), new DialogInterface.OnClickListener() {
@@ -410,10 +404,6 @@ public class LocationActivity extends Activity implements Observer {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mPref = new Preferences(this);
 
-        mWifi = WifiConnection.getInstance(this);
-        mWifi.connect(mPref.getWiFiPort(),false);
-        mWifi.start(mPref);
-
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
@@ -423,12 +413,6 @@ public class LocationActivity extends Activity implements Observer {
         View view = layoutInflater.inflate(R.layout.location, null);
         setContentView(view);
         mLocationView = (LocationView)view.findViewById(R.id.location);
-
-        // Need GPS permission right away
-        if(PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
-            ActivityCompat.requestPermissions(getParent(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 102);
-        }
 
         mMenuOut = false;
 
@@ -534,8 +518,10 @@ public class LocationActivity extends Activity implements Observer {
         mChartOption.setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
-                mPref.setChartType("" + (int) o1);
-                mLocationView.forceReload();
+                String oldC = mPref.getChartType();
+                String newC = Integer.toString((int)o1);
+                mPref.setChartType(newC);
+                mLocationView.forceReloadAfterChartChange(oldC, newC);
                 return null;
             }
         });
@@ -566,7 +552,7 @@ public class LocationActivity extends Activity implements Observer {
                 mPref.setLayerType(mLayerOption.getCurrentValue());
                 mLocationView.setLayerType(mPref.getLayerType());
                 return null;
-            };
+            }
         });
 
         mCenterButton = (ImageButton)view.findViewById(R.id.location_button_center);
@@ -891,7 +877,7 @@ public class LocationActivity extends Activity implements Observer {
 				}
 			}
 
-        });
+              });
 
         mService = null;
         mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
@@ -1066,8 +1052,9 @@ public class LocationActivity extends Activity implements Observer {
                         emailIntent.setType("application/kml");
                         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
                                 getString(R.string.AutoPostTracksSubject) + " " + fileName);
+                        emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                Uri.fromFile(new File(fileURI.getPath())));
+                                FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(fileURI.getPath())));
                         startActivity(emailIntent);
                     } catch (Exception e) {
                     }
@@ -1117,7 +1104,7 @@ public class LocationActivity extends Activity implements Observer {
             mService.getFlightStatus().registerListener(mFSInfc);
 
             mService.getTiles().setOrientation();
-            
+
             /*
              * Check if database needs upgrade
              */
@@ -1220,8 +1207,6 @@ public class LocationActivity extends Activity implements Observer {
                 // tracking and disabled
                 setTrackState(false);
             }
-
-            mWifi.setHelper(mService);
 
         }
 
@@ -1348,6 +1333,8 @@ public class LocationActivity extends Activity implements Observer {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
         }
 
+        mAnimationLayerHandler.post(mAnimationRunnableCode);
+
     }
 
     /* (non-Javadoc)
@@ -1424,6 +1411,9 @@ public class LocationActivity extends Activity implements Observer {
          * Do this as switching from screen needs to hide its menu
          */
         hideMenu();
+
+        mAnimationLayerHandler.removeCallbacks(mAnimationRunnableCode);
+
     }
     
     /* (non-Javadoc)
@@ -1448,9 +1438,6 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        mWifi.stop();
-        mWifi.disconnect();
     }
 
     /**
@@ -1479,7 +1466,8 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     return;                    
                 }
-                mPref.addToRecent(mDestination.getStorageName());
+                StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
+                mService.getDBResource().setUserRecent(s);
                 if(!mIsWaypoint) {
                     mLocationView.updateDestination();
                     if(mService != null) {
@@ -1544,5 +1532,17 @@ public class LocationActivity extends Activity implements Observer {
         	h.postDelayed(r, ms);
         }
     }
+
+    // animate layers at 500 ms
+    Handler mAnimationLayerHandler = new Handler();
+    private Runnable mAnimationRunnableCode = new Runnable() {
+        @Override
+        public void run() {
+            if(mLocationView != null) {
+                mLocationView.postInvalidate();
+                mAnimationLayerHandler.postDelayed(this, Layer.ANIMATE_SPEED_MS);
+            }
+        }
+    };
 
 }

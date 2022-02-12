@@ -244,13 +244,8 @@ public class Polygon
 		// System.out.println("Ray: " + ray.toString() + " ,Side: " + side);
 		// System.out.println("Intersect point: " + intersectPoint.toString());
 
-		if (side.isInside(intersectPoint) && ray.isInside(intersectPoint))
-		{
-			return true;
-		}
-
-		return false;
-	}
+		return side.isInside(intersectPoint) && ray.isInside(intersectPoint);
+}
 
 	/**
 	 * Create a ray. The ray will be created by given point and on point outside of the polygon.<br>

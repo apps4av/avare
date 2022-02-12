@@ -25,6 +25,7 @@ import com.sromku.polygon.Point;
 import com.sromku.polygon.Polygon;
 import com.sromku.polygon.Polygon.Builder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -35,7 +36,7 @@ import java.util.LinkedList;
  */
 public abstract class Shape {
 
-    protected LinkedList<Coordinate> mCoords;
+    protected ArrayList<Coordinate> mCoords;
     protected double mLonMin;
     protected double mLonMax;
     protected double mLatMin;
@@ -52,7 +53,7 @@ public abstract class Shape {
      * 
      */
     public Shape(String label, Date date) {
-        mCoords = new LinkedList<Coordinate>();
+        mCoords = new ArrayList<Coordinate>();
         mLonMin = 180;
         mLonMax = -180;
         mLatMin = 180;
@@ -76,20 +77,27 @@ public abstract class Shape {
         }
         long diff = Helper.getMillisGMT();
         diff -= mDate.getTime();
-        if(diff > expiry * 60 * 1000) {
-            return true;
-        }
-        return false;
+
+        return diff > (expiry * 60 * 1000);
     }
 
     /**
      * 
-     * @param coords
+     * @param lon
+     * @param lat
+     * @param issep
      */
     public void add(double lon, double lat, boolean issep) {
     	add(lon,lat,issep, 0);
     }
-    
+
+    /**
+     *
+     * @param lon
+     * @param lat
+     * @param issep
+     * @param segment
+     */
     public void add(double lon, double lat, boolean issep, int segment) {
         Coordinate c = new Coordinate(lon, lat);
         if(issep) {
@@ -151,7 +159,7 @@ public abstract class Shape {
                 float x1 = (float)origin.getOffsetX(mCoords.get(coord).getLongitude());
                 float x2 = (float)origin.getOffsetX(mCoords.get(coord + 1).getLongitude());
                 float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
-                float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());;
+                float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());
 
                 if(drawTrack) {
 	                paint.setStrokeWidth(width + 4);

@@ -27,10 +27,8 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -322,7 +320,7 @@ public class Plan implements Observer {
         }
 
         /*
-         * Depends if it is active or plan
+         * Depends if it is active plan or destination
          */
         if (mActive) {
 
@@ -343,8 +341,8 @@ public class Plan implements Observer {
             for (int id = (np + 1); id < num; id++) {
                 Location l = mDestination[id - 1].getLocation();
                 l.setSpeed((float)GpsParams.speedConvert(params.getSpeed()));
-                l.setAltitude((float)GpsParams.altitudeConvert(params.getAltitude()));
-                l.setBearing((float)params.getBearing());
+                l.setAltitude((float)GpsParams.altitudeConvert(params.getAltitude())); //ignore plan altitude when active
+                l.setBearing((float)getBearing(id - 1, id)); // bearing from point to point
                 GpsParams p = new GpsParams(l);
                 mDestination[id].updateTo(p);
                 mDistance += mDestination[id].getDistance();
@@ -571,6 +569,7 @@ public class Plan implements Observer {
             double lat, boolean finish) {
         boolean active = mActive;
         String airport = null;
+
         if (finish) {
             airport = mService.getDBResource().findClosestAirportID(lon, lat);
 
@@ -944,25 +943,9 @@ public class Plan implements Observer {
      * @return
      */
     public static LinkedHashMap<String, String> getAllPlans(
-            StorageService service, String plans) {
+            StorageService service, LinkedHashMap<String, String> map) {
 
-        // Linked hashmap as we want to keep the order of plans
-        // hashmap because that deals with updating plans
-        LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-
-        // parse JSON from storage
-        try {
-            JSONObject json = new JSONObject(plans);
-            Iterator<?> keys = json.keys();
-            while (keys.hasNext()) {
-                String name = (String) keys.next();
-                String destinations = json.getString(name);
-                map.put(name, destinations);
-            }
-        } catch (Exception e) {
-        }
-
-        // Now fetch the external plans
+        // fetch the external plans
         if (null != service) {
             ExternalPlanMgr epm = service.getExternalPlanMgr();
             ArrayList<String> planNames = epm.getPlanNames(null);
@@ -984,10 +967,10 @@ public class Plan implements Observer {
      *            - the Storage service
      * @param map
      *            collection of known flight plans
-     * @return json string to save
+     * @return plans to save
      */
     @SuppressWarnings("unchecked")
-    public static String putAllPlans(StorageService service,
+    public static LinkedHashMap<String, String> putAllPlans(StorageService service,
             LinkedHashMap<String, String> map) {
 
         // We need to make a copy here to work on. "map" as passed in may
@@ -1011,9 +994,7 @@ public class Plan implements Observer {
             }
         }
 
-        // Put a collection of plans in storage format
-        JSONObject json = new JSONObject(localMap);
-        return json.toString();
+        return localMap;
     }
 
     /**

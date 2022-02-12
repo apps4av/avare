@@ -432,6 +432,10 @@ public class Boundaries {
         "1","FairbanksTAC","-150.6","64.1502",
         "1","FairbanksTAC","-145.8","64.1502",
         "1","FairbanksTAC","-145.8","65.2501",
+        "1","HonoluluInset","-158.5054","21.6198",
+        "1","HonoluluInset","-158.5054","20.7348",
+        "1","HonoluluInset","-157.3469","20.7348",
+        "1","HonoluluInset","-157.3469","21.6198",
         "1","HoustonTAC","-96.4","30.5502",
         "1","HoustonTAC","-96.4","29.1002",
         "1","HoustonTAC","-94.4999","29.1002",
@@ -1269,5 +1273,15 @@ public class Boundaries {
 	"13","TampaFLY","-81.8278","27.2913",
 	"13","TampaFLY","-81.8278","28.5978"
     };
+
+
+    public float zoomRatio(String id1, String id2) {
+        int idi1 = Integer.valueOf(id1);
+        int idi2 = Integer.valueOf(id2);
+
+        return (float)Math.pow(2, mZooms[idi2] - mZooms[idi1]);
+    }
+
+
 
 }

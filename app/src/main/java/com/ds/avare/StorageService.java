@@ -22,9 +22,12 @@ import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
+
 import androidx.core.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
@@ -32,9 +35,7 @@ import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.connections.BTOutConnection;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
-import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.FlightStatus;
-import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.ExtendedGpsParams;
 import com.ds.avare.gps.Gps;
@@ -46,6 +47,7 @@ import com.ds.avare.instruments.DistanceRings;
 import com.ds.avare.instruments.EdgeDistanceTape;
 import com.ds.avare.instruments.FlightTimer;
 import com.ds.avare.instruments.FuelTimer;
+import com.ds.avare.instruments.GlideProfile;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.instruments.UpTimer;
 import com.ds.avare.instruments.VNAV;
@@ -55,6 +57,7 @@ import com.ds.avare.network.TFRFetcher;
 import com.ds.avare.orientation.OrientationInterface;
 import com.ds.avare.place.Area;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Favorites;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.place.Plan;
 import com.ds.avare.position.LabelCoordinate;
@@ -85,6 +88,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -155,8 +159,6 @@ public class StorageService extends Service {
     
     private boolean mDownloading;
 
-    private LinkedList<Checklist> mCheckLists;
-    private LinkedList<WeightAndBalance> mWnbs;
     String mOverrideListName;
 
     private MetarLayer mMetarLayer;
@@ -269,23 +271,19 @@ public class StorageService extends Service {
 
     // Distance ring instrument
     private DistanceRings mDistanceRings;
-    
+    private GlideProfile mGlideProfile;
+
     private DrawCapLines mCap;
 
     private ExternalPlanMgr mExternalPlanMgr;
 
-    private AutoPilot mAutoPilot;
+    //private AutoPilot mAutoPilot;
 
     /*
      * Watches GPS to notify of phases of flight
      */
     private FlightStatus mFlightStatus;
    
-    /*
-     * Current checklist
-     */
-    private Checklist mChecklist;
-    private WeightAndBalance mWnb;
 
     // The edge distance tape instrument
     private EdgeDistanceTape mEdgeDistanceTape;
@@ -295,6 +293,8 @@ public class StorageService extends Service {
 
     // Timer for count up
     private UpTimer mUpTimer;
+
+    Favorites mFavorites;
 
     LinkedList<LabelCoordinate> mGameTfrLabels;
 
@@ -349,11 +349,14 @@ public class StorageService extends Service {
     }
 
     private void startInForeground() {
-        int icon = R.drawable.plane;
+        int icon = R.drawable.airport;
 
         Notification notification;
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        notificationIntent.setData(uri);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, 0);
+
         if(Build.VERSION.SDK_INT >= 26) {
             String NOTIFICATION_Service_CHANNEL_ID = "service_channel";
 
@@ -363,17 +366,16 @@ public class StorageService extends Service {
 
             notification = new Notification.Builder(this, NOTIFICATION_Service_CHANNEL_ID)
                     .setSmallIcon(icon)
-                    .setContentTitle("Avare")
-                    .setContentText("Touch to start")
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.open_settings))
                     .setContentIntent(pendingIntent)
-                    .setTimeoutAfter(1)
                     .build();
         }
         else {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                     .setSmallIcon(icon)
-                    .setContentTitle("Avare")
-                    .setContentText("Touch to start")
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentText(getString(R.string.open_settings))
                     .setContentIntent(pendingIntent);
             notification = builder.build();
         }
@@ -389,6 +391,7 @@ public class StorageService extends Service {
         super.onCreate();
 
         startInForeground();
+
         mDataSource = new DataSource(getApplicationContext());
         
         mArea = new Area(mDataSource, this);
@@ -423,8 +426,6 @@ public class StorageService extends Service {
         mAdsbTfrCache = new TfrCache(getApplicationContext());
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
-        mCheckLists = null;
-        mWnbs = null;
         mLastLocationUpdate = 0;
 
         mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
@@ -436,8 +437,6 @@ public class StorageService extends Service {
         mDraw = new Draw();
         mPixelDraw = new PixelDraw();
 
-        mChecklist = new Checklist("");
-        
         /*
          * Allocate a flight timer object
          */
@@ -446,7 +445,7 @@ public class StorageService extends Service {
         /*
          * Start up the KML recorder feature
          */
-        mKMLRecorder = new KMLRecorder();
+        mKMLRecorder = new KMLRecorder(getApplicationContext());
         
         /*
          * Internet nexrad
@@ -478,6 +477,9 @@ public class StorageService extends Service {
         // Allocate a new DistanceRing instrument
         mDistanceRings = new DistanceRings(this, getApplicationContext(),
                 Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+
+        mGlideProfile = new GlideProfile(this, getApplicationContext(),
+                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -495,9 +497,9 @@ public class StorageService extends Service {
         mUpTimer = new UpTimer();
 
         // Create a BlueTooth Output connection and give it to the autopilot
-        BTOutConnection btOut = BTOutConnection.getInstance(this);
-        btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
-        mAutoPilot = new AutoPilot(btOut);
+        //BTOutConnection btOut = BTOutConnection.getInstance(this);
+        //btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
+        //mAutoPilot = new AutoPilot(btOut);
 
         mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
         
@@ -583,6 +585,8 @@ public class StorageService extends Service {
                     
                     // Let the odometer know how far we traveled
                     getOdometer().updateValue(mGpsParams);
+
+                    getGlideProfile().updateGlide(mGpsParams);
                     
                     // Vertical descent rate calculation
                     getVNAV().calcGlideSlope(mGpsParams, mDestination);
@@ -591,6 +595,8 @@ public class StorageService extends Service {
                     getVSI().updateValue(mGpsParams);
                     
                     getFlightStatus().updateLocation(mGpsParams);
+
+                    mFavorites.update(StorageService.this);
                     
                     if(mPlan.hasDestinationChanged()) {
                         /*
@@ -604,7 +610,7 @@ public class StorageService extends Service {
                     }
 
                     // Tell the autopilot where we are and where we intend to go
-                    mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
+                    //mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
 
                     // Calculate course line deviation - this must be AFTER the destination update
                     // since the CDI uses the destination in its calculations
@@ -668,6 +674,9 @@ public class StorageService extends Service {
                 }
             }
         };
+
+        mFavorites = new Favorites(this);
+
     }
         
     /* (non-Javadoc)
@@ -700,11 +709,12 @@ public class StorageService extends Service {
         }
 
         // Tell the autopilot we are shutting down
-        mAutoPilot.shutdown();
+        //mAutoPilot.shutdown();
 
         super.onDestroy();
+
         stopForegroundService();
-        
+
         System.runFinalizersOnExit(true);
         System.exit(0);
     }
@@ -748,7 +758,7 @@ public class StorageService extends Service {
     /**
      * @return
      */
-    public LinkedList<ShapeFileShape> getShapeShapes() {
+    public ArrayList<ShapeFileShape> getShapeShapes() {
         return mShapeFetcher.getShapes();
     }
 
@@ -816,7 +826,11 @@ public class StorageService extends Service {
     public Destination getLastAfdDestination() {
         return mLastAfdDestination;
     }
-    
+
+    public Favorites getFavorites() {
+        return mFavorites;
+    }
+
     /**
      * 
      * @param destination
@@ -1029,9 +1043,6 @@ public class StorageService extends Service {
                     }
                 }
                 if(0 == mCounter % 60) {
-                    if(null != mGpsParams) {
-                        mGameTfrLabels = mDataSource.findGameTFRs();
-                    }
                 }
                 mCounter++;
             }
@@ -1146,7 +1157,7 @@ public class StorageService extends Service {
      */
     public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
-            mKMLRecorder.start();
+            mKMLRecorder.start(getApplicationContext());
             return null;
         }
         else {
@@ -1305,38 +1316,6 @@ public class StorageService extends Service {
        mDownloading = state; 
     }
     
-    /**
-     * 
-     * @return
-     */
-    public LinkedList<Checklist> getCheckLists() {
-        return mCheckLists;
-    }
-    
-    /**
-     * 
-     * @param wnb
-     */
-    public void setWnbs(LinkedList<WeightAndBalance> wnb) {
-        mWnbs = wnb;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public LinkedList<WeightAndBalance> getWnbs() {
-        return mWnbs;
-    }
-
-    /**
-     *
-     * @param list
-     */
-    public void setCheckLists(LinkedList<Checklist> list) {
-        mCheckLists = list;
-    }
-
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
             mShadowedText = new ShadowedText(getApplicationContext());
@@ -1351,7 +1330,11 @@ public class StorageService extends Service {
     public DistanceRings getDistanceRings() {
     	return mDistanceRings;
     }
-    
+
+    public GlideProfile getGlideProfile() {
+        return mGlideProfile;
+    }
+
     public ExternalPlanMgr getExternalPlanMgr() {
     	return mExternalPlanMgr;
     }
@@ -1359,24 +1342,6 @@ public class StorageService extends Service {
     public NavComments getNavComments() {
     	return mNavComments;
     }
-    
-    public Checklist getChecklist() {
-    	return mChecklist;
-    }
-    
-    public void setWnb(WeightAndBalance wnb) {
-    	mWnb = wnb;
-    }
-
-    public WeightAndBalance getWnb() {
-        return mWnb;
-    }
-
-    public void setChecklist(Checklist cl) {
-        mChecklist = cl;
-    }
-
-    public AutoPilot getAutoPilot() { return mAutoPilot; }
 
     public EdgeDistanceTape getEdgeTape() {
     	return mEdgeDistanceTape;
@@ -1660,5 +1625,11 @@ public class StorageService extends Service {
             return null;
         }
         return object.toString();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        this.stopSelf();
     }
 }

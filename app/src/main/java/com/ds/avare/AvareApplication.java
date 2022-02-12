@@ -13,30 +13,9 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Application;
-
-import com.ds.avare.storage.Preferences;
-import com.ds.avare.utils.BitmapHolder;
-
-import org.acra.ACRA;
-import org.acra.ReportField;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
-
 /**
  * Created by zkhan on 1/25/16.
  */
-@ReportsCrashes(mailTo = "apps4av@gmail.com",
-        customReportContent = { ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME, ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE},
-        mode = ReportingInteractionMode.DIALOG,
-        resDialogIcon = android.R.drawable.stat_notify_error,
-        resDialogTitle = R.string.CrashLabel,
-        resDialogText = R.string.CrashText)
-public class AvareApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
 
-        // The following line triggers the initialization of ACRA
-        ACRA.init(this);
-    }
+public class AvareApplication extends Application {
 }

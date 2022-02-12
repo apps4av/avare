@@ -44,6 +44,7 @@ public class GGAPacket extends Packet {
      */
 
     public static final String TAG = "$GPGGA";
+    public static final String TAGN = "$GNGGA";
     public static final int HD     = 8;
     public static final int ALT    = 9;
     public static final int GEOID  = 11;

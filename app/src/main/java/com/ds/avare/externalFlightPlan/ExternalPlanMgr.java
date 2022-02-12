@@ -29,7 +29,7 @@ public class ExternalPlanMgr {
 	/***
 	 * public constructor for user defined waypoints collection
 	 * @param service the storage service
-	 * @param application context
+	 * @param context context
 	 */
 	public ExternalPlanMgr(StorageService service, Context context) {
 		mService = service;
@@ -45,7 +45,7 @@ public class ExternalPlanMgr {
 	 * @return
 	 */
 	private String getDir() {
-		return mPref.getUDWLocation();
+		return mPref.getUserDataFolder();
 	}
 	
 	/***

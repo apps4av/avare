@@ -38,6 +38,7 @@ import com.ds.avare.place.Airport;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
+import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
 import java.util.Observable;
@@ -324,7 +325,7 @@ public class NearestActivity extends Activity  implements Observer {
             bearing[id] = Helper.correctConvertHeading(Math.round(heading)) + '\u00B0';
             elevation[id] = a.getElevation();
             runlen[id] = a.getLongestRunway();
-            glide[id] = a.canGlide(mPref);
+            glide[id] = a.canGlide();
         }
 
         for(int id = airportnum; id < Preferences.MAX_AREA_AIRPORTS; id++) {
@@ -405,7 +406,7 @@ public class NearestActivity extends Activity  implements Observer {
                     mSelectedAirportId = a.getId();
                     mDestButton.setText(a.getId());
                     
-                    if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), a.getId())) {
+                    if(PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), a.getId())) {
                     	mAnimatePlates.animate(true);
                     }
                     else {
@@ -413,7 +414,7 @@ public class NearestActivity extends Activity  implements Observer {
                     }                    
                     
                     mAnimateDest.animate(true);
-                    if(!a.canGlide(mPref)) {
+                    if(!a.canGlide()) {
                         mToast.setText(R.string.NotGlideRange);
                         mToast.show();
                     }
@@ -479,11 +480,13 @@ public class NearestActivity extends Activity  implements Observer {
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
+                Destination d = (Destination)arg0;
                 if(null != mService) {
-                    mService.setDestination((Destination)arg0);
+                    mService.setDestination(d);
                 }
-                mPref.addToRecent(((Destination)arg0).getStorageName());
-                mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                StringPreference s = new StringPreference(d.getType(), d.getDbType(), d.getFacilityName(), d.getID());
+                mService.getDBResource().setUserRecent(s);
+                mToast.setText(getString(R.string.DestinationSet) + (d.getID()));
                 mToast.show();
                 ((MainActivity)this.getParent()).showMapTab();
             }

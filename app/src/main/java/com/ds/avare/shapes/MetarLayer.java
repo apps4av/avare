@@ -15,6 +15,8 @@ import android.content.Context;
 
 import com.ds.avare.storage.Preferences;
 
+import java.io.File;
+
 /**
  * 
  * @author zkhan
@@ -38,7 +40,7 @@ public class MetarLayer extends Layer {
      */
     public void parse() {
         super.parse(
-                mPref.mapsFolder() + "/" + "latest_fcat",
-                mPref.mapsFolder() + "/" + "latest_fcat.txt");
+                mPref.getServerDataFolder() + File.separator + "latest_fcat",
+                mPref.getServerDataFolder() + File.separator + "latest_fcat.txt");
      }
 }

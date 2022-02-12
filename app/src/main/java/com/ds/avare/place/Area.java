@@ -59,6 +59,9 @@ public class Area {
      * 
      */
     public Airport getAirport(int index) {
+        if(mAirports == null) {
+            return null;
+        }
         /*
          * Check for null.
          */
@@ -73,6 +76,9 @@ public class Area {
      * @return
      */
     public int getAirportsNumber() {
+        if(mAirports == null) {
+            return 0;
+        }
 
         /*
          * Get all airports in a string array in this area.
@@ -118,6 +124,15 @@ public class Area {
         }
         mDt = new DataBaseAreaTask();
         mDt.execute();
+    }
+
+    public double getNearestElevation() {
+        Airport a = getAirport(0);
+
+        if(a == null) {
+            return 0;
+        }
+        return a.getElevationNumber();
     }
 
     /**
@@ -175,15 +190,6 @@ public class Area {
                         airports[d] = airports[d + 1];
                         airports[d + 1] = swap;
                     }
-                }
-            }
-
-            /*
-             * Now test if all airports are at glide-able distance.
-             */
-            for(int i = 0; i < n; i++) {
-                if(airports[i] != null) {
-                    airports[i].setHeight(mAltitude);
                 }
             }
 

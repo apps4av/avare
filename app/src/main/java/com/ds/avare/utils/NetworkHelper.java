@@ -20,6 +20,7 @@ import org.xml.sax.XMLReader;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
@@ -119,7 +120,7 @@ public class NetworkHelper {
             xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             SAXXMLHandlerMETAR saxHandler = new SAXXMLHandlerMETAR();
             xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
+            connectAndReadXml(xmlReader, xml);
             List<String> texts = saxHandler.getText();
             for(String text : texts) {
                 return text;
@@ -130,71 +131,6 @@ public class NetworkHelper {
         return "";
     }
         
-    /**
-     * 
-     * @param airport
-     * @return
-     */
-    public static String getTAF(String airport) {
-        
-        /*
-         * Get TAF
-         */
-        String xml = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&stationString=K"
-                 + airport + "&hoursBeforeNow=2";
-        
-        XMLReader xmlReader;
-        try {
-            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            SAXXMLHandlerTAF saxHandler = new SAXXMLHandlerTAF();
-            xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
-            List<String> texts = saxHandler.getText();
-            for(String text : texts) {
-                return text;
-            }
-        }
-        catch (Exception e) {
-            
-        }
-        return "";
-    }
-
-    /**
-     * 
-     * @param plan
-     * @param miles
-     * @return
-     */
-    public static String getPIREPS(String plan, String miles) {
-        
-        /*
-         * Get PIREPS
-         */
-        String xml = 
-                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
-                + "&requestType=retrieve&format=xml&hoursBeforeNow=12" 
-                + "&radialDistance=" + miles + ";" + plan;
-        /*
-         * Get PIREPS
-         */
-        String out = "";
-        XMLReader xmlReader;
-        try {
-            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
-            xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
-            List<String> texts = saxHandler.getText();
-            for(String text : texts) {
-                out += text + "::::";
-            }
-        }
-        catch (Exception e) {
-            
-        }        
-        return out;
-    }
 
     /**
      * 
@@ -216,7 +152,7 @@ public class NetworkHelper {
             xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             SAXXMLHandlerMETAR saxHandler = new SAXXMLHandlerMETAR();
             xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
+            connectAndReadXml(xmlReader, xml);
             List<String> texts = saxHandler.getText();
             for(String text : texts) {
                 out += text + "::::";
@@ -249,19 +185,31 @@ public class NetworkHelper {
             xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             SAXXMLHandlerTAF saxHandler = new SAXXMLHandlerTAF();
             xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
+            connectAndReadXml(xmlReader, xml);
             List<String> texts = saxHandler.getText();
             for(String text : texts) {
                 out += text + "::::";
             }
         }
         catch (Exception e) {
+            return out;
             
         }
         
         return out;
     }
 
+
+    private static void connectAndReadXml(XMLReader xmlReader, String url) throws Exception {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
+        con.setRequestProperty("Accept","*/*");
+        con.connect();
+        InputStream is = con.getInputStream();
+        InputSource ins = new InputSource(is);
+        xmlReader.parse(ins);
+        con.disconnect();
+    }
 
     /**
      * 
@@ -283,7 +231,7 @@ public class NetworkHelper {
             xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
             SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
             xmlReader.setContentHandler(saxHandler);
-            xmlReader.parse(new InputSource(xml));
+            connectAndReadXml(xmlReader, xml);
             List<String> texts = saxHandler.getText();
             for(String text : texts) {
                 out += text + "::::";
@@ -338,28 +286,30 @@ public class NetworkHelper {
      */
     private static final int getFirstDate(int year) {
         // Date for first cycle every year in January starting 2014
-    	switch(year) {
-    		case 2014:
-    			return 9;
-    		case 2015:
-    			return 8;
-    		case 2016:
-    			return 7;
-    		case 2017:
-    			return 5;
-    		case 2018:
-    			return 4;
-    		case 2019:
-    			return 3;
-    		case 2020:
-    			return 2;
+        switch(year) {
+            case 2020:
+                return 2;
             case 2021:
-                return 7;
+                return 28;
             case 2022:
-                return 6;
-    		default:
-    			return 0;
-    	}
+                return 27;
+            case 2023:
+                return 26;
+            case 2024:
+                return 25;
+            case 2025:
+                return 23;
+            case 2026:
+                return 22;
+            case 2027:
+                return 21;
+            case 2028:
+                return 20;
+            case 2029:
+                return 18;
+            default:
+                return 0;
+        }
     }
     
     /**
@@ -379,6 +329,7 @@ public class NetworkHelper {
         	 * Lets handle the case when year has just turned
         	 */
         	year--;
+            firstdate = getFirstDate(year);
         }
     	
     	// cycle's upper two digit are year
@@ -454,17 +405,14 @@ public class NetworkHelper {
              */
             expires.set(year, month, day, hour, min);
             expires.add(Calendar.MINUTE, timeout);
-            if(now.after(expires)) {
-                return true;
-            }
-            
-            return false;
+
+            return now.after(expires);
         }
-        
+
         if(!getCycle().equals(date)) {
         	return true;
         }
-        
+
         return false;
     }
 

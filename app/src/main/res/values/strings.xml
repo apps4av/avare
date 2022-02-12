@@ -68,8 +68,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="KeepScreenOnSummary">&quot;Select to keep screen on while application is running&quot;</string>
     <string name="update">&quot;Update&quot;</string>
     <string name="GPS">&quot;GPS&quot;</string>
-    <string name="longitude">&quot;'W&quot;</string>
-    <string name="latitude">&quot;'N&quot;</string>
+    <string name="longitude">&quot;\'W&quot;</string>
+    <string name="latitude">&quot;\'N&quot;</string>
     <string name="accuracy">&quot;Accuracy ft.&quot;</string>
     <string name="degree">&quot;\u00B0&quot;</string>
     <string name="Done">&quot;Done&quot;</string>
@@ -99,7 +99,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AutoShowAirportDiagramSummary">&quot;Select to automatically show airport diagrams on rollout&quot;</string>
     <string name="Altitude">&quot;Altitude ft.&quot;</string>
     <string name="Exit">"Exit?"</string>
-    <string name="SendToBackground">"Close and send to background?"</string>
     <string name="PlatesNF">&quot;No plates available for this destination&quot;</string>
     <string name="Background">&quot;Background&quot;</string>
     <string name="BackgroundLabel">&quot;Show Background&quot;</string>
@@ -107,9 +106,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="SelectPlate">&quot;Select A Plate&quot;</string>
     <string name="DownloadDB">&quot;The required data file is missing and must be downloaded.&quot;</string>
     <string name="Agree">&quot;I Agree&quot;</string>
-    <string name="LeaveRunning">&quot;Leave Running&quot;</string>
-    <string name="LeaveRunningLabel">&quot;Leave Running&quot;</string>
-    <string name="LeaveRunningSummary">&quot;Select to pause the application on Exit (instead of a complete exit)&quot;</string>
     <string name="TFRs">&quot;TFRs&quot;</string>
     <string name="NightMode">&quot;Night Mode&quot;</string>
     <string name="NightModeLabel">&quot;Night Mode (requires restart)&quot;</string>
@@ -171,7 +167,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NotAvailable">&quot;Not available&quot;</string>
     <string name="AirSigType">&quot;AIRMET/SIGMET&quot;</string>
     <string name="AirSigTypeLabel">&quot;AIRMET/SIGMET Type&quot;</string>
-    <string name="AirSigTypeSummary">&quot;Select the type of weather to draw&quot;</string>
+    <string name="AirSigTypeSummary">&quot;Select which color coded polygons to show on Map&quot;</string>
     <string name="prefStorageAndDownloadsCategoryTitle">Storage and Downloads</string>
     <string name="prefGpsCategoryTitle">GPS</string>
     <string name="prefWeatherCategoryTitle">Weather</string>
@@ -235,7 +231,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DownloadDBShort">&quot;Download Databases&quot;</string>
     <string name="LayerTransparency">LayerTransparency</string>
     <string name="LayerTransparencyLabel">&quot;Select Layer Transparency&quot;</string>
-    <string name="LayerTransparencySummary">&quot;Select how transparent a Map layer should be&quot;</string>
+    <string name="LayerTransparencySummary">&quot;Choose transparency of Map layers like NEXRAD&quot;</string>
     <string name="PlanWarning">&quot;Clear the current plan &quot;</string>
     <string name="AndLoad">&quot;and load&quot;</string>
     <string name="PlanDestinationNF">&quot;Some way points not found.&quot;</string>
@@ -246,7 +242,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
-    <string name="GlideRatio">&quot;GlideRatioAircraft&quot;</string>
+    <string name="BestGlideSinkRate">&quot;BestGlideSinkRateAircraft&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
     <string name="prefLastPlateIndex">LastPlateIndex</string>
     <string name="prefLastPlateAirport">LastPlateAirport</string>
@@ -286,7 +282,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Locked">Locked</string>
     <string name="Edit">Edit</string>
     <string name="ExternalFolder">Try using external folder</string>
-    <string name="SDFolder">Try using SD card folder</string>
     <string name="online">Edit Account</string>
     <string name="onlineSummary">Register or unregister your Apps4Av account</string>
     <string name="folderHelp">If this is not the correct SD card folder, then create a folder in root of SD card named Android/data/com.ds.avare, and select it from here</string>
@@ -308,13 +303,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ExtendInfoLines3D">ExtendInfoLines3D</string>
     <string name="ExtendInfoLines3DLabel">Show Status Area on 3D</string>
     <string name="ExtendInfoLines3DSummary">Select to show the configuable status area on the 3D screen</string>
-    <string name="UDWLocation">&quot;UDWLocation&quot;</string>
-    <string name="UDWSearch">User defined waypoint/plans files are found in: </string>
-    <string name="UDWLabel">&quot;User Defined Waypoints/Plans&quot;</string>
-    <string name="UDWSummary">&quot;Select the directory where user defined waypoint files/plans are stored.&quot;</string>
-    <string name="UDWDescription">&quot;User Defined Waypoint&quot;</string>
+    <string name="UDWLocation">&quot;UserLocation&quot;</string>
+    <string name="UDWSearch">User data is found in: </string>
+    <string name="UDWLabel">&quot;User Data Folder&quot;</string>
+    <string name="UDWSummary">&quot;Select the directory where user data is stored.&quot;</string>
+    <string name="UDWDescription">&quot;User Data Folder&quot;</string>
     <string name="Timer">&quot;Timer&quot;</string>
-
     <string name="TabBarTitle">&quot;Tab Bar Content (requires restart)&quot;</string>
     <string name="TabBarSummary">&quot;Select which tabs to show on the bottom bar.&quot;</string>
     <string name="PlatesSummary">&quot;Approach/Departure Plates and Airport diagrams.&quot;</string>
@@ -337,9 +331,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
-    <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
+    <string name="prefTabIo">&quot;prefTabIo&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -403,23 +397,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="useSysFontLabel">&quot;Use System Font (requires restart)&quot;</string>
     <string name="useSysFontSummary">&quot;Select to use the default system font vs custom&quot;</string>
 
-    <string name="sync">Sync Data</string>
-    <string name="syncSummary">Save/Load Avare data on Google Drive</string>
-    <string name="Backup">Backup</string>
-    <string name="Restore">Restore</string>
-    <string name="SyncMessage">Use this screen to backup and restore your Avare preferences, plans, and lists.</string>
-    <string name="BackingUp">Backing up to Google Drive...</string>
-    <string name="BackupFailed">Google Drive backup failed!</string>
-    <string name="Wait">Wait...</string>
-    <string name="RestoringDrive">Restoring from Google Drive...</string>
-    <string name="RestoreFailed">Google Drive restore failed!</string>
-    <string name="SuccessWithReset">Success! Hard restart the app for changes to take effect</string>
-    <string name="ConnectionFailed">Google Drive connection failed!</string>
-    <string name="ConnectingDrive">Connecting to Google Drive...</string>
-    <string name="DisconnectingDrive">Disconnecting from Google Drive...</string>
-    <string name="ConnectedDrive">Connected to Google Drive</string>
-    <string name="DisconnectedDrive">Disconnected from Google Drive</string>
-
     <string name="Expires">&quot;DataExpire&quot;</string>
     <string name="ExpiresLabel">&quot;Data Expiry&quot;</string>
     <string name="ExpiresSummary">&quot;Select in minutes, after which Weather/TFRs/Other will turn red in Downloads, and disappear from Map screen&quot;</string>
@@ -441,7 +418,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftTypeSummary">Aircraft type for filing</string>
 
     <string name="AircraftICAOCode">Aircraft ICAO Code</string>
-    <string name="AircraftICAOCodeSummary">Aircraft ICAO code 24-bit decimal</string>
+    <string name="AircraftICAOCodeSummary">Aircraft ICAO code in hexidecimal</string>
 
     <string name="AircraftColorPrimary">Aircraft Color - First</string>
     <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>
@@ -455,14 +432,17 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftSurveillance">Aircraft Surveillance</string>
     <string name="AircraftSurveillanceSummary">Aircraft surveillance equipment code for filing</string>
 
+    <string name="AircraftOtherInfo">Aircraft Other Info</string>
+    <string name="AircraftOtherInfoSummary">Aircraft other info for filing</string>
+
     <string name="AircraftTAS">Aircraft TAS</string>
     <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
 
     <string name="AircraftHomeBase">Aircraft/Pilot Home Base</string>
     <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
 
-    <string name="GlideRatioLabel">&quot;Aircraft Glide Ratio&quot;</string>
-    <string name="GlideRatioSummary">&quot;Aircraft glide ratio (glide distance in feet for every foot of altitude)&quot;</string>
+    <string name="BestGlideSinkRateLabel">&quot;Aircraft Best Glide Sink Rate&quot;</string>
+    <string name="BestGlideSinkRateSummary">&quot;Aircraft best glide sink rate (feet per minute) for calculating glide range&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
 
     <string name="FuelRateLabel">Aircraft Fuel Burn Rate</string>
@@ -481,7 +461,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="ShapeFile">ShapeFile</string>
     <string name="ShapeFileLabel">Shape File Name</string>
-    <string name="ShapeFileSummary">Load Esri shape file of specified name from the download folder (change requires app restart)</string>
+    <string name="ShapeFileSummary">Load Esri shape file of specified name from the user data folder (change requires app restart)</string>
     <string name="CrashText">To help improve the app, please submit this report to us via email.</string>
     <string name="CrashLabel">Avare has stopped unexpectedly!</string>
     <string name="VerifyPlates">&quot;Verify plates at http://avare.openaircraft.com&quot;</string>
@@ -499,10 +479,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DeclareEmergencyDetails">1.Set Destination to Nearest Airport\n2.Load Emergency Checklist\n3.Show distance guidance\n</string>
     <string name="Menu">Menu</string>
 
-    <string name="b1map">Remove Button 1 in Map (requires restart)</string>
-    <string name="b1plate">Remove Button 1 in Plate (requires restart)</string>
-    <string name="b2plate">Remove Button 2 in Plate (requires restart)</string>
-    <string name="b3plate">Remove Button 3 in Plate (requires restart)</string>
+    <string name="b1map">Remove Pan/Draw Button in Map (requires restart)</string>
+    <string name="b1plate">Remove Pan/Draw Button in Plate (requires restart)</string>
+    <string name="b2plate">Remove Timer Button in Plate (requires restart)</string>
+    <string name="b3plate">Remove Tag Button in Plate (requires restart)</string>
     <string name="UIConfiguration">UI Configuration</string>
 
     <string name="ShowLabelMETARS">&quot;Label for ADSB METARs&quot;</string>
@@ -526,20 +506,20 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="Tag">Tag</string>
     <string name="PointName">Name of point</string>
+    <string name="PointType">Type of point</string>
     <string name="Geotag">Geotag</string>
     <string name="Verify">Verify</string>
     <string name="Tagged">The plate is now tagged and saved, and should be verified before using.</string>
     <string name="Cleared">Cleared! Your Geo. tagging has been deleted for this plate.</string>
-    <string name="AlreadyTagged">his plate is already tagged and stored. Press clear to re-tag.</string>
+    <string name="AlreadyTagged">This plate is already tagged and stored. Press clear to re-tag.</string>
     <string name="InvalidPoint">Invalid Point specified.</string>
     <string name="PointNotFound">The Point is not found, please verify that the point type and its name matches the point on the plate.</string>
     <string name="AddedPoint">You have successfully tagged a point.</string>
     <string name="SelectOtherPoint">The selected points are not sufficiently apart. Please select another point, or press clear to re-tag.</string>
-    <string name="NotTagged">he plate is not tagged. Please tag it first.</string>
-    <string name="VerifyMessage">f the cross hair appears over the point to verify, the plate is correctly tagged.</string>
+    <string name="NotTagged">The plate is not tagged. Please tag it first.</string>
+    <string name="VerifyMessage">If the cross hair appears over the point to verify, the plate is correctly tagged.</string>
     <string name="ClearedPrompt">Are you sure you want to delete your Geo. tag information for this plate?</string>
-    <string name="ToTag">Plates are already tagged for users.\nTo geo-tag a plate, place a known point (Navaid, fix, airport/base) under the cross hair, then enter its name, select its type, then press the Geotag button. Repeat till the plate is tagged.\nTo hide Tag button, use Preferences UI Configuration.</string>
-
+    <string name="ToTag">To geo-tag a custom plate, place a known point (Navaid, fix, airport, address) under the cross hair, then press Set 1 button. Enter point name, select its type, then press the Set button. Repeat for another point far away from the first point with Set 2 button. Press Geotag button to tag.</string>
     <string name="GameTFRLabel">&quot;Show Stadiums&quot;</string>
     <string name="GameTFR">&quot;GameTFR&quot;</string>
     <string name="GameTFRSummary">&quot;Select to show the location of known stadiums&quot;</string>
@@ -554,19 +534,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>
     <string name="UseNmeaAltitudeSummary">Select to use NMEA altitude from the internal GPS, when internal GPS is used as source</string>
-    <string name="ConnectHelp">
-        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then restart the app.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
-    </string>
-    <string name="WIFI">WiFi</string>
-    <string name="ConnectWIFI">Connect WiFi</string>
-    <string name="WIFIPort">WIFIPort</string>
-    <string name="WIFIPortLabel">External WiFi Port</string>
-    <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>
 
-    <string name="BTOut">BTOut</string>
-    <string name="AutopilotBTDevice">APBTDevice</string>
-    <string name="AutopilotBTDeviceLabel">Autopilot Bluetooth Device</string>
-    <string name="AutopilotBTDeviceSummary">Select a bluetooth device to receive NMEA autopilot data</string>
 
     <string name="ReverseAhrsRoll">ReverseAhrsRoll</string>
     <string name="ReverseAhrsRollLabel">AHRS Roll Reverse</string>
@@ -577,4 +545,70 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AdjustFontSizeSummary">Adjust the relative font size that Avare uses</string>
     <string name="AdjustFontSizeMessage">Select the scaling size to apply</string>
 
+    <string name="open_settings">Touch to open settings</string>
+    <string name="permission">Permissions</string>
+    <string name="permission_message">The app needs the location permission to show your location on the map.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without the permissions.</string>
+    <string name="restart">Restart</string>
+    <string name="Set1">Set 1</string>
+    <string name="Set2">Set 2</string>
+    <string name="VerifyMessageFailed">Unable to verify this point</string>
+
+    <string name="drawTrafficCircles">drawTrafficCircles</string>
+    <string name="drawTrafficCirclesLabel">Traffic as Circles</string>
+    <string name="drawTrafficCirclesSummary">Select to show ADSB traffic as circles instead of triangles</string>
+    <string name="MyPlates">My Plates</string>
+    <string name="importExportSummary">Import / Export files to / from user data and map folders</string>
+    <string name="importExport">Import/Export app data</string>
+    <string name="importData">Import data</string>
+    <string name="exportData">Export data</string>
+    <string name="copying">Copying...</string>
+    <string name="done">Done</string>
+    <string name="failed">Failed</string>
+
+    <string name="Connect">Connect</string>
+    <string name="Start">Start</string>
+    <string name="Saving">Saving</string>
+    <string name="Stop">Stop</string>
+    <string name="Avare">Avare</string>
+    <string name="Connected">Avare Connected!</string>
+    <string name="NotConnected">Avare Not Connected!</string>
+    <string name="ADSB">ADSB</string>
+    <string name="ADSBWifi">ADSB WiFi</string>
+    <string name="XPlane">XPlane</string>
+    <string name="MSFS">MSFS</string>
+    <string name="GPSSIM">GPS Sim</string>
+    <string name="USBIN">USB In</string>
+    <string name="DUMP1090">Dump 1090</string>
+    <string name="XPlanePort">49002</string>
+    <string name="WifiPort">43211</string>
+    <string name="Apply">Apply</string>
+    <string name="FlyTo">Fly To Destination (if available)</string>
+    <string name="LandAt">Land at Destination (if available)</string>
+    <string name="Heading">Hdg.\u00b0</string>
+    <string name="Speed">Spd. kt</string>
+    <string name="FileRead">in.bin</string>
+    <string name="FileSave">out.bin</string>
+    <string name="Output">---- Output ----\n</string>
+    <string name="Disconnect">Disconnect</string>
+    <string name="Listen">Listen</string>
+    <string name="DescFS">Connect to XPlane, Flightgear on WIFI</string>
+    <string name="DescMSFS">Connect to MSFS on WIFI-NMEA</string>
+    <string name="DescGPSSim">Simulate GPS</string>
+    <string name="DescDump1090">Connect to Dump1090 via URI</string>
+    <string name="DescExt">Connect to GPS/ADSB units on Bluetooth</string>
+    <string name="DescExtWifi">Connect to GPS/ADSB units on WiFi (Broadcast on Managed Network)</string>
+    <string name="DescFile">Feed NMEA / ADSB data from a binary file</string>
+    <string name="DescAP">Connect to autopilots on Bluetooth</string>
+    <string name="DescUSBIN">Connect to GPS/ADSB units on USB Serial</string>
+    <string name="Status">Status</string>
+    <string name="Bluetooth">Bluetooth</string>
+    <string name="AP">Auto Pilot</string>
+    <string name="Play">Play</string>
+    <string name="Secure">Secure</string>
+    <string name="Preferences">Preferences</string>
+    <string name="filter_hint">Filter messages</string>
+    <string name="Io">IO</string>
+    <string name="IoSummary">Input/Output</string>
+    <string name="WIFI">WiFi</string>
+    <string name="NoBtDevice">Enable Bluetooth, and pair a device first.</string>
 </resources>

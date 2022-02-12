@@ -12,22 +12,24 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="332"
-    android:versionName="8.1.2"
+    android:versionCode="358"
+    android:versionName="10.0.8"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.network" android:required="false" />
@@ -39,10 +41,10 @@ Redistribution and use in source and binary forms, with or without modification,
         android:icon="@drawable/aircraft"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:hasFragileUserData="true"
         android:usesCleartextTraffic="true"
         android:name="AvareApplication"
-        android:allowBackup="true">
-
+        >
 
         <provider
             android:name=".content.ObstaclesProvider"
@@ -64,30 +66,24 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name=".content.LocationProvider"
             android:authorities="com.ds.avare.provider.location" />
 
-        <activity android:name="org.acra.CrashReportDialog"
-            android:theme="@style/Theme.Dialog"
-            android:process=":error_report"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:finishOnTaskLaunch="true" />
+        <provider
+            android:name=".content.UserProvider"
+            android:authorities="com.ds.avare.provider.user" />
 
-        <service android:name=".StorageService"/>
-        <service
-            android:name="com.ds.avare.IHelperService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.ds.avare.START_SERVICE" />
-            </intent-filter>
-        </service>
+        <service android:name=".StorageService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location"
+            />
         <activity android:name=".PrefActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".PlanActivity" />
         <activity android:name=".AirportActivity" />
-        <activity android:name=".SatelliteActivity" />
         <activity android:name=".WebActivity" />
         <activity android:name=".LocationActivity" />
         <activity android:name=".NearestActivity" />
         <activity android:name=".PlatesActivity" />
+        <activity android:name=".IOActivity" />
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
         <activity android:name=".FaaFileActivity" />
@@ -95,16 +91,12 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".PfdActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
-        <activity android:name=".SyncActivity"/>
         <activity android:name=".WnbActivity"/>
-        <activity android:name=".MessageActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".ImportExportActivity" />
         <activity
             android:name="com.ds.avare.MainActivity"
             android:launchMode="singleTask"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_main" >
             <!-- Intent for mock gps built into app -->
             <intent-filter>
@@ -116,6 +108,15 @@ Redistribution and use in source and binary forms, with or without modification,
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+
         </activity>
         
     </application>

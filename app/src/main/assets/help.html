@@ -17,10 +17,45 @@
 
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>
 <div> <h3 style="text-align: center;">Avare Donate</h3>
- <p style="text-align: center;">To support chart updates and ongoing Avare development, please
-  <br>
-  <a href="http://www.apps4av.org/donate.html" target="_blank">Click here to
-   Donate</a>.<br>Donations are tax deductible. Thank you.</p>
+
+
+ <p>
+
+ <p><br> Apps4Av Inc. is a registered non-profit organization in the state of MA.<br> Avare is an open source project on <a href="http://github.com/apps4av/avare">GitHub</a>. <br> Please donate to keep the project improving. Any amount will be appreciated. </p>
+ <b>All donations to Apps4Av Inc. are tax deductible under <a href="https://apps.irs.gov/app/eos/displayAll.do?dispatchMethod=displayAllInfo&Id=4887948&ein=463956765&country=US">501(c)(3)</a> code of IRS.</b>
+
+ <br><b>One Time Donation</b><br>
+
+ <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+  <input type="hidden" name="cmd" value="_s-xclick">
+  <input type="hidden" name="hosted_button_id" value="TKHX6J5R4Q862">
+  <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+  <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+ </form>
+
+ <b>Periodic Donations</b><br>
+
+ <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+  <input type="hidden" name="cmd" value="_s-xclick">
+  <input type="hidden" name="hosted_button_id" value="C77TDW5TVA3XJ">
+  <table >
+   <tr><td ><input  type="hidden" name="on0" value=""></td></tr><tr><td><select style="background-color:#000000;" name="os0">
+   <option value="2 dollars a month">2 dollars a month : $2.00 USD - monthly</option>
+   <option value="5 dollars a month">5 dollars a month : $5.00 USD - monthly</option>
+   <option value="10 dollars a month">10 dollars a month : $10.00 USD - monthly</option>
+  </select> </td></tr>
+  </table>
+  <input type="hidden" name="currency_code" value="USD">
+  <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_subscribeCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+  <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+ </form>
+
+ <p>Thank you!</p>
+
+ <br>
+
+ </p>
+
 
  <h3 style="text-align: center;">Notice</h3>
  All GPS applications on any <b>handheld non-certified devices</b> like
@@ -49,45 +84,50 @@
 
  See Avare learning videos at John Wiley's <a href="https://www.youtube.com/channel/UC0OSj8qmkSg01DIilEzxHGg/videos">Avare Youtube Channel</a>.<br>
  See Avare learning videos at Duffy Fainer's  <a href="https://www.youtube.com/channel/UC8WaDmZoK0vCwBfWYx-PSgw/videos">Avare Youtube Channel</a>.<br><br>
-  Extend Avare by downloading:
- <a href="https://play.google.com/store/apps/details?id=com.apps4av.avarehelper&amp;hl=en">Avare External I/O Plugin</a><br>
 
  <h3>Avare Releases</h3>
- <b>8.1.2</b><br>
+ <b>10.0.8</b><br>
  <ul>
-  <li>Added font adjustment in UI configuration, changed A/FD to CSup</li>
+  <li>Stop bug fix</li>
+  <li>Memory optimization for shape file</li>
  </ul>
- <b>8.1.1</b><br>
+ <b>10.0.7</b><br>
  <ul>
-  <li>Font changes, bug fixes, roll reverse, weather links fixes, near airport missing elevation fix</li>
+  <li>(Near) now works without glide ring enabled</li>
+  <li>Fix of stop bugs</li>
+  <li>Added a chart guide</li>
+  <li>Removed cell tower based location</li>
  </ul>
- <b>8.1.0</b><br>
+ <b>10.0.6</b><br>
+ <ul>
+  <li>Plans can be deleted</li>
+ </ul>
+ <b>10.0.5</b><br>
+ <ul>
+  <li>Fixed stop issue</li>
+ </ul>
+ <b>10.0.4</b><br>
+ <ul>
+  <li>Fixed emailing of tracks</li>
+  <li>Fixed Pirep translations</li>
+  <li>WAC and area charts will not expire</li>
+  <li>Added "my-plates" so users can tag their own non-FAA plates</li>
+ </ul>
+ <b>10.0.3</b><br>
+ <ul>
+  <li>Fixed restart/stop on orientation change</li>
+  <li>Removed data restore from old format</li>
+  <li>Added option to show traffic as circles, and altitude in 100's of feet</li>
+ </ul>
+ <b>10.0.2</b><br>
  <ul>
   <li>Bug fixes</li>
+  <li>Improvements to custom plate tagging and storage in external user database</li>
+  <li>Disable app backup on google as it was causing issues with databases</li>
  </ul>
- <b>8.0.8</b><br>
+ <b>10.0.1</b><br>
  <ul>
-  <li>Added flyway charts</li>
-  <li>ADSB connection auto starts when app starts</li>
-  <li>Added Bluetooth autopilot</li>
-  <li>Changed image format to webp to reduce chart file size</li>
- </ul>
- <b>8.0.7</b><br>
- <ul>
-   <li>Bug fixes</li>
- </ul>
- <b>8.0.5</b><br>
- <ul>
-  <li>Drawing on plates move with pan and zoom</li>
-  <li>Plates show track projection</li>
-  <li>PFD connected to iLevil devices so users get gyro instruments, pitot-static instruments, and AoA information.</li>
-  <li>Fixed an application termination bug on Android O and above.</li>
- </ul>
- <b>8.0.4</b><br>
- <ul>
-  <li>Added more sample weight and balance sheets</li>
-  <li>Fixed the timer on plates</li>
-  <li>App will automatically download appropriate sectional with database</li>
+  <li>Stop bug fix in Checklists</li>
  </ul>
 
  <h3>Avare Help Choices</h3>
@@ -121,7 +161,7 @@
   Online</a></b><a title="Online Avare Videos" href="http://www.youtube.com/channel/UCHDhhxg7JidZ4i7DQuNa6Tw" target="_blank"></a></em><a title="Online Avare Videos" href="https://www.youtube.com/channel/UCHDhhxg7JidZ4i7DQuNa6Tw" target="_blank">* - Videos</a></p>
 
  <p>• <em><b><a title="Online Avare Help" href="http://apps4av.com/avare-overview/" target="_blank">
-  Online</a></b><a title="Online Avare Help" href="http://apps4av.com/avare-overview/" target="_blank"></a></em><a title="Online Avare Help" href="http://apps4av.com/avare-overview/" target="_blank"> * - Website &amp; Forum</a></p>
+  Online</a></b><a title="Online Avare Help" href="http://apps4av.com/avare-overview/" target="_blank"></a></em><a title="Online Avare Help" href="https://apps4av.net" target="_blank"> * - Website &amp; Forum</a></p>
 
  <p>• <em><b><a title="FAA Chart Maps" href="http://aeronav.faa.gov/index.asp?xml=aeronav/applications" target="_blank">
   Online</a></b><a title="FAA Chart Maps" href="http://aeronav.faa.gov/index.asp?xml=aeronav/applications" target="_blank"></a></em><a title="FAA Chart Maps" href="http://aeronav.faa.gov/index.asp?xml=aeronav/applications" target="_blank"> * - FAA Chart Maps</a><br>
@@ -508,17 +548,21 @@
  information by using the "Clear" button.<br>
  <br>
  • <span style="font-weight: bold;">Glide Range</span><br>
- You can set the glide ratio of your aircraft in Preferences, and Avare
+ You can set the best glide vertical speed of your aircraft in Preferences, and Avare
  will calculate your approximate glide range. All the airports shown in
  red color in the Near tab, will not be in glide range, while the ones
- shown in green will be in glide range. An example glide ratio (to be set in
- Preferences) for a C172 is calculated as:<br>
- glide ratio = POH glide distance per thousand feet = 1.25 nm per 1000 feet = 1.25 * 6076 feet / 1000 feet = 7.5.<br>
+ shown in green will be in glide range. <br>
  <br>
  • <span style="font-weight: bold;">Emergency</span><br>
  You can declare an in flight emergency by pressing the Menu button, then the Emergency button. You will be asked to confirm. Press "Yes" button to declare an emergency.
  To load emergency checklist, Set the appropriate values in Preferences under Pilot and Aircraft. Set Emergency Checklist Name. This name must match the name of a saved checklist under Lists.
  Your destination will be set to nearest airport. Depending on altitude, terrain, winds, obstacles, and aircraft, you may not be able to make it to that airport in an engine out emergency.<br>
+ <br>
+ • <span style="font-weight: bold;">My Plates</span><br>
+ You may load your maps / plates images from the external folder. Plates that can be loaded must have .png extension.<br>
+ Create / download your own plates .png files to the Avare external folder (usually Download/com.ds.avare/) under myplates/ sub-folder.<br>
+ Load your own images from the Plates menu -> top right drop down -> My Plates. You may geo tag your images to navigate on them.<br>
+ This is a popular feature when flying in combination with hiking.
  <br>
  • <span style="font-weight: bold;">Stadiums (Contact FSS)</span><br>
  You can show stadium locations on screen. Stadiums will be shown regardless of event schedules. To show stadium locations, check Preferences->Display->Show Stadiums. Note that the game and event schedules are not known to the app and are subject to change at any time. Flight service contact is required to know if any stadium has an active TFR.<br>
@@ -606,7 +650,9 @@ The Layer slide out button on the right side on Map screen allows users to selec
  <p>• <b>Distance &amp; Speed Rings</b><br>
   To see rings displayed on Map view for Time or Distance from your
   current GPS location, use Preferences to set the Style and Size of the
-  rings.</p>
+  rings. The glide range ring displays the glide range based on airplane's configured best glide speed and sink rate. The glide range ring shows the wind at current altitude (w), and the calculated airspeed (t), separated by /.<br>
+  WARNING: Do not use the glide ring in case of emergency to arrive safely at a landing point. There are approximations made in calculations for weather, terrain, and obstacles.
+ </p>
 
  <p>• <b>Civil Air Patrol CAP Grids</b><br>
   To see CAP grids and labels, use Preferences to enable CAP Grids.</p>
@@ -691,19 +737,17 @@ The Layer slide out button on the right side on Map screen allows users to selec
 
  <p>• <b>Loading and Displaying Esri Shape Files</b><br>
   Avare can load and display an Esri shape file (.shp) from the charts download folder. The user will place
-  the shape file to be loaded in the charts download folder (the folder in which Avare stores its charts). The shape
+  the shape file to be loaded in the user data folder (see Preferences). The shape
   file name must be specified in Preferences->Display->Shape File Name. The user must then restart Avare to load the shape file.
   Avare can be restarted by restarting the device, by using Avare preference "Leave Running", or from Android App Settings.
   An example countries shape file can be downloaded from <a href="http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip">Natural Earth</a>.
-  Note that large shape files may crash the app due to memory starvation.
+  Note that maximum points in a shape are limited to 1024, and maximum shapes in a file are limited to 256.
  </p>
 
- <p>• <b>Sharing user data between devices</b><br>
-  Users can share plans, lists, preferences, and recent airports between several devices using Avare built in Google Drive backup and restore functionality.
-  In order to back up data (plans, lists, preferences, and recent airports) from a device, go to Preferences -> Application State -> Sync Data. Then after giving required permissions, press the backup button.
-  In order to restore the backed up data, press the Restore button, then choose the backed up data file.
-  Users can restore the backed up data from the device that created the data, or from a different device.
-  Google Drive account is needed, and must be setup outside the app. Data downloaded from the server (charts, plates, chart supplement) will not be backed up.
+ <p>• <b>Backing up data</b><br>
+  Users can back up plans, lists, preferences, waypoints, and recent airports to the Google cloud automatically by adding a Google drive sync account under Android Settings->System->Backup. To back up data (usually before re-installing the app), go to Android Settings->System->Backup and select Back up now.
+  Data will be restored automatically at the app install.
+  Data downloaded from the server (charts, plates, chart supplement) will not be backed up.
  </p>
 
  <p>• <b>Displaying NavAids near a point</b><br>
@@ -839,38 +883,23 @@ The Layer slide out button on the right side on Map screen allows users to selec
   mind that some anti-virus apps from disreputable providers have
   themselves been used to install a virus.</p>
 
-
  <hr size="1">
 
  <h3 style="text-align: center;"><a name="0.1_Charts">FAA Charts Reference</a></h3>
 
- <p>For current and accurate FAA chart maps, please visit this FAA website:<br>
-  <a title="FAA Chart Maps" href="http://aeronav.faa.gov/index.asp?xml=aeronav/applications" target="_blank">
-   Online FAA Chart Maps</a><br>
-  <i></i></p><blockquote><i>Note: Under the Downloads list on the FAA
+ <p>For current and accurate FAA chart maps, please visit the FAA's 
+  <a title="Digital Products" href="https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/" target="_blank">
+  <B>Digital Products</b></a> website <B>while you are online</b>. Links to materials such as the 
+  <a title="VFR Raster Charts" href="https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/vfr/" target="_blank">
+  VFR Charts</a>, IFR Charts and other materials used in Avare, may also be 
+  found listed in the left margin column there.<br>
+  </p><blockquote><i>Note: Under the VFR chart type tabs on this FAA
   website, select the chart type for which you'd like to see a map
-  legend. For example, to see a map showing the area covered by each of
-  the FAA Sectional charts, click on the "Sectional Raster Charts" link.</i></blockquote>
+   legend <B>Chart Index</b> map. For example, to see a map showing the area covered by each of
+  the online FAA Sectional charts, click on the 
+"<a href="https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/vfr/assets/img/FAA_SectUS_Lrg.jpg" target="_blank">
+  Sectional Chart Index</a>" link.</i></blockquote>
 
- <p><b>The following FAA chart maps are for offline reference only, and are not updated. </b></p>
- <h3 style="text-align: left;">Sectionals and TACs</h3><br>
- <img style="width: 500px; height: 567px;" alt="" src="http://aeronav.faa.gov/content/aeronav/images/FAA_Sect.jpg"><br>
- <br>
-
-
- <h3 style="text-align: left;">WACs<br> </h3>
-
- <img style="width: 500px; height: 609px;" alt="" src="http://aeronav.faa.gov/content/aeronav/images/FAA_WAC_index.jpg"><br>
- <h3 style="text-align: left;">Chart Supplement</h3> <img style="width: 500px; height: 282px;" alt="" src="http://www.faa.gov/air_traffic/flight_info/aeronav/media/AFD_Index.jpg"><br>
-
- <h3 style="text-align: left;">ELUS (Note: Avare area division not
-  shown)<br> </h3>
-
- <img style="width: 500px; height: 326px;" alt="" src="http://aeronav.faa.gov/content/aeronav/images/Low_Index_US.jpg"><br>
- <h3 style="text-align: left;">EHUS <br> </h3> <h3 style="text-align: left;">(Note: Avare area division not shown)</h3>
-
- <img style="width: 500px; height: 283px;" alt="" src="http://aeronav.faa.gov/content/aeronav/images/High_Index_US_new.gif"><br>
- <br>
  <h3 style="text-align: left;">Canada Topo Grid </h3>As far North as 60N covered.<br>
  <br>
  We are investigating the potential for adding more capabilities for
@@ -890,8 +919,7 @@ The Layer slide out button on the right side on Map screen allows users to selec
  Avare's database and fly GPS direct even without any map displayed. To
  display a Canadian map, in the Download menu near the bottom is a
  category currently named "Topographic Maps(42)" which currently only
- contains Canada Grid maps numbered 1-114. To find out which grid map(s)
- you need for the area you fly, consult this map.<br>
+ contains Canada Grid maps numbered 1-114. <br>
  <br>
  In the current version of Avare, you might encounter some difficulty in
  switching between U.S. charts and Canadian Topo. If so, it might help
@@ -900,19 +928,13 @@ The Layer slide out button on the right side on Map screen allows users to selec
  want to improve and add more Canadian capabilities in Avare, but
  receive very little feedback and few inquiries. If you fly Avare in
  Canada or would like to, please contact us on our Forum.<br>
- <img style="width: 1000px; height: 863px;" alt="" src="http://mamba.dreamhosters.com/new/canada_grid.jpg"><br>
 
  <br>
  <h3 style="text-align: left;">TPC and ONC charts </h3>
  TPC and ONC charts are added for World coverage. These charts are expired and should not be used for navigation.
- To find the proper TPC chart for your area, see <a href="http://www.lib.utexas.edu/maps/tpc/">TPC Charts Grid</a>.
+ To find the proper TPC chart for your area, see the <a href="http://www.lib.utexas.edu/maps/tpc/">TPC Charts Grid while you are online</a>.
  <br>
 
- <br>
- <h3 style="text-align: left;">Flyway charts </h3>
- Flyway charts are provided for reference.  VFR Flyway Planning charts are designed for use in conjunction with TACs and are not to be used for navigation.
- To find the proper TPC chart for your area, see the <a href="https://www.faa.gov/air_traffic/flight_info/aeronav/productcatalog/planningcharts/vfrflyway/">FAA Flyway Planning Chart</a> page.
- <br>
 
  <br> <hr><br>
  --End of Avare Help offline sections-- </div></body></html>

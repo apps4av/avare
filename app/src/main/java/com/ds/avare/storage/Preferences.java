@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.storage;
 
 import android.app.Activity;
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -27,18 +28,27 @@ import android.view.WindowManager;
 
 import com.ds.avare.MainActivity;
 import com.ds.avare.R;
+import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
+import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Preferences for main activity
  */
-public class Preferences {
+public class Preferences implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     /*
      * These are set when inited
@@ -120,6 +130,8 @@ public class Preferences {
          * Set default prefs.
          */
         mPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        mPref.registerOnSharedPreferenceChangeListener(this);
+
         if (getDistanceUnit().equals(mContext.getString(R.string.UnitKnot))) {
             speedConversion = 1.944; // m/s to kt/hr
             heightConversion = 3.28084;
@@ -147,9 +159,26 @@ public class Preferences {
         }
     }
 
-    public static boolean isKnots() { return distanceConversionUnit.equals("nm"); }
-    public static boolean isMPH()   { return distanceConversionUnit.equals("mi"); }
-    public static boolean isKPH()   { return distanceConversionUnit.equals("km"); }
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        /**
+         * Backup properties on cloud on change
+         */
+        BackupManager bm = new BackupManager(mContext);
+        bm.dataChanged();
+    }
+
+    public static boolean isKnots() {
+        return distanceConversionUnit.equals("nm");
+    }
+
+    public static boolean isMPH() {
+        return distanceConversionUnit.equals("mi");
+    }
+
+    public static boolean isKPH() {
+        return distanceConversionUnit.equals("km");
+    }
 
     /**
      * @return
@@ -165,120 +194,16 @@ public class Preferences {
         }
         if (val.equals("0")) {
             return "http://www.apps4av.org/new/";
-        }
-        else if (val.equals("1")) {
-            return "http://avare.kitepilot.net/new/";
-        }
-        else if (val.equals("2")) {
-	    val = mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
-	    if (!val.substring(val.length() - 1).equals("/")) {
-		val = val + "/";   
-	    }
+        } else if (val.equals("1")) {
+            return "https://avare.bubble.org/";
+        } else if (val.equals("2")) {
+            val = mPref.getString(mContext.getString(R.string.PrivateServer), "http://127.0.0.1/");
+            if (!val.substring(val.length() - 1).equals("/")) {
+                val = val + "/";
+            }
             return val;
         }
         return ("");
-    }
-
-    /**
-     * @return
-     */
-    public String[] getRecent() {
-        String recent = mPref.getString(mContext.getString(R.string.Recent), "");
-        String[] tokens = recent.split(",");
-        return tokens;
-    }
-
-    /**
-     * @return
-     */
-    public void modifyARecent(String name, String description) {
-        String[] tokens = getRecent();
-        description = description.replaceAll("[^A-Za-z0-9 ]", "");
-        description = description.replaceAll(";", " ");
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                String oldName = name;
-                String newName = null;
-                int desc = oldName.lastIndexOf("@");
-                if (desc < 0) {
-                    newName = description + "@" + oldName;
-                } else {
-                    newName = description + oldName.substring(desc, oldName.length());
-                }
-                l.set(id, newName);
-                break;
-            }
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public void deleteARecent(String name) {
-        String[] tokens = getRecent();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                l.remove(id);
-            }
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public void addToRecent(String name) {
-        String[] tokens = getRecent();
-        List<String> l = new LinkedList<String>(Arrays.asList(tokens));
-        for (int id = 0; id < l.size(); id++) {
-            if (l.get(id).equals(name)) {
-                l.remove(id);
-            }
-        }
-        l.add(0, name);
-        if (l.size() > MAX_RECENT) {
-            l = l.subList(0, MAX_RECENT - 1);
-        }
-
-        String recent = "";
-        for (int id = 0; id < l.size(); id++) {
-            recent = recent + l.get(id) + ",";
-        }
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Recent), recent);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public String getPlans() {
-        return mPref.getString(mContext.getString(R.string.Plan) + "v10", "");
-    }
-
-
-    /**
-     * @return
-     */
-    public void putPlans(String name) {
-        mPref.edit().putString(mContext.getString(R.string.Plan) + "v10", name).commit();
     }
 
 
@@ -287,7 +212,7 @@ public class Preferences {
      */
     public static int[] getTilesNumber(Context ctx) {
         int[] ret = new int[3];
-        
+
         /*
          * Find max tiles this system can support.
          */
@@ -327,35 +252,31 @@ public class Preferences {
         int tilesy = (height / BitmapHolder.HEIGHT) + 2;
 
         // odd tiles only
-        if(tilesx % 2 == 0) {
+        if (tilesx % 2 == 0) {
             tilesx++;
         }
-        if(tilesy % 2 == 0) {
+        if (tilesy % 2 == 0) {
             tilesy++;
         }
 
         // no going above memory limit
-        if(tilesx > ret[0]) {
+        if (tilesx > ret[0]) {
             tilesx = ret[0];
         }
-        if(tilesy > ret[1]) {
+        if (tilesy > ret[1]) {
             tilesy = ret[1];
         }
         ret[0] = tilesx;
         ret[1] = tilesy;
 
-        if(ret[0] <= 0) {
+        if (ret[0] <= 0) {
             ret[0] = MEM_16_X;
         }
-        if(ret[1] <= 0) {
+        if (ret[1] <= 0) {
             ret[1] = MEM_16_Y;
         }
 
         return ret;
-    }
-
-    public boolean isLeaveRunning() {
-        return (mPref.getBoolean(mContext.getString(R.string.LeaveRunning), true));
     }
 
     /**
@@ -407,16 +328,16 @@ public class Preferences {
     public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
+
     public boolean isShowLabelMETARS() {
         return (mPref.getBoolean(mContext.getString(R.string.ShowLabelMETARS), false));
     }
 
     /**
-     *
      * @return
      */
     public boolean showObstacles() {
-        return(mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+        return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
     }
 
     /**
@@ -497,7 +418,7 @@ public class Preferences {
      */
     public boolean isNewerVersion(Activity activity) {
         PackageInfo packageInfo = null;
-        
+
         /*
          * Get current version code.
          */
@@ -507,7 +428,7 @@ public class Preferences {
         } catch (Exception e) {
             packageInfo = null;
         }
-        
+
         /*
          * Found.
          */
@@ -594,67 +515,6 @@ public class Preferences {
     /**
      * @return
      */
-    public String mapsFolder() {
-        File path = mContext.getFilesDir();
-        /*
-         * Make it fail safe?
-         */
-        if (path == null) {
-            path = mContext.getCacheDir();
-            if (path == null) {
-                path = mContext.getExternalCacheDir();
-                if (path == null) {
-                    path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    if (path == null) {
-                        path = Environment.getExternalStorageDirectory();
-                        if (null == path) {
-                            path = new File("/mnt/sdcard/avare");
-                        }
-                    }
-                }
-            }
-        }
-        /*
-         * If no path, use internal folder.
-         * If cannot get internal folder, return / at least
-         */
-        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
-        
-        /*
-         * XXX: Legacy for 5.1.0 and 5.1.1.
-         */
-        if (loc.equals("Internal")) {
-            loc = mContext.getFilesDir().getAbsolutePath() + "/data";
-        } else if (loc.equals("External")) {
-            loc = mContext.getExternalFilesDir(null) + "/data";
-        }
-
-        return (loc);
-    }
-
-    /**
-     * @return
-     */
-    public void setMapsFolder(String folder) {
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Maps), folder);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public String loadString(String name) {
-        return (mPref.getString(name, null));
-    }
-
-    public boolean isDrawTracks() {
-        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean useAdsbWeather() {
         return (mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
@@ -721,8 +581,6 @@ public class Preferences {
     }
 
     /**
-     *
-     *
      * @return
      */
     public void showDistanceRingStatic() {
@@ -782,7 +640,7 @@ public class Preferences {
 
     public String getRowFormats(boolean getDefault) {
         final String defRowFormats = "6,0,0,0,7,8,5 10,0,0,0,3,12,4 6,7,8,5 10,3,12,4";
-        if(getDefault)
+        if (getDefault)
             return defRowFormats;
         return mPref.getString(mContext.getString(R.string.prefGetRowFormats), defRowFormats);
     }
@@ -816,12 +674,12 @@ public class Preferences {
      * @return
      */
     public boolean isRegistered() {
-        return  mPref.getBoolean(mContext.getString(R.string.register), false);
+        return mPref.getBoolean(mContext.getString(R.string.register), false);
     }
 
     /**
      * @return
-         */
+     */
     public String getExternalGpsSource() {
         return mPref.getString(mContext.getString(R.string.externalGps), "0");
     }
@@ -846,41 +704,6 @@ public class Preferences {
     public boolean isShowEdgeTape() {
         return mPref.getBoolean(mContext.getString(R.string.EdgeTape), false);
     }
-
-    /**
-     * 7 is the  glide ratio of most common aircraft like C172 and C182
-     *
-     * @return
-     */
-    public float getGlideRatio() {
-        String def = "7.0";
-        float mratio = Float.parseFloat(def);
-        String ratio = mPref.getString(mContext.getString(R.string.GlideRatio), def);
-        try {
-            mratio = Float.parseFloat(ratio);
-        } catch (Exception e) {
-            /*
-             * Save default
-             */
-            mPref.edit().putString(mContext.getString(R.string.GlideRatio), def).commit();
-        }
-        return (mratio);
-    }
-
-    /**
-     * @return
-     */
-    public String getLists() {
-        return mPref.getString(mContext.getString(R.string.List), "");
-    }
-
-    /**
-     * @return
-     */
-    public void putLists(String name) {
-        mPref.edit().putString(mContext.getString(R.string.List), name).commit();
-    }
-
 
     /**
      * @return
@@ -917,6 +740,10 @@ public class Preferences {
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    public boolean isDrawTracks() {
+        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
+    }
+
     /**
      * @return
      */
@@ -927,21 +754,16 @@ public class Preferences {
     /**
      * @return
      */
-    public String getUDWLocation() {
-        try {
-            return mPref.getString(mContext.getString(R.string.UDWLocation), "");
-        } catch (Exception e) {
-            return "";
-        }
+    public String getUserDataFolder() {
+        return Helper.getExternalFolder(mContext);
     }
 
     /**
-     * @param udwLocation
+     * @return
      */
-    public void setUDWLocation(String udwLocation) {
-        mPref.edit().putString(mContext.getString(R.string.UDWLocation), udwLocation).commit();
+    public String getServerDataFolder() {
+        return Helper.getInternalFolder(mContext);
     }
-
 
 
     // Read all the tab preference selections and return them in a single bitmapped long value
@@ -980,10 +802,6 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabChecklist;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
             mTabs |= 1 << MainActivity.tabPfd;
         }
@@ -992,12 +810,17 @@ public class Preferences {
             mTabs |= 1 << MainActivity.tabWnb;
         }
 
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabIo), true)) {
+            mTabs |= 1 << MainActivity.tabIo;
+        }
+
         return mTabs;
     }
 
     public void setTipIndex(int index) {
         mPref.edit().putInt(mContext.getString(R.string.tipIndex), index).commit();
     }
+
     public int getTipIndex() {
         return mPref.getInt(mContext.getString(R.string.tipIndex), 0);
     }
@@ -1115,6 +938,10 @@ public class Preferences {
         return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
     }
 
+    public String getAircraftOtherInfo() {
+        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
+    }
+
     public String getAircraftSurveillanceEquipment() {
         return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
     }
@@ -1139,8 +966,7 @@ public class Preferences {
         int code = 0;
         try {
             code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
         return code;
@@ -1180,9 +1006,11 @@ public class Preferences {
     public boolean removeB1Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b1plate), false);
     }
+
     public boolean removeB2Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b2plate), false);
     }
+
     public boolean removeB1Map() {
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
@@ -1201,30 +1029,13 @@ public class Preferences {
 
     public int getWindsAloftCeiling() {
         try {
-           return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
+            return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
         } catch (Exception x) {
             return 39;
         }
     }
 
-
     /**
-      * @return
-      */
-     public String getGeotags() {
-        return mPref.getString(mContext.getString(R.string.Geotag), "");
-     }
-
-
-    /**
-      * @param tags
-      */
-    public void setGeotags(String tags) {
-        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
-    }
-
-    /**
-     *
      * @return
      */
     public boolean showGameTFRs() {
@@ -1235,36 +1046,18 @@ public class Preferences {
         mPref.edit().putBoolean(mContext.getString(R.string.GameTFR), true).commit();
     }
 
-    /**
-     * @return
-     */
-    public String getWnbs() {
-        return mPref.getString(mContext.getString(R.string.Wnb), "");
-    }
-
-    /**
-     * @return
-     */
-    public void putWnbs(String name) {
-        mPref.edit().putString(mContext.getString(R.string.Wnb), name).commit();
-    }
-
     public boolean isDefaultAFDImage() {
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
     }
 
-    public String getWiFiPort() {
-        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
-    }
-
-    public String getAutopilotBluetoothDevice() {
-        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
-    }
+//    public String getAutopilotBluetoothDevice() {
+//        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
+//    }
 
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
     }
-  
+
     public boolean reverseRollInAhrs() {
         return mPref.getBoolean(mContext.getString(R.string.ReverseAhrsRoll), false);
     }
@@ -1276,5 +1069,67 @@ public class Preferences {
             return 1;
         }
 
+    }
+
+
+    public int getBestGlideSinkRate() {
+        String in = mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
+        int val = 700;
+        try {
+            val = Integer.parseInt(in);
+        } catch (Exception e) {
+
+        }
+        return val;
+    }
+
+
+    public boolean shouldDrawTrafficCircles() {
+        return mPref.getBoolean(mContext.getString(R.string.drawTrafficCircles), false);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getEditTextValue(int id) {
+        return mPref.getString("EditText" + id, null);
+    }
+
+    /**
+     *
+     */
+    public void setEditTextValue(int id, String val) {
+        mPref.edit().putString("EditText" + id, val).commit();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getCheckboxValue(int id) {
+        return mPref.getBoolean("Checkbox" + id, true);
+    }
+
+    /**
+     *
+     */
+    public void setCheckboxValue(int id, boolean val) {
+        mPref.edit().putBoolean("Checkbox" + id, val).commit();
+    }
+
+    /**
+     *
+     */
+    public int getFragmentIndex() {
+        return mPref.getInt("fragmentindex", 0);
+    }
+
+    /**
+     *
+     * @param fragmentIndex
+     */
+    public void setFragmentIndex(int fragmentIndex) {
+        mPref.edit().putInt("fragmentindex", fragmentIndex).commit();
     }
 }

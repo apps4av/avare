@@ -72,10 +72,7 @@ public class Crc {
             crc = entry ^ entry3;
         }
 
-        if (crc != msgCrc) {
-            return false;
-        }
-        return true;
+        return crc == msgCrc;
     }
 
 
