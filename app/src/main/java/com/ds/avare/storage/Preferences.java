@@ -802,16 +802,16 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             mTabs |= 1 << MainActivity.tabChecklist;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
             mTabs |= 1 << MainActivity.tabPfd;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabWnb), true)) {
             mTabs |= 1 << MainActivity.tabWnb;
+        }
+
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabIo), true)) {
+            mTabs |= 1 << MainActivity.tabIo;
         }
 
         return mTabs;
@@ -1050,13 +1050,9 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
     }
 
-    public String getWiFiPort() {
-        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
-    }
-
-    public String getAutopilotBluetoothDevice() {
-        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
-    }
+//    public String getAutopilotBluetoothDevice() {
+//        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
+//    }
 
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
@@ -1090,5 +1086,50 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public boolean shouldDrawTrafficCircles() {
         return mPref.getBoolean(mContext.getString(R.string.drawTrafficCircles), false);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getEditTextValue(int id) {
+        return mPref.getString("EditText" + id, null);
+    }
+
+    /**
+     *
+     */
+    public void setEditTextValue(int id, String val) {
+        mPref.edit().putString("EditText" + id, val).commit();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getCheckboxValue(int id) {
+        return mPref.getBoolean("Checkbox" + id, true);
+    }
+
+    /**
+     *
+     */
+    public void setCheckboxValue(int id, boolean val) {
+        mPref.edit().putBoolean("Checkbox" + id, val).commit();
+    }
+
+    /**
+     *
+     */
+    public int getFragmentIndex() {
+        return mPref.getInt("fragmentindex", 0);
+    }
+
+    /**
+     *
+     * @param fragmentIndex
+     */
+    public void setFragmentIndex(int fragmentIndex) {
+        mPref.edit().putInt("fragmentindex", fragmentIndex).commit();
     }
 }

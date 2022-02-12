@@ -331,9 +331,9 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
-    <string name="prefTabTools">&quot;prefTabTools&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
     <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
+    <string name="prefTabIo">&quot;prefTabIo&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
     <string name="externalGpsLabel">GPS Position Source</string>
@@ -534,19 +534,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>
     <string name="UseNmeaAltitudeSummary">Select to use NMEA altitude from the internal GPS, when internal GPS is used as source</string>
-    <string name="ConnectHelp">
-        To connect to a WiFi ADS-B device or a GPS, enter WiFi port of the device under Preferences->GPS, then restart the app.\nTo show weather from ADS-B, select "Use ADSB Weather" under Preferences->Weather.\n
-    </string>
-    <string name="WIFI">WiFi</string>
-    <string name="ConnectWIFI">Connect WiFi</string>
-    <string name="WIFIPort">WIFIPort</string>
-    <string name="WIFIPortLabel">External WiFi Port</string>
-    <string name="WIFIPortSummary">UDP port number where external ADS-B / GPS is sending data</string>
 
-    <string name="BTOut">BTOut</string>
-    <string name="AutopilotBTDevice">APBTDevice</string>
-    <string name="AutopilotBTDeviceLabel">Autopilot Bluetooth Device</string>
-    <string name="AutopilotBTDeviceSummary">Select a bluetooth device to receive NMEA autopilot data</string>
 
     <string name="ReverseAhrsRoll">ReverseAhrsRoll</string>
     <string name="ReverseAhrsRollLabel">AHRS Roll Reverse</string>
@@ -577,4 +565,50 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="done">Done</string>
     <string name="failed">Failed</string>
 
+    <string name="Connect">Connect</string>
+    <string name="Start">Start</string>
+    <string name="Saving">Saving</string>
+    <string name="Stop">Stop</string>
+    <string name="Avare">Avare</string>
+    <string name="Connected">Avare Connected!</string>
+    <string name="NotConnected">Avare Not Connected!</string>
+    <string name="ADSB">ADSB</string>
+    <string name="ADSBWifi">ADSB WiFi</string>
+    <string name="XPlane">XPlane</string>
+    <string name="MSFS">MSFS</string>
+    <string name="GPSSIM">GPS Sim</string>
+    <string name="USBIN">USB In</string>
+    <string name="DUMP1090">Dump 1090</string>
+    <string name="XPlanePort">49002</string>
+    <string name="WifiPort">43211</string>
+    <string name="Apply">Apply</string>
+    <string name="FlyTo">Fly To Destination (if available)</string>
+    <string name="LandAt">Land at Destination (if available)</string>
+    <string name="Heading">Hdg.\u00b0</string>
+    <string name="Speed">Spd. kt</string>
+    <string name="FileRead">in.bin</string>
+    <string name="FileSave">out.bin</string>
+    <string name="Output">---- Output ----\n</string>
+    <string name="Disconnect">Disconnect</string>
+    <string name="Listen">Listen</string>
+    <string name="DescFS">Connect to XPlane, Flightgear on WIFI</string>
+    <string name="DescMSFS">Connect to MSFS on WIFI-NMEA</string>
+    <string name="DescGPSSim">Simulate GPS</string>
+    <string name="DescDump1090">Connect to Dump1090 via URI</string>
+    <string name="DescExt">Connect to GPS/ADSB units on Bluetooth</string>
+    <string name="DescExtWifi">Connect to GPS/ADSB units on WiFi (Broadcast on Managed Network)</string>
+    <string name="DescFile">Feed NMEA / ADSB data from a binary file</string>
+    <string name="DescAP">Connect to autopilots on Bluetooth</string>
+    <string name="DescUSBIN">Connect to GPS/ADSB units on USB Serial</string>
+    <string name="Status">Status</string>
+    <string name="Bluetooth">Bluetooth</string>
+    <string name="AP">Auto Pilot</string>
+    <string name="Play">Play</string>
+    <string name="Secure">Secure</string>
+    <string name="Preferences">Preferences</string>
+    <string name="filter_hint">Filter messages</string>
+    <string name="Io">IO</string>
+    <string name="IoSummary">Input/Output</string>
+    <string name="WIFI">WiFi</string>
+    <string name="NoBtDevice">Enable Bluetooth, and pair a device first.</string>
 </resources>

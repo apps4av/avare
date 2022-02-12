@@ -90,14 +90,4 @@ Redistribution and use in source and binary forms, with or without modification,
     </TableLayout>
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:hint="@string/ConnectHelp"
-        android:layout_margin="5dp"
-        android:textColor="#FFFFFFFF"
-        android:id="@+id/satellite_textview_logger"
-        />
-
 </LinearLayout>

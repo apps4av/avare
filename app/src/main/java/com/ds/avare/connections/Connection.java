@@ -53,6 +53,9 @@ public abstract class Connection {
 
     private String mName = "";
 
+    protected byte[] buffer = new byte[16384];
+
+
     private int mState;
 
     private boolean mRunning;

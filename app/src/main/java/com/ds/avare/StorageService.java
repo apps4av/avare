@@ -277,7 +277,7 @@ public class StorageService extends Service {
 
     private ExternalPlanMgr mExternalPlanMgr;
 
-    private AutoPilot mAutoPilot;
+    //private AutoPilot mAutoPilot;
 
     /*
      * Watches GPS to notify of phases of flight
@@ -497,9 +497,9 @@ public class StorageService extends Service {
         mUpTimer = new UpTimer();
 
         // Create a BlueTooth Output connection and give it to the autopilot
-        BTOutConnection btOut = BTOutConnection.getInstance(this);
-        btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
-        mAutoPilot = new AutoPilot(btOut);
+        //BTOutConnection btOut = BTOutConnection.getInstance(this);
+        //btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
+        //mAutoPilot = new AutoPilot(btOut);
 
         mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
         
@@ -610,7 +610,7 @@ public class StorageService extends Service {
                     }
 
                     // Tell the autopilot where we are and where we intend to go
-                    mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
+                    //mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
 
                     // Calculate course line deviation - this must be AFTER the destination update
                     // since the CDI uses the destination in its calculations
@@ -709,7 +709,7 @@ public class StorageService extends Service {
         }
 
         // Tell the autopilot we are shutting down
-        mAutoPilot.shutdown();
+        //mAutoPilot.shutdown();
 
         super.onDestroy();
 
@@ -1342,8 +1342,6 @@ public class StorageService extends Service {
     public NavComments getNavComments() {
     	return mNavComments;
     }
-
-    public AutoPilot getAutoPilot() { return mAutoPilot; }
 
     public EdgeDistanceTape getEdgeTape() {
     	return mEdgeDistanceTape;

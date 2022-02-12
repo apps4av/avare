@@ -947,7 +947,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
                 mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y,
                         (int) mService.getInfoLines().getHeight(), getWidth(), getHeight(),
-                        mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
+                        //mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
+                        TEXT_COLOR_OPPOSITE);
             }
         }
     }
@@ -969,7 +970,8 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
         mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
-                TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
+                //TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
+                TEXT_COLOR,  TEXT_COLOR_OPPOSITE, 4,
                 getWidth(), getHeight(), mErrorStatus, getPriorityMessage());
     }
 

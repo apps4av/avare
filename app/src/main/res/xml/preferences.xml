@@ -67,15 +67,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/externalGps"
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/WIFIPortLabel"
-            android:summary="@string/WIFIPortSummary"
-            android:defaultValue="4000"
-            android:key="@string/WIFIPort"/>
-        <com.ds.avare.utils.BTListPreferenceWithSummary
-            android:key="@string/AutopilotBTDevice"
-            android:summary="@string/AutopilotBTDeviceSummary"
-            android:title="@string/AutopilotBTDeviceLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ReverseAhrsRoll"
@@ -471,14 +462,14 @@ authors: zkhan, jlmcgraw
                 android:title="@string/WXB" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabTools"
-                android:summary="@string/GPSSummary"
-                android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/prefTabIo"
+                android:summary="@string/IoSummary"
+                android:title="@string/Io" />
         </PreferenceScreen>
 
         <CheckBoxPreference
