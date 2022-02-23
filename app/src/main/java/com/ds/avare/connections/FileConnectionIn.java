@@ -192,6 +192,15 @@ public class FileConnectionIn extends Connection {
         catch(Exception e) {
             red = -1;
         }
+
+        // do not overwhelm as files are fast. This should run at 10 kbytes / sec at buffer size of 1024
+        try {
+            Thread.sleep(100);
+        }
+        catch (Exception e) {
+
+        }
+
         return red;
     }
 

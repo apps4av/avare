@@ -53,7 +53,7 @@ public abstract class Connection {
 
     private String mName = "";
 
-    protected byte[] buffer = new byte[16384];
+    protected byte[] buffer = new byte[1024];
 
 
     private int mState;
