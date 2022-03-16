@@ -34,7 +34,7 @@ Redistribution and use in source and binary forms, with or without modification,
         android:id="@+id/main_wifi_port"
         android:layout_margin="10dp"
         android:inputType="number"
-        android:text="43211"
+        android:text="@string/WifiPort"
         android:layout_below="@+id/main_connectwifi_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

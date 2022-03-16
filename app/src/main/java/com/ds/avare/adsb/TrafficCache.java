@@ -41,13 +41,19 @@ public class TrafficCache {
         /*
          * For any new entries, check max traffic objects.
          */
-        if(mTraffic.get(address) == null) {
+        Traffic traffic = mTraffic.get(address);
+        if(traffic == null) {
             if(mTraffic.size() >= MAX_ENTRIES) {
                 return;
             }            
         }
-        
-        mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude, 
+        else {
+            if(callsign.equals("")) {
+                // sometimes callsign does not come, reuse
+                callsign = traffic.mCallSign;
+            }
+        }
+        mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude,
                 heading, speed, time));
     }
 

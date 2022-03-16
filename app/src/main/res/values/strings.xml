@@ -134,7 +134,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Draw">&quot;Draw&quot;</string>
     <string name="Pan">&quot;Pan&quot;</string>
     <string name="Clear">&quot;Clear&quot;</string>
-    <string name="WXB">FAA</string>
     <string name="Left">&quot;Left&quot;</string>
     <string name="Right">&quot;Right&quot;</string>
     <string name="Next">&quot;Next&quot;</string>
@@ -316,7 +315,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FindSummary">&quot;Search for airports and navaids.&quot;</string>
     <string name="ThreeDSummary">&quot;See around in 3D.&quot;</string>
 	<string name="PlanSummary">&quot;Flight plan creation and management.&quot;</string>
-	<string name="WXSummary">&quot;Weather briefing for local, destination or route.&quot;</string>
 	<string name="NearSummary">&quot;Nearest airport information and navigation data.&quot;</string>
 	<string name="ChecklistSummary">&quot;User defined checklists and management.&quot;</string>
     <string name="GPSSummary">&quot;Current settings, GPS status/satellite display.&quot;</string>
@@ -328,7 +326,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTabThreeD">&quot;prefTabThreeD&quot;</string>
 	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
 	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
-	<string name="prefTabWX">&quot;prefTabWX&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
 	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
@@ -580,7 +577,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="USBIN">USB In</string>
     <string name="DUMP1090">Dump 1090</string>
     <string name="XPlanePort">49002</string>
-    <string name="WifiPort">43211</string>
+    <string name="WifiPort">4000</string>
     <string name="Apply">Apply</string>
     <string name="FlyTo">Fly To Destination (if available)</string>
     <string name="LandAt">Land at Destination (if available)</string>

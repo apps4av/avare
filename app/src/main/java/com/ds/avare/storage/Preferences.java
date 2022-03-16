@@ -790,10 +790,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             mTabs |= 1 << MainActivity.tabPlan;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-            mTabs |= 1 << MainActivity.tabWXB;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
             mTabs |= 1 << MainActivity.tabNear;
         }

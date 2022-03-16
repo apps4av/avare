@@ -457,11 +457,6 @@ authors: zkhan, jlmcgraw
                 android:title="@string/List" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabWX"
-                android:summary="@string/WXSummary"
-                android:title="@string/WXB" />
-            <CheckBoxPreference
-                android:defaultValue="true"
                 android:key="@string/prefTabWnb"
                 android:summary="@string/WnbSummary"
                 android:title="@string/Wnb" />
