@@ -37,6 +37,8 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.Logger;
+import com.ds.avare.utils.Telemetry;
+import com.ds.avare.utils.TelemetryParams;
 import com.ds.avare.views.MemView;
 import com.ds.avare.views.SatelliteView;
 
@@ -229,13 +231,23 @@ public class ToolsFragment extends Fragment {
         }
         if(requestCode == EXPORT && uri != null) {
             Logger.Logit(getString(R.string.Export));
-            ExportTask t = new ExportTask();
-            t.execute(uri);
+            Telemetry t = new Telemetry(getActivity());
+            TelemetryParams p = new TelemetryParams();
+            p.add(TelemetryParams.EXPORT_NAME, uri.getPath());
+            t.sendEvent(Telemetry.EXPORT, p);
+
+            ExportTask tsk = new ExportTask();
+            tsk.execute(uri);
         }
         else if(requestCode == IMPORT && uri != null) {
             Logger.Logit(getString(R.string.Import));
-            ImportTask t = new ImportTask();
-            t.execute(uri);
+
+            Telemetry t = new Telemetry(getActivity());
+            TelemetryParams p = new TelemetryParams();
+            p.add(TelemetryParams.IMPORT_NAME, uri.getPath());
+            t.sendEvent(Telemetry.IMPORT, p);
+            ImportTask tsk = new ImportTask();
+            tsk.execute(uri);
         }
     }
 

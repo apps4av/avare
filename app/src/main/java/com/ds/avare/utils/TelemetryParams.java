@@ -9,6 +9,8 @@ public class TelemetryParams {
     public static final String STATUS = "status";
     public static final String FAILED = "failed";
     public static final String SUCCESS = "success";
+    public static final String IMPORT_NAME = "import_name";
+    public static final String EXPORT_NAME = "export_name";
 
     private Bundle mBundle;
 

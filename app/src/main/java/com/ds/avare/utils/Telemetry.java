@@ -9,6 +9,8 @@ public class Telemetry {
 
     // events
     public static final String CHART_DOWNLOAD = "chart_download";
+    public static final String IMPORT = "import";
+    public static final String EXPORT = "export";
 
     private FirebaseAnalytics mInstance;
 
