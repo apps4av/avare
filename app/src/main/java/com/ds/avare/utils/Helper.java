@@ -544,12 +544,17 @@ public class Helper {
     public static LinkedList<File> getDirectoryContents(File dir) throws Exception {
         LinkedList<File> list = new LinkedList();
         try {
-            File[] files = dir.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    list.addAll(getDirectoryContents(file));
-                } else {
-                    list.add(file);
+            if(dir.isFile()) {
+                list.add(dir); // only 1 file asked
+            }
+            else {
+                File[] files = dir.listFiles();
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        list.addAll(getDirectoryContents(file));
+                    } else {
+                        list.add(file);
+                    }
                 }
             }
         } catch (Exception e) {

@@ -59,7 +59,10 @@ public class IOActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
 
     /*
@@ -99,6 +102,14 @@ public class IOActivity extends Activity {
     }
     public GpsStatus getGpsStatus() {
         return mCurrentGpsStatus;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : mFragments) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     /** Defines callbacks for service binding, passed to bindService() */

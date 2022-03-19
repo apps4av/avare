@@ -251,8 +251,11 @@ public class PlatesActivity extends Activity implements Observer  {
      * @see android.app.Activity#onBackPressed()
      */
     @Override
-    public void onBackPressed() {       
-        ((MainActivity)this.getParent()).showMapTab();
+    public void onBackPressed() {
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
     
     private boolean arePopupsShowing() {

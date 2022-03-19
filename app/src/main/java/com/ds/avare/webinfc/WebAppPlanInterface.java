@@ -575,8 +575,11 @@ public class WebAppPlanInterface implements Observer {
      * 
      */
     public void timer() {
-    	
-    	Plan plan = mService.getPlan();
+		if(mService == null) {
+			return;
+		}
+
+		Plan plan = mService.getPlan();
 
     	// If we are in sim mode, then send a message
 	    if(mPref.isSimulationMode()) {
@@ -730,7 +733,11 @@ public class WebAppPlanInterface implements Observer {
     
     @JavascriptInterface
     public void refreshPlanList() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
     	mService.getExternalPlanMgr().forceReload();
 		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
 		setFilteredSize();
@@ -742,7 +749,11 @@ public class WebAppPlanInterface implements Observer {
      * New plan when the plan changes.
      */
     public void newPlan() {
-        clearPlan();
+		if(mService == null) {
+			return;
+		}
+
+		clearPlan();
         Plan plan = mService.getPlan();
         int num = plan.getDestinationNumber();
         for(int dest = 0; dest < num; dest++) {
@@ -770,6 +781,10 @@ public class WebAppPlanInterface implements Observer {
 		/*
 		 * Add to Plan that we found from add action
 		 */
+		if(mService == null) {
+			return;
+		}
+
 		Destination d = (Destination)arg0;
 		int num = mService.getPlan().getDestinationNumber();
 		// Make sure duplicates do not appear. This can happen with airways
@@ -796,6 +811,9 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void moveUp() {
     	// surround JS each call with busy indication / not busy 
+		if(mService == null) {
+			return;
+		}
 
     	Plan plan = mService.getPlan();
     	// move active point up
@@ -817,8 +835,11 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void moveDown() {
     	// surround JS each call with busy indication / not busy 
-    	
-    	// move active point down
+		if(mService == null) {
+			return;
+		}
+
+		// move active point down
     	Plan plan = mService.getPlan();
     	
     	int next = plan.findNextNotPassed();
@@ -841,6 +862,10 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void discardPlan() {
+		if(mService == null) {
+			return;
+		}
+
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.newPlan();
@@ -855,6 +880,9 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void activateToggle() {
+		if(mService == null) {
+			return;
+		}
 
     	Plan plan = mService.getPlan();
     	if(plan.isActive()) {
@@ -877,7 +905,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void deleteWaypoint() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
     	// Delete the one that has a mark on it, or the active waypoint
     	mService.getPlan().remove(mService.getPlan().findNextNotPassed());
     	newPlan();
@@ -889,7 +921,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveBack() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().regress();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -900,7 +936,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveTo(int index) {
-    	mService.getPlan().moveTo(index);
+		if(mService == null) {
+			return;
+		}
+
+		mService.getPlan().moveTo(index);
     }
 
 
@@ -909,7 +949,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveForward() {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().advance();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -922,7 +966,11 @@ public class WebAppPlanInterface implements Observer {
      */	
     @JavascriptInterface
     public void addToPlan(String id, String type, String subtype) {
-    	/*
+		if(mService == null) {
+			return;
+		}
+
+		/*
     	 * Add from JS search query
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
@@ -939,8 +987,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void savePlan(String name) {
+		if(mService == null) {
+			return;
+		}
 
-    	Plan plan = mService.getPlan();
+		Plan plan = mService.getPlan();
     	if(plan.getDestinationNumber() < 2) {
     		// Anything less than 2 is not a plan
     		return;
@@ -964,7 +1015,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlan(String name) {
-    	// surround JS each call with busy indication / not busy 
+		if(mService == null) {
+			return;
+		}
+
+		// surround JS each call with busy indication / not busy
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// If we have an active plan, we need to turn it off now since we are
@@ -1003,7 +1058,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlanReverse(String name) {
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
     	mService.getPlan().setName(name);
@@ -1017,7 +1076,11 @@ public class WebAppPlanInterface implements Observer {
 	 */
 	@JavascriptInterface
 	public void setAltitude(String altitude) {
-        mService.getPlan().setAltitude(Integer.parseInt(altitude) * 100);
+		if(mService == null) {
+			return;
+		}
+
+		mService.getPlan().setAltitude(Integer.parseInt(altitude) * 100);
 	}
 
 	/**
@@ -1070,8 +1133,11 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void saveDelete(String name) {
-    	
-    	mHandler.sendEmptyMessage(MSG_BUSY);
+		if(mService == null) {
+			return;
+		}
+
+		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// If we have a plan that is active, and it is the plan
     	// we are attempting to delete, then make it inactive
@@ -1134,6 +1200,9 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public String getPlanData() {
+    	if(mService == null) {
+    		return "";
+		}
     	Plan plan = mService.getPlan();
     	
         /*
@@ -1284,6 +1353,9 @@ public class WebAppPlanInterface implements Observer {
          */
         @Override
         protected void onPostExecute(Boolean result) {
+			if(mService == null) {
+				return;
+			}
             /*
              * Set new search adapter
              */
@@ -1416,6 +1488,9 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if (MSG_TIMER == msg.what) {
+				if(mService == null) {
+					return;
+				}
 				Plan plan = mService.getPlan();
         		plan.simulate();
         	}

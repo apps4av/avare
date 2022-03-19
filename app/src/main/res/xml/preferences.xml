@@ -37,9 +37,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/Cycle"
             android:summary="@string/CycleSummary"
             android:title="@string/CycleLabel" />
-        <com.ds.avare.utils.ImportExportActivityPreference
-            android:summary="@string/importExportSummary"
-            android:title="@string/importExport" />
         </PreferenceScreen>
 
     <PreferenceScreen 
@@ -330,13 +327,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="@string/Zero"
-            android:entries="@array/AutoPostTracksPrompts"
-            android:entryValues="@array/AutoPostTracksValues"
-            android:key="@string/prefAutoPostTracks"
-            android:summary="@string/AutoPostTracksSummary"
-            android:title="@string/AutoPostTracksLabel" />
         <CheckBoxPreference
             android:defaultValue="true"            
             android:key="@string/rubberBand"

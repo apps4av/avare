@@ -118,7 +118,10 @@ public class PlanActivity extends Activity {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
 
     /*

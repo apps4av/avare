@@ -101,7 +101,10 @@ public class AirportActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
     
     /**
@@ -164,7 +167,7 @@ public class AirportActivity extends Activity implements Observer {
         mAirportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListAirports.size() == 0 || arePopupsShowing()) {
+                if(mListAirports == null || mListAirports.size() == 0 || arePopupsShowing()) {
                     return;
                 }
                 

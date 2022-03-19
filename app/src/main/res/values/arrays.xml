@@ -2034,7 +2034,25 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>10 Minutes</item>
     </string-array>
 
-	<string-array name="Orientation">
+    <string-array name="ExportData">
+        <item>Tracks</item>
+        <item>Plans, Checklists, WP, WNB</item>
+        <item>Minimums</item>
+        <item>Tiles</item>
+        <item>Chart Supplements</item>
+        <item>Plates</item>
+    </string-array>
+
+    <string-array name="ExportDataType">
+        <item>tracks</item>
+        <item>user.db</item>
+        <item>minimums</item>
+        <item>tiles</item>
+        <item>afd</item>
+        <item>plates</item>
+    </string-array>
+
+    <string-array name="Orientation">
         <item>Portrait</item>
         <item>Landscape</item>
         <item>Reverse Portrait</item>

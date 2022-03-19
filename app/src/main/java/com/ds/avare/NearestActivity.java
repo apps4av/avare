@@ -97,7 +97,10 @@ public class NearestActivity extends Activity  implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
 
     /**
@@ -488,7 +491,10 @@ public class NearestActivity extends Activity  implements Observer {
                 mService.getDBResource().setUserRecent(s);
                 mToast.setText(getString(R.string.DestinationSet) + (d.getID()));
                 mToast.show();
-                ((MainActivity)this.getParent()).showMapTab();
+                MainActivity m = (MainActivity)this.getParent();
+                if(m != null) {
+                    m.showMapTab();
+                }
             }
             else {
                 mToast.setText(getString(R.string.DestinationNF));

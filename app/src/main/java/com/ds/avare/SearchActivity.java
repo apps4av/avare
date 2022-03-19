@@ -119,7 +119,10 @@ public class SearchActivity extends Activity implements Observer {
      */
     @Override
     public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
+        MainActivity m = (MainActivity)this.getParent();
+        if(m != null) {
+            m.showMapTab();
+        }
     }
 
     
@@ -607,7 +610,10 @@ public class SearchActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
+                    MainActivity m = (MainActivity)this.getParent();
+                    if(m != null) {
+                        m.showMapTab();
+                    }
                 }
                 else {
                     if(mService != null) {

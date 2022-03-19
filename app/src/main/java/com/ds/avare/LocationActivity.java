@@ -1035,45 +1035,11 @@ public class LocationActivity extends Activity implements Observer {
         }
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
-            switch(mPref.autoPostTracks()) {
-                case 0:
-		    	    			/* Just display a toast message to the user that the file was saved
-		    	    			 */
-                    Toast.makeText(LocationActivity.this,
-                            String.format(getString(R.string.AutoPostTracksDialogText), fileName),
-                            Toast.LENGTH_LONG).show();
-                    break;
-
-                case 1:
-		    	    			/* Send this file out as an email attachment
-		    	    			 */
-                    try {
-                        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                        emailIntent.setType("application/kml");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                                getString(R.string.AutoPostTracksSubject) + " " + fileName);
-                        emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", new File(fileURI.getPath())));
-                        startActivity(emailIntent);
-                    } catch (Exception e) {
-                    }
-                    break;
-
-                case 2:
-		    	    			/* Send it somewhere as KML. Let the user choose where.
-		    	    			 */
-                    try {
-                        Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
-                        viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())),
-                                "application/vnd.google-earth.kml+xml");
-                        startActivity(Intent.createChooser(viewIntent,
-                                getString(R.string.AutoPostTracksTitle)));
-                    } catch (Exception e) {
-
-                    }
-                    break;
-            }
+            /* Just display a toast message to the user that the file was saved
+             */
+            Toast.makeText(LocationActivity.this,
+                    String.format(getString(R.string.AutoPostTracksDialogText), fileName),
+                    Toast.LENGTH_LONG).show();
         }
     }
     /** Defines callbacks for service binding, passed to bindService() */
@@ -1475,7 +1441,10 @@ public class LocationActivity extends Activity implements Observer {
                     }
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
+                    MainActivity m = (MainActivity)this.getParent();
+                    if(m != null) {
+                        m.showMapTab();
+                    }
                 }
                 else {
                     if(mService != null) {

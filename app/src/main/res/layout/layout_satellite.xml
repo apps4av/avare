@@ -28,7 +28,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/tools_table_row2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dip" >
+            android:padding="10dip" >
 
             <ImageView
                 android:text="@string/Maps"
@@ -50,7 +50,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/tools_table_row3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dip" >
+            android:padding="10dip" >
 
             <com.ds.avare.views.MemView
                 android:id="@+id/memory"
@@ -70,7 +70,7 @@ Redistribution and use in source and binary forms, with or without modification,
             android:id="@+id/tools_table_row4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dip" >
+            android:padding="10dip" >
 
             <com.ds.avare.views.SatelliteView
                 android:id="@+id/satellite"
@@ -86,8 +86,53 @@ Redistribution and use in source and binary forms, with or without modification,
 
         </TableRow>
 
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip" >
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:max="100"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/import_export_progress_bar_import"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/import_export_button_import"
+                android:text="@string/importData"/>
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip" >
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:max="100"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/import_export_progress_bar_export"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/import_export_button_export"
+                android:text="@string/exportData"/>
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:id="@+id/import_export_spinner_export"
+                android:entries="@array/ExportData"
+                android:layout_height="wrap_content">
+
+            </Spinner>
+
+        </TableRow>
     </TableLayout>
-
 
 </LinearLayout>

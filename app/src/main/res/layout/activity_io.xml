@@ -1,8 +1,9 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"  
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="fill_parent"
-    android:background="#000000">
+    android:background="#000000"
+    android:orientation="vertical">
 
     <Spinner
         android:id="@+id/main_spinner_ios"
@@ -14,8 +15,7 @@
         android:layout_marginBottom="10dp" />
 	
     <FrameLayout
-        android:layout_below="@+id/main_spinner_ios"
-        android:id="@+id/detailFragment"  
+        android:id="@+id/detailFragment"
         android:layout_width="match_parent"  
         tools:context="ds.avare.MainActivity"
         android:layout_height="wrap_content" > 
@@ -26,8 +26,7 @@
         android:textColor="#FFFFFF"
         android:text="@string/Output"
         android:layout_margin="10dp"
-        android:layout_below="@+id/detailFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     
-</RelativeLayout>  
+</LinearLayout>

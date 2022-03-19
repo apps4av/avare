@@ -611,6 +611,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     /**
      * @return 0-Do not auto post, 1-send in an email, 2-user selects an app to handle KML
+     * This is not used since Android 24 as sending intent with a file is a pain now.
      */
     public int autoPostTracks() {
         try {

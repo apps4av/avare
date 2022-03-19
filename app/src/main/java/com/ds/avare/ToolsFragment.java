@@ -13,10 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
@@ -24,18 +28,32 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.utils.Logger;
 import com.ds.avare.views.MemView;
 import com.ds.avare.views.SatelliteView;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  *
@@ -57,9 +75,22 @@ public class ToolsFragment extends Fragment {
 
     private TextView mGpsText;
 
+    private Preferences mPref;
+
+    // Request code for selecting a document.
+    private static final int IMPORT = 2;
+    private static final int EXPORT = 3;
+
+    private static final int IO_BUFFER_SIZE = 4096;
+
+    private ProgressBar mProgressBarExport;
+    private ProgressBar mProgressBarImport;
+    private Spinner mSpinnerType;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = container.getContext();
+        mPref = new Preferences(mContext);
 
         View view = inflater.inflate(R.layout.layout_satellite, container, false);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
@@ -72,6 +103,35 @@ public class ToolsFragment extends Fragment {
         // update periodically
         mRunning = true;
         mHandler.postDelayed(mRunnable, 1000);
+
+        mProgressBarExport = (ProgressBar) view.findViewById(R.id.import_export_progress_bar_export);
+        mProgressBarImport = (ProgressBar) view.findViewById(R.id.import_export_progress_bar_import);
+        mSpinnerType = (Spinner) view.findViewById(R.id.import_export_spinner_export);
+
+        Button b = (Button)view.findViewById(R.id.import_export_button_export);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String currentDate = new SimpleDateFormat("__MMM_dd_yyyy-HH_mm_ss", Locale.getDefault()).format(new java.util.Date());
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/zip");
+                String name = getString(R.string.app_name) + currentDate + ".zip";
+                intent.putExtra(Intent.EXTRA_TITLE, name);
+                getActivity().startActivityForResult(intent, EXPORT);
+            }
+        });
+
+        b = (Button)view.findViewById(R.id.import_export_button_import);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/zip");
+                getActivity().startActivityForResult(intent, IMPORT);
+            }
+        });
 
         return view;
     }
@@ -129,6 +189,8 @@ public class ToolsFragment extends Fragment {
             mSatelliteView.updateGpsStatus(null);
             mGpsText.setText("");
         }
+
+
     }
 
     private void updateMapArea() {
@@ -148,6 +210,167 @@ public class ToolsFragment extends Fragment {
         mMapAreaText.setText(
                 getString(R.string.MapSize) + " " + (mService.getTiles().getXTilesNum() * BitmapHolder.WIDTH - BitmapHolder.WIDTH)+ "x" + (mService.getTiles().getYTilesNum() * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT) + "px\n" +
                         getString(R.string.ScreenSize) + " " + width + "x" + height + "px" + "\n" + getString(R.string.Tiles) + " " + (mService.getTiles().getOverhead() + mService.getTiles().getTilesNum()));
+    }
+
+
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        Uri uri = null;
+
+        if(resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                uri = resultData.getData();
+            }
+        }
+        if(requestCode == EXPORT && uri != null) {
+            Logger.Logit(getString(R.string.Export));
+            ExportTask t = new ExportTask();
+            t.execute(uri);
+        }
+        else if(requestCode == IMPORT && uri != null) {
+            Logger.Logit(getString(R.string.Import));
+            ImportTask t = new ImportTask();
+            t.execute(uri);
+        }
+    }
+
+    private void updateProgress(int index, int total, int type) {
+        ProgressBar b = mProgressBarExport;
+        if(type == IMPORT) {
+            b = mProgressBarImport;
+        }
+        if(index == 0) { // start
+            Logger.Logit(getString(R.string.copying));
+            b.setProgress(0);
+        }
+        else if (index == total) {
+            Logger.Logit(getString(R.string.done));
+            b.setProgress(100); // done
+        }
+        else if (index == -1) { // error
+            Logger.Logit(getString(R.string.failed));
+        }
+        else {
+            // move bar %
+            int perc = (int)((float)index / (float)total * 100.f);
+            b.setProgress(perc);
+        }
+    }
+
+    // Export data
+    private class ExportTask extends AsyncTask<Uri, Integer, String> {
+
+        @Override
+        protected String doInBackground(Uri... paths) {
+            // find which files to export
+            int index = mSpinnerType.getSelectedItemPosition();
+            final String filter = getResources().getStringArray(R.array.ExportDataType)[index];
+
+            try {
+                // open a place to write files to in zip
+                OutputStream outStream = getActivity().getContentResolver().openOutputStream(paths[0]);
+                ZipOutputStream out = new ZipOutputStream(outStream);
+                // get list of internal files
+                String folder = mPref.getServerDataFolder() + File.separatorChar + filter;
+                File dir = new File(folder);
+                LinkedList<File> files = Helper.getDirectoryContents(dir);
+
+                byte data[] = new byte[IO_BUFFER_SIZE];
+                int total = files.size();
+
+                // process each file one by one
+                for (int filec = 0; filec < total; filec++) {
+                    FileInputStream fi = new FileInputStream(files.get(filec));
+                    BufferedInputStream origin = new BufferedInputStream(fi, IO_BUFFER_SIZE);
+
+                    // do not store full path as that's platform dependant
+                    String name = files.get(filec).toString().split(mPref.getServerDataFolder() + File.separatorChar)[1];
+                    ZipEntry entry = new ZipEntry(name);
+                    out.putNextEntry(entry);
+                    int count;
+
+                    while ((count = origin.read(data, 0, IO_BUFFER_SIZE)) != -1) {
+                        out.write(data, 0, count);
+                    }
+                    // next file
+                    origin.close();
+                    publishProgress(filec, total);
+                }
+                out.close();
+                outStream.close();
+                publishProgress(total, total);
+            } catch (Exception e) {
+                publishProgress(-1, 0);
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            updateProgress(values[0], values[1], EXPORT);
+        }
+    }
+
+    // Import data
+    private class ImportTask extends AsyncTask<Uri, Integer, String> {
+
+        @Override
+        protected String doInBackground(Uri... paths) {
+            try {
+                // read files from file
+                InputStream inStream = getActivity().getContentResolver().openInputStream(paths[0]);
+                ZipInputStream in = new ZipInputStream(inStream);
+                // get place of internal files
+                String folder = mPref.getServerDataFolder();
+
+                byte data[] = new byte[IO_BUFFER_SIZE];
+                ZipEntry entry;
+                int total = inStream.available();
+
+                // process each file one by one
+                while ((entry = in.getNextEntry()) != null) {
+                    String name = entry.getName();
+                    String path = folder + File.separatorChar + name;
+                    File f = new File(path);
+                    if(f.isDirectory()) { // skip dirs but make them
+                        f.mkdirs();
+                        continue;
+                    }
+                    File parent = f.getParentFile();
+                    if(!parent.exists()) {
+                        parent.mkdirs();
+                    }
+                    FileOutputStream fout = new FileOutputStream(folder + File.separatorChar + name);
+                    int count;
+
+                    while ((count = in.read(data)) != -1) {
+                        fout.write(data, 0, count);
+                    }
+
+                    fout.close();
+                    in.closeEntry();
+                    // publish after each file bytes remaining
+                    publishProgress(total - inStream.available(), total);
+                }
+                in.close();
+                inStream.close();
+                publishProgress(total, total);
+            } catch (Exception e) {
+                publishProgress(-1, 0);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            updateProgress(values[0], values[1], IMPORT);
+        }
     }
 
     final Handler mHandler = new Handler();
