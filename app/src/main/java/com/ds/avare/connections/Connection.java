@@ -221,10 +221,10 @@ public abstract class Connection {
             try {
                 data = mService.makeDataForIO();
                 Logger.Logit(data);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
                 try {
                     Thread.sleep(1000);
-                } catch (Exception e1) {
+                } catch (Exception ignored1) {
 
                 }
             }

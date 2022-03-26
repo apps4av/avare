@@ -62,7 +62,7 @@ public class Dump1090Fragment extends Fragment {
         /*
          * Get Connection
          */
-        mDump1090 = ConnectionFactory.getConnection("Dump1090Connection", mContext);
+        mDump1090 = ConnectionFactory.getConnection(ConnectionFactory.CF_Dump1090Connection, mContext);
 
         setStates();
         return view;  

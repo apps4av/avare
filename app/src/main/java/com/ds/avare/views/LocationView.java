@@ -33,6 +33,7 @@ import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
+import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
@@ -942,13 +943,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     private void drawEdgeMarkers(Canvas canvas) {
         if(mPref.isShowEdgeTape()) {
             if(mPointProjection == null) {
+                int bgc = ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext).isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE;
                 int x = (int)(mOrigin.getOffsetX(mGpsParams.getLongitude()));
                 int y = (int)(mOrigin.getOffsetY(mGpsParams.getLatitude()));
                 float pixPerNm = mOrigin.getPixelsInNmAtLatitude(1, mGpsParams.getLatitude());
                 mService.getEdgeTape().draw(canvas, mScale, pixPerNm, x, y,
                         (int) mService.getInfoLines().getHeight(), getWidth(), getHeight(),
                         //mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE);
-                        TEXT_COLOR_OPPOSITE);
+                        bgc);
             }
         }
     }
@@ -969,9 +971,9 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
+        int bgc = ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext).isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE;
         mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
-                //TEXT_COLOR, mService.getAutoPilot().isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE, 4,
-                TEXT_COLOR,  TEXT_COLOR_OPPOSITE, 4,
+                TEXT_COLOR,  bgc, 4,
                 getWidth(), getHeight(), mErrorStatus, getPriorityMessage());
     }
 

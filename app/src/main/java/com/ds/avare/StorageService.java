@@ -33,7 +33,6 @@ import androidx.core.app.NotificationCompat;
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
-import com.ds.avare.connections.BTOutConnection;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
@@ -276,8 +275,6 @@ public class StorageService extends Service {
     private DrawCapLines mCap;
 
     private ExternalPlanMgr mExternalPlanMgr;
-
-    //private AutoPilot mAutoPilot;
 
     /*
      * Watches GPS to notify of phases of flight
@@ -609,9 +606,6 @@ public class StorageService extends Service {
                         mDestination.updateTo(getGpsParams());
                     }
 
-                    // Tell the autopilot where we are and where we intend to go
-                    //mAutoPilot.setGpsData(mGpsParams, mPlan, mDestination);
-
                     // Calculate course line deviation - this must be AFTER the destination update
                     // since the CDI uses the destination in its calculations
                     getCDI().calcDeviation(mDestination, mPlan);
@@ -707,9 +701,6 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
-
-        // Tell the autopilot we are shutting down
-        //mAutoPilot.shutdown();
 
         super.onDestroy();
 
@@ -1560,68 +1551,20 @@ public class StorageService extends Service {
 
     }
 
-
     /**
      * data for autopilot
-     * @return
+     * @return String - the nmea sentences for the autopliot in a serialized JSON string
      */
     public String makeDataForIO() {
-        Location l = getLocationBlocking();
-        JSONObject object = new JSONObject();
+        GpsParams gpsParams = new GpsParams(getLocationBlocking()); // Where we currently are
+        Destination dest    = getDestination();                     // Where we are going
+        Plan plan           = getPlan();                            // The flight plan
+        JSONObject object   = new JSONObject();                     // An object to build
+
         try {
-            object.put("type", "ownship");
-            object.put("longitude", (double)l.getLongitude());
-            object.put("latitude", (double)l.getLatitude());
-            object.put("speed", (double)l.getSpeed());
-            object.put("bearing", (double)l.getBearing());
-            object.put("altitude", (double)l.getAltitude());
-            object.put("time", l.getTime());
-
-            Destination d = getDestination();
-            Plan p = getPlan();
-            CDI c = getCDI();
-            double distance = 0;
-            double bearing = 0;
-            double lon = 0;
-            double lat = 0;
-            double elev = 0;
-            double idNext = -1;
-            double idOrig = -1;
-            double deviation = 0;
-            double bearingTrue = 0;
-            double bearingMagnetic = 0;
-
-            // If destination set, send how to get there (for autopilots).
-            if(d != null) {
-                distance = d.getDistance();
-                bearing = d.getBearing();
-                lon = d.getLocation().getLongitude();
-                lat = d.getLocation().getLatitude();
-                elev = d.getElevation();
-                if(p != null) {
-                    idNext = p.findNextNotPassed();
-                    idOrig = idNext - 1;
-                    bearingTrue = p.getBearing((int)idOrig, (int)idNext);
-                    bearingMagnetic = Helper.getMagneticHeading(bearingTrue, d.getDeclination());
-                }
-                if(c != null) {
-                    deviation = c.getDeviation();
-                    if(!c.isLeft()) {
-                        deviation = -deviation;
-                    }
-                }
-            }
-            object.put("destDistance", distance);
-            object.put("destBearing", bearing);
-            object.put("destLongitude", lon);
-            object.put("destLatitude", lat);
-            object.put("destId", idNext);
-            object.put("destOriginId", idOrig);
-            object.put("destDeviation", deviation);
-            object.put("destElev", elev);
-            object.put("bearingTrue", bearingTrue);
-            object.put("bearingMagnetic", bearingMagnetic);
-        } catch (JSONException e1) {
+            object.put("type", "nmeanav");
+            object.put("apsentences", AutoPilot.apCreateSentences(gpsParams, plan, dest));
+        } catch (JSONException ignore) {
             return null;
         }
         return object.toString();

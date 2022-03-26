@@ -74,7 +74,7 @@ public class XplaneFragment extends Fragment {
         /*
          * List of BT devices is same
          */
-        mXp = ConnectionFactory.getConnection("XplaneConnection", mContext);
+        mXp = ConnectionFactory.getConnection(ConnectionFactory.CF_XplaneConnection, mContext);
 
         setStates();
         
