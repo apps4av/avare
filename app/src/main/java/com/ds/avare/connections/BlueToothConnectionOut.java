@@ -17,10 +17,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 
-import com.ds.avare.nmea.BODPacket;
-import com.ds.avare.nmea.GGAPacket;
-import com.ds.avare.nmea.RMBPacket;
-import com.ds.avare.nmea.RMCPacket;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Logger;
 
@@ -34,7 +30,7 @@ import java.util.UUID;
 
 /**
  * 
- * @author zkhan
+ * @author zkhan, rwalker
  *
  */
 public class BlueToothConnectionOut extends Connection {
@@ -58,7 +54,7 @@ public class BlueToothConnectionOut extends Connection {
      * 
      */
     private BlueToothConnectionOut() {
-        super("Bluetooth Output");
+        super("Autopilot via Bluetooth Output");
         setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {
@@ -66,181 +62,56 @@ public class BlueToothConnectionOut extends Connection {
                  * This state machine will keep trying to connect to
                  * ADBS/GPS receiver
                  */
+                int msgCount = 1;
                 while(isRunning()) {
 
                     /*
                      * Read data from Avare
                      */
-                    String recvd = getDataFromHelper();
-
-                    if(null == recvd) {
+                    String r = getDataFromHelper();
+                    if (null == r) {
                         continue;
                     }
 
-                    /*
-                     * Send to BT
-                     */
-                    byte buffer[] = null;
-                    byte buffer2[] = null;
-                    byte buffer3[] = null;
-                    byte buffer4[] = null;
+                    // Build the JSON object from the received string. Contained therein
+                    // is a collection of NMEA sentences that drives the autopilot. Send that data
+                    // over the connection
                     try {
                         JSONObject object;
-                        object = new JSONObject(recvd);
-                        Logger.Logit("sending message to BT " + mDevName + " " +
-                                object.toString());
+                        object = new JSONObject(r);
+
+                        // Read the type of this object. We are only interested in NMEANAV
+                        // messages
                         String type = object.getString("type");
-                        if(type == null) {
-                            continue;
+                        if (type.equals("nmeanav")) {
+
+                            // Log our intent to the trace window. The data itself was logged in the base object
+                            Logger.Logit(msgCount++ + ". Sending sentences to " + mDevName);
+
+                            // Extract the autopilot sentences from the message
+                            String apData = object.getString("apsentences");
+                            if(0 != apData.length()) {
+                                int wrote = writeToStream(apData.getBytes());
+                                if (wrote <= 0) {
+                                    if (isStopped()) {
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(1000);
+                                    } catch (Exception ignore) {
+
+                                    }
+
+                                    /*
+                                     * Try to reconnect
+                                     */
+                                    Logger.Logit("Disconnected from " + mDevName + ", retrying to connect");
+                                    disconnect();
+                                    connect(mDevName, mSecure);
+                                }
+                            }
                         }
-                        if(type.equals("ownship")) {
-
-                            RMCPacket pkt = new RMCPacket(object.getLong("time"),
-                                    object.getDouble("latitude"),
-                                    object.getDouble("longitude"),
-                                    object.getDouble("speed"),
-                                    object.getDouble("bearing"),
-                                    0); // Ron, please fix this
-                            buffer = pkt.getPacket().getBytes();
-                            GGAPacket pkt2 = new GGAPacket(object.getLong("time"),
-                                    object.getDouble("latitude"),
-                                    object.getDouble("longitude"),
-                                    object.getDouble("altitude"),
-                                    0,
-                                    0,0
-                            );  // Ron, please fix this
-                            buffer2 = pkt2.getPacket().getBytes();
-                            RMBPacket pkt3 = new RMBPacket(
-                                    object.getDouble("destDistance"),
-                                    object.getDouble("destBearing"),
-                                    object.getDouble("destLongitude"),
-                                    object.getDouble("destLatitude"),
-                                    object.getString("destId"),
-                                    object.getString("destOriginId"),
-                                    object.getDouble("destDeviation"),
-                                    object.getDouble("speed"),
-                                    true); // Ron, please fix this
-                            buffer3 = pkt3.getPacket().getBytes();
-                            BODPacket pkt4 = new BODPacket(object.getString("destId"),
-                                    object.getString("destOriginId"),
-                                    object.getDouble("bearingTrue"),
-                                    object.getDouble("bearingMagnetic"));
-                            buffer4 = pkt4.getPacket().getBytes();
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-
-                    if(null == buffer || null == buffer2) {
-                        continue;
-                    }
-
-                    /*
-                     * Make NMEA messages.
-                     */
-
-                    /*
-                     * Write.
-                     */
-                    int wrote = writeToStream(buffer);
-                    if(wrote <= 0) {
-                        if(isStopped()) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-
-                        }
-
-                        /*
-                         * Try to reconnect
-                         */
-                        Logger.Logit("Disconnected from BT device, retrying to connect");
-
-                        disconnect();
-                        connect(mDevName, mSecure);
-                        continue;
-                    }
-
-                    wrote = writeToStream(buffer2);
-                    if(wrote <= 0) {
-                        if(isStopped()) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-
-                        }
-
-                        /*
-                         * Try to reconnect
-                         */
-                        Logger.Logit("Disconnected from BT device, retrying to connect");
-
-                        disconnect();
-                        connect(mDevName, mSecure);
-                        continue;
-                    }
-
-                    // RMB
-                    if(buffer3 == null) {
-                        continue;
-                    }
-                    if(buffer3.length <= 0) {
-                        continue;
-                    }
-                    wrote = writeToStream(buffer3);
-                    if(wrote <= 0) {
-                        if(isStopped()) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-
-                        }
-
-                        /*
-                         * Try to reconnect
-                         */
-                        Logger.Logit("Disconnected from BT device, retrying to connect");
-
-                        disconnect();
-                        connect(mDevName, mSecure);
-                        continue;
-                    }
-
-                    // BOD
-                    if(buffer4 == null) {
-                        continue;
-                    }
-                    if(buffer4.length <= 0) {
-                        continue;
-                    }
-                    wrote = writeToStream(buffer4);
-                    if(wrote <= 0) {
-                        if(isStopped()) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception e) {
-
-                        }
-
-                        /*
-                         * Try to reconnect
-                         */
-                        Logger.Logit("Disconnected from BT device, retrying to connect");
-
-                        disconnect();
-                        connect(mDevName, mSecure);
-                        continue;
-                    }
-
-
+                    } catch(Exception ignore) { }
                 }
                 return null;
             }
@@ -248,7 +119,6 @@ public class BlueToothConnectionOut extends Connection {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
-    
     /**
      * 
      * @return

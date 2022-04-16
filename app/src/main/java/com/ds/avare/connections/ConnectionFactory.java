@@ -29,33 +29,34 @@ public class ConnectionFactory {
     public static final String CF_MsfsConnection         = "MsfsConnection";
     public static final String CF_USBConnectionIn        = "USBConnectionIn";
     public static final String CF_XplaneConnection       = "XplaneConnection";
+    public static final String CF_Dump1090Connection     = "Dump1090Connection";
 
     public static Connection getConnection(String type, Context ctx) {
-        if(type.equals("BlueToothConnectionIn")) {
+        if(type.equals(CF_BlueToothConnectionIn)) {
             return BlueToothConnectionIn.getInstance(ctx);
         }
-        if(type.equals("BlueToothConnectionOut")) {
+        if(type.equals(CF_BlueToothConnectionOut)) {
             return BlueToothConnectionOut.getInstance(ctx);
         }
-        if(type.equals("FileConnectionIn")) {
+        if(type.equals(CF_FileConnectionIn)) {
             return FileConnectionIn.getInstance(ctx);
         }
-        if(type.equals("GPSSimulatorConnection")) {
+        if(type.equals(CF_GPSSimulatorConnection)) {
             return GPSSimulatorConnection.getInstance(ctx);
         }
-        if(type.equals("MsfsConnection")) {
+        if(type.equals(CF_MsfsConnection)) {
             return MsfsConnection.getInstance(ctx);
         }
-        if(type.equals("USBConnectionIn")) {
+        if(type.equals(CF_USBConnectionIn)) {
             return USBConnectionIn.getInstance(ctx);
         }
-        if(type.equals("WifiConnection")) {
+        if(type.equals(CF_WifiConnection)) {
             return WifiConnection.getInstance(ctx);
         }
-        if(type.equals("XplaneConnection")) {
+        if(type.equals(CF_XplaneConnection)) {
             return XplaneConnection.getInstance(ctx);
         }
-        if(type.equals("Dump1090Connection")) {
+        if(type.equals(CF_Dump1090Connection)) {
             return Dump1090Connection.getInstance(ctx);
         }
         return null;
@@ -67,15 +68,15 @@ public class ConnectionFactory {
  */
     public static String getActiveConnections(Context ctx) {
         String s = "";
-        s += getConnection("BlueToothConnectionIn", ctx).isConnected() ? "," + ctx.getString(R.string.Bluetooth) : "";
-        s += getConnection("WifiConnection", ctx).isConnected() ?  "," + ctx.getString(R.string.WIFI) : "";
-        s += getConnection("XplaneConnection", ctx).isConnected() ? "," + ctx.getString(R.string.XPlane) : "";
-        s += getConnection("MsfsConnection", ctx).isConnected() ? "," + ctx.getString(R.string.MSFS) : "";
-        s += getConnection("BlueToothConnectionOut", ctx).isConnected() ? "," + ctx.getString(R.string.AP) : "";
-        s += getConnection("FileConnectionIn", ctx).isConnected() ? "," + ctx.getString(R.string.Play) : "";
-        s += getConnection("GPSSimulatorConnection", ctx).isConnected() ? "," + ctx.getString(R.string.GPSSIM) : "";
-        s += getConnection("USBConnectionIn", ctx).isConnected() ? "," + ctx.getString(R.string.USBIN) : "";
-        s += getConnection("Dump1090Connection", ctx).isConnected() ? "," + ctx.getString(R.string.DUMP1090) : "";
+        s += getConnection(CF_BlueToothConnectionIn, ctx).isConnected() ? "," + ctx.getString(R.string.Bluetooth) : "";
+        s += getConnection(CF_WifiConnection, ctx).isConnected() ?  "," + ctx.getString(R.string.WIFI) : "";
+        s += getConnection(CF_XplaneConnection, ctx).isConnected() ? "," + ctx.getString(R.string.XPlane) : "";
+        s += getConnection(CF_MsfsConnection, ctx).isConnected() ? "," + ctx.getString(R.string.MSFS) : "";
+        s += getConnection(CF_BlueToothConnectionOut, ctx).isConnected() ? "," + ctx.getString(R.string.AP) : "";
+        s += getConnection(CF_FileConnectionIn, ctx).isConnected() ? "," + ctx.getString(R.string.Play) : "";
+        s += getConnection(CF_GPSSimulatorConnection, ctx).isConnected() ? "," + ctx.getString(R.string.GPSSIM) : "";
+        s += getConnection(CF_USBConnectionIn, ctx).isConnected() ? "," + ctx.getString(R.string.USBIN) : "";
+        s += getConnection(CF_Dump1090Connection, ctx).isConnected() ? "," + ctx.getString(R.string.DUMP1090) : "";
         if(s.startsWith(",")) {
             s = s.substring(1);
         }

@@ -595,11 +595,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DescExt">Connect to GPS/ADSB units on Bluetooth</string>
     <string name="DescExtWifi">Connect to GPS/ADSB units on WiFi (Broadcast on Managed Network)</string>
     <string name="DescFile">Feed NMEA / ADSB data from a binary file</string>
-    <string name="DescAP">Connect to autopilots on Bluetooth</string>
+    <string name="DescAP">Connect to autopilots via Bluetooth</string>
     <string name="DescUSBIN">Connect to GPS/ADSB units on USB Serial</string>
     <string name="Status">Status</string>
     <string name="Bluetooth">Bluetooth</string>
-    <string name="AP">Auto Pilot</string>
+    <string name="AP">Auto Pilot via Bluetooth</string>
     <string name="Play">Play</string>
     <string name="Secure">Secure</string>
     <string name="Preferences">Preferences</string>
