@@ -93,13 +93,13 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     private static double mGeoid;
     private static double mHorDil;
 
-    static int getSatCount() {
+    public static int getSatCount() {
         return mSatCount;
     }
-    static double getGeoid() {
+    public static double getGeoid() {
         return mGeoid;
     }
-    static double getHorDil() {
+    public static double getHorDil() {
         return mHorDil;
     }
 

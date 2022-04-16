@@ -60,7 +60,7 @@ public class USBInFragment extends Fragment {
         /*
          * List of BT devices is same
          */
-        mUSB = ConnectionFactory.getConnection("USBConnectionIn", mContext);
+        mUSB = ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, mContext);
         
         mConnectButton = (Button) view.findViewById(R.id.usbin_button_connect);
         mConnectButton.setOnClickListener(new OnClickListener() {

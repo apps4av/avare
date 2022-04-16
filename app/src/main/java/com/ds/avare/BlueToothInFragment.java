@@ -69,7 +69,7 @@ public class BlueToothInFragment extends Fragment {
         /*
          * List of BT devices is same
          */
-        mBt = ConnectionFactory.getConnection("BlueToothConnectionIn", mContext);
+        mBt = ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, mContext);
 
         mList = mBt.getDevices();
         if(mList.size() != 0) {

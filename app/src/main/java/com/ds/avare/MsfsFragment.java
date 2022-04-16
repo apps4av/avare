@@ -74,7 +74,7 @@ public class MsfsFragment extends Fragment {
         /*
          * Get Connection
          */
-        mMsfs = ConnectionFactory.getConnection("MsfsConnection", mContext);
+        mMsfs = ConnectionFactory.getConnection(ConnectionFactory.CF_MsfsConnection, mContext);
         
         setStates();
         return view;  

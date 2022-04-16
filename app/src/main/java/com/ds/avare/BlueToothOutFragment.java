@@ -56,7 +56,7 @@ public class BlueToothOutFragment extends Fragment {
         /*
          * List of BT devices is same
          */
-        mBt = ConnectionFactory.getConnection("BlueToothConnectionOut", mContext);
+        mBt = ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext);
 
         mList = mBt.getDevices();
         if(mList.size() != 0) {
