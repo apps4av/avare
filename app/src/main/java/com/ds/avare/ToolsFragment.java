@@ -14,8 +14,10 @@ package com.ds.avare;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -35,6 +37,7 @@ import android.widget.TextView;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.Logger;
 import com.ds.avare.utils.Telemetry;
@@ -82,12 +85,15 @@ public class ToolsFragment extends Fragment {
     // Request code for selecting a document.
     private static final int IMPORT = 2;
     private static final int EXPORT = 3;
+    private static final int DELETE = 4;
 
     private static final int IO_BUFFER_SIZE = 4096;
 
     private ProgressBar mProgressBarExport;
     private ProgressBar mProgressBarImport;
-    private Spinner mSpinnerType;
+    private ProgressBar mProgressBarDelete;
+    private Spinner mSpinnerTypeExport;
+    private Spinner mSpinnerTypeDelete;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,7 +114,9 @@ public class ToolsFragment extends Fragment {
 
         mProgressBarExport = (ProgressBar) view.findViewById(R.id.import_export_progress_bar_export);
         mProgressBarImport = (ProgressBar) view.findViewById(R.id.import_export_progress_bar_import);
-        mSpinnerType = (Spinner) view.findViewById(R.id.import_export_spinner_export);
+        mProgressBarDelete = (ProgressBar) view.findViewById(R.id.import_export_progress_bar_delete);
+        mSpinnerTypeExport = (Spinner) view.findViewById(R.id.import_export_spinner_export);
+        mSpinnerTypeDelete = (Spinner) view.findViewById(R.id.import_export_spinner_delete);
 
         Button b = (Button)view.findViewById(R.id.import_export_button_export);
         b.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +140,34 @@ public class ToolsFragment extends Fragment {
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("application/zip");
                 getActivity().startActivityForResult(intent, IMPORT);
+            }
+        });
+
+        b = (Button)view.findViewById(R.id.import_export_button_delete);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
+                builder.setMessage(getString(R.string.Sure))
+                        .setCancelable(true)
+                        .setNegativeButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        //confirm before deleting anything
+                        .setPositiveButton(getString(R.string.Delete), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Logger.Logit(getString(R.string.Delete));
+                                DeleteTask tsk = new DeleteTask();
+                                tsk.execute();
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
         });
 
@@ -256,16 +292,19 @@ public class ToolsFragment extends Fragment {
         if(type == IMPORT) {
             b = mProgressBarImport;
         }
-        if(index == 0) { // start
-            Logger.Logit(getString(R.string.copying));
+        else if (type == DELETE) {
+            b = mProgressBarDelete;
+        }
+        if(index == -1) { // error
+            Logger.Logit(getString(R.string.error));
             b.setProgress(0);
         }
         else if (index == total) {
             Logger.Logit(getString(R.string.done));
             b.setProgress(100); // done
         }
-        else if (index == -1) { // error
-            Logger.Logit(getString(R.string.failed));
+        else if (index == 0) { // start
+            Logger.Logit(getString(R.string.processing));
         }
         else {
             // move bar %
@@ -280,7 +319,7 @@ public class ToolsFragment extends Fragment {
         @Override
         protected String doInBackground(Uri... paths) {
             // find which files to export
-            int index = mSpinnerType.getSelectedItemPosition();
+            int index = mSpinnerTypeExport.getSelectedItemPosition();
             final String filter = getResources().getStringArray(R.array.ExportDataType)[index];
 
             try {
@@ -325,6 +364,41 @@ public class ToolsFragment extends Fragment {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             updateProgress(values[0], values[1], EXPORT);
+        }
+    }
+
+    // Export data
+    private class DeleteTask extends AsyncTask<Void, Integer, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // find which files to delete
+            int index = mSpinnerTypeDelete.getSelectedItemPosition();
+            final String filter = getResources().getStringArray(R.array.DeleteDataType)[index];
+
+            try {
+                // get list of internal files
+                String folder = mPref.getServerDataFolder() + File.separatorChar + filter;
+                File dir = new File(folder);
+                LinkedList<File> files = Helper.getDirectoryContents(dir);
+
+                int total = files.size();
+
+                // process each file one by one
+                for (int filec = 0; filec < total; filec++) {
+                    files.get(filec).delete();
+                    publishProgress(filec, total);
+                }
+                publishProgress(total, total);
+            } catch (Exception e) {
+                publishProgress(-1, 0);
+            }
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            updateProgress(values[0], values[1], DELETE);
         }
     }
 

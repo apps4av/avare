@@ -133,6 +133,33 @@ Redistribution and use in source and binary forms, with or without modification,
             </Spinner>
 
         </TableRow>
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dip" >
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:max="100"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/import_export_progress_bar_delete"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/import_export_button_delete"
+                android:text="@string/Delete"/>
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:id="@+id/import_export_spinner_delete"
+                android:entries="@array/DeleteData"
+                android:layout_height="wrap_content">
+
+            </Spinner>
+
+        </TableRow>
+
     </TableLayout>
 
 </LinearLayout>

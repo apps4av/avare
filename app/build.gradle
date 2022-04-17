@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
     buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "com.ds.avare"
-        minSdkVersion 18 // Required for lossless and transparent webp
-        targetSdkVersion 30
+        minSdkVersion 20 // android 5 is minimum
+        targetSdkVersion 32
     }
 
     compileOptions {

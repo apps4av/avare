@@ -111,6 +111,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NightModeLabel">&quot;Night Mode (requires restart)&quot;</string>
     <string name="NightModeSummary">&quot;Select to reduce white light during night operation&quot;</string>
     <string name="Delete">&quot;Delete&quot;</string>
+    <string name="Sure">&quot;Are you sure? This operation cannot be reversed.&quot;</string>
     <string name="Label">&quot;Label&quot;</string>
     <string name="Create">&quot;Create&quot;</string>
     <string name="Plan">&quot;Plan&quot;</string>
@@ -558,7 +559,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="importExport">Import/Export app data</string>
     <string name="importData">Import data</string>
     <string name="exportData">Export data</string>
-    <string name="copying">Copying...</string>
+    <string name="processing">Processing...</string>
     <string name="done">Done</string>
     <string name="failed">Failed</string>
 

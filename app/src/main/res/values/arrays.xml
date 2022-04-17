@@ -2052,6 +2052,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>plates</item>
     </string-array>
 
+    <string-array name="DeleteData">
+        <item>Tracks</item>
+        <item>Plans, Checklists, WP, WNB</item>
+    </string-array>
+
+    <string-array name="DeleteDataType">
+        <item>tracks</item>
+        <item>user.db</item>
+    </string-array>
+
     <string-array name="Orientation">
         <item>Portrait</item>
         <item>Landscape</item>

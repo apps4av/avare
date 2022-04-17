@@ -352,7 +352,7 @@ public class StorageService extends Service {
         Intent notificationIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         notificationIntent.setData(uri);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         if(Build.VERSION.SDK_INT >= 26) {
             String NOTIFICATION_Service_CHANNEL_ID = "service_channel";

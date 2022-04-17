@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="361"
-    android:versionName="10.1.1"
+    android:versionCode="362"
+    android:versionName="10.1.2"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -95,7 +95,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:name="com.ds.avare.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:exported="true">
             <!-- Intent for mock gps built into app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
