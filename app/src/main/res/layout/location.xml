@@ -14,12 +14,20 @@ Redistribution and use in source and binary forms, with or without modification,
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
+
         <com.ds.avare.views.LocationView
-            android:background="#FF000000"
             android:id="@+id/location"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="#FF000000" />
+
+        <WebView
+            android:id="@+id/location_wv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="30dp"
+            android:background="#FF000000"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/location_button_pref"

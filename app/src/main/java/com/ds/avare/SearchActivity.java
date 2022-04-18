@@ -71,15 +71,19 @@ public class SearchActivity extends Activity implements Observer {
     private ProgressBar mProgressBar;
     private String mSelected;
     private Button mSelectedButton;
+    private Button mSaveButton;
     private Button mEditButton;
     private Button mPlanButton;
     private Button mPlatesButton;
+    private Button mCsupButton;
     private boolean mIsWaypoint;
     
     private AnimateButton mAnimatePlates;
+    private AnimateButton mAnimateCsup;
     private AnimateButton mAnimatePlan;
     private AnimateButton mAnimateSelect;
     private AnimateButton mAnimateEdit;
+    private AnimateButton mAnimateSave;
 
     /**
      * Shows edit dialog
@@ -297,7 +301,25 @@ public class SearchActivity extends Activity implements Observer {
                 }
             }
         });
-        
+
+        mSaveButton = (Button)view.findViewById(R.id.search_button_save);
+        mSaveButton.getBackground().setAlpha(255);
+        mSaveButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    String id = StringPreference.parseHashedNameId(mSelected);
+                    String destType = StringPreference.parseHashedNameDestType(mSelected);
+                    String dbType = StringPreference.parseHashedNameDbType(mSelected);
+                    String name = StringPreference.parseHashedNameFacilityName(mSelected);
+                    mService.getDBResource().setUserRecent(new StringPreference(destType, dbType, name, id));
+                    hideMenu();
+                    mSearchText.setText("");
+                }
+            }
+        });
+
         mPlatesButton = (Button)view.findViewById(R.id.search_button_plates);
         mPlatesButton.getBackground().setAlpha(255);
         mPlatesButton.setOnClickListener(new OnClickListener() {
@@ -317,8 +339,27 @@ public class SearchActivity extends Activity implements Observer {
                     }
                 }
             }
-        });        
+        });
 
+        mCsupButton = (Button)view.findViewById(R.id.search_button_csup);
+        mCsupButton.getBackground().setAlpha(255);
+        mCsupButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    String id = StringPreference.parseHashedNameId(mSelected);
+                    if(id == null) {
+                        return;
+                    }
+
+                    if(mService != null) {
+                        mService.setLastAfdAirport(id);
+                        ((MainActivity) SearchActivity.this.getParent()).showAfdTab();
+                    }
+                }
+            }
+        });
 
         /*
          * Set on click
@@ -354,6 +395,7 @@ public class SearchActivity extends Activity implements Observer {
                 
                 // Don't display the plates button if there are no plates
                 String id = StringPreference.parseHashedNameId(mSelected);
+                String base = StringPreference.parseHashedNameDestType(mSelected);
                 
                 if(PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), id)) {
                 	mAnimatePlates.animate(true);
@@ -362,9 +404,16 @@ public class SearchActivity extends Activity implements Observer {
                 	mAnimatePlates.stopAndHide();
                 }
 
+                if(base.equals(Destination.BASE)) {
+                    mAnimateCsup.animate(true);
+                }
+                else {
+                    mAnimateCsup.stopAndHide();
+                }
                 mAnimateSelect.animate(true);
                 mAnimatePlan.animate(true);
-                
+                mAnimateSave.animate(true);
+
                 // Don't display the edit button if we can't edit
                 String type = StringPreference.parseHashedNameDbType(mSelected);
                 if(type == null || !type.equals(Destination.GPS)) {
@@ -443,11 +492,13 @@ public class SearchActivity extends Activity implements Observer {
 
             }
         });
-        
-        mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
+
+        mAnimateSave = new AnimateButton(SearchActivity.this, mSaveButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlan = new AnimateButton(SearchActivity.this, mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateSelect = new AnimateButton(SearchActivity.this, mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
+        mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateCsup = new AnimateButton(SearchActivity.this, mCsupButton, AnimateButton.DIRECTION_R_L, (View[])null);
 
     }
 
@@ -458,7 +509,9 @@ public class SearchActivity extends Activity implements Observer {
     private void hideMenu() {
         mAnimatePlan.stopAndHide();
         mAnimatePlates.stopAndHide();
+        mAnimateCsup.stopAndHide();
         mAnimateSelect.stopAndHide();
+        mAnimateSave.stopAndHide();
         mAnimateEdit.stopAndHide();
     }
 

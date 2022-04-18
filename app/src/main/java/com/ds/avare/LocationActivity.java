@@ -121,6 +121,7 @@ public class LocationActivity extends Activity implements Observer {
      * To go to emergency mode
      */
     private AlertDialog mSosDialog;
+    private WebView mWv;
 
     /**
      * Version related warnings
@@ -150,7 +151,6 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
-    private AlertDialog mAlertDialogDestination;
     private WebAppMapInterface mInfc;
 
     private Button mPlanPrev;
@@ -500,7 +500,7 @@ public class LocationActivity extends Activity implements Observer {
                         mInfc.setData(data);
                     }
                     if(!isFinishing()) {
-                        mAlertDialogDestination.show();
+                        mWv.setVisibility(View.VISIBLE);
                     }
 
                     /*
@@ -894,129 +894,117 @@ public class LocationActivity extends Activity implements Observer {
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
 
-
         mInitLocation = Gps.getLastLocation(getApplicationContext());
         if (null == mInitLocation) {
             mInitLocation = mPref.getLastLocation();
         }
 
-        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(LocationActivity.this);
+        /*
+         * Make a dialog to show destination info, when long pressed on it
+         */
+        mWv = findViewById(R.id.location_wv);
+        mWv.loadUrl("file:///android_asset/map.html");
 
-        try {
+        mInfc = new WebAppMapInterface(LocationActivity.this, mWv, new GenericCallback() {
             /*
-             * Make a dialog to show destination info, when long pressed on it
+             * (non-Javadoc)
+             * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
              */
-            WebView wv = new WebView(LocationActivity.this);
-            wv.loadUrl("file:///android_asset/map.html");
+            @Override
+            public Object callback(Object o, Object o1) {
 
-            mInfc = new WebAppMapInterface(LocationActivity.this, wv, new GenericCallback() {
-                /*
-                 * (non-Javadoc)
-                 * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
-                 */
-                @Override
-                public Object callback(Object o, Object o1) {
+                String param = (String) o;
+                String airport = (String) o;
 
-                    String param = (String) o;
-                    String airport = (String) o;
+                mWv.setVisibility(View.INVISIBLE);
 
-                    try {
-                        mAlertDialogDestination.dismiss();
-                    }
-                    catch (Exception e){}
-
-
-                    if (null == mAirportPressed) {
-                        return null;
-                    }
-                    if (mService == null) {
-                        return null;
-                    }
-
-                    if (param.equals("CSup")) {
-                        /*
-                         * Chart Supplement
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastAfdAirport(mAirportPressed);
-                            ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("Plate")) {
-                        /*
-                         * Plate
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastPlateAirport(mAirportPressed);
-                            mService.setLastPlateIndex(0);
-                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("+Plan")) {
-                        String type = Destination.BASE;
-                        if (mAirportPressed.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        planTo(mAirportPressed, type);
-                        mAirportPressed = null;
-                    } else if (param.equals("->D")) {
-
-                        /*
-                         * On click, find destination that was pressed on in view
-                         * If button pressed was a destination go there, otherwise if none, then delete current dest
-                         */
-                        String dest = mAirportPressed;
-                        mAirportPressed = null;
-                        String type = Destination.BASE;
-                        if (dest.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        goTo(dest, type);
-                    }
+                if (null == mAirportPressed) {
                     return null;
                 }
-            });
-            wv.addJavascriptInterface(mInfc, "AndroidMap");
-
-            wv.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
-
-                    return true;
+                if (mService == null) {
+                    return null;
                 }
-            });
 
-            wv.getSettings().setJavaScriptEnabled(true);
-            wv.getSettings().setBuiltInZoomControls(false);
-            // This is need on some old phones to get focus back to webview.
-            wv.setFocusable(true);
-            wv.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View arg0, MotionEvent arg1) {
-                    arg0.performClick();
-                    arg0.requestFocus();
-                    return false;
+                if (param.equals("CSup")) {
+                    /*
+                     * Chart Supplement
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastAfdAirport(mAirportPressed);
+                        ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
+                    }
+                    mAirportPressed = null;
                 }
-            });
-            // Do not let selecting text
-            wv.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return true;
+                else if (param.equals("Save")) {
+
+                    mAirportPressed = null;
                 }
-            });
-            wv.setLongClickable(false);
+                else if (param.equals("Plate")) {
+                    /*
+                     * Plate
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastPlateAirport(mAirportPressed);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("X")) {
+                    mWv.setVisibility(View.INVISIBLE);
+                } else if (param.equals("+Plan")) {
+                    String type = Destination.BASE;
+                    if (mAirportPressed.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    planTo(mAirportPressed, type);
+                    mAirportPressed = null;
+                } else if (param.equals("->D")) {
 
+                    /*
+                     * On click, find destination that was pressed on in view
+                     * If button pressed was a destination go there, otherwise if none, then delete current dest
+                     */
+                    String dest = mAirportPressed;
+                    mAirportPressed = null;
+                    String type = Destination.BASE;
+                    if (dest.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    goTo(dest, type);
+                }
+                return null;
+            }
+        });
+        mWv.addJavascriptInterface(mInfc, "AndroidMap");
 
-            alert.setView(wv);
-        }
-        catch (RuntimeException e) {
-            // This is when webkit is updating, we get an exception that webview is not defined.
-        }
-        mAlertDialogDestination = alert.create();
-        mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mWv.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
 
+        mWv.getSettings().setJavaScriptEnabled(true);
+        mWv.getSettings().setBuiltInZoomControls(false);
+        // This is need on some old phones to get focus back to webview.
+        mWv.setFocusable(true);
+        mWv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                arg0.performClick();
+                arg0.requestFocus();
+                return false;
+            }
+        });
+        // Do not let selecting text
+        mWv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return true;
+            }
+        });
+        mWv.setLongClickable(false);
     }
 
     private void setTrackState(boolean bState)
@@ -1365,14 +1353,7 @@ public class LocationActivity extends Activity implements Observer {
             }
         }
 
-        if(null != mAlertDialogDestination) {
-            try {
-                mAlertDialogDestination.dismiss();
-            }
-            catch (Exception e) {
-            }
-        }
-
+        mWv.setVisibility(View.INVISIBLE);
         /*
          * Do this as switching from screen needs to hide its menu
          */

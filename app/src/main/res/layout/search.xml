@@ -69,16 +69,16 @@ Redistribution and use in source and binary forms, with or without modification,
 	    android:visibility="invisible" />
         
     <Button
-        android:id="@+id/search_button_plates"
+        android:id="@+id/search_button_save"
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Plates"
+        android:text="@string/Save"
         android:layout_alignParentBottom="true"
         android:background="@drawable/button_bg"
         android:layout_margin="5dp"
-        android:visibility="invisible" />      
-    
+        android:visibility="invisible" />
+
     <ProgressBar
         android:id="@+id/search_progress_bar"
         style="?android:attr/progressBarStyleSmall"
@@ -89,5 +89,32 @@ Redistribution and use in source and binary forms, with or without modification,
         android:visibility="invisible"
         android:layout_marginRight="14dp"
         android:layout_marginTop="14dp" />
+
+    <Button
+        android:id="@+id/search_button_plates"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Plates"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_bg"
+        android:layout_margin="5dp"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/search_button_csup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/search_button_plates"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/button_bg"
+        android:text="@string/AFD"
+        android:textStyle="bold"
+        android:visibility="invisible" />
 
 </RelativeLayout>
