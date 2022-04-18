@@ -935,10 +935,6 @@ public class LocationActivity extends Activity implements Observer {
                     }
                     mAirportPressed = null;
                 }
-                else if (param.equals("Save")) {
-
-                    mAirportPressed = null;
-                }
                 else if (param.equals("Plate")) {
                     /*
                      * Plate
