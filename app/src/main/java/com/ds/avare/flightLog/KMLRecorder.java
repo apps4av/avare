@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -55,22 +56,20 @@ import com.ds.avare.utils.Helper;
  *
  */
 public class KMLRecorder {
-	static final int UPDATETIME = 30 * 1000;
+	static final int UPDATETIME = 10 * 1000;
 	static final int STARTSPEED = 3;
 
 	/**
 	 * Local runtime instance members. All item guaranteed to be zero or NULL
 	 * when created by the system
 	 */
-//	private Config			mConfig;				// Configuration record passed in at start() call
 	private BufferedWriter  mTracksFile;			// File handle to use for writing the data
-    private File            mFile;					// core file handler
-    private LinkedList<GpsParams> mPositionHistory; // Stored GPS points 
+//    private File            mFile;					// core file handler
+    private final LinkedList<GpsParams> mPositionHistory; // Stored GPS points
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
-	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
-	private GpsParams		mLastFix;				// the last time we wrote a position			
-	private CrumbsShape     mShape;
-	private String          mFolder;
+	private GpsParams		mLastFix;				// the last time we wrote a position
+	private final CrumbsShape     mShape;
+	private final String          mFolder;
 	
 	/**
 	 * Statics that all class instances share
@@ -149,7 +148,7 @@ public class KMLRecorder {
      * of gps points
      */
     public KMLRecorder(Context ctx){
-    	mPositionHistory = new LinkedList<GpsParams>();
+    	mPositionHistory = new LinkedList<>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
     	mFolder = new Preferences(ctx).getCacheFolder();
@@ -175,11 +174,11 @@ public class KMLRecorder {
     			mTracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
 				// Write out each track point of this flight as its own entry. This
 				// saves out more detail than just lat/long of the point.
-				for(int idx = mFlightStartIndex, max = mPositionHistory.size(); idx < max; idx++) {
+				for(int idx = 0, max = mPositionHistory.size(); idx < max; idx++) {
 					GpsParams gpsParams = mPositionHistory.get(idx);
-					String trackPoint = String.format(KMLTRACKPOINT,
+					String trackPoint = String.format(Locale.getDefault(), KMLTRACKPOINT,
 							idx + 1,
-							new Date(gpsParams.getTime()).toString(),
+							new Date(gpsParams.getTime()),
 							gpsParams.getAltitude(),
 							gpsParams.getBearing(),
 							gpsParams.getSpeed(),
@@ -210,11 +209,10 @@ public class KMLRecorder {
     @SuppressLint("SimpleDateFormat")
 	public void start() {
         mShape.clearShape();
-//    	mConfig = config;
-    	
+
 		// Build the file name based upon the current date/time
 		String fileName = new SimpleDateFormat(KMLFILENAMEFORMAT).format(Calendar.getInstance().getTime()) + KMLFILENAMEEXTENTION;
-    	mFile = new File(mFolder, fileName);
+    	File mFile = new File(mFolder, fileName);
     	
     	// File handling can throw some exceptions
     	try {
@@ -242,20 +240,8 @@ public class KMLRecorder {
     		mTracksFile.write(KMLFILEPREFIX);			// Overall file prelude
     		mTracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
 
-           	clearPositionHistory();
-
-            // Mark the starting entry of our history list. This is required in order
-            // to save off the individual points of our trip at close
-            mFlightStartIndex = mPositionHistory.size();
-            
+			mPositionHistory.clear();
     	} catch (Exception ignore) { }
-    }
-    
-    /**
-     * Clear out the linked list of historical position data
-     */
-    public void clearPositionHistory() {
-    	mPositionHistory.clear();
     }
     
     /**
@@ -284,7 +270,7 @@ public class KMLRecorder {
 		if (Math.abs(gpsParams.getSpeed() - mLastFix.getSpeed()) > 5) {
 			bRecordPoint = true;
 		}
-		
+
 		// If the altitude is 100' or greater different
 		if((Math.abs(gpsParams.getAltitude() - mLastFix.getAltitude())) > 100) {
 			bRecordPoint = true;

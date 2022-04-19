@@ -1025,12 +1025,6 @@ public class LocationActivity extends Activity implements Observer {
         URI fileURI = mService.setTracks(bState);
         /* The fileURI is returned when the tracks are closed off.
          */
-        if(bState) {
-            Toast.makeText(LocationActivity.this,
-                    getString(R.string.TracksOn),
-                    Toast.LENGTH_LONG).show();
-
-        }
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
 
