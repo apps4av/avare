@@ -28,6 +28,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
     <uses-feature android:name="android.hardware.wifi" android:required="false" />
 
@@ -69,6 +74,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <provider
             android:name=".content.UserProvider"
             android:authorities="com.ds.avare.provider.user" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.ds.avare.provider.file"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
 
         <service android:name=".StorageService"
             android:enabled="true"
