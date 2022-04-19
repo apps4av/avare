@@ -56,15 +56,7 @@ import com.ds.avare.utils.Helper;
  *
  */
 public class KMLRecorder {
-	static final int UPDATETIME = 10 * 1000;
-	static final int STARTSPEED = 3;
-
-	/**
-	 * Local runtime instance members. All item guaranteed to be zero or NULL
-	 * when created by the system
-	 */
 	private BufferedWriter  mTracksFile;			// File handle to use for writing the data
-//    private File            mFile;					// core file handler
     private final LinkedList<GpsParams> mPositionHistory; // Stored GPS points
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
 	private GpsParams		mLastFix;				// the last time we wrote a position
@@ -256,8 +248,9 @@ public class KMLRecorder {
     		// File closed means nothing to do
     		return;
     	}
-		
-		if((gpsParams.getSpeed() < STARTSPEED)) {
+
+    	// Start recording faster than 3 knots
+		if((gpsParams.getSpeed() < 3)) {
 			// Not going fast enough yet to record
 			return;
 		}
@@ -281,8 +274,8 @@ public class KMLRecorder {
     		bRecordPoint = true;
     	}
 
-    	// If the time of the last point and now is greater than our configured time 
-		if(((gpsParams.getTime() - mLastFix.getTime()) > UPDATETIME)) {
+    	// If the time of the last point and now is greater than 10 seconds
+		if(((gpsParams.getTime() - mLastFix.getTime()) > 10 * 1000)) {
 			bRecordPoint = true;
 		}
 
