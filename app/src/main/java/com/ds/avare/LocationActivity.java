@@ -22,7 +22,6 @@ import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -42,7 +41,6 @@ import androidx.core.content.FileProvider;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
-import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -1035,11 +1033,25 @@ public class LocationActivity extends Activity implements Observer {
         }
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
-            /* Just display a toast message to the user that the file was saved
-             */
-            Toast.makeText(LocationActivity.this,
-                    String.format(getString(R.string.AutoPostTracksDialogText), fileName),
-                    Toast.LENGTH_LONG).show();
+
+            try {
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {mPref.getRegisteredEmail()});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.AutoPostTracksSubject) + " " + fileName);
+
+
+                File f = new File(fileURI.getPath());
+                if(f.exists() && f.canRead()) {
+                    emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    emailIntent.putExtra(Intent.EXTRA_STREAM,
+                            FileProvider.getUriForFile(getApplicationContext(),
+                                    getApplicationContext().getPackageName() + ".provider.file",
+                                    f));
+                }
+                startActivity(emailIntent);
+            } catch (Exception ignore) {
+            }
         }
     }
     /** Defines callbacks for service binding, passed to bindService() */

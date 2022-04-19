@@ -759,6 +759,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return Helper.getExternalFolder(mContext);
     }
 
+    public String getCacheFolder() {
+        return Helper.getCacheFolder(mContext);
+    }
+
     /**
      * @return
      */
