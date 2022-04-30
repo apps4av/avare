@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -1148,17 +1147,11 @@ public class StorageService extends Service {
      */
     public URI setTracks(boolean shouldTrack) {
         if(shouldTrack) {
-            mKMLRecorder.start(getApplicationContext());
+            mKMLRecorder.start();
             return null;
         }
         else {
-            URI fileURI = mKMLRecorder.stop();
-
-            // If a file was created, then tell the media scanner about it
-            if(null != fileURI) {
-            	MediaScannerConnection.scanFile(getApplicationContext(), new String[] { fileURI.getPath() }, null, null);
-            }
-			return fileURI;
+			return mKMLRecorder.stop();
         }
     }
 

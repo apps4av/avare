@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -55,52 +56,12 @@ import com.ds.avare.utils.Helper;
  *
  */
 public class KMLRecorder {
-	
-	/**
-	 * Configuration class. Contains all items that the caller can specify
-	 * for how/when to record the position information
-	 * 
-	 * @author Ron
-	 *
-	 */
-	public 	class Config {
-	    private boolean			mClearListOnStart = false;	// Option to clear the linked list at every start
-		private long			mUpdateTime       = 0;		// Time interval to record positions
-		private boolean			mUseDetailedPositionReporting = false;	// Write extended position details to the KML file (verbose)
-		private String			mFolder           = null;
-		private long			mStartSpeed       = 20;		// Min speed to begin recording
-
-		/**
-		 * Constructor for configuration class of KMLRecorder
-		 * 
-		 * @param clearListOnStart true to clear list each time tracking starts
-		 * @param updateTime Time interval to record position updates in seconds
-		 * @param useDetailedPositionReporting Use verbose position information in KML file
-		 * @param folder Folder to store the output KML file
-		 * @param startSpeed Speed at which flight is considered to begin
-		 */
-		public Config(boolean clearListOnStart, long updateTime, boolean useDetailedPositionReporting, String folder, long startSpeed) {
-			mClearListOnStart = clearListOnStart;
-			mUpdateTime       = updateTime * 1000; // we use milliseconds internally
-			mUseDetailedPositionReporting = useDetailedPositionReporting;
-			mFolder           = folder;
-			mStartSpeed       = startSpeed;
-		}
-	}
-	
-	/**
-	 * Local runtime instance members. All item guaranteed to be zero or NULL
-	 * when created by the system
-	 */
-	private Config			mConfig;				// Configuration record passed in at start() call
 	private BufferedWriter  mTracksFile;			// File handle to use for writing the data
-    private File            mFile;					// core file handler
-    private LinkedList<GpsParams> mPositionHistory; // Stored GPS points 
+    private final LinkedList<GpsParams> mPositionHistory; // Stored GPS points
 	private URI 			mFileURI;				// The URI of the file created for these datapoints
-	private int				mFlightStartIndex;		// When "start" is pressed, this is set to the size of our history list.
-	private GpsParams		mLastFix;				// the last time we wrote a position			
-	private CrumbsShape     mShape;
-	private String          mFolder;
+	private GpsParams		mLastFix;				// the last time we wrote a position
+	private final CrumbsShape     mShape;
+	private final String          mFolder;
 	
 	/**
 	 * Statics that all class instances share
@@ -179,10 +140,10 @@ public class KMLRecorder {
      * of gps points
      */
     public KMLRecorder(Context ctx){
-    	mPositionHistory = new LinkedList<GpsParams>();
+    	mPositionHistory = new LinkedList<>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
-    	mFolder = new Preferences(ctx).getUserDataFolder();
+    	mFolder = new Preferences(ctx).getCacheFolder();
     }
     
     /** 
@@ -203,31 +164,29 @@ public class KMLRecorder {
     		// File operations can cause exceptions and we need to account for that
     		try {
     			mTracksFile.write(KMLCOORDINATESTRAILER);	// Close off the coordinates section
-    			if(mConfig.mUseDetailedPositionReporting) {
-	    			// Write out each track point of this flight as its own entry. This
-	    			// saves out more detail than just lat/long of the point.
-	    			for(int idx = mFlightStartIndex, max = mPositionHistory.size(); idx < max; idx++) {
-						GpsParams gpsParams = mPositionHistory.get(idx);
-						String trackPoint = String.format(KMLTRACKPOINT,
-								idx + 1,
-	    						new Date(gpsParams.getTime()).toString(),
-	    						gpsParams.getAltitude(),
-	    						gpsParams.getBearing(),
-	    						gpsParams.getSpeed(),
-	    						gpsParams.getLongitude(),
-	    						gpsParams.getLatitude(),
-	    						gpsParams.getLongitude(),
-	    						gpsParams.getLatitude(),
-	    						gpsParams.getAltitude() * .3048 /* meter per feet */
-	    						);
-						mTracksFile.write(trackPoint);
-	    			}
+				// Write out each track point of this flight as its own entry. This
+				// saves out more detail than just lat/long of the point.
+				for(int idx = 0, max = mPositionHistory.size(); idx < max; idx++) {
+					GpsParams gpsParams = mPositionHistory.get(idx);
+					String trackPoint = String.format(Locale.getDefault(), KMLTRACKPOINT,
+							idx + 1,
+							new Date(gpsParams.getTime()),
+							gpsParams.getAltitude(),
+							gpsParams.getBearing(),
+							gpsParams.getSpeed(),
+							gpsParams.getLongitude(),
+							gpsParams.getLatitude(),
+							gpsParams.getLongitude(),
+							gpsParams.getLatitude(),
+							gpsParams.getAltitude() * .3048 /* meter per feet */
+							);
+					mTracksFile.write(trackPoint);
     			}
     			
     			// Close off the overall KML file now
         		mTracksFile.write(KMLFILESUFFIX);	// The last of the file data 
     			mTracksFile.close();				// close the file
-    		} catch (IOException ioe) { }
+    		} catch (IOException ignore) { }
 
     		// Clear out our control objects
     		mTracksFile = null;	// No track file anymore
@@ -236,38 +195,22 @@ public class KMLRecorder {
     	return null;
     }
     
-
-	/**
-	 * Start with default config
-	 */
-	public void start(Context ctx) {
-        KMLRecorder.Config config = this.new Config(
-                true,   /* always remove tracks from display on start */
-                30,     /* Max of 30 seconds between position updates */
-                true,   /* use verbose details */
-                mFolder + File.separator + "tracks",
-                3);     // Adjust down to 3 knots to capture taxi
-        start(config);
-	}
-	
     /**
      * Begin recording position points to a file and our memory linked list
-     * @param config Details on how/when to write the data
      */
     @SuppressLint("SimpleDateFormat")
-	public void start(Config config) {
+	public void start() {
         mShape.clearShape();
-    	mConfig = config;
-    	
+
 		// Build the file name based upon the current date/time
 		String fileName = new SimpleDateFormat(KMLFILENAMEFORMAT).format(Calendar.getInstance().getTime()) + KMLFILENAMEEXTENTION;
-    	mFile = new File(mConfig.mFolder, fileName);
+    	File mFile = new File(mFolder, fileName);
     	
     	// File handling can throw some exceptions
     	try {
     		
     		// Ensure the full path to the file area exists
-    		File mDirPath = new File(mConfig.mFolder, "");
+    		File mDirPath = new File(mFolder, "");
     		if(!mDirPath.exists()) {
     			mDirPath.mkdirs();
     		}
@@ -289,26 +232,8 @@ public class KMLRecorder {
     		mTracksFile.write(KMLFILEPREFIX);			// Overall file prelude
     		mTracksFile.write(KMLCOORDINATESHEADER);	// Open coordinates data
 
-            // If we are supposed to clear the linked list each time
-            // we start timing then do so now
-            if(mConfig.mClearListOnStart) {
-            	clearPositionHistory();
-            }
-            
-            // Mark the starting entry of our history list. This is required in order
-            // to save off the individual points of our trip at close
-            mFlightStartIndex = mPositionHistory.size();
-            
-    	} catch (Exception e) { // Catch all exceptions here
-
-    	}
-    }
-    
-    /**
-     * Clear out the linked list of historical position data
-     */
-    public void clearPositionHistory() {
-    	mPositionHistory.clear();
+			mPositionHistory.clear();
+    	} catch (Exception ignore) { }
     }
     
     /**
@@ -323,8 +248,9 @@ public class KMLRecorder {
     		// File closed means nothing to do
     		return;
     	}
-		
-		if((gpsParams.getSpeed() < mConfig.mStartSpeed)) {
+
+    	// Start recording faster than 3 knots
+		if((gpsParams.getSpeed() < 3)) {
 			// Not going fast enough yet to record
 			return;
 		}
@@ -337,7 +263,7 @@ public class KMLRecorder {
 		if (Math.abs(gpsParams.getSpeed() - mLastFix.getSpeed()) > 5) {
 			bRecordPoint = true;
 		}
-		
+
 		// If the altitude is 100' or greater different
 		if((Math.abs(gpsParams.getAltitude() - mLastFix.getAltitude())) > 100) {
 			bRecordPoint = true;
@@ -348,8 +274,8 @@ public class KMLRecorder {
     		bRecordPoint = true;
     	}
 
-    	// If the time of the last point and now is greater than our configured time 
-		if(((gpsParams.getTime() - mLastFix.getTime()) > mConfig.mUpdateTime)) {
+    	// If the time of the last point and now is greater than 10 seconds
+		if(((gpsParams.getTime() - mLastFix.getTime()) > 10 * 1000)) {
 			bRecordPoint = true;
 		}
 
@@ -372,7 +298,7 @@ public class KMLRecorder {
 			// The data was saved correctly, update our last known position
 			mLastFix = gpsParams;
 
-		} catch (Exception e) { }
+		} catch (Exception ignore) { }
 	}
     
     /**

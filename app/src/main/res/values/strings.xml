@@ -197,8 +197,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="FileStore">Files will be stored in: </string>
     <string name="FileStoreInvalid">Unable to write to folder:</string>
     <string name="prefTracksCategoryTitle">Flight Tracking</string>
-    <string name="TracksOn">Tracks On</string>
-    <string name="TracksOff">Tracks Off</string>
+    <string name="TracksOn">Tracks are ON</string>
+    <string name="TracksOff">Tracks are OFF</string>
     <string name="TrkUpdAllow">TrkUpdAllow</string>
     <string name="TrkUpdAllowLabel">&quot;Enable Tracking&quot;</string>
     <string name="TrkUpdAllowSummary">&quot;Select to allow position tracking to be recorded.&quot;</string>

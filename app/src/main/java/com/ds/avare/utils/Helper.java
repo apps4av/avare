@@ -85,6 +85,10 @@ public class Helper {
         return context.getFilesDir().getAbsolutePath();
     }
 
+    public static String getCacheFolder(Context context) {
+        return context.getCacheDir().getAbsolutePath();
+    }
+
     /**
      * Finds elevation from the above elevation pixel formula from a pixel in meters
      * @param px
