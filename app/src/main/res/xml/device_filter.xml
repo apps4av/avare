@@ -11,5 +11,26 @@
 
     <!-- 0x10C4 / 0xEA60: CP210x UART Bridge -->
     <usb-device vendor-id="4292" product-id="60000" />
-    
+
+    <!-- 0x1A86 / 0x55D4: CH9102 UART Bridge -->
+    <usb-device vendor-id="6790" product-id="21972" />
+
+    <!-- 0x0483 / 0x5740: SoftRF Dongle -->
+    <usb-device vendor-id="1155" product-id="22336" class="2" />
+
+    <!-- 0x239A / 0x8029: SoftRF Badge -->
+    <usb-device vendor-id="9114" product-id="32809" class="2" />
+
+    <!-- 0x2341 / 0x804D: SoftRF Academy -->
+    <usb-device vendor-id="9025" product-id="32845" class="2" />
+
+    <!-- 0x1D50 / 0x6089: SoftRF ES -->
+    <usb-device vendor-id="7504" product-id="24713" class="2" />
+
+    <!-- 0x2E8A / 0x000A: SoftRF Lego -->
+    <usb-device vendor-id="11914" product-id="10" class="2" />
+
+    <!-- 0x2E8A / 0xF00A: SoftRF Lego -->
+    <usb-device vendor-id="11914" product-id="61450" class="2" />
+
 </resources>
