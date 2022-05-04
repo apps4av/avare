@@ -686,7 +686,8 @@ function plan_add(id, type) {
 
 // Delete a waypoint in Plan
 function plan_delete() {
-	bootbox.confirm("Delete Selected?", function(result) {
+    var msgStr = "Delete waypoint \"" + AndroidPlan.nextWaypointID() + "\"?";
+	bootbox.confirm(msgStr, function(result) {
 		if(result == false) {
 			return;
 		}
