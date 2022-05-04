@@ -32,10 +32,48 @@ Redistribution and use in source and binary forms, with or without modification,
         android:layout_centerInParent="true"
         android:background="@drawable/button_small"
         android:layout_margin="5dp"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible" />
 
 
-        <Button
+    <Button
+        android:id="@+id/plates_button_rotate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/plates_header"
+        android:background="@drawable/button_small"
+        android:text="@string/Rotate"
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/plates_button_rotate_90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_below="@+id/plates_header"
+        android:layout_toLeftOf="@+id/plates_button_rotate"
+        android:background="@drawable/button_small"
+        android:text="+90"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/plates_button_rotate_10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+          android:layout_marginEnd="5dp"
+        android:layout_below="@+id/plates_header"
+        android:layout_toLeftOf="@+id/plates_button_rotate_90"
+        android:background="@drawable/button_small"
+        android:text="+10"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
+    <Button
     	        android:id="@+id/plates_button_tag"
     	        android:textStyle="bold"
     	        android:layout_centerVertical="true"
@@ -84,8 +122,8 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />
-    
-    
+
+
     <LinearLayout
         android:baselineAligned="true"
         android:id="@+id/plates_header"

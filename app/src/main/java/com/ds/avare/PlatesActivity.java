@@ -75,6 +75,9 @@ public class PlatesActivity extends Activity implements Observer  {
     private Button mAirportButton;
     private Button mPlatesButton;
     private Button mApproachButton;
+    private Button mRotateButton;
+    private Button mRotate90Button;
+    private Button mRotate10Button;
     private Button mPlatesTagButton;
     private Button mPlatesTimerButton;
     private AlertDialog mPlatesPopup;
@@ -299,6 +302,7 @@ public class PlatesActivity extends Activity implements Observer  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        mPlatesView.clearRotation();
                         setPlateFromPos(which);
                     }
                 };
@@ -485,6 +489,40 @@ public class PlatesActivity extends Activity implements Observer  {
             }
         });
 
+        mRotateButton = (Button)view.findViewById(R.id.plates_button_rotate);
+        mRotate90Button = (Button)view.findViewById(R.id.plates_button_rotate_90);
+        mRotate10Button = (Button)view.findViewById(R.id.plates_button_rotate_10);
+        mRotateButton.getBackground().setAlpha(255);
+        mRotateButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlatesView.clearRotation();
+                if (mRotate90Button.getVisibility() == View.INVISIBLE) {
+                    mRotate90Button.setVisibility(View.VISIBLE);
+                    mRotate10Button.setVisibility(View.VISIBLE);
+                } else {
+                    mRotate90Button.setVisibility(View.INVISIBLE);
+                    mRotate10Button.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+        mRotate10Button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlatesView.advancePlateRotationRDegrees(10.0);
+            }
+        });
+        mRotate90Button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlatesView.advancePlateRotationRDegrees(90.0);
+            }
+        });
+        if(mPref.isTrackUpPlates()) {
+            mRotateButton.setVisibility(View.INVISIBLE);
+        } else {
+            mRotateButton.setVisibility(View.VISIBLE);
+        }
 
         mPlatesTagButton = (Button)view.findViewById(R.id.plates_button_tag);
         mPlatesTagButton.getBackground().setAlpha(255);
@@ -947,6 +985,12 @@ public class PlatesActivity extends Activity implements Observer  {
         }
         else {
             mCenterButton.getBackground().setColorFilter(0xFF444444, PorterDuff.Mode.MULTIPLY);
+        }
+
+        if(mPref.isTrackUpPlates()) {
+            mRotateButton.setVisibility(View.INVISIBLE);
+        } else {
+            mRotateButton.setVisibility(View.VISIBLE);
         }
     }
    
