@@ -17,10 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
@@ -30,10 +26,9 @@ import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
 import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
 
@@ -43,15 +38,9 @@ import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
  * @author plinel
  *
  */
-public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
-	
+public class PlatesView extends PanZoomView  {
 
-    private Scale                        mScale;
-    private Pan                          mPan;
 	private Paint                        mPaint;
-    private MultiTouchController<Object> mMultiTouchC;
-    private PointInfo                    mCurrTouchPoint;
-    private GestureDetector              mGestureDetector;
     private BitmapHolder                 mBitmap;
     private BitmapHolder               mLineHeadingBitmap;
     private GpsParams                    mGpsParams;
@@ -93,24 +82,19 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
-        mPan = new Pan();
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mPref = new Preferences(context);
-        mScale = new Scale(MAX_PLATE_SCALE);
-        setOnTouchListener(this);
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new PointInfo();
-        mGestureDetector = new GestureDetector(context, new GestureListener());
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mDipToPix = Helper.getDpiToPix(context);
-
+        center();
     }
+
 
     // Condition for rotation, only rotate when track up and either airport diagram or geo tagged plate is showing
     private boolean shouldRotate() {
@@ -170,14 +154,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     }
 
     
-    /* (non-Javadoc)
-     * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
-     */
-    @Override
-    public boolean onTouch(View view, MotionEvent e) {
-        mGestureDetector.onTouchEvent(e);
-        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), 1);
-    }
 
     /**
      * @param holder
@@ -214,68 +190,7 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
 
     }
 
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public void selectObject(Object obj, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-    }
 
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Do not move on multitouch
-             */
-            if(mDraw && mService != null) {
-                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
-                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = Helper.rotateCoord(getWidth() / 2,getHeight() / 2 , thetab, x, y);
-                    mService.getPixelDraw().addPoint((float)p[0],(float)p[1]);
-                }
-                else {
-                    mService.getPixelDraw().addPoint(x, y);
-                }
-
-                return true;
-            }
-
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
-            float x = newObjPosAndScale.getXOff();
-            float y = newObjPosAndScale.getYOff();
-
-            if (shouldRotate()) {
-                double thetab = mGpsParams.getBearing();
-                double p[] = new double[2];
-                p = Helper.rotateCoord(0, 0, thetab, x, y);
-                mPan.setMove((float) p[0], (float) p[1]);
-            }
-            else {
-                mPan.setMove(x, y);
-            }
-
-            
-        } else {
-            /*
-             * Clamp scaling.
-             */
-            mScale.setScaleFactor(newObjPosAndScale.getScale());
-        }
-        
-        invalidate();
-        return true;
-    }
 
     /**
      * 
@@ -309,13 +224,6 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
     	postInvalidate();
     }
     
-    /**
-     * @param touchPoint
-     */
-    private void touchPointChanged(PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        invalidate();
-    }
 
     /* (non-Javadoc)
      * @see android.view.View#onDraw(android.graphics.Canvas)
@@ -520,42 +428,22 @@ public class PlatesView extends View implements MultiTouchObjectCanvas<Object>, 
      * Center to the location
      */
     public void center() {
+        resetPan();
+        resetZoom(MAX_PLATE_SCALE);
+
         /*
-         * On long press, move to center
+         * Fit plate to screen
          */
-        mPan = new Pan();
+        if(mBitmap != null) {
+            float h = getHeight();
+            float ih = mBitmap.getHeight();
+            float fac = h / ih;
+            mScale.setScaleFactor(fac);
+        }
 
         invalidate();
     }
 
-    /**
-     * @author zkhan
-     *
-     */
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
-        @Override
-        public void onLongPress(MotionEvent e) {
-        	
-        }
-        
-        @Override
-        public boolean onDown(MotionEvent e) {
-            if(null != mService) {
-                /*
-                 * Add separation between chars
-                 */
-                mService.getPixelDraw().addSeparation();
-            }
-            return true;
-        }
-
-    }
-    
-    
     /**
      * 
      * @param b
