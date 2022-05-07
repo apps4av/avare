@@ -89,7 +89,7 @@ public class AfdView extends PanZoomView {
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
-        postInvalidate();
+        center();
     }
 
     /**
@@ -112,8 +112,7 @@ public class AfdView extends PanZoomView {
             mScale.setScaleFactor(fac);
         }
 
-        invalidate();
-
+        postInvalidate();
     }
 
     /* (non-Javadoc)

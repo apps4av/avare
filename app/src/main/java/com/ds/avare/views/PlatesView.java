@@ -92,7 +92,6 @@ public class PlatesView extends PanZoomView  {
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mDipToPix = Helper.getDpiToPix(context);
-        center();
     }
 
 
@@ -160,7 +159,7 @@ public class PlatesView extends PanZoomView  {
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
-        postInvalidate();
+        center();
     }
 
     /* (non-Javadoc)
@@ -441,7 +440,7 @@ public class PlatesView extends PanZoomView  {
             mScale.setScaleFactor(fac);
         }
 
-        invalidate();
+        postInvalidate();
     }
 
     /**

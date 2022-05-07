@@ -96,7 +96,7 @@ public class PlatesTagView extends PanZoomView {
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
-        postInvalidate();
+        center();
     }
 
     /* (non-Javadoc)
@@ -202,7 +202,7 @@ public class PlatesTagView extends PanZoomView {
             mScale.setScaleFactor(fac);
         }
 
-        invalidate();
+        postInvalidate();
     }
     
     
