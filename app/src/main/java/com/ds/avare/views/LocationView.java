@@ -157,6 +157,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      * Projection of a touch point
      */
     private Projection mPointProjection;
+    private Projection mPointProjectionAirport;
 
     /*
      * Is it drawing?
@@ -356,6 +357,9 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
+        /*
+         * ALl these operations happen outside the PanZoomView since they are related to user actions not related to pan and pinch zoom.
+         */
         boolean bPassToGestureDetector = true;
 
         if(e.getAction() == MotionEvent.ACTION_UP) {
@@ -425,21 +429,20 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             mGestureDetector.onTouchEvent(e);
         }
 
-        if(!isMultiTouch()) {
+        if(e.getPointerCount() != 2) { // not multi
 
             /*
              * Do not move on drag
              */
             if(mDragPlanPoint >= 0) {
-                return true;
+                return true; // do not PTZ
             }
 
             /*
              * Do not move on multitouch
              */
             if(mDraw && mService != null) {
-                float x = getMultiPointers()[0] * mScale.getScaleFactor() * mScale.getMacroFactor();
-                float y = getMultiPointers()[1] * mScale.getScaleFactor() * mScale.getMacroFactor();
+                Point pt = getFirstPoint(e);
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
@@ -448,17 +451,18 @@ public class LocationView extends PanZoomView implements OnTouchListener {
                     double p[] = new double[2];
                     double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
                     double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
-                    p = Helper.rotateCoord(c_x, c_y, thetab, x, y);
+                    p = Helper.rotateCoord(c_x, c_y, thetab, pt.x, pt.y);
                     mService.getDraw().addPoint((float)p[0],(float)p[1], mOrigin);
                 }
                 else {
-                    mService.getDraw().addPoint(x, y, mOrigin);
+                    mService.getDraw().addPoint(pt.x, pt.y, mOrigin);
                 }
-                return true;
+                return true; // do not PTZ
             }
         }
         else {
 
+            // multi touch
             // Zooming does not change drag
             mDragPlanPoint = -1;
 
@@ -467,10 +471,12 @@ public class LocationView extends PanZoomView implements OnTouchListener {
              */
 
             if(mPointProjection == null) {
-                double x0 = getMultiPointers()[0];
-                double y0 = getMultiPointers()[1];
-                double x1 = getMultiPointers()[2];
-                double y1 = getMultiPointers()[3];
+                Point p00 = getFirstPoint(e);
+                Point p11 = getSecondPoint(e);
+                double x0 = p00.x;
+                double y0 = p00.y;
+                double x1 = p11.x;
+                double y1 = p11.y;
 
                 double lon0,lat0,lon1,lat1;
                 // convert to origin coord if Trackup
@@ -500,7 +506,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     }
 
 
-
+    // update tiles on pan / zoom if needed
     GenericCallback mCallback = new GenericCallback() {
         @Override
         public Object callback(Object o, Object o1) {
@@ -1299,7 +1305,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
 
-            mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
+            mPointProjectionAirport = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
             return airport;
         }
         
@@ -1308,12 +1314,12 @@ public class LocationView extends PanZoomView implements OnTouchListener {
          */
         @Override
         protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjection && null != airport) {
+            if(null != mGestureCallBack && null != mPointProjectionAirport && null != airport) {
                 mLongTouchDestination = new LongTouchDestination();
                 mLongTouchDestination.airport = airport;
-                mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
-                        "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
+                mLongTouchDestination.info = Math.round(mPointProjectionAirport.getDistance()) + Preferences.distanceConversionUnit +
+                        "(" + mPointProjectionAirport.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
+                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjectionAirport.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
 
                 /*
                  * Clear old weather

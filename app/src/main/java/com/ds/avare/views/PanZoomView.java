@@ -21,10 +21,7 @@ public class PanZoomView extends View {
     private int mActivePointerId = INVALID_POINTER_ID;
 
     protected Scale mScale;
-    private boolean isMulti;
     protected Pan mPan;
-
-    private float [] mPoints;
 
     private ScaleGestureDetector mScaleDetector;
 
@@ -35,8 +32,6 @@ public class PanZoomView extends View {
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mScale = new Scale();
         mPan = new Pan();
-        isMulti = false;
-        mPoints = new float[4]; // 2 points
     }
 
     public PanZoomView(Context context) {
@@ -93,9 +88,6 @@ public class PanZoomView extends View {
                 final float x = ev.getX(pointerIndex);
                 final float y = ev.getY(pointerIndex);
 
-                mPoints[0] = x;
-                mPoints[1] = y;
-
                 final float dx = x - mLastTouchX;
                 final float dy = y - mLastTouchY;
 
@@ -125,20 +117,7 @@ public class PanZoomView extends View {
                 break;
             }
 
-            case MotionEvent.ACTION_POINTER_DOWN: {
-                int count = ev.getPointerCount();
-                if (2 == count) {
-                    mPoints[0] = ev.getX(ev.getPointerId(0));
-                    mPoints[1] = ev.getY(ev.getPointerId(0));
-                    mPoints[2] = ev.getX(ev.getPointerId(1));
-                    mPoints[3] = ev.getY(ev.getPointerId(1));
-                }
-                isMulti = true;
-                break;
-            }
-
             case MotionEvent.ACTION_POINTER_UP: {
-                isMulti = false;
                 // Extract the index of the pointer that left the touch sensor
                 final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
@@ -176,9 +155,35 @@ public class PanZoomView extends View {
     /**
      *
      * @param e
+     * @return first point
+     */
+    public Point getFirstPoint(MotionEvent e) {
+        int pointerIndex = e.findPointerIndex(0);
+        int x = (int)e.getX(pointerIndex);
+        int y = (int)e.getY(pointerIndex);
+        Point p = new Point(x, y);
+        return (p);
+    }
+
+    /**
+     *
+     * @param e
+     * @return first point
+     */
+    public Point getSecondPoint(MotionEvent e) {
+        int pointerIndex = e.findPointerIndex(1);
+        int x = (int)e.getX(pointerIndex);
+        int y = (int)e.getY(pointerIndex);
+        Point p = new Point(x, y);
+        return (p);
+    }
+
+    /**
+     *
+     * @param e
      * @return focus point in touch e
      */
-    Point getFocusPoint(MotionEvent e) {
+    public Point getFocusPoint(MotionEvent e) {
         // Determine focal point
         float sumX = 0, sumY = 0;
         final int count = e.getPointerCount();
@@ -195,11 +200,4 @@ public class PanZoomView extends View {
         return p;
     }
 
-    public boolean isMultiTouch() {
-        return isMulti;
-    }
-
-    public float [] getMultiPointers() {
-        return mPoints;
-    }
 }
