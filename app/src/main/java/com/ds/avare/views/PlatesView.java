@@ -17,16 +17,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
-import com.ds.avare.position.Pan;
-import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
-import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
@@ -180,11 +178,11 @@ public class PlatesView extends PanZoomView  {
             double thetab = mGpsParams.getBearing();
             p = Helper.rotateCoord(0, 0, -thetab, x, y);
             objPosAndScaleOut.set((float)p[0],(float)p[1], true,
-                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+                    mScale.getScaleFactor(), false, 0, 0, false, 0);
         }
         else {
             objPosAndScaleOut.set(x, y, true,
-                    mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
+                    mScale.getScaleFactor(), false, 0, 0, false, 0);
         }
 
     }
@@ -235,7 +233,7 @@ public class PlatesView extends PanZoomView  {
         if(mBitmap != null && mBitmap.getBitmap() != null) {
     	
             
-            float scale = mScale.getScaleFactorRaw();
+            float scale = mScale.getScaleFactor();
 
             float lon = (float) mGpsParams.getLongitude();
             float lat = (float) mGpsParams.getLatitude();

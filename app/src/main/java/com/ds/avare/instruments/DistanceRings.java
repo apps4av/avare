@@ -218,10 +218,10 @@ public class DistanceRings {
         if(mPref.getDistanceRingType() == 1) {
             int macro = scale.getMacroFactor();
             /* the larger totalZoom is, the more zoomed in we are  */
-            if(macro <= 1 && scale.getScaleFactorRaw() > 1) {  
+            if(macro <= 1 && scale.getScaleFactor() > 1) {
                 ringScale = RINGS_1_2_5;        
             } 
-            else if(macro <= 1 && scale.getScaleFactorRaw() <= 1) {  
+            else if(macro <= 1 && scale.getScaleFactor() <= 1) {
                 ringScale = RINGS_2_5_10;
             } 
             else if (macro <= 2) {

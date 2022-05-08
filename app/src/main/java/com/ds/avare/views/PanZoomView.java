@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -20,9 +21,11 @@ public class PanZoomView extends View {
     private int mActivePointerId = INVALID_POINTER_ID;
 
     protected Scale mScale;
+    private boolean isMulti;
     protected Pan mPan;
 
-    private Point mFocusPoint;
+    private float [] mPoints;
+
     private ScaleGestureDetector mScaleDetector;
 
     private float mLastTouchX;
@@ -32,7 +35,8 @@ public class PanZoomView extends View {
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mScale = new Scale();
         mPan = new Pan();
-        mFocusPoint = new Point();
+        isMulti = false;
+        mPoints = new float[4]; // 2 points
     }
 
     public PanZoomView(Context context) {
@@ -65,14 +69,9 @@ public class PanZoomView extends View {
         mScale = new Scale(maxScale);
     }
 
-    public Point getFocusPoint() {
-        return mFocusPoint;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
 
-        boolean reload = false;
         mScaleDetector.onTouchEvent(ev);
         final int action = ev.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
@@ -94,6 +93,9 @@ public class PanZoomView extends View {
                 final float x = ev.getX(pointerIndex);
                 final float y = ev.getY(pointerIndex);
 
+                mPoints[0] = x;
+                mPoints[1] = y;
+
                 final float dx = x - mLastTouchX;
                 final float dy = y - mLastTouchY;
 
@@ -103,7 +105,11 @@ public class PanZoomView extends View {
                 float xm = mPan.getMoveX() + dx / mScale.getScaleFactor() / mScale.getMacroFactor();  // slow down pan with zoom out
                 float ym = mPan.getMoveY() + dy / mScale.getScaleFactor() / mScale.getMacroFactor();  // so finger does not move through
 
-                reload = mPan.setMove(xm, ym);
+                boolean reload = mPan.setMove(xm, ym);
+                // cb for motion event
+                if(mMotionCallback != null) {
+                    mMotionCallback.callback(null, reload);
+                }
                 invalidate();
 
                 break;
@@ -119,7 +125,20 @@ public class PanZoomView extends View {
                 break;
             }
 
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                int count = ev.getPointerCount();
+                if (2 == count) {
+                    mPoints[0] = ev.getX(ev.getPointerId(0));
+                    mPoints[1] = ev.getY(ev.getPointerId(0));
+                    mPoints[2] = ev.getX(ev.getPointerId(1));
+                    mPoints[3] = ev.getY(ev.getPointerId(1));
+                }
+                isMulti = true;
+                break;
+            }
+
             case MotionEvent.ACTION_POINTER_UP: {
+                isMulti = false;
                 // Extract the index of the pointer that left the touch sensor
                 final int pointerIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
@@ -134,10 +153,6 @@ public class PanZoomView extends View {
                 break;
             }
         }
-        // cb for motion event
-        if(mMotionCallback != null) {
-            mMotionCallback.callback(ev, reload);
-        }
         return true;
     }
 
@@ -146,13 +161,11 @@ public class PanZoomView extends View {
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             mScale.setScaleFactor(mScale.getScaleFactor() * detector.getScaleFactor());
-            if (detector.isInProgress()) {
-                mFocusPoint.set((int)detector.getFocusX(), (int)detector.getFocusY());
+            if(mScale.getNewMacroFactor() == mScale.getMacroFactor()) {
+                // keep scaling, no need to reload new tiles.
             }
-            else {
-                if(mMotionCallback != null) {
-                    mMotionCallback.callback(null, true);
-                }
+            else if(mMotionCallback != null) {
+                mMotionCallback.callback(null, true);
             }
 
             invalidate();
@@ -160,4 +173,33 @@ public class PanZoomView extends View {
         }
     }
 
+    /**
+     *
+     * @param e
+     * @return focus point in touch e
+     */
+    Point getFocusPoint(MotionEvent e) {
+        // Determine focal point
+        float sumX = 0, sumY = 0;
+        final int count = e.getPointerCount();
+        for (int i = 0; i < count; i++) {
+            sumX += e.getX(i);
+            sumY += e.getY(i);
+        }
+        final int div = count;
+        final float focusX = sumX / div;
+        final float focusY = sumY / div;
+
+        Point p = new Point();
+        p.set((int)focusX, (int)focusY);
+        return p;
+    }
+
+    public boolean isMultiTouch() {
+        return isMulti;
+    }
+
+    public float [] getMultiPointers() {
+        return mPoints;
+    }
 }

@@ -51,7 +51,7 @@ public class Origin {
         if(currentTile == null) {
             return;
         }
-        mScale = scale.getScaleFactor();
+        mScale = scale.getScaleFactor() * scale.getMacroFactor();
         mZoom = currentTile.getZoom();
         // Get top and center of scrren lat/lon using projection
         mLatScreenCenter = Epsg900913.getLatitudeOf(-pan.getMoveY(), params.getLatitude(), mZoom);

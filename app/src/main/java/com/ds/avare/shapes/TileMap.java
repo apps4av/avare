@@ -66,7 +66,7 @@ public class TileMap extends MapBase {
      * Function that loads new tiles in background
      *
      */
-    public void loadTiles(final double lon, final double lat, final Pan panIn, final float macro, final Scale scale, final double bearing, final GenericCallback callbackDone) {
+    public void loadTiles(final double lon, final double lat, final Pan panIn, final Scale scale, final double bearing, final GenericCallback callbackDone) {
 
         if(mTileTask != null && mTileTask.getStatus() == AsyncTask.Status.RUNNING) {
             mTileTask.cancel(true);
@@ -100,7 +100,7 @@ public class TileMap extends MapBase {
                 p[0] = gpsTile.getPx();
                 p[1] = gpsTile.getPy();
 
-                factor = macro / (float) scale.getMacroFactor();
+                factor = (float)scale.getMacroFactor() / (float)scale.getNewMacroFactor(); // how much jump in zoom factor
 
                 /*
                  * Make a copy of Pan to find next tile set in case this gets stopped, we do not

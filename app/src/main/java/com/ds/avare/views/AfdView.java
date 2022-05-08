@@ -131,7 +131,7 @@ public class AfdView extends PanZoomView {
         mPaint.setTextSize(min / 20);
         mPaint.setShadowLayer(0, 0, 0, Color.BLACK);
         
-        float scale = mScale.getScaleFactorRaw();
+        float scale = mScale.getScaleFactor();
 
     	/*
     	 * Chart Supplement

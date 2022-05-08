@@ -20,9 +20,8 @@ package com.ds.avare.position;
 public class Scale {
 
     private double mScaleFactor;
-    private double mScaleCorrectY;
-    private double mMacroMultiply;
-    
+    private int mMacro;
+
     private double mMaxScale;
     private static final double MIN_SCALE = 0.03125; 
 
@@ -32,8 +31,7 @@ public class Scale {
     public Scale(double max) {
         mMaxScale = max;
         mScaleFactor = 1;
-        mScaleCorrectY = 1;
-        mMacroMultiply = 1;
+        mMacro = 1;
     }
 
     /**
@@ -42,8 +40,7 @@ public class Scale {
     public Scale() {
         mMaxScale = 2;
         mScaleFactor = 1;
-        mScaleCorrectY = 1;
-        mMacroMultiply = 1;
+        mMacro = 1;
     }
     
     // Determine a stepping factor based upon the macro and scale
@@ -51,7 +48,7 @@ public class Scale {
     public double getStep() {
     	double step;
         int macro = getMacroFactor();
-        float scaleRaw = getScaleFactorRaw();
+        float scaleRaw = getScaleFactor();
         if(macro <= 1 && scaleRaw > 1) {  
             step = 2.5;        
         } 
@@ -82,24 +79,6 @@ public class Scale {
     }
     
     /**
-     * 
-     * @return
-     */
-    public float getScaleFactorRaw() {
-        double s;
-        if(mScaleFactor > mMaxScale) {
-            s = mMaxScale;
-        }
-        else if(mScaleFactor < MIN_SCALE) {
-            s = MIN_SCALE;
-        }
-        else {
-            s = mScaleFactor;
-        }
-        return((float)s);        
-    }
-
-    /**
      * This one is for plates drawing only
      * @return
      */
@@ -114,7 +93,6 @@ public class Scale {
         else {
             s = mScaleFactor;
         }
-        s = s * mMacroMultiply;
         return((float)s);
     }
 
@@ -122,36 +100,42 @@ public class Scale {
      * 
      * @return
      */
-    public float getScaleCorrected() {
-        return((float)(getScaleFactor() * mScaleCorrectY));
+    public int getMacroFactor() {
+        return mMacro;
     }
 
-    /**
-     * 
-     * @return
-     */
-    public int getMacroFactor() {
+    public void setMacroFactor() {
         if(mScaleFactor >= 0.5) {
-            return 1;
+            mMacro = 1;
         }
         else if(mScaleFactor >= 0.25) {
-            return 2;
+            mMacro = 2;
         }
         else if(mScaleFactor >= 0.125) {
-            return 4;
+            mMacro = 4;
         }
         else if(mScaleFactor >= 0.0625) {
-            return 8;
+            mMacro = 8;
         }
-        return 16;
+        else {
+            mMacro = 16;
+        }
     }
 
-    /**
-     * 
-     * @return
-     */
-    public void updateMacro() {
-        mMacroMultiply = getMacroFactor();
+    public int getNewMacroFactor() {
+        if(mScaleFactor >= 0.5) {
+            return(1);
+        }
+        else if(mScaleFactor >= 0.25) {
+            return(2);
+        }
+        else if(mScaleFactor >= 0.125) {
+            return(4);
+        }
+        else if(mScaleFactor >= 0.0625) {
+            return(8);
+        }
+        return(16);
     }
 
     /**
@@ -179,25 +163,5 @@ public class Scale {
      */
     public void zoomOut() {
        mScaleFactor = MIN_SCALE; 
-    }
-
-    public double getMaxScale() {
-        return mMaxScale;
-    }
-
-    public double getMinScale() {
-        return MIN_SCALE;
-    }
-
-    public void adjustZoom(double factor) {
-    	mScaleFactor += factor;
-    	
-    	if(mScaleFactor > mMaxScale) {
-    		mScaleFactor = mMaxScale;
-    	}
-
-    	if(mScaleFactor < MIN_SCALE) {
-    		mScaleFactor = MIN_SCALE;
-    	}
     }
 }
