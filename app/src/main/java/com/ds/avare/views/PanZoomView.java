@@ -1,6 +1,7 @@
 package com.ds.avare.views;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -21,21 +22,17 @@ public class PanZoomView extends View {
     protected Scale mScale;
     protected Pan mPan;
 
-    private float mScaleFactor;
+    private Point mFocusPoint;
     private ScaleGestureDetector mScaleDetector;
-    private float mPosX;
-    private float mPosY;
 
     private float mLastTouchX;
     private float mLastTouchY;
-    private float mFocusY;
-    private float mFocusX;
 
     private void setup(Context context) {
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mScale = new Scale();
         mPan = new Pan();
-        mScaleFactor = mScale.getScaleFactor();
+        mFocusPoint = new Point();
     }
 
     public PanZoomView(Context context) {
@@ -53,24 +50,30 @@ public class PanZoomView extends View {
         setup(context);
     }
 
+    private GenericCallback mMotionCallback;
+    public void setMotionCallback(GenericCallback cb) {
+        mMotionCallback = cb;
+    }
+
     public void resetPan() {
         mLastTouchX = 0;
         mLastTouchY = 0;
-        mPosX = 0;
-        mPosY = 0;
         mPan = new Pan();
     }
 
     public void resetZoom(double maxScale) {
-        mScaleFactor = 1;
         mScale = new Scale(maxScale);
+    }
+
+    public Point getFocusPoint() {
+        return mFocusPoint;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
 
+        boolean reload = false;
         mScaleDetector.onTouchEvent(ev);
-
         final int action = ev.getAction();
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
@@ -102,10 +105,10 @@ public class PanZoomView extends View {
                     return true;
                 }
 
-                mPosX += dx / mScaleFactor;
-                mPosY += dy / mScaleFactor;
+                float xm = mPan.getMoveX() + dx / mScale.getScaleFactor() / mScale.getMacroFactor();  // slow down pan with zoom out
+                float ym = mPan.getMoveY() + dy / mScale.getScaleFactor() / mScale.getMacroFactor();  // so finger does not move through
 
-                mPan.setMove(mPosX, mPosY);
+                reload = mPan.setMove(xm, ym);
                 invalidate();
 
                 break;
@@ -136,6 +139,10 @@ public class PanZoomView extends View {
                 break;
             }
         }
+        // cb for motion event
+        if(mMotionCallback != null) {
+            mMotionCallback.callback(ev, reload);
+        }
         return true;
     }
 
@@ -143,15 +150,16 @@ public class PanZoomView extends View {
 
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            mScaleFactor *= detector.getScaleFactor();
+            mScale.setScaleFactor(mScale.getScaleFactor() * detector.getScaleFactor());
             if (detector.isInProgress()) {
-                mFocusX = detector.getFocusX();
-                mFocusY = detector.getFocusY();
+                mFocusPoint.set((int)detector.getFocusX(), (int)detector.getFocusY());
             }
 
-            mScale.setScaleFactor(mScaleFactor);
-            mScaleFactor = mScale.getScaleFactor();
             invalidate();
+
+            if(mMotionCallback != null) {
+                mMotionCallback.callback(null, true);
+            }
 
             return true;
         }
