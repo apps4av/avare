@@ -99,12 +99,7 @@ public class PanZoomView extends View {
 
                 mLastTouchX = x;
                 mLastTouchY = y;
-
-                // do not pan when scaling
-                if (mScaleDetector.isInProgress()) {
-                    return true;
-                }
-
+                
                 float xm = mPan.getMoveX() + dx / mScale.getScaleFactor() / mScale.getMacroFactor();  // slow down pan with zoom out
                 float ym = mPan.getMoveY() + dy / mScale.getScaleFactor() / mScale.getMacroFactor();  // so finger does not move through
 
@@ -154,13 +149,13 @@ public class PanZoomView extends View {
             if (detector.isInProgress()) {
                 mFocusPoint.set((int)detector.getFocusX(), (int)detector.getFocusY());
             }
-
-            invalidate();
-
-            if(mMotionCallback != null) {
-                mMotionCallback.callback(null, true);
+            else {
+                if(mMotionCallback != null) {
+                    mMotionCallback.callback(null, true);
+                }
             }
 
+            invalidate();
             return true;
         }
     }
