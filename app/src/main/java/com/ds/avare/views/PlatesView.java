@@ -474,14 +474,6 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
      */
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        /* (non-Javadoc)
-         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
-         */
-        @Override
-        public void onLongPress(MotionEvent e) {
-
-        }
-
         @Override
         public boolean onDown(MotionEvent e) {
             if(null != mService) {
