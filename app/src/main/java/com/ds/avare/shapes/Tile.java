@@ -302,9 +302,6 @@ public class Tile {
         boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
         float scaleFactor = ctx.scale.getScaleFactor() * ctx.scale.getMacroFactor();
 
-
-
-
         for(int tilen = 0; tilen < tn; tilen++) {
 
             BitmapHolder tile = tiles.getTile(tilen);

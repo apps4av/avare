@@ -16,8 +16,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
@@ -27,16 +30,13 @@ import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.Helper;
 
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
-
 /**
  * 
  * @author zkhan
  * @author plinel
  *
  */
-public class PlatesView extends PanZoomView  {
+public class PlatesView extends PanZoomView implements View.OnTouchListener {
 
 	private Paint                        mPaint;
     private BitmapHolder                 mBitmap;
@@ -50,7 +50,7 @@ public class PlatesView extends PanZoomView  {
     private StorageService              mService;
     private double                     mAirportLon;
     private double                     mAirportLat;
-
+    private GestureDetector              mGestureDetector;
     private Context                   mContext;
     /*
      * Is it drawing?
@@ -80,12 +80,14 @@ public class PlatesView extends PanZoomView  {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
+        mGestureDetector = new GestureDetector(context, new GestureListener());
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mPref = new Preferences(context);
+        setOnTouchListener(this);
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
@@ -159,34 +161,6 @@ public class PlatesView extends PanZoomView  {
         mBitmap = holder;
         center();
     }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return mBitmap;
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
-     */
-    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
-        float x = mPan.getMoveX();
-        float y = mPan.getMoveY();
-        if(shouldRotate()) {
-            double p[] = new double[2];
-            double thetab = mGpsParams.getBearing();
-            p = Helper.rotateCoord(0, 0, -thetab, x, y);
-            objPosAndScaleOut.set((float)p[0],(float)p[1], true,
-                    mScale.getScaleFactor(), false, 0, 0, false, 0);
-        }
-        else {
-            objPosAndScaleOut.set(x, y, true,
-                    mScale.getScaleFactor(), false, 0, 0, false, 0);
-        }
-
-    }
-
 
 
     /**
@@ -466,4 +440,58 @@ public class PlatesView extends PanZoomView  {
         postInvalidate();
     }
 
+    @Override
+    public boolean onTouch(View view, MotionEvent e) {
+        mGestureDetector.onTouchEvent(e);
+        if (e.getPointerCount() != 2) {
+            /*
+             * Do not move on multitouch
+             */
+            if (mDraw && mService != null) {
+                Point pt = getFirstPoint(e);
+                /*
+                 * Threshold the drawing so we do not generate too many points
+                 */
+                if (shouldRotate()) {
+                    double thetab = mGpsParams.getBearing();
+                    double p[] = new double[2];
+                    p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, pt.x, pt.y);
+                    mService.getPixelDraw().addPoint((float) p[0], (float) p[1]);
+                } else {
+                    mService.getPixelDraw().addPoint(pt.x, pt.y);
+                }
+                invalidate();
+                return true; // do not PTZ
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @author zkhan
+     *
+     */
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        /* (non-Javadoc)
+         * @see android.view.GestureDetector.SimpleOnGestureListener#onLongPress(android.view.MotionEvent)
+         */
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if(null != mService) {
+                /*
+                 * Add separation between chars
+                 */
+                mService.getPixelDraw().addSeparation();
+            }
+            return true;
+        }
+
+    }
 }

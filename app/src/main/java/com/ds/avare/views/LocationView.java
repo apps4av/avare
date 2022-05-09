@@ -457,6 +457,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
                 else {
                     mService.getDraw().addPoint(pt.x, pt.y, mOrigin);
                 }
+                invalidate();
                 return true; // do not PTZ
             }
         }
@@ -1406,7 +1407,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         updateCoordinates();
         postInvalidate();
     }
-            
+
     /**
      * @author zkhan
      *
@@ -1423,7 +1424,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             }
             return true;
         }
-        
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
         	
@@ -1479,8 +1480,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
                 	return;
             	}
             }
-
-
 
             /*
              * Notify activity of gesture.
