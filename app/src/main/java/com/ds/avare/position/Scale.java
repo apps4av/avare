@@ -23,13 +23,21 @@ public class Scale {
     private int mMacro;
 
     private double mMaxScale;
-    private static final double MIN_SCALE = 0.03125; 
+    private double mMinScale;
 
     /**
      * Scale for pictures
      */
     public Scale(double max) {
         mMaxScale = max;
+        mMinScale = 0.03125;
+        mScaleFactor = 1;
+        mMacro = 1;
+    }
+
+    public Scale(double max, double min) {
+        mMaxScale = max;
+        mMinScale = min;
         mScaleFactor = 1;
         mMacro = 1;
     }
@@ -39,6 +47,7 @@ public class Scale {
      */
     public Scale() {
         mMaxScale = 2;
+        mMinScale = 0.03125;
         mScaleFactor = 1;
         mMacro = 1;
     }
@@ -87,8 +96,8 @@ public class Scale {
         if(mScaleFactor > mMaxScale) {
             s = mMaxScale;
         }
-        else if(mScaleFactor < MIN_SCALE) {
-            s = MIN_SCALE;
+        else if(mScaleFactor < mMinScale) {
+            s = mMinScale;
         }
         else {
             s = mScaleFactor;
@@ -162,6 +171,6 @@ public class Scale {
      * 
      */
     public void zoomOut() {
-       mScaleFactor = MIN_SCALE; 
+       mScaleFactor = mMinScale;
     }
 }

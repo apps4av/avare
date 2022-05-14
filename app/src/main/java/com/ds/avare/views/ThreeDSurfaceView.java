@@ -18,10 +18,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.ds.avare.position.Scale;
+
 /**
  * Created by zkhan on 5/16/16.
  */
-public class ThreeDSurfaceView extends PanZoomSurfaceView implements View.OnTouchListener {
+public class ThreeDSurfaceView extends PanZoomView implements View.OnTouchListener {
 
     private float mAngle;
 
@@ -56,6 +58,8 @@ public class ThreeDSurfaceView extends PanZoomSurfaceView implements View.OnTouc
 
     public void init() {
         mAngle = 0;
+        mScale = new Scale(MAX_SCALE, MIN_SCALE);
+        setOnTouchListener(this);
     }
 
     void setAngle(Point p0, Point p1) {
@@ -64,7 +68,7 @@ public class ThreeDSurfaceView extends PanZoomSurfaceView implements View.OnTouc
 
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        if(e.getPointerCount() == 2) { // not multi
+        if(e.getPointerCount() == 2) { // multi
             Point p0 = getFirstPoint(e);
             Point p1 = getSecondPoint(e);
             setAngle(p0, p1);

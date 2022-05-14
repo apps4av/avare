@@ -15,7 +15,7 @@ import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.utils.GenericCallback;
 
-public class PanZoomView extends View {
+public class PanZoomView extends GLSurfaceView {
 
     private static final int INVALID_POINTER_ID = 1;
     private int mActivePointerId = INVALID_POINTER_ID;
@@ -45,7 +45,7 @@ public class PanZoomView extends View {
     }
 
     public PanZoomView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context, attrs);
         setup(context);
     }
 
@@ -93,7 +93,11 @@ public class PanZoomView extends View {
 
                 mLastTouchX = x;
                 mLastTouchY = y;
-                
+
+                if(ev.getPointerCount() != 1) {
+                    break; // do not pan when more than one pointer. this fixes zoom in place.
+                }
+
                 float xm = mPan.getMoveX() + dx / mScale.getScaleFactor() / mScale.getMacroFactor();  // slow down pan with zoom out
                 float ym = mPan.getMoveY() + dy / mScale.getScaleFactor() / mScale.getMacroFactor();  // so finger does not move through
 
