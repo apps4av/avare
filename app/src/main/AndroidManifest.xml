@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="362"
-    android:versionName="10.1.2"
+    android:versionCode="363"
+    android:versionName="10.1.3"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -27,6 +27,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
