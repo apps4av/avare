@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.TypedValue;
@@ -186,11 +187,17 @@ public class MainActivity extends TabActivity {
         // check permissions
         final Activity ctx = MainActivity.this;
         int PERMISSION_ALL = 101;
+
         String[] PERMISSIONS = {
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.BLUETOOTH_CONNECT,
-                android.Manifest.permission.BLUETOOTH_SCAN,
         };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PERMISSIONS = new String[] {
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                    android.Manifest.permission.BLUETOOTH_SCAN,
+            };
+        }
         boolean granted = true;
         for (String permission : PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(ctx, permission) != PackageManager.PERMISSION_GRANTED) {
