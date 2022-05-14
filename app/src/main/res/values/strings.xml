@@ -545,7 +545,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string name="open_settings">Touch to open settings</string>
     <string name="permission">Permissions</string>
-    <string name="permission_message">The app needs the location permission to show your location on the map.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without the permissions.</string>
+    <string name="permission_message">The app needs the location permission to show your location on the map.\nThe app needs the nearby devices/BT permission for receiving traffic, and weather.\nYou may grant these permissions from Android App Settings.\nThe app cannot proceed without the permissions.</string>
     <string name="restart">Restart</string>
     <string name="Set1">Set 1</string>
     <string name="Set2">Set 2</string>

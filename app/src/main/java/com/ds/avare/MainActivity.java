@@ -187,7 +187,9 @@ public class MainActivity extends TabActivity {
         final Activity ctx = MainActivity.this;
         int PERMISSION_ALL = 101;
         String[] PERMISSIONS = {
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.BLUETOOTH_CONNECT,
+                android.Manifest.permission.BLUETOOTH_SCAN,
         };
         boolean granted = true;
         for (String permission : PERMISSIONS) {
