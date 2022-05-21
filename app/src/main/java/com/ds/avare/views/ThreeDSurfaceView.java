@@ -68,13 +68,13 @@ public class ThreeDSurfaceView extends PanZoomView implements View.OnTouchListen
 
     @Override
     public boolean onTouch(View view, MotionEvent e) {
-        if(e.getPointerCount() == 2) { // multi
+        if(e.getPointerCount() != 2) { // not multi
+            mAngle = 0;
+        }
+        else {
             Point p0 = getFirstPoint(e);
             Point p1 = getSecondPoint(e);
             setAngle(p0, p1);
-        }
-        else {
-           mAngle = 0;
         }
         return false;
     }

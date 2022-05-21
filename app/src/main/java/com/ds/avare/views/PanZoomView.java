@@ -83,20 +83,14 @@ public class PanZoomView extends GLSurfaceView {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                // Find the index of the active pointer and fetch its position
-                final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-                final float x = ev.getX(pointerIndex);
-                final float y = ev.getY(pointerIndex);
+                final float x = ev.getX();
+                final float y = ev.getY();
 
                 final float dx = x - mLastTouchX;
                 final float dy = y - mLastTouchY;
 
                 mLastTouchX = x;
                 mLastTouchY = y;
-
-                if(ev.getPointerCount() != 1) {
-                    break; // do not pan when more than one pointer. this fixes zoom in place.
-                }
 
                 float xm = mPan.getMoveX() + dx / mScale.getScaleFactor() / mScale.getMacroFactor();  // slow down pan with zoom out
                 float ym = mPan.getMoveY() + dy / mScale.getScaleFactor() / mScale.getMacroFactor();  // so finger does not move through
@@ -111,11 +105,7 @@ public class PanZoomView extends GLSurfaceView {
                 break;
             }
 
-            case MotionEvent.ACTION_UP: {
-                mActivePointerId = INVALID_POINTER_ID;
-                break;
-            }
-
+            case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL: {
                 mActivePointerId = INVALID_POINTER_ID;
                 break;
@@ -162,9 +152,8 @@ public class PanZoomView extends GLSurfaceView {
      * @return first point
      */
     public Point getFirstPoint(MotionEvent e) {
-        int pointerIndex = e.findPointerIndex(0);
-        int x = (int)e.getX(pointerIndex);
-        int y = (int)e.getY(pointerIndex);
+        int x = (int)e.getX();
+        int y = (int)e.getY();
         Point p = new Point(x, y);
         return (p);
     }
@@ -172,12 +161,15 @@ public class PanZoomView extends GLSurfaceView {
     /**
      *
      * @param e
-     * @return first point
+     * @return first/second point
      */
     public Point getSecondPoint(MotionEvent e) {
-        int pointerIndex = e.findPointerIndex(1);
-        int x = (int)e.getX(pointerIndex);
-        int y = (int)e.getY(pointerIndex);
+        int id = 0;
+        if(e.getPointerCount() > 1) {
+            id = 1;
+        }
+        int x = (int)e.getX(id);
+        int y = (int)e.getY(id);
         Point p = new Point(x, y);
         return (p);
     }
