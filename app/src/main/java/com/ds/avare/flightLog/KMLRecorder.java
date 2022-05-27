@@ -143,7 +143,7 @@ public class KMLRecorder {
     	mPositionHistory = new LinkedList<>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
-    	mFolder = new Preferences(ctx).getCacheFolder();
+		mFolder = new Preferences(ctx).getUserDataFolder() + File.separator + "tracks";
     }
     
     /** 
