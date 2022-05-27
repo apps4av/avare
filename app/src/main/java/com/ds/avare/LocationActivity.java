@@ -19,7 +19,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.Bundle;
@@ -27,6 +30,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -37,10 +41,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
+import androidx.core.view.ScaleGestureDetectorCompat;
+import androidx.core.view.ViewCompat;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
+import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -98,11 +105,11 @@ public class LocationActivity extends Activity implements Observer {
      * App preferences
      */
     private Preferences mPref;
-    
+
     private Toast mToast;
 
     private Location mInitLocation;
-    
+
     /**
      * Shows warning message about Avare
      */
@@ -1020,6 +1027,8 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogDestination = alert.create();
         mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        // connect external wifi instruments automatically
+        WifiConnection.getInstance(getApplicationContext()).connect(mPref.getEditTextValue(R.id.main_wifi_port), false);
     }
 
     private void setTrackState(boolean bState)
@@ -1071,6 +1080,8 @@ public class LocationActivity extends Activity implements Observer {
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
             }
+            // connect to all external receivers
+            WifiConnection.getInstance(getApplicationContext()).setHelper(mService);
 
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
@@ -1332,7 +1343,7 @@ public class LocationActivity extends Activity implements Observer {
          * Clean up on pause that was started in on resume
          */
         getApplicationContext().unbindService(mConnection);
-        
+
         /*
          * Kill dialogs
          */
@@ -1391,7 +1402,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimationLayerHandler.removeCallbacks(mAnimationRunnableCode);
 
     }
-    
+
     /* (non-Javadoc)
      * @see android.app.Activity#onRestart()
      */
@@ -1417,7 +1428,7 @@ public class LocationActivity extends Activity implements Observer {
     }
 
     /**
-     * 
+     *
      */
     @Override
     public void update(Observable arg0, Object arg1) {
@@ -1427,7 +1438,7 @@ public class LocationActivity extends Activity implements Observer {
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
-            
+
                 /*
                  * Temporarily move to destination by giving false GPS signal.
                  */
@@ -1440,7 +1451,7 @@ public class LocationActivity extends Activity implements Observer {
                     /*
                      * If user presses a selection repeatedly, reject previous
                      */
-                    return;                    
+                    return;
                 }
                 StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
                 mService.getDBResource().setUserRecent(s);
@@ -1464,10 +1475,10 @@ public class LocationActivity extends Activity implements Observer {
                         else {
                             mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
                         }
-                        mToast.show();                            
+                        mToast.show();
                     }
                 }
-                
+
                 /*
                  * Move to new dest temporarily if sim mode.
                  */
@@ -1484,7 +1495,7 @@ public class LocationActivity extends Activity implements Observer {
             }
         }
     }
-    
+
     /**
      * Blink screen for an alert
      */
@@ -1498,11 +1509,11 @@ public class LocationActivity extends Activity implements Observer {
                 	mLocationView.setVisibility(View.INVISIBLE);
                 }
                 else {
-                	mLocationView.setVisibility(View.VISIBLE);                        	
+                	mLocationView.setVisibility(View.VISIBLE);
                 }
             }
         };
-        
+
         /*
          * Schedule 10 times
          */

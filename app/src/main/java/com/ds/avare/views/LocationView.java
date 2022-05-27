@@ -72,11 +72,6 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
-import org.metalev.multitouch.controller.MultiTouchController;
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas;
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo;
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -87,113 +82,91 @@ import java.util.Vector;
  * 
  * This is a view that user sees 99% of the time. Has moving map on it.
  */
-public class LocationView extends View implements MultiTouchObjectCanvas<Object>, OnTouchListener {
+public class LocationView extends PanZoomView implements OnTouchListener {
     /**
      * paint for onDraw
      */
-    private Paint                      mPaint;
+    private Paint mPaint;
     /**
      * Current GPS location
      */
-    private GpsParams                  mGpsParams;
-    
+    private GpsParams mGpsParams;
+
     /**
      * The plane on screen
      */
-    private BitmapHolder               mAirplaneBitmap;
-    private BitmapHolder               mRunwayBitmap;
-    private BitmapHolder               mLineBitmap;
-    private BitmapHolder               mLineHeadingBitmap;
-    private BitmapHolder               mObstacleBitmap;
-    /**
-     * The magic of multi touch
-     */
-    private MultiTouchController<Object> mMultiTouchC;
-    /**
-     * The magic of multi touch
-     */
-    private PointInfo                   mCurrTouchPoint;
+    private BitmapHolder mAirplaneBitmap;
+    private BitmapHolder mRunwayBitmap;
+    private BitmapHolder mLineBitmap;
+    private BitmapHolder mLineHeadingBitmap;
+    private BitmapHolder mObstacleBitmap;
     /**
      * Gesture like long press, double touch outside of multi-touch
      */
-    private GestureDetector             mGestureDetector;
+    private GestureDetector mGestureDetector;
     /**
      * Cache
      */
-    private Context                     mContext;
-    
+    private Context mContext;
+
     /**
      * Current movement from center
      */
-    private Movement                    mMovement;
+    private Movement mMovement;
     /**
      * GPS status string if it fails, set by activity
      */
-    private String                      mErrorStatus;
-   
+    private String mErrorStatus;
+
     // Which layer to draw
-    private  String                     mLayerType;
-    private Layer                       mLayer;
+    private String mLayerType;
+    private Layer mLayer;
 
     /**
      * Task that finds closets airport.
      */
-    private ClosestAirportTask          mClosestTask; 
+    private ClosestAirportTask mClosestTask;
 
     /**
      * Storage service that contains all the state
      */
-    private StorageService              mService;
+    private StorageService mService;
 
-    /**
-     * Translation of current pan 
-     */
-    private Pan                         mPan;
-    
-    private DataSource                  mImageDataSource;
-    
+    private DataSource mImageDataSource;
+
     /**
      * To tell activity to do something on a gesture or touch
      */
-    private GestureInterface            mGestureCallBack; 
+    private GestureInterface mGestureCallBack;
 
-    /**
-     * Scale factor based on pinch zoom
-     */
-    private Scale                       mScale;
-    
     /*
      * A hashmap to load only required tiles.
      */
-    
-    private Preferences                 mPref;
-    private TextPaint                   mTextPaint;
-    
-    private Typeface                    mFace;
-    
+
+    private Preferences mPref;
+    private TextPaint mTextPaint;
+
+    private Typeface mFace;
+
     /**
      * These are longitude and latitude at top left (0,0)
      */
-    private Origin                      mOrigin;
-    
+    private Origin mOrigin;
+
     /*
      * Projection of a touch point
      */
-    private Projection                  mPointProjection;
-    
+    private Projection mPointProjection;
+    private Projection mPointProjectionAirport;
+
     /*
      * Is it drawing?
      */
-    private boolean                   mDraw;
+    private boolean mDraw;
 
-    /*
-     * Macro of zoom
-     */
-    private int                         mMacro;
-
-    private int                mDragPlanPoint;
-    private float                mDragStartedX;
-    private float                mDragStartedY;
+    private int mDragPlanPoint;
+    private float mDragStartedX;
+    private float mDragStartedY;
 
 
     /*
@@ -214,40 +187,40 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     /*
      * Text on screen color
      */
-    private static final int TEXT_COLOR = Color.WHITE; 
-    private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
-    
+    private static final int TEXT_COLOR = Color.WHITE;
+    private static final int TEXT_COLOR_OPPOSITE = Color.BLACK;
+
     private static final float MOVEMENT_THRESHOLD = 32.f;
-    
+
     private static final int MAX_SCALE = 4;
-    
+
     /*
      * dip to pix scaling factor
      */
-    private float                      mDipToPix;
+    private float mDipToPix;
 
     Point mDownFocusPoint;
     int mTouchSlopSquare;
     boolean mDoCallbackWhenDone;
     LongTouchDestination mLongTouchDestination;
 
-    public LongTouchDestination getLongTouchDestination() {return mLongTouchDestination;}
+    public LongTouchDestination getLongTouchDestination() {
+        return mLongTouchDestination;
+    }
 
     /**
      * @param context
      */
     private void setup(Context context) {
-        
+
         /*
          * Set up all graphics.
          */
         mContext = context;
         mPan = new Pan();
-        mScale = new Scale(MAX_SCALE);
         mOrigin = new Origin();
         mMovement = new Movement();
         mErrorStatus = null;
-        mMacro = 1;
         mDragPlanPoint = -1;
         mImageDataSource = null;
         mGpsParams = new GpsParams(null);
@@ -261,36 +234,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         mFace = Helper.getTypeFace(context);
         mPaint.setTypeface(mFace);
         mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
-        
-        
+        setOnTouchListener(this);
+
+
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTypeface(mFace);
         mTextPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
-        
+
         /*
          * Set up the paint for misc messages to display
          */
         mMsgPaint = new Paint();
         mMsgPaint.setAntiAlias(true);
         mMsgPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
-        
+
         /*
          * Set up the paint for the runways as much as possible here
          */
         mRunwayPaint = new Paint(mPaint);
         mRunwayPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.runwayNumberTextSize));
 
-
-        setOnTouchListener(this);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineBitmap = new BitmapHolder(context, R.drawable.line);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mRunwayBitmap = new BitmapHolder(context, R.drawable.runway_extension);
         mObstacleBitmap = new BitmapHolder(context, R.drawable.obstacle);
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new PointInfo();
 
         mTrafficRed = new BitmapHolder(context, R.drawable.tr_red);
         mTrafficGreen = new BitmapHolder(context, R.drawable.tr_green);
@@ -299,26 +269,28 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
 
         mGestureDetector = new GestureDetector(context, new GestureListener());
-        
+
         // We're going to give the user twice the slop as normal
         final ViewConfiguration configuration = ViewConfiguration.get(context);
         int touchSlop = configuration.getScaledTouchSlop() * 2;
         mTouchSlopSquare = touchSlop * touchSlop;
         mDoCallbackWhenDone = false;
-             
+
         mDipToPix = Helper.getDpiToPix(context);
+
+        setMotionCallback(mCallback);
+
     }
-    
+
     /**
-     * 
+     *
      */
     private void updateCoordinates() {
         mOrigin.update(mGpsTile, getWidth(), getHeight(), mGpsParams, mPan, mScale);
     }
 
     /**
-     * @param context
-     * Default for tools, do not call
+     * @param context Default for tools, do not call
      */
     public LocationView(Context context) {
         super(context);
@@ -326,8 +298,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * @param context
-     * Default for tools, do not call
+     * @param context Default for tools, do not call
      */
     public LocationView(Context context, AttributeSet aset) {
         super(context, aset);
@@ -335,8 +306,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     }
 
     /**
-     * @param context
-     * Default for tools, do not call
+     * @param context Default for tools, do not call
      */
     public LocationView(Context context, AttributeSet aset, int arg) {
         super(context, aset, arg);
@@ -350,22 +320,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
     public void onDraw(Canvas canvas) {
         drawMap(canvas);
     }
-       
+
     /**
-     * 
      * @param x
      * @param y
      * @param finish
      */
     private void rubberBand(float x, float y, boolean finish) {
-        
+
         // Rubberbanding
-        if(mDragPlanPoint >= 0 && mService.getPlan() != null) {
-            
+        if (mDragPlanPoint >= 0 && mService.getPlan() != null) {
+
             // Threshold for movement
             float movementx = Math.abs(x - mDragStartedX);
             float movementy = Math.abs(y - mDragStartedY);
-            if((movementx > MOVEMENT_THRESHOLD * mDipToPix) 
+            if ((movementx > MOVEMENT_THRESHOLD * mDipToPix)
                     || (movementy > MOVEMENT_THRESHOLD * mDipToPix)) {
                 /*
                  * Do something to plan
@@ -373,47 +342,42 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                  */
                 double lon = mOrigin.getLongitudeOf(x);
                 double lat = mOrigin.getLatitudeOf(y);
-                
+
                 mService.getPlan().replaceDestination(mPref, mDragPlanPoint, lon, lat, finish);
-               
+
                 // This will not snap again
                 mDragStartedX = -1000;
-                mDragStartedY = -1000; 
+                mDragStartedY = -1000;
             }
         }
     }
-    
+
     /* (non-Javadoc)
      * @see android.view.View.OnTouchListener#onTouch(android.view.View, android.view.MotionEvent)
      */
     @Override
     public boolean onTouch(View view, MotionEvent e) {
+        /*
+         * ALl these operations happen outside the PanZoomView since they are related to user actions not related to pan and pinch zoom.
+         */
         boolean bPassToGestureDetector = true;
-        
+
         if(e.getAction() == MotionEvent.ACTION_UP) {
 
             /**
              * Rubberbanding
              */
             rubberBand(e.getX(), e.getY(), true);
-            
+
             /*
              * Drag stops for rubber band
              */
             mDragPlanPoint = -1;
-            
+
             /*
              * Do not draw point. Only when long press and down.
              */
-             mPointProjection = null;
-
-            /*
-             * Now that we have moved passed the macro level, re-query for new tiles.
-             * Do not query repeatedly hence check for mFactor = 1
-             */
-            if(mMacro != mScale.getMacroFactor()) {
-                loadTiles();
-            }
+            mPointProjection = null;
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
 
@@ -429,11 +393,11 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     mDragStartedX = e.getX();
                     mDragStartedY = e.getY();
                 }
-                
+
             }
 
             mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
-            
+
             // Remember this point so we can make sure we move far enough before losing the long press
             mDoCallbackWhenDone = false;
             mDownFocusPoint = getFocusPoint(e);
@@ -441,18 +405,18 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
         else if(e.getAction() == MotionEvent.ACTION_MOVE) {
             if(mDownFocusPoint != null) {
-        
+
                 Point fp = getFocusPoint(e);
                 final int deltaX = fp.x - mDownFocusPoint.x;
                 final int deltaY = fp.y - mDownFocusPoint.y;
                 int distanceSquare = (deltaX * deltaX) + (deltaY * deltaY);
                 bPassToGestureDetector = distanceSquare > mTouchSlopSquare;
-                
+
             }
             // Rubberbanding, intermediate
             rubberBand(e.getX(), e.getY(), false);
         }
-        
+
         if(bPassToGestureDetector) {
             // Once we break out of the square or stop the long press, keep sending
             if(e.getAction() == MotionEvent.ACTION_MOVE || e.getAction() == MotionEvent.ACTION_UP) {
@@ -464,74 +428,21 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             mGestureDetector.onTouchEvent(e);
         }
-        return mMultiTouchC.onTouchEvent(e, mScale.getMaxScale(), mScale.getMinScale(), mMacro);
-    }
-    
-    /**
-     * 
-     * @param e
-     * @return
-     */
-    Point getFocusPoint(MotionEvent e) {
-        // Determine focal point
-        float sumX = 0, sumY = 0;
-        final int count = e.getPointerCount();
-        for (int i = 0; i < count; i++) {
-            sumX += e.getX(i);
-            sumY += e.getY(i);
-        }
-        final int div = count;
-        final float focusX = sumX / div;
-        final float focusY = sumY / div;
-        
-        Point p = new Point();
-        p.set((int)focusX, (int)focusY);
-        return p;
-    }
 
+        if(e.getPointerCount() != 2) { // not multi
 
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getDraggableObjectAtPoint(com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public Object getDraggableObjectAtPoint(PointInfo pt) {
-        return this;
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#getPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale)
-     */
-    public void getPositionAndScale(Object obj, PositionAndScale objPosAndScaleOut) {
-        objPosAndScaleOut.set(mPan.getMoveX(), mPan.getMoveY(), true,
-                mScale.getScaleFactorRaw(), false, 0, 0, false, 0);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#selectObject(java.lang.Object, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public void selectObject(Object obj, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-    }
-
-    /* (non-Javadoc)
-     * @see com.ds.avare.MultiTouchController.MultiTouchObjectCanvas#setPositionAndScale(java.lang.Object, com.ds.avare.MultiTouchController.PositionAndScale, com.ds.avare.MultiTouchController.PointInfo)
-     */
-    public boolean setPositionAndScale(Object obj,PositionAndScale newObjPosAndScale, PointInfo touchPoint) {
-        touchPointChanged(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            
             /*
              * Do not move on drag
              */
             if(mDragPlanPoint >= 0) {
-                return true;                
+                return true; // do not PTZ
             }
-            
+
             /*
              * Do not move on multitouch
              */
             if(mDraw && mService != null) {
-                float x = mCurrTouchPoint.getX() * mScale.getScaleFactor();
-                float y = mCurrTouchPoint.getY() * mScale.getScaleFactor();
+                Point pt = getFirstPoint(e);
                 /*
                  * Threshold the drawing so we do not generate too many points
                  */
@@ -540,39 +451,33 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                     double p[] = new double[2];
                     double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
                     double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
-                    p = Helper.rotateCoord(c_x, c_y, thetab, x, y);
+                    p = Helper.rotateCoord(c_x, c_y, thetab, pt.x, pt.y);
                     mService.getDraw().addPoint((float)p[0],(float)p[1], mOrigin);
                 }
                 else {
-                    mService.getDraw().addPoint(x, y, mOrigin);
+                    mService.getDraw().addPoint(pt.x, pt.y, mOrigin);
                 }
-                return true;
-            }
-
-            // Pan
-            if(mPan.setMove(
-                            newObjPosAndScale.getXOff(),
-                            newObjPosAndScale.getYOff())) {
-                /*
-                 * Query when we have moved one tile. This will happen in background.
-                 */
-                loadTiles();
+                invalidate();
+                return true; // do not PTZ
             }
         }
         else {
-            
+
+            // multi touch
             // Zooming does not change drag
             mDragPlanPoint = -1;
-            
+
             /*
              * on double touch find distance and bearing between two points.
              */
 
             if(mPointProjection == null) {
-                double x0 = mCurrTouchPoint.getXs()[0];
-                double y0 = mCurrTouchPoint.getYs()[0];
-                double x1 = mCurrTouchPoint.getXs()[1];
-                double y1 = mCurrTouchPoint.getYs()[1];
+                Point p00 = getFirstPoint(e);
+                Point p11 = getSecondPoint(e);
+                double x0 = p00.x;
+                double y0 = p00.y;
+                double x1 = p11.x;
+                double y1 = p11.y;
 
                 double lon0,lat0,lon1,lat1;
                 // convert to origin coord if Trackup
@@ -596,28 +501,26 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 }
                 mPointProjection = new Projection(lon0, lat0, lon1, lat1);
             }
-
-
-            /*
-             * Clamp scaling.
-             */
-            
-            mScale.setScaleFactor(newObjPosAndScale.getScale());
         }
-        updateCoordinates();
-        invalidate();
-        return true;
+
+        return false; // need ontouch to be called
     }
+
+
+    // update tiles on pan / zoom if needed
+    GenericCallback mCallback = new GenericCallback() {
+        @Override
+        public Object callback(Object o, Object o1) {
+            boolean reload = (Boolean)o1;
+            if(reload) {
+                loadTiles();
+            }
+            updateCoordinates();
+            invalidate();
+            return null;
+        }
+    };
     
-    /**
-     * @param touchPoint
-     */
-    private void touchPointChanged(PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        invalidate();
-    }
-
-
     /**
      *
      * @param canvas
@@ -1215,7 +1118,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         }
 
         TileMap map = mService.getTiles();
-        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mPan, mMacro, mScale, mGpsParams.getBearing(),
+        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mPan, mScale, mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
@@ -1238,8 +1141,14 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                         mPan.setTileMove(t.movex, t.movey);
                         mMovement = new Movement(t.offsets);
                         mService.setMovement(mMovement);
-                        mMacro = mScale.getMacroFactor();
-                        mScale.updateMacro();
+                        mScale.setMacroFactor(); // update new macro as new tiles are loaded
+                        /* the process goes like:
+                          From scale, find a downsample factor.
+                          Load tiles using that downsample factor.
+                          Change macro to accomodate the new downsample factor.
+                          Change all coordinates.
+                          Slow down pan by scale and macro factor
+                         */
                         updateCoordinates();
                         invalidate();
 
@@ -1397,7 +1306,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
 
             navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
 
-            mPointProjection = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
+            mPointProjectionAirport = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
             return airport;
         }
         
@@ -1406,12 +1315,12 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
          */
         @Override
         protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjection && null != airport) {
+            if(null != mGestureCallBack && null != mPointProjectionAirport && null != airport) {
                 mLongTouchDestination = new LongTouchDestination();
                 mLongTouchDestination.airport = airport;
-                mLongTouchDestination.info = Math.round(mPointProjection.getDistance()) + Preferences.distanceConversionUnit +
-                        "(" + mPointProjection.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjection.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
+                mLongTouchDestination.info = Math.round(mPointProjectionAirport.getDistance()) + Preferences.distanceConversionUnit +
+                        "(" + mPointProjectionAirport.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
+                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjectionAirport.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
 
                 /*
                  * Clear old weather
@@ -1498,7 +1407,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
         updateCoordinates();
         postInvalidate();
     }
-            
+
     /**
      * @author zkhan
      *
@@ -1515,7 +1424,7 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
             }
             return true;
         }
-        
+
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
         	
@@ -1571,8 +1480,6 @@ public class LocationView extends View implements MultiTouchObjectCanvas<Object>
                 	return;
             	}
             }
-
-
 
             /*
              * Notify activity of gesture.

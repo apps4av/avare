@@ -300,8 +300,7 @@ public class Tile {
 
         String type = Boundaries.getChartType(index);
         boolean IFRinv = ctx.pref.isNightMode() && (type.equals("IFR Low") || type.equals("IFR High") || type.equals("IFR Area"));
-        float scaleFactor = ctx.scale.getScaleFactor();
-        float scaleCorrected = ctx.scale.getScaleCorrected();
+        float scaleFactor = ctx.scale.getScaleFactor() * ctx.scale.getMacroFactor();
 
         for(int tilen = 0; tilen < tn; tilen++) {
 
@@ -333,7 +332,7 @@ public class Tile {
              * Pretty straightforward. Pan and draw individual tiles.
              */
 
-            tile.getTransform().setScale(scaleFactor, scaleCorrected);
+            tile.getTransform().setScale(scaleFactor, scaleFactor);
             tile.getTransform().postTranslate(
                     ctx.view.getWidth()  / 2.f
                             + ( - BitmapHolder.WIDTH  / 2.f
@@ -347,7 +346,7 @@ public class Tile {
                             + ctx.pan.getMoveY()
                             + ((tilen / tiles.getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(tiles.getYTilesNum() / 2))
                             + ctx.pan.getTileMoveY() * BitmapHolder.HEIGHT
-                            - (float)ctx.movement.getOffsetLatitude() ) * scaleCorrected);
+                            - (float)ctx.movement.getOffsetLatitude() ) * scaleFactor);
 
             Bitmap b = tile.getBitmap();
             if(null != b && (!b.isRecycled())) {

@@ -13,23 +13,19 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.views;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
-import org.metalev.multitouch.controller.MultiTouchController;
+import com.ds.avare.position.Scale;
 
 /**
  * Created by zkhan on 5/16/16.
  */
-public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchController.MultiTouchObjectCanvas<Object> {
+public class ThreeDSurfaceView extends GlPanZoomView implements View.OnTouchListener {
 
-    private float mX;
-    private float mY;
-    private float mScale;
     private float mAngle;
-    private MultiTouchController<Object> mMultiTouchC;
-    private MultiTouchController.PointInfo mCurrTouchPoint;
 
     private static final float MAX_SCALE = 12f;
     private static final float MIN_SCALE = 1.0f; // change this range in relationship to MAX_VIEW_ANGLE
@@ -44,75 +40,42 @@ public class ThreeDSurfaceView extends GLSurfaceView implements MultiTouchContro
         init();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        return mMultiTouchC.onTouchEvent(e, MAX_SCALE, MIN_SCALE, 1);
-    }
-
     public float getAngle() {
         return -(float)Math.toDegrees(mAngle);
     }
 
     public float getDisplacementY() {
-        return -mY * MAX_SCALE / getHeight();
+        return -mPan.getMoveY() * MAX_SCALE / getHeight();
     }
 
     public float getDisplacementX() {
-        return  mX * MAX_SCALE / getWidth();
+        return  mPan.getMoveX() * MAX_SCALE / getWidth();
     }
 
     public float getScale() {
-        return mScale;
+        return mScale.getScaleFactor();
     }
 
     public void init() {
-        mX = 0;
-        mY = 0;
         mAngle = 0;
-        mScale = 1.0f;
-        mMultiTouchC = new MultiTouchController<Object>(this);
-        mCurrTouchPoint = new MultiTouchController.PointInfo();
+        mScale = new Scale(MAX_SCALE, MIN_SCALE);
+        setOnTouchListener(this);
+    }
+
+    void setAngle(Point p0, Point p1) {
+        mAngle = (float) Math.atan2(p1.y - p0.y, p1.x - p0.x);
     }
 
     @Override
-    public Object getDraggableObjectAtPoint(MultiTouchController.PointInfo touchPoint) {
-        return this;
-    }
-
-    @Override
-    public void getPositionAndScale(Object obj, MultiTouchController.PositionAndScale objPosAndScaleOut) {
-        objPosAndScaleOut.set(mX, mY, true, mScale, true, mScale, mScale, true, mAngle);
-    }
-
-    @Override
-    public boolean setPositionAndScale(Object obj, MultiTouchController.PositionAndScale newObjPosAndScale, MultiTouchController.PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
-        if(false == mCurrTouchPoint.isMultiTouch()) {
-            /*
-             * Multi-touch is zoom, single touch is pan
-             */
-            mX = newObjPosAndScale.getXOff();
-            mY = newObjPosAndScale.getYOff();
+    public boolean onTouch(View view, MotionEvent e) {
+        if(e.getPointerCount() != 2) { // not multi
+            mAngle = 0;
         }
         else {
-            /*
-             * Clamp scaling.
-             */
-            mScale = newObjPosAndScale.getScale();
-            if(mScale > MAX_SCALE) {
-                mScale = MAX_SCALE;
-            }
-            if(mScale < MIN_SCALE) {
-                mScale = MIN_SCALE;
-            }
-            mAngle = newObjPosAndScale.getAngle();
+            Point p0 = getFirstPoint(e);
+            Point p1 = getSecondPoint(e);
+            // this is bad user experience setAngle(p0, p1);
         }
-
-        return true;
-    }
-
-    @Override
-    public void selectObject(Object obj, MultiTouchController.PointInfo touchPoint) {
-        mCurrTouchPoint.set(touchPoint);
+        return false;
     }
 }

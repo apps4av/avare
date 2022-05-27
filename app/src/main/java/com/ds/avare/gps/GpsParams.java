@@ -31,7 +31,6 @@ package com.ds.avare.gps;
 import android.hardware.GeomagneticField;
 import android.location.Location;
 
-import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 
 import java.util.Locale;
@@ -47,7 +46,6 @@ public class GpsParams {
     private double mLatitude;
     private double mAltitude;
     private double mBearing;
-    private Scale  mScale;
     private float  mDeclination;
     private long   mTime;
     private int    mSatCount;
@@ -66,7 +64,6 @@ public class GpsParams {
             mLatitude = 0;
             mAltitude = 0;
             mBearing = 0;
-            mScale = new Scale();
             mDeclination = 0;
             mTime = 0;
             mSatCount = 0;
@@ -89,8 +86,7 @@ public class GpsParams {
         gmf = null;
         
         mBearing = (location.getBearing() + 360) % 360;
-        mScale = new Scale();
-        
+
         mTime = location.getTime();
 
         // These items come from the base GPS object since they are not part
@@ -112,7 +108,6 @@ public class GpsParams {
         lhs.mLatitude    = rhs.mLatitude;
         lhs.mAltitude    = rhs.mAltitude;
         lhs.mBearing     = rhs.mBearing;
-        lhs.mScale       = rhs.mScale;
         lhs.mDeclination = rhs.mDeclination;
         lhs.mTime        = rhs.mTime;
         lhs.mSatCount    = rhs.mSatCount;
@@ -186,12 +181,6 @@ public class GpsParams {
         return mBearing;
     }
 
-    /**
-     * @return Scale
-     */
-    public Scale getScale() {
-        return mScale;
-    }
 
     /**
      * 
