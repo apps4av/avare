@@ -114,5 +114,12 @@ public class WiFiInFragment extends Fragment {
     @Override  
     public void onDestroyView() {  
         super.onDestroyView();
-    }    
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // wifi can be started from other activities so set correct state.
+        mWifiCb.setChecked(mWifi.isConnected());
+    }
 } 

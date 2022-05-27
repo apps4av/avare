@@ -47,6 +47,7 @@ import androidx.core.view.ViewCompat;
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
+import com.ds.avare.connections.WifiConnection;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -1026,6 +1027,8 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogDestination = alert.create();
         mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        // connect external wifi instruments automatically
+        WifiConnection.getInstance(getApplicationContext()).connect(mPref.getEditTextValue(R.id.main_wifi_port), false);
     }
 
     private void setTrackState(boolean bState)
@@ -1077,6 +1080,8 @@ public class LocationActivity extends Activity implements Observer {
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
             }
+            // connect to all external receivers
+            WifiConnection.getInstance(getApplicationContext()).setHelper(mService);
 
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
