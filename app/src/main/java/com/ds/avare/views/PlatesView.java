@@ -463,6 +463,13 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
                 invalidate();
                 return true; // do not PTZ
             }
+            else if (shouldRotate()) {
+                // rotate pan
+                double thetab = mGpsParams.getBearing();
+                double p[] = new double[2];
+                p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, e.getX(), e.getY());
+                e.setLocation((float)p[0], (float)p[1]);
+            }
         }
 
         return false;

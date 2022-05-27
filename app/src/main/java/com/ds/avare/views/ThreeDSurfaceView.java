@@ -23,7 +23,7 @@ import com.ds.avare.position.Scale;
 /**
  * Created by zkhan on 5/16/16.
  */
-public class ThreeDSurfaceView extends PanZoomView implements View.OnTouchListener {
+public class ThreeDSurfaceView extends GlPanZoomView implements View.OnTouchListener {
 
     private float mAngle;
 
@@ -74,7 +74,7 @@ public class ThreeDSurfaceView extends PanZoomView implements View.OnTouchListen
         else {
             Point p0 = getFirstPoint(e);
             Point p1 = getSecondPoint(e);
-            setAngle(p0, p1);
+            // this is bad user experience setAngle(p0, p1);
         }
         return false;
     }

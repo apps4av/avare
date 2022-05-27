@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -15,7 +14,7 @@ import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.utils.GenericCallback;
 
-public class PanZoomView extends View {
+public class GlPanZoomView extends GLSurfaceView {
 
     private static final int INVALID_POINTER_ID = 1;
     private int mActivePointerId = INVALID_POINTER_ID;
@@ -34,17 +33,17 @@ public class PanZoomView extends View {
         mPan = new Pan();
     }
 
-    public PanZoomView(Context context) {
+    public GlPanZoomView(Context context) {
         super(context);
         setup(context);
     }
 
-    public PanZoomView(Context context, @Nullable AttributeSet attrs) {
+    public GlPanZoomView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setup(context);
     }
 
-    public PanZoomView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public GlPanZoomView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs);
         setup(context);
     }
