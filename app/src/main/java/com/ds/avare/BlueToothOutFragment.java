@@ -52,6 +52,7 @@ public class BlueToothOutFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.layout_ap, container, false);
+        mSpinner = (Spinner) view.findViewById(R.id.main_spinner_out);
 
         /*
          * List of BT devices is same
@@ -63,8 +64,6 @@ public class BlueToothOutFragment extends Fragment {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext,
                     android.R.layout.simple_spinner_item, mList);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            mSpinner = (Spinner) view.findViewById(R.id.main_spinner_out);
 
             mSpinner.setAdapter(adapter);
         }
@@ -96,8 +95,13 @@ public class BlueToothOutFragment extends Fragment {
                     mConnectButton.setText(getString(R.string.Connect));
                     mBt.setHelper(((IOActivity)getActivity()).getService());
                     mBt.connect(val, mSecureCb.isChecked());
+                    Preferences pref = new Preferences(getActivity());
                     if (mBt.isConnected()) {
-                        mBt.start(new Preferences(getActivity()));
+                        mBt.start(pref);
+                        pref.setLastConnectedBtOut(val); // save where we connected
+                    }
+                    else {
+                        pref.setLastConnectedBtOut(null); // clear
                     }
                     setStates();
                 }

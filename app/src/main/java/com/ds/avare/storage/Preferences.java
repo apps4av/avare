@@ -1133,4 +1133,32 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     public void setFragmentIndex(int fragmentIndex) {
         mPref.edit().putInt("fragmentindex", fragmentIndex).commit();
     }
+
+    public String getLastConnectedBtIn() {
+        return mPref.getString("LastConnectedBtIn", null);
+    }
+    public void setLastConnectedBtIn(String val) {
+        mPref.edit().putString("LastConnectedBtIn", val).commit();
+    }
+
+    public String getLastConnectedBtOut() {
+        return mPref.getString("LastConnectedBtOut", null);
+    }
+    public void setLastConnectedBtOut(String val) {
+        mPref.edit().putString("LastConnectedBtOut", val).commit();
+    }
+
+    public String getLastConnectedUSB() {
+        return mPref.getString("LastConnectedUSB", null);
+    }
+    public void setLastConnectedUSB(String val) {
+        mPref.edit().putString("LastConnectedUSB", val).commit();
+    }
+    public String getLastConnectedWifi() {
+        return mPref.getString("LastConnectedWifi", null);
+    }
+    public void setLastConnectedWifi(String val) {
+        mPref.edit().putString("LastConnectedWifi", val).commit();
+    }
+
 }

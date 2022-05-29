@@ -83,8 +83,13 @@ public class USBInFragment extends Fragment {
                     mUSB.setHelper(((IOActivity)getActivity()).getService());
                     mConnectButton.setText(getString(R.string.Connect));
                     mUSB.connect(mParamsText.getText().toString(), false);
+                    Preferences pref = new Preferences(getActivity());
                     if (mUSB.isConnected()) {
-                        mUSB.start(new Preferences(getActivity()));
+                        mUSB.start(pref);
+                        pref.setLastConnectedUSB(mParamsText.getText().toString()); // save where we connected
+                    }
+                    else {
+                        pref.setLastConnectedUSB(null); // clear
                     }
                     setStates();
                 }

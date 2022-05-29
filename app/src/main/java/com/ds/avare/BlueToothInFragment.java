@@ -107,8 +107,13 @@ public class BlueToothInFragment extends Fragment {
                     mConnectButton.setText(getString(R.string.Connect));
                     mBt.setHelper(((IOActivity)getActivity()).getService());
                     mBt.connect(val, mSecureCb.isChecked());
+                    Preferences pref = new Preferences(getActivity());
                     if (mBt.isConnected()) {
-                        mBt.start(new Preferences(getActivity()));
+                        mBt.start(pref);
+                        pref.setLastConnectedBtIn(val); // save where we connected
+                    }
+                    else {
+                        pref.setLastConnectedBtIn(null); //clear
                     }
                     setStates();
                 }

@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,13 +42,12 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
-import androidx.core.view.ScaleGestureDetectorCompat;
-import androidx.core.view.ViewCompat;
 
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
-import com.ds.avare.connections.WifiConnection;
+import com.ds.avare.connections.Connection;
+import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -100,6 +100,8 @@ public class LocationActivity extends Activity implements Observer {
      * Service that keeps state even when activity is dead
      */
     private StorageService mService;
+
+    static private AsyncTask<Void, Void, Boolean> mConnectionTask = null;
 
     /**
      * App preferences
@@ -1027,9 +1029,67 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogDestination = alert.create();
         mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        // connect external wifi instruments automatically
-        WifiConnection.getInstance(getApplicationContext()).connect(mPref.getEditTextValue(R.id.main_wifi_port), false);
+        // connect to external devices
+        if(mConnectionTask != null) {
+            if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
+                mConnectionTask.cancel(true);
+            }
+        }
+
+        mConnectionTask = new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... vals) {
+                // connect external wifi, BT instruments automatically
+                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()),
+                        false,
+                        mPref.getLastConnectedWifi());
+
+                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()),
+                        mPref.getCheckboxValue(R.id.main_cb_btin),
+                        mPref.getLastConnectedBtIn());
+
+                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()),
+                        mPref.getCheckboxValue(R.id.main_cb_btout),
+                        mPref.getLastConnectedBtOut());
+
+                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()),
+                        false,
+                        mPref.getLastConnectedUSB());
+                return(true);
+            }
+        };
+
+        // start connecting with a delay
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mConnectionTask.execute();
+            }
+        }, 1000);
     }
+
+    private void disconnect(Connection c) {
+        if (c.isConnected()) {
+            c.stop();
+            c.disconnect();
+        }
+    }
+
+    // Connect to a device, called on start to connect to previously connected external devices
+    private void connect(Connection c, boolean secure, String to) {
+        if (c.isConnected()) {
+            c.stop();
+            c.disconnect();
+        }
+        if (null != to && (!c.isConnected())) {
+            c.connect(to, secure);
+            if (c.isConnected()) {
+                c.start(mPref);
+            }
+        }
+    }
+
 
     private void setTrackState(boolean bState)
     {
@@ -1062,6 +1122,7 @@ public class LocationActivity extends Activity implements Observer {
             }
         }
     }
+
     /** Defines callbacks for service binding, passed to bindService() */
     /**
      *
@@ -1081,7 +1142,10 @@ public class LocationActivity extends Activity implements Observer {
                 startActivity(i);
             }
             // connect to all external receivers
-            WifiConnection.getInstance(getApplicationContext()).setHelper(mService);
+            ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()).setHelper(mService);
+            ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()).setHelper(mService);
+            ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()).setHelper(mService);
+            ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()).setHelper(mService);
 
             /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
@@ -1424,6 +1488,17 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onDestroy() {
+        // disconnect all external connections
+        if(mConnectionTask != null) {
+            if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
+                mConnectionTask.cancel(true);
+            }
+        }
+
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()));
         super.onDestroy();
     }
 
