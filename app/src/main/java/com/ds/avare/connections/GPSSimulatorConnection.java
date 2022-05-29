@@ -14,6 +14,7 @@ package com.ds.avare.connections;
 
 import android.content.Context;
 
+import com.ds.avare.place.Destination;
 import com.ds.avare.utils.GenericCallback;
 
 import org.json.JSONException;
@@ -48,42 +49,6 @@ public class GPSSimulatorConnection extends Connection {
     private double mDestBearing = -1;
     private double mDestElevation = 0;
 
-
-    /**
-     * Get Dest from Avare
-     */
-    void runInBackground() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (isRunning()) {
-                    String recvd = getDataFromHelper();
-                    if (null == recvd) {
-                        mDestValid = false;
-                    }
-                    else {
-
-                        try {
-                            JSONObject object = new JSONObject(recvd);
-                            String type = object.getString("type");
-                            if (type == null) {
-                                mDestValid = false;
-                            }
-                            else if (type.equals("ownship")) {
-                                mDestBearing = object.getDouble("destBearing");
-                                mDestDistance = object.getDouble("destDistance");
-                                mDestElevation = object.getDouble("destElev") * FEET_TO_METERS;
-                                mDestValid = true;
-                            }
-                        } catch (JSONException e) {
-                            mDestValid = false;
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
-
     /**
      *
      *
@@ -95,12 +60,26 @@ public class GPSSimulatorConnection extends Connection {
             public Object callback(Object o, Object o1) {
 
                 double bearing = mBearing;
-                runInBackground();
 
                 /*
                  * Start the GPS Simulator
                  */
                 while (isRunning()) {
+
+                    if(mService != null) {
+
+                        Destination d = mService.getDestination();
+                        if(d != null) {
+                            mDestBearing = d.getBearing();
+                            mDestDistance = d.getDistance();
+                            mDestElevation = d.getElevation() * FEET_TO_METERS;
+                            mDestValid = true;
+                        }
+                        else {
+                            mDestValid = false;
+                        }
+
+                    }
                     double time = 1; // in seconds
                     if (isStopped()) {
                         break;

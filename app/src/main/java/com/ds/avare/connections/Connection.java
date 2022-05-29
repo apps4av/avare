@@ -60,7 +60,7 @@ public abstract class Connection {
 
     private boolean mRunning;
 
-    private StorageService mService;
+    protected StorageService mService;
 
     private Thread mThread;
 
