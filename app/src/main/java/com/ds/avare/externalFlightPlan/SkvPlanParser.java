@@ -56,7 +56,7 @@ public class SkvPlanParser extends PlanParser {
                 // Did we find the start of the plan ? ie: NOT -1
                 if(-1 != planLoc) {
 
-                    List<Waypoint> points = new ArrayList<Waypoint>();
+                    List<Waypoint> points = new ArrayList<>();
                     String planText = fileLine.substring(planLoc + PLAN.length());
 
                     // At this point we have a string of points in the following format:
@@ -81,7 +81,7 @@ public class SkvPlanParser extends PlanParser {
                         // Third field is the name. If it starts with a K and is 4 letters
                         // in length, then strip the first character.
                         String name = wpf[2];
-                        if(4 == name.length() && true == name.startsWith("K")) {
+                        if(4 == name.length() && name.startsWith("K")) {
                             name = name.substring(1);
                         }
 
@@ -98,7 +98,7 @@ public class SkvPlanParser extends PlanParser {
 
                         // Now add this waypoint to our collection if we were able to parse it
                         if(null != type) {
-                            points.add(new Waypoint(name, type, 0, 0, false, Waypoint.MT_NONE, false));
+                            points.add(new Waypoint(name, type, 0, 0, Destination.INVALID_ELEVATION,false, Waypoint.MT_NONE, false));
                         }
                     }
 
@@ -109,7 +109,7 @@ public class SkvPlanParser extends PlanParser {
                 // We did not find a valid line containing the plan. Read the next line in the file
                 fileLine = br.readLine();
             }
-        } catch (Exception  e) { }
+        } catch (Exception  ignore) { }
         return null;
     }
 

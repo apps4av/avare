@@ -72,7 +72,7 @@ public class KmlUDWParser extends UDWParser {
             parser.setInput(inputStream, null);
             parser.nextTag();
             return readKmlData(parser);
-        } catch (Exception e) { }
+        } catch (Exception ignore) { }
         	
         return null;
     }
@@ -100,7 +100,7 @@ public class KmlUDWParser extends UDWParser {
     // We are in the document tag, now search for either "Folder" or "Waypoint"
     //
     private List<Waypoint> readDocument(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Waypoint> entries = new ArrayList<Waypoint>();
+        List<Waypoint> entries = new ArrayList<>();
 
         parser.require(XmlPullParser.START_TAG, NS, DOCUMENT);	// Must be inside of <Document> now
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -124,7 +124,7 @@ public class KmlUDWParser extends UDWParser {
     private List<Waypoint> readFolder(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, FOLDER);	// We must be inside <Folder> at this point
 
-        List<Waypoint> entries = new ArrayList<Waypoint>();
+        List<Waypoint> entries = new ArrayList<>();
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -149,6 +149,7 @@ public class KmlUDWParser extends UDWParser {
         String name = null;
         float lat = 0;
         float lon = 0;
+        float ele = Destination.INVALID_ELEVATION;
         boolean showDist = false;	// Future is to pull this from metadata in the point itself
         int markerType = Waypoint.MT_CYANDOT;	// Type of marker to use on the chart (metadata again)
         
@@ -162,13 +163,19 @@ public class KmlUDWParser extends UDWParser {
             } else if (nodeName.equals(POINT)) {
             	String coordinates = readPoint(parser);
             	String[] values = coordinates.split(",");
-            	lat = Float.parseFloat(values[1]);
-                lon = Float.parseFloat(values[0]);
+                if(values.length > 0)
+                    lon = Float.parseFloat(values[0]);
+                if(values.length > 1)
+                	lat = Float.parseFloat(values[1]);
+                if(values.length > 2)
+                    ele = Float.parseFloat(values[2]) * (float) 3.2808; // convert meters to feet
+                if(values.length > 3)
+                    showDist = values[3].equalsIgnoreCase("T");
             } else {
                 skip(parser);
             }
         }
-        return new Waypoint(name, Destination.UDW, lon, lat, showDist, markerType, true);
+        return new Waypoint(name, Destination.UDW, lon, lat, ele, showDist, markerType, true);
     }
 
     // Inside of the "Point" tag, we only care about the coordinates
@@ -222,9 +229,9 @@ public class KmlUDWParser extends UDWParser {
     /***
      * Skip this next entire sub-block of XML tags
      * 
-     * @param parser
-     * @throws XmlPullParserException
-     * @throws IOException
+     * @param parser XML State machine parser
+     * @throws XmlPullParserException invalid XML syntax
+     * @throws IOException Garage door failed to open
      */
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {

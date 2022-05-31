@@ -86,10 +86,9 @@ public class InfoLines {
     private static final int ID_DO_PORTRAIT  = 1;
 
     // To add new display fields, take the ID_FLD_MAX value, and adjust MAX up
-    // by 1.
-    // ID_FLD_MAX must always be the highest, and ID_FLD_NUL the lowest
-    // Ensure that the string-array "TextFieldOptions" is update with the new
-    // entry in the proper order
+    // by 1. ID_FLD_MAX must always be the highest, and ID_FLD_NUL the lowest
+    // Ensure that the string-array's "TextFieldOptions" and "TextFieldOptionTitles"
+    // are update with the new entry in the proper order
     private static final int ID_FLD_NUL = 0;
     private static final int ID_FLD_GMT = 1;
     private static final int ID_FLD_LT  = 2;
@@ -112,7 +111,8 @@ public class InfoLines {
     private static final int ID_FLD_SPP = 19;
     private static final int ID_FLD_HDP = 20;
     private static final int ID_FLD_MSP = 21;
-    private static final int ID_FLD_MAX = 22;
+    private static final int ID_FLD_NEL = 22;
+    private static final int ID_FLD_MAX = 23;
     private static final String NOVALUE = "     ";
 
     private static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -832,6 +832,17 @@ public class InfoLines {
                 if (mService != null && mService.getExtendedGpsParams() != null) {
                     return Helper.centerString(Helper
                             .calculateAltitudeFromMSL((float) mService.getExtendedGpsParams().getAltitudeTrend()), MAX_FIELD_SIZE_IN_CHARS);
+                }
+                break;
+            }
+
+            case ID_FLD_NEL: {
+                if (mService != null) {
+                    if (mService.getDestination() != null) {
+                        double dstAlt = mService.getDestination().getElevation();
+                        return String.format(Locale.getDefault(),
+                                getFmtString(dstAlt), dstAlt);
+                    }
                 }
                 break;
             }
