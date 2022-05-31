@@ -35,6 +35,7 @@ import com.sromku.polygon.Line;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -545,17 +546,26 @@ public class Helper {
      * @param dir
      * @return
      */
-    public static LinkedList<File> getDirectoryContents(File dir) throws Exception {
+    public static LinkedList<File> getDirectoryContents(File dir, String filter) throws Exception {
         LinkedList<File> list = new LinkedList();
         try {
             if(dir.isFile()) {
                 list.add(dir); // only 1 file asked
             }
             else {
-                File[] files = dir.listFiles();
+                FileFilter ff = null;
+                if(null != filter) {
+                    ff = new FileFilter () {
+                        public boolean accept(File f) {
+                            return f.getName().endsWith(filter.substring(filter.lastIndexOf(".")));
+                        }
+                    };
+                }
+                File[] files = (null != ff) ? dir.listFiles(ff) : dir.listFiles();
+
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        list.addAll(getDirectoryContents(file));
+                        list.addAll(getDirectoryContents(file, null));
                     } else {
                         list.add(file);
                     }

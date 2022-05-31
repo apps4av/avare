@@ -329,7 +329,7 @@ public class ToolsFragment extends Fragment {
                 // get list of internal files
                 String folder = mPref.getServerDataFolder() + File.separatorChar + filter;
                 File dir = new File(folder);
-                LinkedList<File> files = Helper.getDirectoryContents(dir);
+                LinkedList<File> files = Helper.getDirectoryContents(dir, null);
 
                 byte data[] = new byte[IO_BUFFER_SIZE];
                 int total = files.size();
@@ -378,9 +378,9 @@ public class ToolsFragment extends Fragment {
 
             try {
                 // get list of internal files
-                String folder = mPref.getServerDataFolder() + File.separatorChar + filter;
+                String folder = mPref.getServerDataFolder() + (filter.startsWith("*") ?  "" : (File.separatorChar + filter));
                 File dir = new File(folder);
-                LinkedList<File> files = Helper.getDirectoryContents(dir);
+                LinkedList<File> files = Helper.getDirectoryContents(dir, filter);
 
                 int total = files.size();
 

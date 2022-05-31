@@ -2055,11 +2055,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string-array name="DeleteData">
         <item>Tracks</item>
         <item>Plans, Checklists, WP, WNB</item>
+        <item>GPX Waypoints &amp; Plans</item>
+        <item>KML Waypoints &amp; Plans</item>
     </string-array>
 
     <string-array name="DeleteDataType">
         <item>tracks</item>
         <item>user.db</item>
+        <item>*.gpx</item>
+        <item>*.kml</item>
     </string-array>
 
     <string-array name="Orientation">
