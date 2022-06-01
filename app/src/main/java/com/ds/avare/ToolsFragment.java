@@ -390,6 +390,8 @@ public class ToolsFragment extends Fragment {
                     publishProgress(filec, total);
                 }
                 publishProgress(total, total);
+                mService.getUDWMgr().forceReload();	// Tell the UDWs to reload
+                mService.getExternalPlanMgr().forceReload(); // Reload plans too
             } catch (Exception e) {
                 publishProgress(-1, 0);
             }
@@ -446,6 +448,8 @@ public class ToolsFragment extends Fragment {
                 in.close();
                 inStream.close();
                 publishProgress(total, total);
+                mService.getUDWMgr().forceReload();	// Tell the UDWs to reload
+                mService.getExternalPlanMgr().forceReload(); // Reload plans too
             } catch (Exception e) {
                 publishProgress(-1, 0);
             }
