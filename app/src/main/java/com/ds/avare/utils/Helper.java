@@ -565,7 +565,7 @@ public class Helper {
 
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        list.addAll(getDirectoryContents(file, null));
+                        list.addAll(getDirectoryContents(file, filter));
                     } else {
                         list.add(file);
                     }
