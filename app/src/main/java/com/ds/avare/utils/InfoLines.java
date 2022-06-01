@@ -838,10 +838,12 @@ public class InfoLines {
 
             case ID_FLD_NEL: {
                 if (mService != null) {
-                    if (mService.getDestination() != null) {
-                        double dstAlt = mService.getDestination().getElevation();
-                        return String.format(Locale.getDefault(),
-                                getFmtString(dstAlt), dstAlt);
+                    if (null != mService.getDestination()) {
+                        if(mService.getDestination().hasValidElevation()) {
+                            double dstAlt = mService.getDestination().getElevation();
+                            return String.format(Locale.getDefault(),
+                                    getFmtString(dstAlt), dstAlt);
+                        }
                     }
                 }
                 break;

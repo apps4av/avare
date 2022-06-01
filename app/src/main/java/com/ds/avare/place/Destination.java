@@ -501,6 +501,10 @@ public class Destination extends Observable {
         catch (Exception ignore) { }
 		return INVALID_ELEVATION;
 	}
+
+    public boolean hasValidElevation() {
+        return getElevation() > INVALID_ELEVATION;
+    }
 	
 	/**
 	 * Find vertical speed to this dest in feet/m per minute
