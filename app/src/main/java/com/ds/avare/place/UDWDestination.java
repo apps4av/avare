@@ -26,6 +26,8 @@ public class UDWDestination extends Destination {
         if(null != p) {
             mLatd = p.getLat();
             mLond = p.getLon();
+            mEle = p.getEle();
+
             if(!mInited) {
                 mLonInit = mLond;
                 mLatInit = mLatd;
@@ -34,6 +36,7 @@ public class UDWDestination extends Destination {
             mCmt  = p.getCmt();
             mParams.put(LocationContentProviderHelper.LONGITUDE, "" + mLond);
             mParams.put(LocationContentProviderHelper.LATITUDE, "" + mLatd);
+            mParams.put(LocationContentProviderHelper.ELEVATION, "" + mEle);
             mParams.put(LocationContentProviderHelper.FACILITY_NAME, UDWMgr.UDWDESCRIPTION);
             mFound = true;
         }

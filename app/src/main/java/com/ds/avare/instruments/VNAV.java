@@ -76,7 +76,7 @@ public class VNAV {
 		mBarCount = 11;
 		
 		// The width of each bar is the basis for the entire instrument size
-		mBarWidth = (int) (minSize / 16);
+		mBarWidth = (float) minSize / 16;
 		
 		// Height is 1/4 of the width
 		mBarHeight = mBarWidth / 4;
@@ -146,7 +146,7 @@ public class VNAV {
 	    mVNAVPaint.setColor(Color.WHITE);		// white
 	    mVNAVPaint.setStrokeWidth(mBarHeight);	// height of each bar
 	    for(int idx = 0; idx < mBarCount; idx++) {
-	        float extend = (idx == (int)(mBarCount / 2)) ? mInstWidth / 3 : 0;
+	        float extend = (idx == mBarCount / 2) ? mInstWidth / 3 : 0;
 	    	float barTop = mInstTop + mBarHeight * (float) 1.5 + 
 	    			idx * (mBarHeight + mBarSpace);
 	        canvas.drawLine(mInstLeft + mBarHeight - mInstWidth / 2, barTop, 
@@ -209,7 +209,7 @@ public class VNAV {
 		// Fetch the elevation of our destination. If we can't find it
 		// then we don't want to display any vertical information
 		double destElev = dest.getElevation();
-		if(destElev == -200) {
+		if(destElev <= Destination.INVALID_ELEVATION) {
 		    mShow = false;
 			return;
 		}

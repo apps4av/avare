@@ -93,14 +93,14 @@ public class AutoPilot {
                 deviation = -deviation;
             }
 
-            // Limit our station IDs to 4 chars max so we don't exceed the 80 char
+            // Limit our station IDs to 5 chars max so we don't exceed the 80 char
             // sentence limit. A "GPS" fix has a temp name that is quite long
-            if(startID.length() > 4) {
+            if(startID.length() > 5) {
                 startID = "gSRC";
             }
 
             String endID = dest.getID();
-            if(endID.length() > 4) {
+            if(endID.length() > 5) {
                 endID = "gDST";
             }
 

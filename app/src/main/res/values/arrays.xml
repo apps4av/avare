@@ -2126,6 +2126,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Ground Speed Trend</item>
         <item>Track Trend</item>
         <item>MSL Altitude Trend</item>
+        <item>Next Waypoint Elevation</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -2158,6 +2159,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Ground Speed T</item>
         <item>Track T</item>
         <item>MSL ft T</item>
+        <item>ELE Next</item>
 	</string-array>
 
 	<string-array name="DisplayIconValues">

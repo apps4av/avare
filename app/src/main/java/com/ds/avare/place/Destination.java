@@ -86,6 +86,7 @@ public class Destination extends Observable {
      */
     protected double mLond;
     protected double mLatd;
+    protected double mEle;
 
     private String mWindString;
     
@@ -492,14 +493,18 @@ public class Destination extends Observable {
 	 * Fetch the destination elevation 
 	 * @return Elevation in feet. <-200 is an error
 	 */
+    public static final float INVALID_ELEVATION = -200;
 	public double getElevation(){
         try {
-            double elev = (Double.parseDouble(mParams.get(LocationContentProviderHelper.ELEVATION)));
-            return elev;
+            return Double.parseDouble(mParams.get(LocationContentProviderHelper.ELEVATION));
         }
-        catch (Exception e) { }
-		return -200;
+        catch (Exception ignore) { }
+		return INVALID_ELEVATION;
 	}
+
+    public boolean hasValidElevation() {
+        return getElevation() > INVALID_ELEVATION;
+    }
 	
 	/**
 	 * Find vertical speed to this dest in feet/m per minute
