@@ -129,10 +129,6 @@ public class PrefActivity extends PreferenceActivity {
              * This will will sure we update tiles when someone changes storage folder
              */
             mService.getTiles().forceReload();
-            mService.getUDWMgr().forceReload();	// Tell the UDWs to reload as well
-            mService.getExternalPlanMgr().forceReload(); // Reload plans too
-            //BTOutConnection.getInstance(this).disconnect();
-            //BTOutConnection.getInstance(this).connect(pref.getAutopilotBluetoothDevice(), false);
         }
     }
 }
