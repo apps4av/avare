@@ -41,6 +41,8 @@ import java.util.LinkedList;
 
 /**
  * Created by zkhan on 11/8/15.
+ *
+ * Coded Instrument Flight Procedures - CIFP
  */
 public class Cifp {
 
