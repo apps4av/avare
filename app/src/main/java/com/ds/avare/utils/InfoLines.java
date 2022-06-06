@@ -674,8 +674,6 @@ public class InfoLines {
                         String name = mService.getDestination().getID();
                         if (Helper.isGPSCoordinate(name)) { // Change a direct coordinate to GPS
                             name = Destination.GPS;
-                        } else if (name.length() > 5) { // Truncate name if larger than 5 chars
-                            name = name.substring(0, 4);
                         }
                         return Helper.centerString(name, MAX_FIELD_SIZE_IN_CHARS);
                     }

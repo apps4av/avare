@@ -339,7 +339,7 @@ public class PlatesActivity extends Activity implements Observer  {
                             return;
                         }
                         Cifp cifp = mCifp.get(which);
-                        cifp.setApproach(mService, mPref);
+                        cifp.setApproach(mService);
                         ((MainActivity) PlatesActivity.this.getParent()).showPlanTab();
                     }
                 };
