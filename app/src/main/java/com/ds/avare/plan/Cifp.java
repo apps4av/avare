@@ -138,7 +138,10 @@ public class Cifp {
                     runway = tokens[tkn + 1];
                     if(tkn > 0) {
                         if(tokens[tkn - 1].matches("[A-Z]")) {
-                            runway = runway + "-" + tokens[tkn - 1];
+                            if(2 == runway.length()) { // if no L/C/R then add a dash
+                                runway = runway + "-";
+                            }
+                            runway = runway + tokens[tkn - 1];
                         }
                     }
                 }
