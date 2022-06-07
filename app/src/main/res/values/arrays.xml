@@ -2131,6 +2131,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Track Trend</item>
         <item>MSL Altitude Trend</item>
         <item>Next Waypoint Elevation</item>
+        <item>Active ADSB Targets</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -2141,9 +2142,9 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 		    
 	<string-array name="TextFieldOptionTitles">
-	    <item></item>
+	    <item/>
 		<item>Zulu</item>
-	    <item></item>
+	    <item/>
 		<item>Ground Speed</item>
 	    <item>Track</item>
 	    <item>Brg Next</item>
@@ -2164,6 +2165,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Track T</item>
         <item>MSL ft T</item>
         <item>ELE Next</item>
+        <item>ADSB Targets</item>
 	</string-array>
 
 	<string-array name="DisplayIconValues">
