@@ -217,7 +217,6 @@ public class Cifp {
                     if(c != null) {
                         Destination d = DestinationFactory.build(service, Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
                         d.find();
-                        while (d.isLooking());  // Wait for the background query to finish
                         d.setFacilityName(mAirport + rw);
                         d.setElevation(fixEle);
                         service.getPlan().appendDestination(d);
