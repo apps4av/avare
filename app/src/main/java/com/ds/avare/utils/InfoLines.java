@@ -112,7 +112,8 @@ public class InfoLines {
     private static final int ID_FLD_HDP = 20;
     private static final int ID_FLD_MSP = 21;
     private static final int ID_FLD_NEL = 22;
-    private static final int ID_FLD_MAX = 23;
+    private static final int ID_FLD_TRG = 23;
+    private static final int ID_FLD_MAX = 24;
     private static final String NOVALUE = "     ";
 
     private static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -845,6 +846,19 @@ public class InfoLines {
                                     getFmtString(dstAlt), dstAlt);
                         }
                     }
+                }
+                break;
+            }
+
+            // Display how many ADSB targets we are tracking
+            case ID_FLD_TRG: {
+                if (null != mService) {
+                    // since mService is NOT null,
+                    // getTrafficCache() will never be null and
+                    // getTraffic() will never be null
+                    // thereby safe to call size() directly with no checks
+                    int tc = mService.getTrafficCache().getTraffic().size();
+                    return Helper.centerString(Integer.toString(tc), MAX_FIELD_SIZE_IN_CHARS);
                 }
                 break;
             }
