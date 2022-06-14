@@ -16,12 +16,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.location.Location;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsParams;
 import com.ds.avare.instruments.CDI;
 import com.ds.avare.instruments.Odometer;
 import com.ds.avare.place.Destination;
+import com.ds.avare.place.Plan;
+import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
@@ -113,7 +117,8 @@ public class InfoLines {
     private static final int ID_FLD_MSP = 21;
     private static final int ID_FLD_NEL = 22;
     private static final int ID_FLD_TRG = 23;
-    private static final int ID_FLD_MAX = 24;
+    private static final int ID_FLD_TDZ = 24;
+    private static final int ID_FLD_MAX = 25;
     private static final String NOVALUE = "     ";
 
     private static final double TITLE_TO_TEXT_RATIO = 2.5;
@@ -857,6 +862,35 @@ public class InfoLines {
                     // thereby safe to call size() directly with no checks
                     int tc = mService.getTrafficCache().getTraffic().size();
                     return Helper.centerString(Integer.toString(tc), MAX_FIELD_SIZE_IN_CHARS);
+                }
+                break;
+            }
+
+            // If we are on an active plan where we were able to determine our touchdown
+            // point, then calculate the distance between where we are and that point
+            case ID_FLD_TDZ: {
+                if(null != mService) {
+                    Plan plan = mService.getPlan();
+                    if(null != plan) {
+                        if(plan.isActive()) {
+                            GpsParams loc1 = mService.getGpsParams();
+                            if (null != loc1) {
+                                double lat1 = loc1.getLatitude();
+                                double lon1 = loc1.getLongitude();
+                                for (int idx = 0, max = plan.getDestinationNumber(); idx < max; idx++) {
+                                    Destination dest = plan.getDestination(idx);
+                                    if (dest.getLanding()) {
+                                        Location loc2 = dest.getLocation();
+                                        double lat2 = loc2.getLatitude();
+                                        double lon2 = loc2.getLongitude();
+
+                                        double dist = Projection.getStaticDistance(lon1, lat1, lon2, lat2);
+                                        return String.format(Locale.getDefault(), getFmtString(dist), dist);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 break;
             }

@@ -2132,6 +2132,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>MSL Altitude Trend</item>
         <item>Next Waypoint Elevation</item>
         <item>Active ADSB Targets</item>
+        <item>Distance to Touchdown Zone</item>
 	</string-array>
 
 	<string-array name="AdsOptions">
@@ -2166,6 +2167,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>MSL ft T</item>
         <item>ELE Next</item>
         <item>ADSB Targets</item>
+        <item>Dist TDZ</item>
 	</string-array>
 
 	<string-array name="DisplayIconValues">
