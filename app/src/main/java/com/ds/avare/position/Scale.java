@@ -46,7 +46,7 @@ public class Scale {
      * Scale for charts
      */
     public Scale() {
-        mMaxScale = 2;
+        mMaxScale = 4;
         mMinScale = 0.03125;
         mScaleFactor = 1;
         mMacro = 1;

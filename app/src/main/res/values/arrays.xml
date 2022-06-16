@@ -2041,6 +2041,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Tiles</item>
         <item>Chart Supplements</item>
         <item>Plates</item>
+        <item>Preferences</item>
     </string-array>
 
     <string-array name="ExportDataType">
@@ -2050,6 +2051,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>tiles</item>
         <item>afd</item>
         <item>plates</item>
+        <item>../shared_prefs/com.ds.avare_preferences.xml</item>
     </string-array>
 
     <string-array name="DeleteData">
@@ -2057,6 +2059,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Plans, Checklists, WP, WNB</item>
         <item>GPX Waypoints &amp; Plans</item>
         <item>KML Waypoints &amp; Plans</item>
+        <item>Preferences</item>
     </string-array>
 
     <string-array name="DeleteDataType">
@@ -2064,6 +2067,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>user.db</item>
         <item>*.gpx</item>
         <item>*.kml</item>
+        <item>../shared_prefs/com.ds.avare_preferences.xml</item>
     </string-array>
 
     <string-array name="Orientation">

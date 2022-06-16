@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 
 /**
@@ -59,7 +60,9 @@ public class ThreeDSurfaceView extends GlPanZoomView implements View.OnTouchList
     public void init() {
         mAngle = 0;
         mScale = new Scale(MAX_SCALE, MIN_SCALE);
+        mPan = new Pan();
         setOnTouchListener(this);
+        invalidate();
     }
 
     void setAngle(Point p0, Point p1) {

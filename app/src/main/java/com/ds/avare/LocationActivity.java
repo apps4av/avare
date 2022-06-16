@@ -1029,41 +1029,41 @@ public class LocationActivity extends Activity implements Observer {
         mAlertDialogDestination = alert.create();
         mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        // connect to external devices
-        if(mConnectionTask != null) {
-            if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
-                mConnectionTask.cancel(true);
-            }
-        }
-
-        mConnectionTask = new AsyncTask<Void, Void, Boolean>() {
-
-            @Override
-            protected Boolean doInBackground(Void... vals) {
-                // connect external wifi, BT instruments automatically
-                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()),
-                        false,
-                        mPref.getLastConnectedWifi());
-
-                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()),
-                        mPref.getCheckboxValue(R.id.main_cb_btin),
-                        mPref.getLastConnectedBtIn());
-
-                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()),
-                        mPref.getCheckboxValue(R.id.main_cb_btout),
-                        mPref.getLastConnectedBtOut());
-
-                connect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()),
-                        false,
-                        mPref.getLastConnectedUSB());
-                return(true);
-            }
-        };
-
         // start connecting with a delay
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                // connect to external devices
+                if(mConnectionTask != null) {
+                    if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
+                        mConnectionTask.cancel(true);
+                    }
+                }
+
+                mConnectionTask = new AsyncTask<Void, Void, Boolean>() {
+
+                    @Override
+                    protected Boolean doInBackground(Void... vals) {
+                        // connect external wifi, BT instruments automatically
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()),
+                                false,
+                                mPref.getLastConnectedWifi());
+
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()),
+                                mPref.getCheckboxValue(R.id.main_cb_btin),
+                                mPref.getLastConnectedBtIn());
+
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()),
+                                mPref.getCheckboxValue(R.id.main_cb_btout),
+                                mPref.getLastConnectedBtOut());
+
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()),
+                                false,
+                                mPref.getLastConnectedUSB());
+                        return(true);
+                    }
+                };
+
                 mConnectionTask.execute();
             }
         }, 1000);
