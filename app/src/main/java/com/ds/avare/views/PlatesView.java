@@ -24,7 +24,9 @@ import android.view.View;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
@@ -365,7 +367,6 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
 	                canvas.drawBitmap(mAirplaneBitmap.getBitmap(), mAirplaneBitmap.getTransform(), mPaint);
                 }
             }
-
         }
     	/*
     	 * Draw drawing
@@ -380,11 +381,20 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         }
 
         // do not rotate info lines
-        if(mService != null && mPref.showPlateInfoLines()) {
-            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR, TEXT_COLOR_OPPOSITE, SHADOW,
-                    getWidth(), getHeight(), mErrorStatus, null);
-        }
+        if(mService != null) {
+            if(mPref.showPlateInfoLines()) {
+                mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR,
+                ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext).isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE,
+                SHADOW, getWidth(), getHeight(), mErrorStatus, null);
+            }
 
+            if(mPref.getShowCDI()) {
+                Destination dest = mService.getDestination();
+                if (dest != null) {
+                    mService.getVNAV().drawVNAV(canvas, getWidth(), getHeight(), dest);
+                }
+            }
+        }
     }
     
     /**

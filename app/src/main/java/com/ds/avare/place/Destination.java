@@ -390,6 +390,10 @@ public class Destination extends Observable {
     	return(mParams.get(LocationContentProviderHelper.FACILITY_NAME));
     }
 
+    public void setFacilityName(String facilityName) {
+        mName = facilityName;
+    }
+
     /**
      * @return
      */
@@ -501,6 +505,10 @@ public class Destination extends Observable {
         catch (Exception ignore) { }
 		return INVALID_ELEVATION;
 	}
+
+    public void setElevation(Float ele) {
+        mParams.put(LocationContentProviderHelper.ELEVATION, ele.toString());
+    }
 
     public boolean hasValidElevation() {
         return getElevation() > INVALID_ELEVATION;
