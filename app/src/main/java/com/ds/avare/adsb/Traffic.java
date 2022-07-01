@@ -2,6 +2,8 @@ package com.ds.avare.adsb;
 
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.location.Location;
+import android.media.MediaPlayer;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -27,6 +29,7 @@ public class Traffic {
     public String mCallSign;
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
+    private AudibleTrafficAlerts audibleTrafficAlerts;
 
 
     public static final double TRAFFIC_ALTITUDE_DIFF_DANGEROUS = 1000; //ft 300m required minimum
@@ -56,6 +59,8 @@ public class Traffic {
         mHeading = heading;
         mHorizVelocity = speed;
         mLastUpdate = time;
+
+        this.audibleTrafficAlerts = audibleTrafficAlerts;
 
         /*
          * Limit
@@ -133,9 +138,10 @@ public class Traffic {
                 traffic.delete(key);
                 continue;
             }
-
+            //System.out.println("drawing");
             if(t.mIcaoAddress == ownIcao) {
                 // Do not draw shadow of own
+                //System.out.println(String.format("I am %s, at %f, %f heading %f", ownIcao, t.mLat, t.mLon, t.mHeading));
                 continue;
             }
 
@@ -260,6 +266,56 @@ public class Traffic {
 
 
     }
+
+    public static void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
+                                           AudibleTrafficAlerts audibleTrafficAlerts, double alertDistance, int ownAltitude)
+    {
+            for (int i = 0; i < allTraffic.size(); i++) {
+                Traffic t = allTraffic.get(allTraffic.keyAt(i));
+                double altDiff = ownAltitude - t.mAltitude;
+                if (greatCircleDistance(ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon) < alertDistance
+                    && Math.abs(altDiff) < TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                )
+                    audibleTrafficAlerts.trafficNearAlert();
+            }
+
+    }
+
+    /**
+     * Great circle distance between two lat/lon's via Haversine formula, Java impl courtesy of https://introcs.cs.princeton.edu/java/12types/GreatCircle.java.html
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    public static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
+
+        double x1 = Math.toRadians(lat1);
+        double y1 = Math.toRadians(lon1);
+        double x2 = Math.toRadians(lat2);
+        double y2 = Math.toRadians(lon2);
+
+        /*************************************************************************
+         * Compute using Haversine formula
+         *************************************************************************/
+        double a = Math.pow(Math.sin((x2-x1)/2), 2)
+                + Math.cos(x1) * Math.cos(x2) * Math.pow(Math.sin((y2-y1)/2), 2);
+
+        // great circle distance in radians
+        double angle2 = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+
+        // convert back to degrees
+        angle2 = Math.toDegrees(angle2);
+
+        // each degree on a great circle of Earth is 60 nautical miles
+        double distance2 = 60 * angle2;
+
+        //System.out.println(String.format("Dist between (%f, %f) and (%f, %f) is %f nautical miles", x1, y1, x2, y2, distance2));
+
+        return distance2;
+    }
+
 
 
     /**

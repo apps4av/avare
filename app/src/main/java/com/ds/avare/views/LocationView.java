@@ -20,9 +20,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +33,7 @@ import android.view.ViewConfiguration;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.adsb.AudibleTrafficAlerts;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.connections.ConnectionFactory;
@@ -123,6 +126,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     // Which layer to draw
     private String mLayerType;
     private Layer mLayer;
+    private AudibleTrafficAlerts audibleTrafficAlerts;
 
     /**
      * Task that finds closets airport.
@@ -213,6 +217,12 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         return mLongTouchDestination;
     }
 
+
+    private AudibleTrafficAlerts getAudibleAlerts() {
+        if (this.audibleTrafficAlerts == null)
+            this.audibleTrafficAlerts = new AudibleTrafficAlerts(mContext);
+        return this.audibleTrafficAlerts;
+    }
     /**
      * @param context
      */
@@ -582,6 +592,17 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         }
     }
 
+    private static final double MIN_WARN_DIST = 5.0;
+    private void handleAudibleAlerts() {
+        if (mPref.isAudibleTrafficAlerts()) {
+            Traffic.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(), mService.getTrafficCache().getTraffic(),
+                    this.getAudibleAlerts(), MIN_WARN_DIST, mService.getTrafficCache().getOwnAltitude());
+        }
+    }
+
+
+
+
     /**
      *
      * @param canvas
@@ -944,6 +965,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         drawDrawing(canvas, ctx);
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
+        handleAudibleAlerts();
         drawObstacles(canvas, ctx);
         drawTFR(canvas, ctx);
         drawShapes(canvas, ctx);
@@ -1204,7 +1226,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-        	
+
         	// Ignore this gesture if we are not configured to use dynamic fields
         	if((mPref.useDynamicFields() == false)) {
         		return false;
