@@ -251,6 +251,11 @@ authors: zkhan, jlmcgraw
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="@string/AudibleTrafficAlerts"
+            android:summary="@string/AudibleTrafficAlertsSummary"
+            android:title="@string/AudibleTrafficAlertsLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="@string/drawTrafficCircles"
             android:summary="@string/drawTrafficCirclesSummary"
             android:title="@string/drawTrafficCirclesLabel" />
