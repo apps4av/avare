@@ -31,10 +31,6 @@ public class Traffic {
     private static Matrix mMatrix = new Matrix();
     private AudibleTrafficAlerts audibleTrafficAlerts;
 
-
-    public static final double TRAFFIC_ALTITUDE_DIFF_DANGEROUS = 1000; //ft 300m required minimum
-    
-
     
     // ms
     private static final long EXPIRES = 1000 * 60 * 1;
@@ -86,22 +82,22 @@ public class Traffic {
      * 
      * @return
      */
-    public static int getColorFromAltitude(double myAlt, double theirAlt) {
+    public static int getColorFromAltitude(double myAlt, double theirAlt, int proximityDangerMinimum) {
         int color;
         double diff = myAlt - theirAlt;
-        if(diff > TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
+        if(diff > proximityDangerMinimum) {
             /*
              * Much below us
              */
             color = Color.GREEN;
         }
-        else if (diff < TRAFFIC_ALTITUDE_DIFF_DANGEROUS && diff > 0) {
+        else if (diff < proximityDangerMinimum && diff > 0) {
             /*
              * Dangerously below us
              */
             color = Color.RED;
         }
-        else if (diff < -TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
+        else if (diff < -proximityDangerMinimum) {
             /*
              * Much above us
              */
@@ -118,7 +114,7 @@ public class Traffic {
     }
 
     public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
-                            BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
+                            BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta, int proximityDangerMinimum) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
         boolean circles = ctx.pref.shouldDrawTrafficCircles();
@@ -161,7 +157,7 @@ public class Traffic {
             /*
              * Find color from altitude
              */
-            int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
+            int color = Traffic.getColorFromAltitude(altitude, t.mAltitude, proximityDangerMinimum);
 
             int diff;
             String text = "";
@@ -268,13 +264,13 @@ public class Traffic {
     }
 
     public static void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
-                                           AudibleTrafficAlerts audibleTrafficAlerts, double alertDistance, int ownAltitude)
+                                           AudibleTrafficAlerts audibleTrafficAlerts, float alertDistance, int ownAltitude, int altitudeProximityDangerMinimum)
     {
             for (int i = 0; i < allTraffic.size(); i++) {
                 Traffic t = allTraffic.get(allTraffic.keyAt(i));
                 double altDiff = ownAltitude - t.mAltitude;
                 if (greatCircleDistance(ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon) < alertDistance
-                    && Math.abs(altDiff) < TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                    && Math.abs(altDiff) < altitudeProximityDangerMinimum
                 )
                     audibleTrafficAlerts.trafficNearAlert();
             }

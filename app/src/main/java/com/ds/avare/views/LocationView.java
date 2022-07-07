@@ -596,7 +596,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
             Traffic.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(), mService.getTrafficCache().getTraffic(),
-                    this.getAudibleAlerts(), MIN_WARN_DIST, mService.getTrafficCache().getOwnAltitude());
+                    this.getAudibleAlerts(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
+                    mService.getTrafficCache().getOwnAltitude(), mPref.getAltitudeProximityDangerMinimum());
         }
     }
 
@@ -694,7 +695,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     private void drawTraffic(Canvas canvas, DrawingContext ctx) {
         Traffic.draw(ctx, mService.getTrafficCache().getTraffic(),
                 mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection,
-                mTrafficRed, mTrafficGreen, mTrafficBlue, mTrafficMagenta);
+                mTrafficRed, mTrafficGreen, mTrafficBlue, mTrafficMagenta, mPref.getAltitudeProximityDangerMinimum());
     }
 
     /**

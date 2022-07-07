@@ -340,6 +340,15 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
     }
 
+
+    public float getAudibleTrafficAlertsDistanceMinimum() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+    }
+
+    public int getAltitudeProximityDangerMinimum() {
+        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AltitudeProximityDangerMinimum), "1000"));
+    }
+
     /**
      * @return
      */
@@ -902,9 +911,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }
 
-    public boolean setAudibleTrafficAlerts(boolean audibleTrafficAlerts) {
-        return mPref.edit().putBoolean(mContext.getString(R.string.AudibleTrafficAlerts), audibleTrafficAlerts).commit();
-    }
+
 
 
     public boolean isTrackUpPlates() {

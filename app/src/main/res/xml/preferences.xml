@@ -254,6 +254,16 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlerts"
             android:summary="@string/AudibleTrafficAlertsSummary"
             android:title="@string/AudibleTrafficAlertsLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="5"
+            android:key="@string/AudibleTrafficAlertsDistanceMinimum"
+            android:summary="@string/AudibleTrafficAlertsDistanceMinimumSummary"
+            android:title="@string/AudibleTrafficAlertsDistanceMinimumLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="1000"
+            android:key="@string/AltitudeProximityDangerMinimum"
+            android:summary="@string/AltitudeProximityDangerMinimumSummary"
+            android:title="@string/AltitudeProximityDangerMinimumLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/drawTrafficCircles"

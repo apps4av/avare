@@ -155,6 +155,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlerts">&quot;Audible Traffic Alerts&quot;</string>
     <string name="AudibleTrafficAlertsSummary">&quot;Play audible alerts for ADSB traffic within danger minimums&quot;</string>
     <string name="AudibleTrafficAlertsLabel">&quot;Audible Traffic Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsDistanceMinimum">&quot;Audible Traffic Alerts Distance Minimum&quot;</string>
+    <string name="AudibleTrafficAlertsDistanceMinimumSummary">&quot;Distance (nm) under which audible ADSB traffic alerts sound, assuming altitude under danger Minimum too&quot;</string>
+    <string name="AudibleTrafficAlertsDistanceMinimumLabel">&quot;Audible Traffic Alerts Minimum&quot;</string>
+    <string name="AltitudeProximityDangerMinimum">&quot;Altitude Proximity Danger Distance Minimum&quot;</string>
+    <string name="AltitudeProximityDangerMinimumSummary">&quot;Distance (feet) above or below traffic aircraft under which danger visual and audible warnings are triggered&quot;</string>
+    <string name="AltitudeProximityDangerMinimumLabel">&quot;Altitude Proximity Minimum&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>
