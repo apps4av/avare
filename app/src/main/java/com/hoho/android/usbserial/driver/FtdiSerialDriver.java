@@ -28,6 +28,59 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * A {@link CommonUsbSerialDriver} implementation for a variety of FTDI devices
+ * <p>
+ * This driver is based on
+ * <a href="http://www.intra2net.com/en/developer/libftdi">libftdi</a>, and is
+ * copyright and subject to the following terms:
+ *
+ * <pre>
+ *   Copyright (C) 2003 by Intra2net AG
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License
+ *   version 2.1 as published by the Free Software Foundation;
+ *
+ *   opensource@intra2net.com
+ *   http://www.intra2net.com/en/developer/libftdi
+ * </pre>
+ *
+ * </p>
+ * <p>
+ * Some FTDI devices have not been tested; see later listing of supported and
+ * unsupported devices. Devices listed as "supported" support the following
+ * features:
+ * <ul>
+ * <li>Read and write of serial data (see {@link #read(byte[], int)} and
+ * {@link #write(byte[], int)}.
+ * <li>Setting baud rate (see {@link #setBaudRate(int)}).
+ * </ul>
+ * </p>
+ * <p>
+ * Supported and tested devices:
+ * <ul>
+ * <li>{@value DeviceType#TYPE_R}</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Unsupported but possibly working devices (please contact the author with
+ * feedback or patches):
+ * <ul>
+ * <li>{@value DeviceType#TYPE_2232C}</li>
+ * <li>{@value DeviceType#TYPE_2232H}</li>
+ * <li>{@value DeviceType#TYPE_4232H}</li>
+ * <li>{@value DeviceType#TYPE_AM}</li>
+ * <li>{@value DeviceType#TYPE_BM}</li>
+ * </ul>
+ * </p>
+ *
+ * @author mike wakerly (opensource@hoho.com)
+ * @see <a href="http://code.google.com/p/usb-serial-for-android/">USB Serial
+ * for Android project page</a>
+ * @see <a href="http://www.ftdichip.com/">FTDI Homepage</a>
+ * @see <a href="http://www.intra2net.com/en/developer/libftdi">libftdi</a>
+ */
 public class FtdiSerialDriver extends CommonUsbSerialDriver {
    public static final int USB_TYPE_STANDARD = 0;
    public static final int USB_TYPE_CLASS = 0;
