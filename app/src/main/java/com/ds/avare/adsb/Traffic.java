@@ -272,7 +272,7 @@ public class Traffic {
                 if (greatCircleDistance(ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon) < alertDistance
                     && Math.abs(altDiff) < altitudeProximityDangerMinimum
                 )
-                    audibleTrafficAlerts.trafficNearAlert();
+                    audibleTrafficAlerts.alertTrafficPosition(t, ownLocation, ownAltitude);
             }
 
     }
