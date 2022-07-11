@@ -109,8 +109,6 @@ public class AudibleTrafficAlerts {
     }
 
     protected static double relativeBearingFromHeadingAndLocations(double lat1, double long1, double lat2, double long2,  double myBearing) {
-        final double angle = angleFromCoordinate(lat1, long1, lat2, long2);
-        final double relativeBearing = (angle - myBearing + 360) % 360;
-        return relativeBearing;
+        return (angleFromCoordinate(lat1, long1, lat2, long2) - myBearing + 360) % 360;
     }
 }
