@@ -6,15 +6,66 @@ import android.media.MediaPlayer;
 
 import com.ds.avare.R;
 
+import java.util.LinkedList;
 
-public class AudibleTrafficAlerts {
+
+public class AudibleTrafficAlerts implements Runnable {
     final private MediaPlayer mpTrafficNear;
     final private MediaPlayer mpLow, mpHigh, mpLevel;
     final private MediaPlayer mpOClock;
     final private MediaPlayer[] arrMpClockHours;
     final private SequentialMediaPlayer sequentialMediaPlayer;
+    private static volatile boolean isEnabled = true;
+    final private LinkedList<AlertItem> alertQueue = new LinkedList<>();
+    private static AudibleTrafficAlerts singleton;
 
-    public AudibleTrafficAlerts(Context ctx) {
+    private static class AlertItem {
+        final private Traffic traffic;
+        final private Location ownLocation;
+        final int ownAltitude;
+
+        private AlertItem(Traffic traffic, Location ownLocation, int ownAltitude) {
+            this.ownAltitude = ownAltitude;
+            this.traffic = traffic;
+            this.ownLocation = ownLocation;
+        }
+
+        @Override
+        public final int hashCode() {
+            return traffic.mCallSign.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null)
+                return false;
+            if (!(o instanceof AlertItem))
+                return false;
+            return ((AlertItem)o).traffic.mCallSign.equals(this.traffic.mCallSign);
+        }
+    }
+
+    public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
+        if (singleton == null)
+            singleton = new AudibleTrafficAlerts(ctx);
+        isEnabled = true;
+        new Thread(singleton).start();
+        return singleton;
+    }
+
+    public static synchronized void stopAudibleTrafficAlerts() {
+        isEnabled = false;
+    }
+
+    public static synchronized  boolean isEnabled() {
+        return isEnabled;
+    }
+
+
+
+
+
+    private AudibleTrafficAlerts(Context ctx) {
         mpTrafficNear = MediaPlayer.create(ctx, R.raw.watch_out);
         sequentialMediaPlayer = new SequentialMediaPlayer();
         arrMpClockHours = new MediaPlayer[] {
@@ -29,22 +80,47 @@ public class AudibleTrafficAlerts {
         mpOClock = MediaPlayer.create(ctx, R.raw.oclock);
     }
 
-    public synchronized void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
-            final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
-                    myLoc.getLatitude(), myLoc.getLongitude(), traffic.mLat, traffic.mLon, myLoc.getBearing());
-            final double altitudeDiff = ownAltitude - traffic.mAltitude;
-                // TODO: Put in one synchronized, serial call, and ensure fairness to nearest not-already-called craft
-                if (sequentialMediaPlayer.setMedia(mpTrafficNear, arrMpClockHours[clockHour - 1], mpOClock,
+    @Override
+    public void run() {
+        while(isEnabled) {
+            synchronized (this) {
+                if (this.alertQueue.size() > 0 && !sequentialMediaPlayer.isPlaying) {
+                    final AlertItem alertItem = alertQueue.removeFirst();
+                    final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
+                    final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
+                            alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
+                            alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
+                    if (sequentialMediaPlayer.setMedia(
+                        mpTrafficNear, arrMpClockHours[clockHour - 1], mpOClock,
                         Math.abs(altitudeDiff) < 100 ? mpLevel
-                                : (altitudeDiff > 0 ? mpLow : mpHigh)))
-                    sequentialMediaPlayer.play();
+                                : (altitudeDiff > 0 ? mpLow : mpHigh)
+                    ))
+                        sequentialMediaPlayer.play();
+                } else {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    public synchronized void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
+        final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
+        if (!this.alertQueue.contains(alertItem)) {
+            this.alertQueue.add(alertItem);
+        }
+        notifyAll();
     }
 
     /**
      * Helpler class that uses media event handling to ensure strictly sequential play of a list
      * of media resources
      */
-    private class SequentialMediaPlayer implements MediaPlayer.OnCompletionListener {
+    private static class SequentialMediaPlayer implements MediaPlayer.OnCompletionListener {
 
         private MediaPlayer[] media;
         private boolean isPlaying = false;
@@ -52,9 +128,9 @@ public class AudibleTrafficAlerts {
 
         /**
          * TODO: Use synchro to wait for current play to finish if called when playing
-         * @param media
+         * @param media Media item sequence to queue in player
          */
-        public synchronized boolean  setMedia(MediaPlayer... media) {
+        public synchronized boolean setMedia(MediaPlayer... media) {
             if (!isPlaying) {
                 this.media = media;
                 this.mediaIndex = 0;
