@@ -3,19 +3,16 @@ package com.ds.avare.adsb;
 import android.content.Context;
 import android.location.Location;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 
 import com.ds.avare.R;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class AudibleTrafficAlerts {
-    private MediaPlayer mpTrafficNear;
-    private MediaPlayer mpLow, mpHigh, mpLevel;
-    private MediaPlayer mpOClock;
-    private MediaPlayer[] arrMpClockHours;
-    private SequentialMediaPlayer sequentialMediaPlayer;
+    final private MediaPlayer mpTrafficNear;
+    final private MediaPlayer mpLow, mpHigh, mpLevel;
+    final private MediaPlayer mpOClock;
+    final private MediaPlayer[] arrMpClockHours;
+    final private SequentialMediaPlayer sequentialMediaPlayer;
 
     public AudibleTrafficAlerts(Context ctx) {
         mpTrafficNear = MediaPlayer.create(ctx, R.raw.watch_out);
@@ -36,10 +33,11 @@ public class AudibleTrafficAlerts {
             final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
                     myLoc.getLatitude(), myLoc.getLongitude(), traffic.mLat, traffic.mLon, myLoc.getBearing());
             final double altitudeDiff = ownAltitude - traffic.mAltitude;
-                sequentialMediaPlayer.setMedia(mpTrafficNear, arrMpClockHours[clockHour - 1],
+                // TODO: Put in one synchronized, serial call, and ensure fairness to nearest not-already-called craft
+                if (sequentialMediaPlayer.setMedia(mpTrafficNear, arrMpClockHours[clockHour - 1], mpOClock,
                         Math.abs(altitudeDiff) < 100 ? mpLevel
-                                : (altitudeDiff > 0 ? mpLow : mpHigh));
-                sequentialMediaPlayer.play();
+                                : (altitudeDiff > 0 ? mpLow : mpHigh)))
+                    sequentialMediaPlayer.play();
     }
 
     /**
@@ -56,13 +54,15 @@ public class AudibleTrafficAlerts {
          * TODO: Use synchro to wait for current play to finish if called when playing
          * @param media
          */
-        public synchronized void  setMedia(MediaPlayer... media) {
+        public synchronized boolean  setMedia(MediaPlayer... media) {
             if (!isPlaying) {
                 this.media = media;
                 this.mediaIndex = 0;
                 for (MediaPlayer mp : media)
                     mp.setOnCompletionListener(this);
-            }
+                return true;
+            } else
+                return false;
         }
 
         @Override
