@@ -16,7 +16,7 @@ public class AudibleTrafficAlerts implements Runnable {
     final private MediaPlayer[] arrMpClockHours;
     final private SequentialMediaPlayer sequentialMediaPlayer;
     private static volatile Thread runnerThread;
-    final private LinkedList<AlertItem> alertQueue = new LinkedList<>();
+    final private LinkedList<AlertItem> alertQueue;
     private static AudibleTrafficAlerts singleton;
 
     private static class AlertItem {
@@ -70,7 +70,8 @@ public class AudibleTrafficAlerts implements Runnable {
 
     private AudibleTrafficAlerts(Context ctx) {
         mpTrafficNear = MediaPlayer.create(ctx, R.raw.watch_out);
-        sequentialMediaPlayer = new SequentialMediaPlayer();
+        alertQueue = new LinkedList<>();
+        sequentialMediaPlayer = new SequentialMediaPlayer(alertQueue);
         arrMpClockHours = new MediaPlayer[] {
                 MediaPlayer.create(ctx, R.raw.one), MediaPlayer.create(ctx, R.raw.two), MediaPlayer.create(ctx, R.raw.three),
                 MediaPlayer.create(ctx, R.raw.four), MediaPlayer.create(ctx, R.raw.five), MediaPlayer.create(ctx, R.raw.six),
@@ -81,12 +82,13 @@ public class AudibleTrafficAlerts implements Runnable {
         mpHigh = MediaPlayer.create(ctx, R.raw.high);
         mpLevel = MediaPlayer.create(ctx, R.raw.level);
         mpOClock = MediaPlayer.create(ctx, R.raw.oclock);
+
     }
 
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()) {
-            synchronized (this) {
+            synchronized (alertQueue) {
                 if (this.alertQueue.size() > 0 && !sequentialMediaPlayer.isPlaying) {
                     final AlertItem alertItem = alertQueue.removeFirst();
                     final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
@@ -102,7 +104,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     }
                 } else {
                     try {
-                        wait();
+                        alertQueue.wait();
                     } catch (InterruptedException e) {
                     }
                 }
@@ -112,15 +114,17 @@ public class AudibleTrafficAlerts implements Runnable {
 
     }
 
-    public synchronized void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
-        final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
-        final int alertIndex = alertQueue.indexOf(alertItem);
-        if (alertIndex == -1) {
-            this.alertQueue.add(alertItem);
-        } else {
-            this.alertQueue.set(alertIndex, alertItem);
+    public  void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
+        synchronized (alertQueue) {
+            final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
+            final int alertIndex = alertQueue.indexOf(alertItem);
+            if (alertIndex == -1) {
+                this.alertQueue.add(alertItem);
+            } else {
+                this.alertQueue.set(alertIndex, alertItem);
+            }
+            alertQueue.notifyAll();
         }
-        notifyAll();
     }
 
     /**
@@ -132,9 +136,13 @@ public class AudibleTrafficAlerts implements Runnable {
         private MediaPlayer[] media;
         private boolean isPlaying = false;
         private int mediaIndex = 0;
+        private Object playStatusMonitorObject;
+
+        SequentialMediaPlayer(Object playStatusMonitorObject) {
+            this.playStatusMonitorObject = playStatusMonitorObject;
+        }
 
         /**
-         * TODO: Use synchro to wait for current play to finish if called when playing
          * @param media Media item sequence to queue in player
          */
         public synchronized boolean setMedia(MediaPlayer... media) {
@@ -152,8 +160,12 @@ public class AudibleTrafficAlerts implements Runnable {
         public void onCompletion(MediaPlayer mediaPlayer) {
             if (++mediaIndex <= media.length-1)
                 play();
-            else
+            else {
                 this.isPlaying = false;
+                synchronized(playStatusMonitorObject) {
+                    playStatusMonitorObject.notifyAll();
+                }
+            }
         }
 
         public synchronized void play() {
