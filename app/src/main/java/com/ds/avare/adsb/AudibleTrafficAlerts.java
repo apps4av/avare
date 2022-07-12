@@ -15,7 +15,7 @@ public class AudibleTrafficAlerts implements Runnable {
     final private MediaPlayer mpOClock;
     final private MediaPlayer[] arrMpClockHours;
     final private SequentialMediaPlayer sequentialMediaPlayer;
-    private static volatile boolean isEnabled = true;
+    private static volatile Thread runnerThread;
     final private LinkedList<AlertItem> alertQueue = new LinkedList<>();
     private static AudibleTrafficAlerts singleton;
 
@@ -48,17 +48,20 @@ public class AudibleTrafficAlerts implements Runnable {
     public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
         if (singleton == null)
             singleton = new AudibleTrafficAlerts(ctx);
-        isEnabled = true;
-        new Thread(singleton).start();
+        runnerThread = new Thread(singleton);
+        runnerThread.start();
         return singleton;
     }
 
     public static synchronized void stopAudibleTrafficAlerts() {
-        isEnabled = false;
+        if (runnerThread != null) {
+            runnerThread.interrupt();
+            runnerThread = null;
+        }
     }
 
     public static synchronized  boolean isEnabled() {
-        return isEnabled;
+        return runnerThread != null && !runnerThread.isInterrupted();
     }
 
 
@@ -82,7 +85,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
     @Override
     public void run() {
-        while(isEnabled) {
+        while(!Thread.currentThread().isInterrupted()) {
             synchronized (this) {
                 if (this.alertQueue.size() > 0 && !sequentialMediaPlayer.isPlaying) {
                     final AlertItem alertItem = alertQueue.removeFirst();
@@ -94,8 +97,9 @@ public class AudibleTrafficAlerts implements Runnable {
                         mpTrafficNear, arrMpClockHours[clockHour - 1], mpOClock,
                         Math.abs(altitudeDiff) < 100 ? mpLevel
                                 : (altitudeDiff > 0 ? mpLow : mpHigh)
-                    ))
+                    )) {
                         sequentialMediaPlayer.play();
+                    }
                 } else {
                     try {
                         wait();
