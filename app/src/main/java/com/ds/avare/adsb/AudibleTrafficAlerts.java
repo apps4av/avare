@@ -110,8 +110,11 @@ public class AudibleTrafficAlerts implements Runnable {
 
     public synchronized void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
         final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
-        if (!this.alertQueue.contains(alertItem)) {
+        final int alertIndex = alertQueue.indexOf(alertItem);
+        if (alertIndex == -1) {
             this.alertQueue.add(alertItem);
+        } else {
+            this.alertQueue.set(alertIndex, alertItem);
         }
         notifyAll();
     }
