@@ -45,29 +45,6 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
-        if (singleton == null)
-            singleton = new AudibleTrafficAlerts(ctx);
-        runnerThread = new Thread(singleton);
-        runnerThread.start();
-        return singleton;
-    }
-
-    public static synchronized void stopAudibleTrafficAlerts() {
-        if (runnerThread != null) {
-            runnerThread.interrupt();
-            runnerThread = null;
-        }
-    }
-
-    public static synchronized  boolean isEnabled() {
-        return runnerThread != null && !runnerThread.isInterrupted();
-    }
-
-
-
-
-
     private AudibleTrafficAlerts(Context ctx) {
         mpTrafficNear = MediaPlayer.create(ctx, R.raw.watch_out);
         alertQueue = new LinkedList<>();
@@ -83,6 +60,25 @@ public class AudibleTrafficAlerts implements Runnable {
         mpLevel = MediaPlayer.create(ctx, R.raw.level);
         mpOClock = MediaPlayer.create(ctx, R.raw.oclock);
 
+    }
+
+    public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
+        if (singleton == null)
+            singleton = new AudibleTrafficAlerts(ctx);
+        runnerThread = new Thread(singleton, "AudibleAlerts");
+        runnerThread.start();
+        return singleton;
+    }
+
+    public static synchronized void stopAudibleTrafficAlerts() {
+        if (runnerThread != null) {
+            runnerThread.interrupt();
+            runnerThread = null;
+        }
+    }
+
+    public static synchronized  boolean isEnabled() {
+        return runnerThread != null && !runnerThread.isInterrupted();
     }
 
     @Override
@@ -120,7 +116,7 @@ public class AudibleTrafficAlerts implements Runnable {
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
                 this.alertQueue.add(alertItem);
-            } else {
+            } else {    // if already in queue, update with the most recent data prior to speaking
                 this.alertQueue.set(alertIndex, alertItem);
             }
             alertQueue.notifyAll();
@@ -136,9 +132,11 @@ public class AudibleTrafficAlerts implements Runnable {
         private MediaPlayer[] media;
         private boolean isPlaying = false;
         private int mediaIndex = 0;
-        private Object playStatusMonitorObject;
+        final private Object playStatusMonitorObject;
 
         SequentialMediaPlayer(Object playStatusMonitorObject) {
+            if (playStatusMonitorObject == null)
+                throw new IllegalArgumentException("Play status monitor object must not be null");
             this.playStatusMonitorObject = playStatusMonitorObject;
         }
 
@@ -176,8 +174,6 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-
-
     protected static double angleFromCoordinate(double lat1, double long1, double lat2,
                                               double long2) {
 
@@ -192,9 +188,9 @@ public class AudibleTrafficAlerts implements Runnable {
         final double x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad)
                 * Math.cos(lat2Rad) * Math.cos(dLon);
 
-        double brng = Math.atan2(y, x);
+        final double bearingRad = Math.atan2(y, x);
 
-        return  (Math.toDegrees(brng) + 360) % 360;
+        return  (Math.toDegrees(bearingRad) + 360) % 360;
     }
 
     protected static long nearestClockHourFromHeadingAndLocations(
