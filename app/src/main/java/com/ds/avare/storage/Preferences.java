@@ -907,6 +907,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlerts), true);
     }
 
+    public boolean isAudibleTrafficAlertsTopGunMode() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
+    }
+
+    public boolean isAudibleAlertTrafficId() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
+    }
+
     public boolean setTrackUp(boolean trackUp) {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }

@@ -592,6 +592,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
+            AudibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
+            AudibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             Traffic.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(), mService.getTrafficCache().getTraffic(),
                     this.getAudibleAlerts(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
                     mService.getTrafficCache().getOwnAltitude(), mPref.getAltitudeProximityDangerMinimum());

@@ -10,14 +10,18 @@ import java.util.LinkedList;
 
 
 public class AudibleTrafficAlerts implements Runnable {
-    final private MediaPlayer mpTrafficNear;
+    final private MediaPlayer mpTraffic;
+    final private MediaPlayer mpBogey;
     final private MediaPlayer mpLow, mpHigh, mpLevel;
-    final private MediaPlayer mpOClock;
     final private MediaPlayer[] arrMpClockHours;
+    final private MediaPlayer[] arrMpTrafficAliases;
     final private SequentialMediaPlayer sequentialMediaPlayer;
     private static volatile Thread runnerThread;
     final private LinkedList<AlertItem> alertQueue;
+    final private LinkedList<String> phoneticAlphaIcaoSequenceQueue;
     private static AudibleTrafficAlerts singleton;
+    private static boolean useTrafficAliases = true;
+    private static boolean topGunDorkMode = false;
 
     private static class AlertItem {
         final private Traffic traffic;
@@ -46,20 +50,27 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private AudibleTrafficAlerts(Context ctx) {
-        mpTrafficNear = MediaPlayer.create(ctx, R.raw.watch_out);
         alertQueue = new LinkedList<>();
+        phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
         sequentialMediaPlayer = new SequentialMediaPlayer(alertQueue);
-        arrMpClockHours = new MediaPlayer[] {
-                MediaPlayer.create(ctx, R.raw.one), MediaPlayer.create(ctx, R.raw.two), MediaPlayer.create(ctx, R.raw.three),
-                MediaPlayer.create(ctx, R.raw.four), MediaPlayer.create(ctx, R.raw.five), MediaPlayer.create(ctx, R.raw.six),
-                MediaPlayer.create(ctx, R.raw.seven), MediaPlayer.create(ctx, R.raw.eight), MediaPlayer.create(ctx, R.raw.nine),
-                MediaPlayer.create(ctx, R.raw.ten), MediaPlayer.create(ctx, R.raw.eleven), MediaPlayer.create(ctx, R.raw.twelve)
-        };
-        mpLow = MediaPlayer.create(ctx, R.raw.low);
-        mpHigh = MediaPlayer.create(ctx, R.raw.high);
-        mpLevel = MediaPlayer.create(ctx, R.raw.level);
-        mpOClock = MediaPlayer.create(ctx, R.raw.oclock);
 
+        mpTraffic = MediaPlayer.create(ctx, R.raw.tr_traffic);
+        mpBogey = MediaPlayer.create(ctx, R.raw.tr_bogey);
+        arrMpClockHours = new MediaPlayer[] {
+                MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.three),
+                MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.six),
+                MediaPlayer.create(ctx, R.raw.tr_seven), MediaPlayer.create(ctx, R.raw.tr_eight), MediaPlayer.create(ctx, R.raw.tr_nine),
+                MediaPlayer.create(ctx, R.raw.ten), MediaPlayer.create(ctx, R.raw.tr_eleven), MediaPlayer.create(ctx, R.raw.tr_twelve)
+        };
+        arrMpTrafficAliases = new MediaPlayer[] {
+                MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.three),
+                MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.six),
+                MediaPlayer.create(ctx, R.raw.tr_seven), MediaPlayer.create(ctx, R.raw.tr_eight), MediaPlayer.create(ctx, R.raw.tr_nine),
+                MediaPlayer.create(ctx, R.raw.ten), MediaPlayer.create(ctx, R.raw.tr_eleven), MediaPlayer.create(ctx, R.raw.tr_twelve)
+        };
+        mpLow = MediaPlayer.create(ctx, R.raw.tr_low);
+        mpHigh = MediaPlayer.create(ctx, R.raw.tr_high);
+        mpLevel = MediaPlayer.create(ctx, R.raw.tr_level);
     }
 
     public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
@@ -81,23 +92,29 @@ public class AudibleTrafficAlerts implements Runnable {
         return runnerThread != null && !runnerThread.isInterrupted();
     }
 
+    public static void setUseTrafficAliases(boolean useTrafficAliases) {
+        AudibleTrafficAlerts.useTrafficAliases = useTrafficAliases;
+    }
+
+    public static boolean isUsingTrafficAliases() {
+        return AudibleTrafficAlerts.useTrafficAliases;
+    }
+
+    public static void setTopGunDorkMode(boolean topGunDorkMode) {
+        AudibleTrafficAlerts.topGunDorkMode = topGunDorkMode;
+    }
+
+    public static boolean isInTopGunDorkMode() {
+        return AudibleTrafficAlerts.topGunDorkMode;
+    }
+
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
                 if (this.alertQueue.size() > 0 && !sequentialMediaPlayer.isPlaying) {
-                    final AlertItem alertItem = alertQueue.removeFirst();
-                    final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
-                    final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
-                            alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
-                            alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
-                    if (sequentialMediaPlayer.setMedia(
-                        mpTrafficNear, arrMpClockHours[clockHour - 1], mpOClock,
-                        Math.abs(altitudeDiff) < 100 ? mpLevel
-                                : (altitudeDiff > 0 ? mpLow : mpHigh)
-                    )) {
+                    if (sequentialMediaPlayer.setMedia(buildAudioMessage(alertQueue.removeFirst())))
                         sequentialMediaPlayer.play();
-                    }
                 } else {
                     try {
                         alertQueue.wait();
@@ -105,12 +122,33 @@ public class AudibleTrafficAlerts implements Runnable {
                     }
                 }
             }
-
         }
-
     }
 
-    public  void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
+    private MediaPlayer[] buildAudioMessage(AlertItem alertItem) {
+        final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases ? 4 : 3];
+        final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
+        final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
+                alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
+                alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
+        int i = 0;
+        alertAudio[i++] = topGunDorkMode ? mpBogey : mpTraffic;
+        if (useTrafficAliases) {
+            int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(alertItem.traffic.mCallSign);
+            if (icaoIndex == -1) {
+                phoneticAlphaIcaoSequenceQueue.add(alertItem.traffic.mCallSign);
+                icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
+            }
+            // TODO: double/triple/etc. id if you get to end, rather than starting over
+            alertAudio[i++] = arrMpTrafficAliases[icaoIndex % (arrMpTrafficAliases.length - 1)];
+        }
+        alertAudio[i++] = arrMpClockHours[clockHour - 1];
+        alertAudio[i++] = Math.abs(altitudeDiff) < 100 ? mpLevel
+                : (altitudeDiff > 0 ? mpLow : mpHigh);
+        return alertAudio;
+    }
+
+    public void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
         synchronized (alertQueue) {
             final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
             final int alertIndex = alertQueue.indexOf(alertItem);
