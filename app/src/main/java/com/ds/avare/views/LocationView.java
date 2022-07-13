@@ -20,11 +20,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -592,7 +590,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         }
     }
 
-    private static final double MIN_WARN_DIST = 5.0;
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
             Traffic.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(), mService.getTrafficCache().getTraffic(),

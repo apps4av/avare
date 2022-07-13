@@ -264,12 +264,16 @@ public class Traffic {
     }
 
     public static void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
-                                           AudibleTrafficAlerts audibleTrafficAlerts, float alertDistance, int ownAltitude, int altitudeProximityDangerMinimum)
+                                           AudibleTrafficAlerts audibleTrafficAlerts,
+                                           float alertDistance, int ownAltitude,
+                                           int altitudeProximityDangerMinimum)
     {
             for (int i = 0; i < allTraffic.size(); i++) {
                 Traffic t = allTraffic.get(allTraffic.keyAt(i));
                 double altDiff = ownAltitude - t.mAltitude;
-                if (greatCircleDistance(ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon) < alertDistance
+                if (greatCircleDistance(
+                        ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon
+                ) < alertDistance
                     && Math.abs(altDiff) < altitudeProximityDangerMinimum
                 )
                     audibleTrafficAlerts.alertTrafficPosition(t, ownLocation, ownAltitude);
