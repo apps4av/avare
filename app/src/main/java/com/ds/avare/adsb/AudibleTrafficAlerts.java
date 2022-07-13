@@ -96,17 +96,10 @@ public class AudibleTrafficAlerts implements Runnable {
         AudibleTrafficAlerts.useTrafficAliases = useTrafficAliases;
     }
 
-    public static boolean isUsingTrafficAliases() {
-        return AudibleTrafficAlerts.useTrafficAliases;
-    }
-
     public static void setTopGunDorkMode(boolean topGunDorkMode) {
         AudibleTrafficAlerts.topGunDorkMode = topGunDorkMode;
     }
 
-    public static boolean isInTopGunDorkMode() {
-        return AudibleTrafficAlerts.topGunDorkMode;
-    }
 
     @Override
     public void run() {
@@ -119,6 +112,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     try {
                         alertQueue.wait();
                     } catch (InterruptedException e) {
+                        /* Proceed top top and check if thread is meant to exit */
                     }
                 }
             }
@@ -143,7 +137,7 @@ public class AudibleTrafficAlerts implements Runnable {
             alertAudio[i++] = arrMpTrafficAliases[icaoIndex % (arrMpTrafficAliases.length - 1)];
         }
         alertAudio[i++] = arrMpClockHours[clockHour - 1];
-        alertAudio[i++] = Math.abs(altitudeDiff) < 100 ? mpLevel
+        alertAudio[i] = Math.abs(altitudeDiff) < 100 ? mpLevel
                 : (altitudeDiff > 0 ? mpLow : mpHigh);
         return alertAudio;
     }
