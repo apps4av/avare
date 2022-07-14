@@ -53,20 +53,24 @@ public class AudibleTrafficAlerts implements Runnable {
         alertQueue = new LinkedList<>();
         phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
         sequentialMediaPlayer = new SequentialMediaPlayer(alertQueue);
-
         mpTraffic = MediaPlayer.create(ctx, R.raw.tr_traffic);
         mpBogey = MediaPlayer.create(ctx, R.raw.tr_bogey);
         arrMpClockHours = new MediaPlayer[] {
-                MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.three),
-                MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.six),
+                MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.tr_three),
+                MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.tr_six),
                 MediaPlayer.create(ctx, R.raw.tr_seven), MediaPlayer.create(ctx, R.raw.tr_eight), MediaPlayer.create(ctx, R.raw.tr_nine),
-                MediaPlayer.create(ctx, R.raw.ten), MediaPlayer.create(ctx, R.raw.tr_eleven), MediaPlayer.create(ctx, R.raw.tr_twelve)
+                MediaPlayer.create(ctx, R.raw.tr_ten), MediaPlayer.create(ctx, R.raw.tr_eleven), MediaPlayer.create(ctx, R.raw.tr_twelve)
         };
         arrMpTrafficAliases = new MediaPlayer[] {
-                MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.three),
-                MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.six),
-                MediaPlayer.create(ctx, R.raw.tr_seven), MediaPlayer.create(ctx, R.raw.tr_eight), MediaPlayer.create(ctx, R.raw.tr_nine),
-                MediaPlayer.create(ctx, R.raw.ten), MediaPlayer.create(ctx, R.raw.tr_eleven), MediaPlayer.create(ctx, R.raw.tr_twelve)
+                MediaPlayer.create(ctx, R.raw.tr_alpha), MediaPlayer.create(ctx, R.raw.tr_bravo), MediaPlayer.create(ctx, R.raw.tr_charlie),
+                MediaPlayer.create(ctx, R.raw.tr_delta), MediaPlayer.create(ctx, R.raw.tr_echo), MediaPlayer.create(ctx, R.raw.tr_foxtrot),
+                MediaPlayer.create(ctx, R.raw.tr_golf), MediaPlayer.create(ctx, R.raw.tr_hotel), MediaPlayer.create(ctx, R.raw.tr_india),
+                MediaPlayer.create(ctx, R.raw.tr_juliet), MediaPlayer.create(ctx, R.raw.tr_kilo), MediaPlayer.create(ctx, R.raw.tr_lima),
+                MediaPlayer.create(ctx, R.raw.tr_mike), MediaPlayer.create(ctx, R.raw.tr_november), MediaPlayer.create(ctx, R.raw.tr_oscar),
+                MediaPlayer.create(ctx, R.raw.tr_papa), MediaPlayer.create(ctx, R.raw.tr_quebec), MediaPlayer.create(ctx, R.raw.tr_romeo),
+                MediaPlayer.create(ctx, R.raw.tr_sierra), MediaPlayer.create(ctx, R.raw.tr_tango), MediaPlayer.create(ctx, R.raw.tr_uniform),
+                MediaPlayer.create(ctx, R.raw.tr_victor), MediaPlayer.create(ctx, R.raw.tr_whiskey), MediaPlayer.create(ctx, R.raw.tr_xray),
+                MediaPlayer.create(ctx, R.raw.tr_yankee), MediaPlayer.create(ctx, R.raw.tr_zulu)
         };
         mpLow = MediaPlayer.create(ctx, R.raw.tr_low);
         mpHigh = MediaPlayer.create(ctx, R.raw.tr_high);
@@ -133,8 +137,8 @@ public class AudibleTrafficAlerts implements Runnable {
                 phoneticAlphaIcaoSequenceQueue.add(alertItem.traffic.mCallSign);
                 icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
             }
-            // TODO: double/triple/etc. id if you get to end, rather than starting over
-            alertAudio[i++] = arrMpTrafficAliases[icaoIndex % (arrMpTrafficAliases.length - 1)];
+            // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
+            alertAudio[i++] = arrMpTrafficAliases[icaoIndex % arrMpTrafficAliases.length];
         }
         alertAudio[i++] = arrMpClockHours[clockHour - 1];
         alertAudio[i] = Math.abs(altitudeDiff) < 100 ? mpLevel
