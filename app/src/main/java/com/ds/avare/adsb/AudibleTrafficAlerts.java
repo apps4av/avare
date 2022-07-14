@@ -3,6 +3,7 @@ package com.ds.avare.adsb;
 import android.content.Context;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.util.SparseArray;
 
 import com.ds.avare.R;
 
@@ -20,8 +21,8 @@ public class AudibleTrafficAlerts implements Runnable {
     final private LinkedList<AlertItem> alertQueue;
     final private LinkedList<String> phoneticAlphaIcaoSequenceQueue;
     private static AudibleTrafficAlerts singleton;
-    private static boolean useTrafficAliases = true;
-    private static boolean topGunDorkMode = false;
+    private boolean useTrafficAliases = true;
+    private boolean topGunDorkMode = false;
 
     private static class AlertItem {
         final private Traffic traffic;
@@ -96,12 +97,12 @@ public class AudibleTrafficAlerts implements Runnable {
         return runnerThread != null && !runnerThread.isInterrupted();
     }
 
-    public static void setUseTrafficAliases(boolean useTrafficAliases) {
-        AudibleTrafficAlerts.useTrafficAliases = useTrafficAliases;
+    public void setUseTrafficAliases(boolean useTrafficAliases) {
+        this.useTrafficAliases = useTrafficAliases;
     }
 
-    public static void setTopGunDorkMode(boolean topGunDorkMode) {
-        AudibleTrafficAlerts.topGunDorkMode = topGunDorkMode;
+    public void setTopGunDorkMode(boolean topGunDorkMode) {
+        this.topGunDorkMode = topGunDorkMode;
     }
 
 
@@ -146,9 +147,25 @@ public class AudibleTrafficAlerts implements Runnable {
         return alertAudio;
     }
 
-    public void  alertTrafficPosition(Traffic traffic, Location myLoc, int ownAltitude) {
+    public void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
+                                           float alertDistance, int ownAltitude,
+                                           int altitudeProximityDangerMinimum)
+    {
+        for (int i = 0; i < allTraffic.size(); i++) {
+            Traffic t = allTraffic.get(allTraffic.keyAt(i));
+            double altDiff = ownAltitude - t.mAltitude;
+            if (greatCircleDistance(
+                    ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon
+            ) < alertDistance
+                    && Math.abs(altDiff) < altitudeProximityDangerMinimum
+            )
+                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude));
+        }
+
+    }
+
+    private void  alertTrafficPosition(AlertItem alertItem) {
         synchronized (alertQueue) {
-            final AlertItem alertItem = new AlertItem(traffic, myLoc, ownAltitude);
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
                 this.alertQueue.add(alertItem);
@@ -237,5 +254,33 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected static double relativeBearingFromHeadingAndLocations(double lat1, double long1, double lat2, double long2,  double myBearing) {
         return (angleFromCoordinate(lat1, long1, lat2, long2) - myBearing + 360) % 360;
+    }
+
+    /**
+     * Great circle distance between two lat/lon's via Haversine formula, Java impl courtesy of https://introcs.cs.princeton.edu/java/12types/GreatCircle.java.html
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return
+     */
+    private static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
+
+        final double x1 = Math.toRadians(lat1);
+        final double y1 = Math.toRadians(lon1);
+        final double x2 = Math.toRadians(lat2);
+        final double y2 = Math.toRadians(lon2);
+
+        /*************************************************************************
+         * Compute using Haversine formula
+         *************************************************************************/
+        final double a = Math.pow(Math.sin((x2-x1)/2), 2)
+                + Math.cos(x1) * Math.cos(x2) * Math.pow(Math.sin((y2-y1)/2), 2);
+
+        // great circle distance in radians
+        final double angle2 = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+
+        // convert back to degrees, and each degree on a great circle of Earth is 60 nautical miles
+        return 60 * Math.toDegrees(angle2);
     }
 }

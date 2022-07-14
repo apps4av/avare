@@ -263,52 +263,6 @@ public class Traffic {
 
     }
 
-    public static void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
-                                           AudibleTrafficAlerts audibleTrafficAlerts,
-                                           float alertDistance, int ownAltitude,
-                                           int altitudeProximityDangerMinimum)
-    {
-            for (int i = 0; i < allTraffic.size(); i++) {
-                Traffic t = allTraffic.get(allTraffic.keyAt(i));
-                double altDiff = ownAltitude - t.mAltitude;
-                if (greatCircleDistance(
-                        ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon
-                ) < alertDistance
-                    && Math.abs(altDiff) < altitudeProximityDangerMinimum
-                )
-                    audibleTrafficAlerts.alertTrafficPosition(t, ownLocation, ownAltitude);
-            }
-
-    }
-
-    /**
-     * Great circle distance between two lat/lon's via Haversine formula, Java impl courtesy of https://introcs.cs.princeton.edu/java/12types/GreatCircle.java.html
-     * @param lat1
-     * @param lon1
-     * @param lat2
-     * @param lon2
-     * @return
-     */
-    public static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
-
-        final double x1 = Math.toRadians(lat1);
-        final double y1 = Math.toRadians(lon1);
-        final double x2 = Math.toRadians(lat2);
-        final double y2 = Math.toRadians(lon2);
-
-        /*************************************************************************
-         * Compute using Haversine formula
-         *************************************************************************/
-        final double a = Math.pow(Math.sin((x2-x1)/2), 2)
-                + Math.cos(x1) * Math.cos(x2) * Math.pow(Math.sin((y2-y1)/2), 2);
-
-        // great circle distance in radians
-        final double angle2 = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
-
-        // convert back to degrees, and each degree on a great circle of Earth is 60 nautical miles
-        return 60 * Math.toDegrees(angle2);
-    }
-
 
 
     /**
