@@ -6,8 +6,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
-        //FDROID-REMOVED: classpath 'com.google.gms:google-services:4.3.10'
-        //FDROID-REMOVED: classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+        //FOSS-REMOVED: classpath 'com.google.gms:google-services:4.3.10'
+        //FOSS-REMOVED: classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
     }
 }
 

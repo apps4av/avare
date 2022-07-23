@@ -6,7 +6,7 @@ import android.os.Bundle;
 // FDroid packagers note:
 // Google Firebase is not allowed under FDroid FOSS policies
 
-//FDROID-REMOVED:  import com.google.firebase.analytics.FirebaseAnalytics;
+//FOSS-REMOVED:  import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class Telemetry {
 
@@ -15,13 +15,13 @@ public class Telemetry {
     public static final String IMPORT = "import";
     public static final String EXPORT = "export";
 
-    //FDROID-REMOVED: private FirebaseAnalytics mInstance;
+    //FOSS-REMOVED: private FirebaseAnalytics mInstance;
 
     public Telemetry(Context ctx) {
-        //FDROID-REMOVED: mInstance = FirebaseAnalytics.getInstance(ctx);
+        //FOSS-REMOVED: mInstance = FirebaseAnalytics.getInstance(ctx);
     }
 
     public void sendEvent(String name, TelemetryParams params) {
-        //FDROID-REMOVED: mInstance.logEvent(name, params.getBundle());
+        //FOSS-REMOVED: mInstance.logEvent(name, params.getBundle());
     }
 }
