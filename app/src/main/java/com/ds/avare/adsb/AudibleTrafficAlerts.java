@@ -81,8 +81,10 @@ public class AudibleTrafficAlerts implements Runnable {
     public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
         if (singleton == null)
             singleton = new AudibleTrafficAlerts(ctx);
-        runnerThread = new Thread(singleton, "AudibleAlerts");
-        runnerThread.start();
+        if (runnerThread == null || runnerThread.isInterrupted()) {
+            runnerThread = new Thread(singleton, "AudibleAlerts");
+            runnerThread.start();
+        }
         return singleton;
     }
 
@@ -91,10 +93,6 @@ public class AudibleTrafficAlerts implements Runnable {
             runnerThread.interrupt();
             runnerThread = null;
         }
-    }
-
-    public static synchronized  boolean isEnabled() {
-        return runnerThread != null && !runnerThread.isInterrupted();
     }
 
     public void setUseTrafficAliases(boolean useTrafficAliases) {

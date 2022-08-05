@@ -216,11 +216,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     }
 
 
-    private AudibleTrafficAlerts getAudibleAlerts() {
-        if (this.audibleTrafficAlerts == null || !AudibleTrafficAlerts.isEnabled())
-            this.audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(this.mContext);
-        return this.audibleTrafficAlerts;
-    }
     /**
      * @param context
      */
@@ -592,7 +587,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
-            AudibleTrafficAlerts audibleTrafficAlerts = getAudibleAlerts();
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(mContext);
             audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             audibleTrafficAlerts.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(),
