@@ -54,6 +54,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
     private double                     mAirportLat;
     private GestureDetector              mGestureDetector;
     private Context                   mContext;
+    private boolean                    mDrawing;
     /*
      * Is it drawing?
      */
@@ -88,6 +89,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
+        mDrawing = false;
         mPref = new Preferences(context);
         setOnTouchListener(this);
         setBackgroundColor(Color.BLACK);
@@ -453,33 +455,46 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         mGestureDetector.onTouchEvent(e);
-        if (e.getPointerCount() != 2) {
-            /*
-             * Do not move on multitouch
-             */
-            if (mDraw && mService != null) {
-                Point pt = getFirstPoint(e);
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, pt.x, pt.y);
-                    mService.getPixelDraw().addPoint((float) p[0], (float) p[1]);
-                } else {
-                    mService.getPixelDraw().addPoint(pt.x, pt.y);
-                }
-                invalidate();
-                return true; // do not PTZ
+
+        if (shouldRotate()) {
+            // rotate pan
+            double thetab = mGpsParams.getBearing();
+            double p[] = new double[2];
+            p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, e.getX(), e.getY());
+            e.setLocation((float)p[0], (float)p[1]);
+        }
+
+        // drawing stuff
+        if(e.getPointerCount() == 1 && mDraw && mService != null) { // only draw with 1 pointer
+            switch (e.getAction() & MotionEvent.ACTION_MASK) { // draw when moving with 1 pointer and there was a pointer down before
+                case MotionEvent.ACTION_DOWN:
+                    mDrawing = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mDrawing = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (mDrawing) {
+                        Point pt = getFirstPoint(e);
+                        /*
+                         * Threshold the drawing so we do not generate too many points
+                         */
+                        if (mPref.isTrackUp()) {
+                            double thetab = mGpsParams.getBearing();
+                            double p[] = new double[2];
+                            p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, pt.x, pt.y);
+                            mService.getPixelDraw().addPoint((float) p[0], (float) p[1]);
+                        } else {
+                            mService.getPixelDraw().addPoint(pt.x, pt.y);
+                        }
+                        invalidate();
+                        return true; // do not PTZ
+                    }
+                    break;
             }
-            else if (shouldRotate()) {
-                // rotate pan
-                double thetab = mGpsParams.getBearing();
-                double p[] = new double[2];
-                p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, e.getX(), e.getY());
-                e.setLocation((float)p[0], (float)p[1]);
-            }
+        }
+        else {
+            mDrawing = false;
         }
 
         return false;
