@@ -634,8 +634,13 @@ public class Destination extends Observable {
         }
 
     }
+
     public int getAltitude() {
         return mAltitude;
     }
 
+    // Simple flag to indicate our intent to land at this destination
+    private boolean mLanding = false;
+    public void setLanding(boolean landing) { mLanding = landing; }
+    public boolean getLanding() { return mLanding; }
 }

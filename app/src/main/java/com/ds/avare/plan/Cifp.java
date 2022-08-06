@@ -219,6 +219,7 @@ public class Cifp {
                         d.find();
                         d.setFacilityName(mAirport + rw);
                         d.setElevation(fixEle);
+                        d.setLanding(true); // Since this is a runway, our intent is to land here
                         service.getPlan().appendDestination(d);
                     }
                 }
