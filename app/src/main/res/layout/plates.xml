@@ -47,7 +47,19 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:layout_margin="5dp"
     	        android:visibility="visible" />
 
-	    <Button
+    <Button
+        android:id="@+id/plates_button_write"
+        android:textStyle="bold"
+        android:layout_above="@id/plate_button_draw"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Notes"
+        android:background="@drawable/button_small"
+        android:layout_margin="5dp"
+        android:visibility="visible" />
+
+    <Button
             android:id="@+id/plates_button_timer"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
@@ -84,8 +96,20 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />
-    
-    
+
+    <EditText
+        android:id="@+id/plates_edittext_write"
+        android:layout_width="match_parent"
+        android:gravity="top"
+        android:alpha="0.8"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/plates_button_tag"
+        android:layout_below="@id/plates_header"
+        android:layout_margin="5dp"
+        android:hint="@string/Notes"
+        android:visibility="invisible"></EditText>
+
+
     <LinearLayout
         android:baselineAligned="true"
         android:id="@+id/plates_header"

@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ import com.ds.avare.plan.Cifp;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.PngCommentReader;
 import com.ds.avare.views.PlatesView;
@@ -76,6 +78,7 @@ public class PlatesActivity extends Activity implements Observer  {
     private Button mPlatesButton;
     private Button mApproachButton;
     private Button mPlatesTagButton;
+    private Button mWriteButton;
     private Button mPlatesTimerButton;
     private AlertDialog mPlatesPopup;
     private AlertDialog mApproachPopup;
@@ -90,6 +93,7 @@ public class PlatesActivity extends Activity implements Observer  {
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
+    private EditText mEditText;
     private String myString;
     private boolean mIsTimerOn;
     private long mTimerInit;
@@ -370,6 +374,31 @@ public class PlatesActivity extends Activity implements Observer  {
                 sendEmptyMessageDelayed(0,1000);
             }
         };
+
+        mEditText= (EditText) view.findViewById(R.id.plates_edittext_write);
+        mWriteButton = (Button)view.findViewById(R.id.plates_button_write);
+        mWriteButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mEditText.getVisibility() == View.INVISIBLE) {
+                    mEditText.setVisibility(View.VISIBLE);
+                    mPlatesView.setWriteCallback(
+                            new GenericCallback() {
+                                @Override
+                                public Object callback(Object o, Object o1) {
+                                    String data = (String) o;
+                                    // add space between words
+                                    mEditText.append(" " + data);
+                                    return (null);
+                                }
+                            });
+                }
+                else {
+                    mEditText.setVisibility(View.INVISIBLE);
+                    mPlatesView.setWriteCallback(null);
+                }
+            }
+        });
 
         mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
         mPlatesTimerButton.setOnClickListener(new OnClickListener() {
