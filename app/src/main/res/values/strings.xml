@@ -611,4 +611,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NoBtDevice">Enable Bluetooth, and pair a device first.</string>
     <string name="Export">Export</string>
     <string name="Notes">Notes</string>
+    <string name="Wx">Wx</string>
 </resources>

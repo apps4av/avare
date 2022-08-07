@@ -48,6 +48,8 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
+import com.ds.avare.weather.Metar;
+import com.ds.avare.weather.Taf;
 
 import java.util.LinkedHashMap;
 import java.util.Observable;
@@ -76,14 +78,18 @@ public class SearchActivity extends Activity implements Observer {
     private Button mPlanButton;
     private Button mPlatesButton;
     private Button mCsupButton;
+    private Button mWxButton;
     private boolean mIsWaypoint;
     
     private AnimateButton mAnimatePlates;
     private AnimateButton mAnimateCsup;
+    private AnimateButton mAnimateWx;
     private AnimateButton mAnimatePlan;
     private AnimateButton mAnimateSelect;
     private AnimateButton mAnimateEdit;
     private AnimateButton mAnimateSave;
+
+    private AlertDialog mAlertDialogWx;
 
     /**
      * Shows edit dialog
@@ -361,6 +367,53 @@ public class SearchActivity extends Activity implements Observer {
             }
         });
 
+        mWxButton = (Button)view.findViewById(R.id.search_button_weather);
+        mWxButton.getBackground().setAlpha(255);
+        mWxButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(null != mSelected) {
+                    String id = StringPreference.parseHashedNameId(mSelected);
+                    if(id == null || mService == null) {
+                        return;
+                    }
+                    Metar metar = null;
+                    Taf taf = null;
+                    if(mPref.useAdsbWeather()) {
+                        metar = mService.getAdsbWeather().getMETAR(id);
+                        taf = mService.getAdsbWeather().getTaf(id);
+                    }
+                    else {
+                        metar = mService.getDBResource().getMetar(id);
+                        taf = mService.getDBResource().getTaf(id);
+                    }
+
+                    String wx = "";
+                    if(null != metar) {
+                        if(null != metar.rawText) {
+                            wx = metar.rawText;
+                        }
+                    }
+
+                    if(null != taf) {
+                        if(null != taf.rawText) {
+                            wx += "\n\n" + taf.rawText;
+                        }
+                    }
+
+                    if(!wx.equals("")) {
+                        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(SearchActivity.this);
+                        alert.setMessage(wx);
+                        mAlertDialogWx = alert.create();
+                        mAlertDialogWx.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        mAlertDialogWx.show();
+                        hideMenu();
+                    }
+                }
+            }
+        });
+
         /*
          * Set on click
          */
@@ -406,8 +459,10 @@ public class SearchActivity extends Activity implements Observer {
 
                 if(base.equals(Destination.BASE)) {
                     mAnimateCsup.animate(true);
+                    mAnimateWx.animate(true);
                 }
                 else {
+                    mAnimateWx.stopAndHide();
                     mAnimateCsup.stopAndHide();
                 }
                 mAnimateSelect.animate(true);
@@ -499,6 +554,7 @@ public class SearchActivity extends Activity implements Observer {
         mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_R_L, (View[])null);
         mAnimateCsup = new AnimateButton(SearchActivity.this, mCsupButton, AnimateButton.DIRECTION_R_L, (View[])null);
+        mAnimateWx = new AnimateButton(SearchActivity.this, mWxButton, AnimateButton.DIRECTION_R_L, (View[])null);
 
     }
 
@@ -510,6 +566,7 @@ public class SearchActivity extends Activity implements Observer {
         mAnimatePlan.stopAndHide();
         mAnimatePlates.stopAndHide();
         mAnimateCsup.stopAndHide();
+        mAnimateWx.stopAndHide();
         mAnimateSelect.stopAndHide();
         mAnimateSave.stopAndHide();
         mAnimateEdit.stopAndHide();
@@ -592,6 +649,14 @@ public class SearchActivity extends Activity implements Observer {
         if(null != mAlertDialogEdit) {
             try {
                 mAlertDialogEdit.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
+        if(null != mAlertDialogWx) {
+            try {
+                mAlertDialogWx.dismiss();
             }
             catch (Exception e) {
             }
