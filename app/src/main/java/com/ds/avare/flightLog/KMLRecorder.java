@@ -184,9 +184,12 @@ public class KMLRecorder {
     			}
     			
     			// Close off the overall KML file now
-        		mTracksFile.write(KMLFILESUFFIX);	// The last of the file data 
+        		mTracksFile.write(KMLFILESUFFIX);	// The last of the file data
+				mTracksFile.flush();
     			mTracksFile.close();				// close the file
-    		} catch (IOException ignore) { }
+    		} catch (IOException ignore) {
+
+			}
 
     		// Clear out our control objects
     		mTracksFile = null;	// No track file anymore
@@ -274,8 +277,8 @@ public class KMLRecorder {
     		bRecordPoint = true;
     	}
 
-    	// If the time of the last point and now is greater than 10 seconds
-		if(((gpsParams.getTime() - mLastFix.getTime()) > 10 * 1000)) {
+    	// If the time of the last point and now is greater than 30 seconds
+		if(((gpsParams.getTime() - mLastFix.getTime()) > 30 * 1000)) {
 			bRecordPoint = true;
 		}
 
