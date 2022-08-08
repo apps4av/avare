@@ -1,0 +1,27 @@
+Avare (ausgesprochen „AvAir“) ist eine sich bewegende Luftfahrtkarte.
+
+<b>Übersicht</b>
+Avare ist eine kostenlose GPS-App für das Situationsbewusstsein der Luftfahrt, die erstmals in Boston entwickelt und an Flieger und Open-Source-Programmierer gespendet wurde. Es gibt keine Push-Anzeigen, keine besonderen Berechtigungen und keine versteckten Kosten oder Abonnementgebühren.
+
+<b>Basisfunktionen</b> in Avare umfassen eine Offline-Flughafen-Schnellreferenz (nach dem Download), einschließlich lokaler Sonnenaufgänge/-untergänge, Kraftstoffverfügbarkeit und vollständige FAA C.Supplement (A/FD)-Seiten; aktiver GPS-Standort auf allen FAA VFR Sectionals, WACs, TACs, IFR Plates und anderen Karten, einschließlich Flughafendiagrammen, und einer Open Street Maps-Darstellung jedes Flughafenbereichs, einschließlich derjenigen, die nicht in FAA-Materialien enthalten sind.
+
+Avare ermöglicht das manuelle Durchsuchen aller Karten und aller anderen Materialien auch bei ausgeschaltetem GPS (Simulationsmodus). Aktuelles FAA-Internet (und ADS-B In, mit Empfänger) Wetter METARs, NEXRAD, TAFs, TFRs und Flugpläne werden ebenfalls unterstützt, zusammen mit einer detaillierten Near-Liste von Flughäfen, Live-3D-Gelände oder Kartenansicht und anderen Extras. Zu den erforderlichen Berechtigungen gehören Internetzugang zum Herunterladen kostenloser aktueller FAA-Materialien und -Informationen, Speicherzugriff zum Speichern von Materialien, Bluetooth für neue Funktionen wie ADS-B und GPS-Standort zur Bereitstellung der Moving-Map-Funktion.
+
+<b>Diagramme</b>
+Moving Map FAA-Karten mit oder ohne GPS, laden Sie nur die Karten herunter, die Sie benötigen;
+Bodenspur und Zielpeilung, GPS-Geschwindigkeit und -Höhe, Entfernung, Benutzerwegpunkte, Ziel- und Spuranzeigen;
+Verfolgen Sie Linien, Gummibänder und Aufzeichnungen; ETA, CSup (A/FD), Flughafendiagramme; und Peilung und Entfernung zu/von jedem beliebigen Punkt auf der Karte.
+
+<b>Anzeigen</b>
+Zu den Anzeigeoptionen gehören Quer- und Hochformat sowie North Up oder eingeschränkter Track Up (Text auf den kostenlosen FAA-Karten dreht sich mit der Karte im Track Up-Modus). Alle Avare-Apps und alle Funktionen sind kostenlos.
+
+<b>Hardware</b>
+Avare funktioniert auf den meisten Android-Geräten. Einige Geräte funktionieren sogar noch besser mit einem kostengünstigen externen WAAS-GPS und mit den meisten ADS-B-Empfängern, einschließlich des leistungsstarken, kostengünstigen StratuX (siehe unser Forum über die Einschränkungen der Marke StratuS). Avare funktioniert sogar auf vielen kleinen oder älteren Android-Geräten, obwohl natürlich die besten Ergebnisse und einige Funktionen wie das „PFD“ von neueren Geräten profitieren und ein kostengünstiges externes Bluetooth-GPS die Zuverlässigkeit und Genauigkeit verbessern kann. Einige Benutzer bevorzugen den größeren Bildschirmbereich auf einem Tablet-Gerät.
+
+<b>Installation</b>
+
+Hilfe zur manuellen Installation finden Sie unter: https://www.apps4av.com/manual-installation.html
+
+<b>Hilfe</b>
+
+Hilfe zur Fehlerbehebung bei Anwendungen finden Sie unter: https://www.apps4av.com/help.html

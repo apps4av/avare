@@ -1,4 +1,4 @@
-Avare (pronounced "AvAir") is a free moving aviation map. 
+Avare (pronounced "AvAir") is a moving aviation map. 
 
 <b>Overview</b>
 Avare is a free aviation situational awareness moving map aviation GPS app first developed in Boston, and donated to aviators and open source programmers. There are no push ads, no special permissions, and no hidden charges or subscription fees.
