@@ -61,4 +61,5 @@ dependencies {
     testImplementation 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
     testImplementation 'org.robolectric:robolectric:4.3'
+    implementation 'com.google.mlkit:digital-ink-recognition:18.0.0'
 }

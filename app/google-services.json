@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "954248734559",
+    "firebase_url": "https://avare-1f119.firebaseio.com",
+    "project_id": "avare-1f119",
+    "storage_bucket": "avare-1f119.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:954248734559:android:313f8e6f4e7ebe23",
+        "android_client_info": {
+          "package_name": "com.ds.avare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "private_client_id",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "private_key"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "private_client_id",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

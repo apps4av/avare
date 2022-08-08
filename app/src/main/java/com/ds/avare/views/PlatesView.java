@@ -17,6 +17,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -30,7 +31,19 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.common.model.RemoteModelManager;
+import com.google.mlkit.vision.digitalink.DigitalInkRecognition;
+import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModel;
+import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier;
+import com.google.mlkit.vision.digitalink.DigitalInkRecognizer;
+import com.google.mlkit.vision.digitalink.DigitalInkRecognizerOptions;
+import com.google.mlkit.vision.digitalink.Ink;
+import com.google.mlkit.vision.digitalink.RecognitionResult;
+
 
 /**
  * 
@@ -52,8 +65,16 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
     private StorageService              mService;
     private double                     mAirportLon;
     private double                     mAirportLat;
-    private GestureDetector              mGestureDetector;
-    private Context                   mContext;
+    private GestureDetector            mGestureDetector;
+    private Context                     mContext;
+    private boolean                     mDrawing;
+    private Ink.Stroke.Builder          mStrokeBuilder;
+    private Ink.Builder                 mInkBuilder;
+    DigitalInkRecognizer                mRecognizer;
+    private boolean                    mWriting;
+    private GenericCallback            mCallback;
+
+
     /*
      * Is it drawing?
      */
@@ -64,11 +85,13 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
      */
     private float                      mDipToPix;
 
+    DigitalInkRecognitionModel mModel = null;
     private static final double MAX_PLATE_SCALE = 8;
     
     private static final int TEXT_COLOR = Color.WHITE; 
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK; 
     private static final int SHADOW = 4;
+
 
     /**
      * 
@@ -82,18 +105,43 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
+        mCallback = null;
         mGestureDetector = new GestureDetector(context, new GestureListener());
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
+        mDrawing = false;
+        mWriting = false;
         mPref = new Preferences(context);
         setOnTouchListener(this);
         setBackgroundColor(Color.BLACK);
         mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
         mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
         mDipToPix = Helper.getDpiToPix(context);
+
+        mStrokeBuilder = Ink.Stroke.builder();
+        mInkBuilder = Ink.builder();
+
+        // Pick a recognition model.
+        mModel = DigitalInkRecognitionModel.builder(DigitalInkRecognitionModelIdentifier.EN_US).build();
+        RemoteModelManager remoteModelManager = RemoteModelManager.getInstance();
+
+        remoteModelManager.isModelDownloaded(mModel).addOnSuccessListener(new OnSuccessListener<Boolean>() {
+            @Override
+            public void onSuccess(Boolean success) {
+                if(success) {
+                    mWriting = true;
+                }
+                else {
+                    mWriting = false;
+                    remoteModelManager.download(mModel, new DownloadConditions.Builder().build());
+                }
+            }
+        });
+
+        mRecognizer = DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(mModel).build());
     }
 
 
@@ -450,36 +498,100 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         postInvalidate();
     }
 
+    final Handler mHandler = new Handler();
+
     @Override
     public boolean onTouch(View view, MotionEvent e) {
         mGestureDetector.onTouchEvent(e);
-        if (e.getPointerCount() != 2) {
-            /*
-             * Do not move on multitouch
-             */
-            if (mDraw && mService != null) {
-                Point pt = getFirstPoint(e);
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (shouldRotate()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, pt.x, pt.y);
-                    mService.getPixelDraw().addPoint((float) p[0], (float) p[1]);
-                } else {
-                    mService.getPixelDraw().addPoint(pt.x, pt.y);
-                }
-                invalidate();
-                return true; // do not PTZ
+        float x= e.getX();
+        float y= e.getY();
+        long t = e.getEventTime();
+
+        // writing
+        if(mWriting && mCallback != null) {
+            switch (e.getAction() & MotionEvent.ACTION_MASK) {
+
+                case MotionEvent.ACTION_DOWN:
+                    mHandler.removeCallbacksAndMessages(null); // down so word continues
+                    mStrokeBuilder = Ink.Stroke.builder();
+                    mStrokeBuilder.addPoint(Ink.Point.create(x, y, t));
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mStrokeBuilder.addPoint(Ink.Point.create(x, y, t));
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mStrokeBuilder.addPoint(Ink.Point.create(x, y, t));
+                    mInkBuilder.addStroke(mStrokeBuilder.build());
+                    mStrokeBuilder = null;
+                    // only if callback is not null do the detection
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // This is what to send to the recognizer.
+                            Ink ink = mInkBuilder.build();
+
+                            mRecognizer.recognize(ink)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<RecognitionResult>() {
+                                                @Override
+                                                public void onSuccess(RecognitionResult recognitionResult) {
+                                                    if(mCallback != null) {
+                                                        mCallback.callback(recognitionResult.getCandidates().get(0).getText(), null);
+                                                    }
+                                                }
+                                            }
+                                    );
+                            // new recognition
+                            mInkBuilder = Ink.builder();
+                        }
+                    }, 500); // lifting up for 500 ms is a new word
+                default:
+                    break;
+
             }
-            else if (shouldRotate()) {
-                // rotate pan
-                double thetab = mGpsParams.getBearing();
-                double p[] = new double[2];
-                p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, e.getX(), e.getY());
-                e.setLocation((float)p[0], (float)p[1]);
+            // writing so do not pan
+            return true;
+        }
+
+        if (shouldRotate()) {
+            // rotate pan
+            double thetab = mGpsParams.getBearing();
+            double p[] = new double[2];
+            p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, e.getX(), e.getY());
+            e.setLocation((float)p[0], (float)p[1]);
+        }
+
+        // drawing stuff
+        if(e.getPointerCount() == 1 && mDraw && mService != null) { // only draw with 1 pointer
+            switch (e.getAction() & MotionEvent.ACTION_MASK) { // draw when moving with 1 pointer and there was a pointer down before
+                case MotionEvent.ACTION_DOWN:
+                    mDrawing = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mDrawing = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (mDrawing) {
+                        Point pt = getFirstPoint(e);
+                        /*
+                         * Threshold the drawing so we do not generate too many points
+                         */
+                        if (mPref.isTrackUp()) {
+                            double thetab = mGpsParams.getBearing();
+                            double p[] = new double[2];
+                            p = Helper.rotateCoord(getWidth() / 2, getHeight() / 2, thetab, pt.x, pt.y);
+                            mService.getPixelDraw().addPoint((float) p[0], (float) p[1]);
+                        } else {
+                            mService.getPixelDraw().addPoint(pt.x, pt.y);
+                        }
+                        invalidate();
+                        return true; // do not PTZ
+                    }
+                    break;
             }
+        }
+        else {
+            mDrawing = false;
         }
 
         return false;
@@ -502,5 +614,10 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
             return true;
         }
 
+    }
+
+    // writing recognition callback
+    public void setWriteCallback(GenericCallback cb) {
+        mCallback = cb;
     }
 }

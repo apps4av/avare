@@ -168,6 +168,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     private float mDragStartedX;
     private float mDragStartedY;
 
+    private boolean mDrawing;
+
 
     /*
      *  Copy the existing paint to a new paint so we don't mess it up
@@ -228,6 +230,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         mPaint.setAntiAlias(true);
         mPointProjection = null;
         mDraw = false;
+        mDrawing = false;
 
         mPref = new Preferences(context);
 
@@ -429,35 +432,46 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             mGestureDetector.onTouchEvent(e);
         }
 
-        if(e.getPointerCount() != 2) { // not multi
+        // drawing stuff
+        if(e.getPointerCount() == 1 && mDraw && mService != null) { // only draw with 1 pointer
+            switch (e.getAction() & MotionEvent.ACTION_MASK) { // draw when moving with 1 pointer and there was a pointer down before
+                case MotionEvent.ACTION_DOWN:
+                    mDrawing = true;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mDrawing = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (mDrawing) {
+                        Point pt = getFirstPoint(e);
+                        /*
+                         * Threshold the drawing so we do not generate too many points
+                         */
+                        if (mPref.isTrackUp()) {
+                            double thetab = mGpsParams.getBearing();
+                            double p[] = new double[2];
+                            double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
+                            double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
+                            p = Helper.rotateCoord(c_x, c_y, thetab, pt.x, pt.y);
+                            mService.getDraw().addPoint((float) p[0], (float) p[1], mOrigin);
+                        } else {
+                            mService.getDraw().addPoint(pt.x, pt.y, mOrigin);
+                        }
+                        invalidate();
+                        return true; // do not PTZ
+                    }
+                    break;
+            }
+        }
+        else {
+            mDrawing = false;
+        }
 
+        if(e.getPointerCount() != 2) { // not multi
             /*
              * Do not move on drag
              */
             if(mDragPlanPoint >= 0) {
-                return true; // do not PTZ
-            }
-
-            /*
-             * Do not move on multitouch
-             */
-            if(mDraw && mService != null) {
-                Point pt = getFirstPoint(e);
-                /*
-                 * Threshold the drawing so we do not generate too many points
-                 */
-                if (mPref.isTrackUp()) {
-                    double thetab = mGpsParams.getBearing();
-                    double p[] = new double[2];
-                    double c_x = mOrigin.getOffsetX(mGpsParams.getLongitude());
-                    double c_y = mOrigin.getOffsetY(mGpsParams.getLatitude());
-                    p = Helper.rotateCoord(c_x, c_y, thetab, pt.x, pt.y);
-                    mService.getDraw().addPoint((float)p[0],(float)p[1], mOrigin);
-                }
-                else {
-                    mService.getDraw().addPoint(pt.x, pt.y, mOrigin);
-                }
-                invalidate();
                 return true; // do not PTZ
             }
         }
