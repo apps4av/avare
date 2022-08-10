@@ -152,45 +152,32 @@ public abstract class Shape {
         if (this instanceof TrackShape) {
             
             /*
-             * Draw background on track shapes, so draw twice
+             * Draw background on track shapes, so draw twice. There is the
+             * the possibility of a "future" track being the same as the current or prev track, as
+             * would be the case if an approach came in from a VOR, then the missed approach goes
+             * back to the same VOR, or a VOR used in a procedure turn. This can be handled by
+             * cycling through the list twice and drawing them in 2 passes
+             *
+             * Note there is NOT a 1:1 relationship between coord's and the legs of a plan. Each
+             * coord has a property that indicates its leg within the plan, use that.
              */
-        	int cMax = getNumCoords();
-            for(int coord = 0; coord < (cMax - 1); coord++) {
-                float x1 = (float)origin.getOffsetX(mCoords.get(coord).getLongitude());
-                float x2 = (float)origin.getOffsetX(mCoords.get(coord + 1).getLongitude());
-                float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
-                float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());
+        	int cMax = getNumCoords() - 1;
+            int currentLeg = ((null == plan) ? 0 : plan.findNextNotPassed() - 1);
 
-                if(drawTrack) {
-	                paint.setStrokeWidth(width + 4);
-	                paint.setColor(night? Color.WHITE : Color.BLACK);
-	                c.drawLine(x1, y1, x2, y2, paint);
-	                paint.setStrokeWidth(width);
-
-	                if(null == plan) {
-	                	paint.setColor(color);
-	                } else {
-	                	paint.setColor(TrackShape.getLegColor(plan, mCoords.get(coord).getLeg()));
-	                }
-
-	                c.drawLine(x1, y1, x2, y2, paint);
-                }
-
-				if(mCoords.get(coord + 1).isSeparate()) {
-                    paint.setColor(night? Color.WHITE : Color.BLACK);
-                    c.drawCircle(x2, y2, width + 8, paint);
-                    paint.setColor(Color.GREEN);
-                    c.drawCircle(x2, y2, width + 6, paint);
-                    paint.setColor(color);
-                }
-                if(mCoords.get(coord).isSeparate()) {
-                    paint.setColor(night? Color.WHITE : Color.BLACK);
-                    c.drawCircle(x1, y1, width + 8, paint);
-                    paint.setColor(Color.GREEN);
-                    c.drawCircle(x1, y1, width + 6, paint);
-                    paint.setColor(color);
+            // Pass 1 - draw all of the legs that are AFTER the current leg
+            for(int coord = 0; coord < cMax; coord++) {
+                if(mCoords.get(coord).getLeg() > currentLeg) {
+                    drawPlanSegment(c, origin, paint, night, drawTrack, plan, coord);
                 }
             }
+
+            // Pass 2 - draw all of the legs that are before AND the current leg
+            for(int coord = 0; coord < cMax; coord++) {
+                if(mCoords.get(coord).getLeg() <= currentLeg) {
+                    drawPlanSegment(c, origin, paint, night, drawTrack, plan, coord);
+                } else break;   // If we're past current leg, stop for() loop
+            }
+
         } else {
             /*
              * Draw the shape segment by segment
@@ -221,6 +208,46 @@ public abstract class Shape {
         }
     }
 
+    // Draw the plan segment indicated by the coord index
+    //
+    void drawPlanSegment(Canvas c, Origin origin, Paint paint, boolean night, boolean drawTrack, Plan plan, int coord) {
+        float x1 = (float)origin.getOffsetX(mCoords.get(coord).getLongitude());
+        float x2 = (float)origin.getOffsetX(mCoords.get(coord + 1).getLongitude());
+        float y1 = (float)origin.getOffsetY(mCoords.get(coord).getLatitude());
+        float y2 = (float)origin.getOffsetY(mCoords.get(coord + 1).getLatitude());
+
+        float width = paint.getStrokeWidth();
+        int color = paint.getColor();
+
+        if(drawTrack) {
+            paint.setStrokeWidth(width + 4);
+            paint.setColor(night? Color.WHITE : Color.BLACK);
+            c.drawLine(x1, y1, x2, y2, paint);
+            paint.setStrokeWidth(width);
+
+            if(null == plan) {
+                paint.setColor(color);
+            } else {
+                paint.setColor(TrackShape.getLegColor(plan, mCoords.get(coord).getLeg()));
+            }
+            c.drawLine(x1, y1, x2, y2, paint);
+        }
+
+        if(mCoords.get(coord + 1).isSeparate()) {
+            paint.setColor(night? Color.WHITE : Color.BLACK);
+            c.drawCircle(x2, y2, width + 8, paint);
+            paint.setColor(Color.GREEN);
+            c.drawCircle(x2, y2, width + 6, paint);
+            paint.setColor(color);
+        }
+        if(mCoords.get(coord).isSeparate()) {
+            paint.setColor(night? Color.WHITE : Color.BLACK);
+            c.drawCircle(x1, y1, width + 8, paint);
+            paint.setColor(Color.GREEN);
+            c.drawCircle(x1, y1, width + 6, paint);
+            paint.setColor(color);
+        }
+    }
     /*
      * Determine if shape belong to a screen based on Screen longitude and latitude
      * and shape max/min longitude latitude
