@@ -139,24 +139,15 @@ public abstract class Shape {
      */
 	public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack, Plan plan) {
 
-        /*
-         * Do a tab on top of shape
-         */
-        /*
-         * Draw pivots at end of track
-         */
-        float width = paint.getStrokeWidth();
-        int color = paint.getColor();
-        
         // TrackShape type is used for a flight plan destination
         if (this instanceof TrackShape) {
             
             /*
              * Draw background on track shapes, so draw twice. There is the
-             * the possibility of a "future" track being the same as the current or prev track, as
+             * the possibility of a "future" leg being the same as the current or prev leg, as
              * would be the case if an approach came in from a VOR, then the missed approach goes
              * back to the same VOR, or a VOR used in a procedure turn. This can be handled by
-             * cycling through the list twice and drawing them in 2 passes
+             * cycling through the list twice and drawing them in 2 passes.
              *
              * Note there is NOT a 1:1 relationship between coord's and the legs of a plan. Each
              * coord has a property that indicates its leg within the plan, use that.
@@ -165,7 +156,9 @@ public abstract class Shape {
             int currentLeg = ((null == plan) ? 0 : plan.findNextNotPassed() - 1);
 
             // Pass 1 - draw all of the legs that are AFTER the current leg
-            for(int coord = 0; coord < cMax; coord++) {
+            // We can start our search at currentLeg * 2 into the coord array due to each
+            // plan leg having at least 2 coord entries, saves a bit of looping time.
+            for(int coord = currentLeg * 2; coord < cMax; coord++) {
                 if(mCoords.get(coord).getLeg() > currentLeg) {
                     drawPlanSegment(c, origin, paint, night, drawTrack, plan, coord);
                 }
@@ -175,7 +168,7 @@ public abstract class Shape {
             for(int coord = 0; coord < cMax; coord++) {
                 if(mCoords.get(coord).getLeg() <= currentLeg) {
                     drawPlanSegment(c, origin, paint, night, drawTrack, plan, coord);
-                } else break;   // If we're past current leg, stop for() loop
+                } else break;   // If we're past current leg, stop the for() loop
             }
 
         } else {
