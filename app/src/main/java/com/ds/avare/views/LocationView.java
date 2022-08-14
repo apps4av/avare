@@ -681,8 +681,10 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      * @param ctx
      */
     private void drawTrack(Canvas canvas, DrawingContext ctx) {
-        TrackShape.draw(ctx, mService.getPlan(), mService.getDestination(),
-                mGpsParams, mLineBitmap, mLineHeadingBitmap, mPointProjection == null);
+        if((null == mPointProjection) && (null != mService.getDestination())) {
+            TrackShape.draw(ctx, mService.getPlan(), mService.getDestination(),
+                    mGpsParams, mLineBitmap, mLineHeadingBitmap);
+        }
     }
 
     /**
