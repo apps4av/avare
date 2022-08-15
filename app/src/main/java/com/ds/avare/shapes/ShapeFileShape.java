@@ -132,7 +132,7 @@ public class ShapeFileShape extends Shape {
                 }
                 ctx.paint.setColor(Color.BLUE);
                 if (todraw.isOnScreen(ctx.origin)) {
-                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }
         }

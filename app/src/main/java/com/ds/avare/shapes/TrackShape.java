@@ -92,7 +92,7 @@ public class TrackShape extends Shape {
 
         Projection p = new Projection(lastLon, lastLat, destLon, destLat);
         int segments = (int) p.getDistance() / MILES_PER_SEGMENT + 3; // Min 3 points
-        Coordinate coord[] = p.findPoints(segments);
+        Coordinate[] coord = p.findPoints(segments);
         super.mCoords.clear();
         
         /*
@@ -123,6 +123,8 @@ public class TrackShape extends Shape {
         }
     }
 
+    // draw all segments that make up this plan
+    //
     private void drawSegments(Canvas c, Origin origin, Paint paint, boolean night, boolean drawTrack, Plan plan) {
         /*
          * Draw background on track shapes, so draw twice. There is the
@@ -155,6 +157,8 @@ public class TrackShape extends Shape {
         }
     }
 
+    // draw one specific segment of the plan
+    //
     private void drawOneSegment(Canvas c, Origin origin, Paint paint, boolean night, boolean drawTrack, Plan plan, int coord) {
 
         // fetch the start and end coordinates of this segment
@@ -171,11 +175,13 @@ public class TrackShape extends Shape {
         int color = paint.getColor();
 
         if(drawTrack) {
+            // Draw the background of the track line
             paint.setStrokeWidth(width + 4);
             paint.setColor(night ? Color.WHITE : Color.BLACK);
             c.drawLine(x1, y1, x2, y2, paint);
-            paint.setStrokeWidth(width);
 
+            // Now draw the track line itself in proper color
+            paint.setStrokeWidth(width);
             if(null == plan) {
                 paint.setColor(color);
             } else {

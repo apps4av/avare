@@ -125,19 +125,13 @@ public abstract class Shape {
         }
     }
 
-    public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack) {
-    	drawShape(c, origin, scale,movement,paint,night, drawTrack, null);
-    }
-    
     /**
      * This will draw the closed shape in canvas with given screen params
      * @param c
      * @param origin
-     * @param scale
-     * @param movement
      * @param paint
      */
-	public void drawShape(Canvas c, Origin origin, Scale scale, Movement movement, Paint paint, boolean night, boolean drawTrack, Plan plan) {
+	public void drawShape(Canvas c, Origin origin, Paint paint) {
        /*
          * Draw the shape segment by segment
          */
