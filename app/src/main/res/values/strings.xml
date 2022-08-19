@@ -160,7 +160,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsDistanceMinimumLabel">&quot;Audible Traffic Alerts Min (nm)&quot;</string>
     <string name="AudibleAlertTrafficId">&quot;Audible Alert Traffic Phonetic Id&quot;</string>
     <string name="AudibleAlertTrafficIdSummary">&quot;Speak a phonetic alphabet letter for tracking each distinct ADSB traffic ICAO callsign&quot;</string>
-    <string name="AudibleAlertTrafficIdLabel">&quot;Audible Alert Traffic Phonetic Id&quot;</string>
+    <string name="AudibleAlertTrafficIdLabel">&quot;Audible Traffic Phonetic Id's&quot;</string>
     <string name="AudibleAlertTopGunMode">&quot;Top Gun Lingo Mode&quot;</string>
     <string name="AudibleAlertTopGunModeSummary">&quot;Use the term "bogey" rather than "traffic" for proximate ADSB traffic&quot;</string>
     <string name="AudibleAlertTopGunModeLabel">&quot;Top Gun Lingo Mode&quot;</string>
