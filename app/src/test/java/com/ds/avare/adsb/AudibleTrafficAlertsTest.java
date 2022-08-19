@@ -66,4 +66,22 @@ public class AudibleTrafficAlertsTest {
                 AudibleTrafficAlerts.nearestClockHourFromHeadingAndLocations(
                         43.5439, -96.730, 39.5718, -96.735, 180));
     }
+
+    @Test
+    public void closestApproachTime_eastWestHeadOn() {
+        final double lat1 = 45, lat2 = 45, lon1 = -95, lon2 = -94;
+        final int velo1 = 60, velo2 = 60;
+        final float heading1 = 270, heading2 = 90;
+        final double caTime = AudibleTrafficAlerts.closestApproachTime(lat1, lon1, lat2, lon2, heading1, heading2, velo1, velo2);
+        Assert.assertEquals("Closest approach seconds", .25, caTime, .5);
+    }
+
+    @Test
+    public void closestApproachTime_northSouthHeadOn() {
+        final double lat1 = 45, lat2 = 46, lon1 = -95, lon2 = -95;
+        final int velo1 = 60, velo2 = 60;
+        final float heading1 = 180, heading2 = 0;
+        final double caTime = AudibleTrafficAlerts.closestApproachTime(lat1, lon1, lat2, lon2, heading1, heading2, velo1, velo2);
+        Assert.assertEquals("Closest approach seconds", .25, caTime, .1);
+    }
 }
