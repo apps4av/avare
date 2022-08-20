@@ -7,6 +7,7 @@ import android.util.SparseArray;
 
 import com.ds.avare.R;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -24,15 +25,33 @@ public class AudibleTrafficAlerts implements Runnable {
     private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
 
+    private static class ClosingEvent {
+        private final double closingTimeSec;
+        private final double closestApproachDistanceNmi;
+        private long eventTimeMillis;
+
+        public ClosingEvent(double closingTimeSec, double closestApproachDistanceNmi) {
+            this.closingTimeSec = closingTimeSec;
+            this.closestApproachDistanceNmi = closestApproachDistanceNmi;
+            this.eventTimeMillis = System.currentTimeMillis();
+        }
+
+        public double closingSeconds() {
+            return closingTimeSec-(System.currentTimeMillis()-eventTimeMillis)/1000.000;
+        }
+    }
+
     private static class AlertItem {
         final private Traffic traffic;
         final private Location ownLocation;
-        final int ownAltitude;
+        final private int ownAltitude;
+        private ClosingEvent closingEvent = null;
 
-        private AlertItem(Traffic traffic, Location ownLocation, int ownAltitude) {
+        private AlertItem(Traffic traffic, Location ownLocation, int ownAltitude, ClosingEvent closingEvent) {
             this.ownAltitude = ownAltitude;
             this.traffic = traffic;
             this.ownLocation = ownLocation;
+            this.closingEvent = closingEvent;
         }
 
         @Override
@@ -123,6 +142,7 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private MediaPlayer[] buildAudioMessage(AlertItem alertItem) {
+        //System.out.println("here "+alertItem.closingEvent);
         final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases ? 4 : 3];
         final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
         final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
@@ -142,6 +162,10 @@ public class AudibleTrafficAlerts implements Runnable {
         alertAudio[i++] = arrMpClockHours[clockHour - 1];
         alertAudio[i] = Math.abs(altitudeDiff) < 100 ? mpLevel
                 : (altitudeDiff > 0 ? mpLow : mpHigh);
+        if (alertItem.closingEvent != null)
+            System.out.println(String.format("Plane %s approaching in %fsec within %fnmi",
+                    alertItem.traffic.mCallSign, alertItem.closingEvent.closingSeconds(),
+                    alertItem.closingEvent.closestApproachDistanceNmi));
         return alertAudio;
     }
 
@@ -156,14 +180,38 @@ public class AudibleTrafficAlerts implements Runnable {
                     ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon
             ) < alertDistance
                     && Math.abs(altDiff) < altitudeProximityDangerMinimum
-            )
-                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude));
+            ) {
+                ClosingEvent ce = null;
+                if (true) { //TODO: CE pref enabled
+                    final double closingEventTimeSec = closestApproachTime(
+                            t.mLat, t.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
+                            t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, (int) ownLocation.getSpeed()
+                    )*60.00*60.00;
+                    if (closingEventTimeSec > 0 && closingEventTimeSec < 15) {  // TODO: # secs = preference
+                        //System.out.println(String.format("For %s closing time=%fsec, my bearing=%f, speed=%f",
+                        //        t.mCallSign, closingEventTimeSec, ownLocation.getBearing(), ownLocation.getSpeed()));
+                        final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
+                                ownLocation.getBearing(), ownLocation.getSpeed(), closingEventTimeSec/3600.00);
+                        final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
+                                t.mHorizVelocity, closingEventTimeSec/3600.00);
+                        final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
+                        if (caDistance < 3) { // TODO: CA distance CE threshold = preference
+                            //System.out.println(String.format("Closest approach distance will be %fnmi from %f,%f to %f,%f",
+                            //        caDistance, myNewLoc[0], myNewLoc[1], theirNewLoc[0], theirNewLoc[1]));
+                            ce = new ClosingEvent(closingEventTimeSec, caDistance);
+                        }
+                    }
+                }
+                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude, ce));
+            }
         }
 
     }
 
     private void  alertTrafficPosition(AlertItem alertItem) {
         synchronized (alertQueue) {
+            if (alertItem.closingEvent != null)
+                System.out.println("Adding one with closing event");
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
                 this.alertQueue.add(alertItem);
@@ -284,15 +332,15 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
                                            float heading1, float heading2, int velocity1, int velocity2) {
-        final double c = (lat2 - lat1) * 60.0;
         final double a = (lon2 - lon1) * (60.0 * Math.cos(Math.toRadians((lat1+lat2)/2.0000))) ;
         final double b = velocity2*Math.cos(Math.toDegrees(heading2)) - velocity1*Math.cos(Math.toDegrees(heading1));
+        final double c = (lat2 - lat1) * 60.0;
         final double d = velocity2*Math.sin(Math.toDegrees(heading2)) - velocity1*Math.sin(Math.toDegrees(heading1));
 
         return - ((a*b + c*d) / (b*b + d*d));
     }
 
-    protected static double[] locationAfterTime(double lat, double lon, int heading, float velocityInKt, double timeInHrs) {
+    protected static double[] locationAfterTime(double lat, double lon, float heading, float velocityInKt, double timeInHrs) {
         final double newLat =  lat + Math.cos(Math.toRadians(heading)) * (velocityInKt/60.00000) * timeInHrs;
         return new double[]  {
                 newLat,

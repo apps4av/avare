@@ -89,7 +89,7 @@ public class AudibleTrafficAlertsTest {
     public void locationAfterTime_northAt60ktsIsOneDegreeLat() {
         final double lat = 41, lon = -95, time = 1 /* hour */;
         final float velo = 60; /* knots */
-        final int heading = 0; /* North */
+        final float heading = 0; /* North */
         double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
         Assert.assertEquals("new lat", 42, latLonOverTime[0], 0.1);
         Assert.assertEquals("new lon the same", lon, latLonOverTime[1], 0.1);
@@ -99,7 +99,7 @@ public class AudibleTrafficAlertsTest {
     public void locationAfterTime_eastAt60ktsNearEquatorIsAboutOneDegreeLon() {
         final double lat = 10, lon = -95, time = 1 /* hour */;
         final float velo = 60; /* knots */
-        final int heading = 90; /* East */
+        final float heading = 90; /* East */
         double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94, latLonOverTime[1], 0.1);
@@ -109,7 +109,7 @@ public class AudibleTrafficAlertsTest {
     public void locationAfterTime_eastAt60ktsNearEquatorIsAboutOneDegreeLonHalfHour() {
         final double lat = 10, lon = -95, time = .5 /* hour */;
         final float velo = 60; /* knots */
-        final int heading = 90; /* East */
+        final float heading = 90; /* East */
         double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94.5, latLonOverTime[1], 0.1);
