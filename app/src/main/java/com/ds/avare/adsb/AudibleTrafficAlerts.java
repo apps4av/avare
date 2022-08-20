@@ -292,11 +292,13 @@ public class AudibleTrafficAlerts implements Runnable {
         return - ((a*b + c*d) / (b*b + d*d));
     }
 
-    protected static double[] locationAfterTime(double lat, double lon, int heading, float velocityInKt, double time) {
-        final double newLat =  lat + Math.cos(Math.toRadians(heading)) * (velocityInKt/60.00000);
-        return new double[] {
+    protected static double[] locationAfterTime(double lat, double lon, int heading, float velocityInKt, double timeInHrs) {
+        final double newLat =  lat + Math.cos(Math.toRadians(heading)) * (velocityInKt/60.00000) * timeInHrs;
+        return new double[]  {
                 newLat,
-                lon + Math.sin(Math.toRadians(heading)) * (velocityInKt / (60.00000*Math.cos(Math.toRadians((newLat+lat)/2.0000))))
+                lon + Math.sin(Math.toRadians(heading))
+                        * (velocityInKt / (60.00000*Math.cos(Math.toRadians((newLat+lat)/2.0000))))
+                        * timeInHrs
         };
     }
 }

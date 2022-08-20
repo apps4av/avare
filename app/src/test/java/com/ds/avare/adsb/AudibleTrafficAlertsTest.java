@@ -104,4 +104,14 @@ public class AudibleTrafficAlertsTest {
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94, latLonOverTime[1], 0.1);
     }
+
+    @Test
+    public void locationAfterTime_eastAt60ktsNearEquatorIsAboutOneDegreeLonHalfHour() {
+        final double lat = 10, lon = -95, time = .5 /* hour */;
+        final float velo = 60; /* knots */
+        final int heading = 90; /* East */
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
+        Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
+        Assert.assertEquals("new lon", -94.5, latLonOverTime[1], 0.1);
+    }
 }
