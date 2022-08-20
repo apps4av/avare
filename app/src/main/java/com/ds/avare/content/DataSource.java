@@ -127,9 +127,12 @@ public class DataSource {
     }
 
     public StringPreference searchOne(String name) {
-        return LocationContentProviderHelper.searchOne(mContext, name);
+        return LocationContentProviderHelper.searchOne(mContext, name, false);
     }
 
+    public StringPreference searchOneNoCache(String name) {
+        return LocationContentProviderHelper.searchOne(mContext, name, true);
+    }
     public String[] findMinimums(String airportId) {
         return LocationContentProviderHelper.findMinimums(mContext, airportId);
     }

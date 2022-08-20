@@ -225,9 +225,10 @@ public class Cifp {
                 }
 
 	            /*
-	             * Search from database. Make this a simple one off search
+	             * Search from database. Make this a simple one off search. Do NOT use the "most recent"
+	             * cache - use dbase only.
 	             */
-                StringPreference s = service.getDBResource().searchOne(wp);
+                StringPreference s = service.getDBResource().searchOneNoCache(wp);
                 if(s != null) {
                     String found = s.getHashedName();
                     String id = StringPreference.parseHashedNameId(found);
