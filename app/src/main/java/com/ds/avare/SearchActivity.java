@@ -385,8 +385,11 @@ public class SearchActivity extends Activity implements Observer {
                         taf = mService.getAdsbWeather().getTaf(id);
                     }
                     else {
-                        metar = mService.getDBResource().getMetar(id);
-                        taf = mService.getDBResource().getTaf(id);
+                        boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
+                        if(!inWeatherOld) {
+                            metar = mService.getDBResource().getMetar(id);
+                            taf = mService.getDBResource().getTaf(id);
+                        }
                     }
 
                     String wx = "";
@@ -409,6 +412,10 @@ public class SearchActivity extends Activity implements Observer {
                         mAlertDialogWx.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         mAlertDialogWx.show();
                         hideMenu();
+                    }
+                    else {
+                        mToast.setText(getString(R.string.weatherNa));
+                        mToast.show();
                     }
                 }
             }

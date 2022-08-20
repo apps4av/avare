@@ -612,4 +612,5 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Export">Export</string>
     <string name="Notes">Notes</string>
     <string name="Wx">Wx</string>
+    <string name="weatherNa">Weather not available</string>
 </resources>
