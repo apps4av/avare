@@ -127,7 +127,7 @@ public class MetShape extends Shape {
                     continue;
                 }
                 if( met.shape.isOnScreen(ctx.origin) ) {
-                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }
         }

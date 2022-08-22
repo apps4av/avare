@@ -681,8 +681,10 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      * @param ctx
      */
     private void drawTrack(Canvas canvas, DrawingContext ctx) {
-        TrackShape.draw(ctx, mService.getPlan(), mService.getDestination(),
-                mGpsParams, mLineBitmap, mLineHeadingBitmap, mPointProjection == null);
+        if((null == mPointProjection) && (null != mService.getDestination())) {
+            TrackShape.draw(ctx, mService.getPlan(), mService.getDestination(),
+                    mGpsParams, mLineBitmap, mLineHeadingBitmap);
+        }
     }
 
     /**
@@ -796,10 +798,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     }
 
     /**
-     * Draw the tracks to show our previous positions. If tracking is enabled, there is
-     * a linked list of gps coordinates attached to this view with the most recent one at the end
-     * of that list. Start at the end value to begin the drawing and as soon as we find one that is 
-     * not in the range of this display, we can assume that we're done.
+     * Draw the tracks to show our previous positions.
      * @param canvas
      * @param ctx
      */
@@ -816,7 +815,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             mPaint.setStrokeWidth(6 * mDipToPix);
             mPaint.setStyle(Paint.Style.FILL);
 
-            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mScale, mMovement, mPaint, mPref.isNightMode(), true);
+            mService.getKMLRecorder().getShape().drawShape(canvas, mOrigin, mPaint);
         }
     }
 
