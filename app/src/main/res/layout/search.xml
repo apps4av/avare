@@ -117,4 +117,19 @@ Redistribution and use in source and binary forms, with or without modification,
         android:textStyle="bold"
         android:visibility="invisible" />
 
+    <Button
+        android:id="@+id/search_button_weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/search_button_csup"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/button_bg"
+        android:text="@string/Wx"
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
 </RelativeLayout>
