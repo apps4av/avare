@@ -79,13 +79,11 @@ public class PlatesActivity extends Activity implements Observer  {
     private Button mPlatesButton;
     private Button mApproachButton;
     private Button mPlatesTagButton;
-    private Button mWriteButton;
     private Button mPlatesTimerButton;
     private AlertDialog mPlatesPopup;
     private AlertDialog mApproachPopup;
     private AlertDialog mAirportPopup;
     private Button mDrawClearButton;
-    private Button mWriteClearButton;
     private TwoButton mDrawButton;
     private Destination mDest;
     private Toast mToast;
@@ -95,7 +93,6 @@ public class PlatesActivity extends Activity implements Observer  {
     private String mPlateFound[];
     private String mDestString;
     private String nearString;
-    private TextView mWriteTextView;
     private String myString;
     private boolean mIsTimerOn;
     private long mTimerInit;
@@ -377,44 +374,6 @@ public class PlatesActivity extends Activity implements Observer  {
             }
         };
 
-
-        mWriteTextView = (TextView) view.findViewById(R.id.plates_textview_write);
-
-        // delete on tap
-        mWriteClearButton = (Button)view.findViewById(R.id.plates_button_write_clear);
-        mWriteClearButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int length = mWriteTextView.getText().length();
-                if (length > 0) {
-                    mWriteTextView.setText(mWriteTextView.getText().subSequence(0, length - 1));
-                }
-            }
-        });
-        // clear on long press
-        mWriteClearButton.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                mWriteTextView.setText("");
-                return true;
-            }
-        });
-
-        mWriteButton = (Button)view.findViewById(R.id.plates_button_write);
-        mWriteButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mWriteTextView.getVisibility() == View.INVISIBLE) {
-                    mWriteTextView.setVisibility(View.VISIBLE);
-                    mWriteClearButton.setVisibility(View.VISIBLE);
-                }
-                else {
-                    mWriteTextView.setVisibility(View.INVISIBLE);
-                    mWriteClearButton.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
 
         mPlatesTimerButton = (Button)view.findViewById(R.id.plates_button_timer);
         mPlatesTimerButton.setOnClickListener(new OnClickListener() {

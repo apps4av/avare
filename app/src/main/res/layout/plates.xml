@@ -48,30 +48,6 @@ Redistribution and use in source and binary forms, with or without modification,
         android:visibility="visible" />
 
     <Button
-        android:id="@+id/plates_button_write"
-        android:textStyle="bold"
-        android:layout_above="@id/plate_button_draw"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Notes"
-        android:background="@drawable/button_small"
-        android:layout_margin="5dp"
-        android:visibility="visible" />
-
-    <Button
-        android:id="@+id/plates_button_write_clear"
-        android:textStyle="bold"
-        android:layout_above="@id/plate_button_draw_clear"
-        android:layout_toLeftOf="@id/plates_button_write"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Clear"
-        android:background="@drawable/button_small"
-        android:layout_margin="5dp"
-        android:visibility="invisible" />
-
-    <Button
             android:id="@+id/plates_button_timer"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
@@ -108,20 +84,6 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_width="wrap_content"
             android:textOn="@string/Draw"
             android:textStyle="bold" />
-
-    <com.ds.avare.utils.WritingTextView
-        android:id="@+id/plates_textview_write"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/plates_header"
-        android:layout_above="@id/plates_button_write"
-        android:textSize="20dp"
-        android:background="#3F3F3F"
-        android:gravity="top"
-        android:hint="@string/Notes"
-        android:textColor="#FFFFFF"
-        android:visibility="invisible"></com.ds.avare.utils.WritingTextView>
-
 
     <LinearLayout
         android:baselineAligned="true"
