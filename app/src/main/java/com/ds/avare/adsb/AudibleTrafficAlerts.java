@@ -14,9 +14,11 @@ import java.util.LinkedList;
 public class AudibleTrafficAlerts implements Runnable {
     final private MediaPlayer mpTraffic;
     final private MediaPlayer mpBogey;
+    final private MediaPlayer mpClosingIn;
     final private MediaPlayer mpLow, mpHigh, mpLevel;
     final private MediaPlayer[] arrMpClockHours;
     final private MediaPlayer[] arrMpTrafficAliases;
+    final private MediaPlayer[] arrMpClosingInSeconds;
     final private SequentialMediaPlayer sequentialMediaPlayer;
     private static volatile Thread runnerThread;
     final private LinkedList<AlertItem> alertQueue;
@@ -75,6 +77,7 @@ public class AudibleTrafficAlerts implements Runnable {
         sequentialMediaPlayer = new SequentialMediaPlayer(alertQueue);
         mpTraffic = MediaPlayer.create(ctx, R.raw.tr_traffic);
         mpBogey = MediaPlayer.create(ctx, R.raw.tr_bogey);
+        mpClosingIn = MediaPlayer.create(ctx, R.raw.tr_cl_closingin);
         arrMpClockHours = new MediaPlayer[] {
                 MediaPlayer.create(ctx, R.raw.tr_one), MediaPlayer.create(ctx, R.raw.tr_two), MediaPlayer.create(ctx, R.raw.tr_three),
                 MediaPlayer.create(ctx, R.raw.tr_four), MediaPlayer.create(ctx, R.raw.tr_five), MediaPlayer.create(ctx, R.raw.tr_six),
@@ -91,6 +94,13 @@ public class AudibleTrafficAlerts implements Runnable {
                 MediaPlayer.create(ctx, R.raw.tr_sierra), MediaPlayer.create(ctx, R.raw.tr_tango), MediaPlayer.create(ctx, R.raw.tr_uniform),
                 MediaPlayer.create(ctx, R.raw.tr_victor), MediaPlayer.create(ctx, R.raw.tr_whiskey), MediaPlayer.create(ctx, R.raw.tr_xray),
                 MediaPlayer.create(ctx, R.raw.tr_yankee), MediaPlayer.create(ctx, R.raw.tr_zulu)
+        };
+        arrMpClosingInSeconds = new MediaPlayer[] {
+                MediaPlayer.create(ctx, R.raw.tr_cl_01), MediaPlayer.create(ctx, R.raw.tr_cl_02),
+                MediaPlayer.create(ctx, R.raw.tr_cl_03), MediaPlayer.create(ctx, R.raw.tr_cl_04),
+                MediaPlayer.create(ctx, R.raw.tr_cl_05), MediaPlayer.create(ctx, R.raw.tr_cl_06),
+                MediaPlayer.create(ctx, R.raw.tr_cl_07), MediaPlayer.create(ctx, R.raw.tr_cl_08),
+                MediaPlayer.create(ctx, R.raw.tr_cl_09), MediaPlayer.create(ctx, R.raw.tr_cl_10)
         };
         mpLow = MediaPlayer.create(ctx, R.raw.tr_low);
         mpHigh = MediaPlayer.create(ctx, R.raw.tr_high);
@@ -142,8 +152,8 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private MediaPlayer[] buildAudioMessage(AlertItem alertItem) {
-        //System.out.println("here "+alertItem.closingEvent);
-        final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases ? 4 : 3];
+        final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases
+                ? (alertItem.closingEvent != null ? 6 : 4) : (alertItem.closingEvent != null ? 5 : 3)];
         final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
         final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
                 alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
@@ -160,12 +170,14 @@ public class AudibleTrafficAlerts implements Runnable {
             alertAudio[i++] = arrMpTrafficAliases[icaoIndex % arrMpTrafficAliases.length];
         }
         alertAudio[i++] = arrMpClockHours[clockHour - 1];
-        alertAudio[i] = Math.abs(altitudeDiff) < 100 ? mpLevel
+        alertAudio[i++] = Math.abs(altitudeDiff) < 100 ? mpLevel
                 : (altitudeDiff > 0 ? mpLow : mpHigh);
-        if (alertItem.closingEvent != null)
-            System.out.println(String.format("Plane %s approaching in %fsec within %fnmi",
-                    alertItem.traffic.mCallSign, alertItem.closingEvent.closingSeconds(),
-                    alertItem.closingEvent.closestApproachDistanceNmi));
+        if (alertItem.closingEvent != null) {
+            alertAudio[i++] = mpClosingIn;
+            alertAudio[i++] = arrMpClosingInSeconds[
+                    Math.max(0, Math.min(arrMpClosingInSeconds.length-1,
+                            (int)alertItem.closingEvent.closingSeconds()-1))];
+        }
         return alertAudio;
     }
 
