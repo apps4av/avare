@@ -175,7 +175,7 @@ public class AudibleTrafficAlerts implements Runnable {
         if (alertItem.closingEvent != null) {
             alertAudio[i++] = mpClosingIn;
             alertAudio[i++] = arrMpClosingInSeconds[
-                    Math.max(0, Math.min(arrMpClosingInSeconds.length-1,
+                    Math.min(0, Math.max(arrMpClosingInSeconds.length-1,
                             (int)alertItem.closingEvent.closingSeconds()-1))];
         }
         return alertAudio;
