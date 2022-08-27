@@ -50,7 +50,7 @@ android {
 dependencies {
     implementation 'org.xmlunit:xmlunit-core:2.3.0'
     implementation 'oro:oro:2.0.8'
-    implementation 'org.xmlunit:xmlunit-matchers:2.3.0'
+    implementation 'org.xmlunit:xmlunit-matchers:2.9.0'
     implementation 'androidx.core:core:1.3.2'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-crashlytics:18.2.6'
@@ -61,5 +61,7 @@ dependencies {
     testImplementation 'org.powermock:powermock-api-mockito2:1.7.0RC2'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.7.0RC2'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.7.0RC2'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.robolectric:robolectric:4.8.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+    testImplementation 'org.codehaus.plexus:plexus-utils:3.4.2'
 }
