@@ -1,7 +1,14 @@
 package com.ds.avare.adsb;
 
+import android.content.Context;
+import android.location.Location;
+import android.media.MediaPlayer;
+
 import org.junit.Assert;
 import org.junit.Test;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
 
 public class AudibleTrafficAlertsTest {
 
@@ -113,5 +120,55 @@ public class AudibleTrafficAlertsTest {
         double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94.5, latLonOverTime[1], 0.1);
+    }
+
+    @Test
+    public void buildAudioMessage_closingEventBeyondAlertRange_PicksLastMedia() {
+        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
+        Location mockLoc = getMockedLocation(41.3,-95.4, 200.0f);
+        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
+                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
+                mockLoc, 2225,
+                new AudibleTrafficAlerts.ClosingEvent(67, 1.0)
+        );
+        MediaPlayer[] media = ata.buildAudioMessage(alert);
+        Assert.assertTrue("Last media used", Arrays.asList(media).contains(
+                ata.arrMpClosingInSeconds[ata.arrMpClosingInSeconds.length-1]));
+    }
+
+    @Test
+    public void buildAudioMessage_closingEventLessThanHalfSecond_PicksFirstMedia() {
+        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
+        Location mockLoc = getMockedLocation(41.3,-95.4, 200.0f);
+        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
+                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
+                mockLoc, 2225,
+                new AudibleTrafficAlerts.ClosingEvent(.25, 1.0)
+        );
+        MediaPlayer[] media = ata.buildAudioMessage(alert);
+        Assert.assertTrue("First media used", Arrays.asList(media).contains(ata.arrMpClosingInSeconds[0]));
+    }
+
+    private AudibleTrafficAlerts getMockedAudibleTrafficAlerts(int secondsCount) {
+        MediaPlayer[] mpSecondsMedia = new MediaPlayer[secondsCount];
+        for (int i = 0; i < secondsCount; i++)
+            mpSecondsMedia[i] = mock(MediaPlayer.class);
+        MediaPlayer[] mpClockHours = new MediaPlayer[12];
+        for (int i = 0; i < mpClockHours.length; i++)
+            mpClockHours[i] = mock(MediaPlayer.class);
+        MediaPlayer[] mpPhoneticAliases = new MediaPlayer[26];
+        for (int i = 0; i < mpPhoneticAliases.length; i++)
+            mpPhoneticAliases[i] = mock(MediaPlayer.class);
+        return new AudibleTrafficAlerts(mock(MediaPlayer.class), mock(MediaPlayer.class), mpClockHours,
+                mpPhoneticAliases, mock(MediaPlayer.class), mock(MediaPlayer.class), mock(MediaPlayer.class),
+                mock(MediaPlayer.class), mpSecondsMedia);
+    }
+
+    private Location getMockedLocation(double latitude, double longitude, float bearing) {
+        final Location mockLoc = mock(Location.class);
+        when(mockLoc.getLatitude()).thenReturn(latitude);
+        when(mockLoc.getLongitude()).thenReturn(longitude);
+        when(mockLoc.getBearing()).thenReturn(bearing);
+        return mockLoc;
     }
 }
