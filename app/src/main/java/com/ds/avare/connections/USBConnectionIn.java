@@ -13,12 +13,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.connections;
 
 import android.content.Context;
+import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Logger;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ public class USBConnectionIn extends Connection {
     private static USBConnectionIn mConnection;
     private static UsbManager mUsbManager;
     private String mParams;
+    private static UsbDeviceConnection mDriverConnection;
+    private static UsbSerialPort mPort;
     private UsbSerialDriver mDriver = null;
     /**
      * 
@@ -120,8 +124,12 @@ public class USBConnectionIn extends Connection {
     public boolean connect(String params, boolean secure) {
         
         mParams = params;
-        mDriver = UsbSerialProber.findFirstDevice(mUsbManager);
-
+        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
+        if (availableDrivers.isEmpty()) {
+            Logger.Logit("No USB serial device available");
+            return false;
+        }
+        mDriver = availableDrivers.get(0);
         if(mDriver == null) {
             Logger.Logit("No USB serial device available");
             return false;
@@ -139,8 +147,17 @@ public class USBConnectionIn extends Connection {
         setState(Connection.CONNECTING);
 
         try {
-            mDriver.open();
-            
+
+            mDriverConnection = mUsbManager.openDevice(mDriver.getDevice());
+            if (mDriverConnection == null) {
+                Logger.Logit("Failed!");
+
+                return false;
+            }
+
+            mPort = mDriver.getPorts().get(0);
+            mPort.open(mDriverConnection);
+
             String tokens[] = mParams.split(",");
             // 115200, 8, n, 1
             // rate, data, parity, stop
@@ -148,16 +165,16 @@ public class USBConnectionIn extends Connection {
             int data = Integer.parseInt(tokens[1]);
             int parity;
             if(tokens[2].equals("n")) {
-                parity = UsbSerialDriver.PARITY_NONE;
+                parity = UsbSerialPort.PARITY_NONE;
             }
             else if (tokens[2].equals("o")) {
-                parity = UsbSerialDriver.PARITY_ODD;
+                parity = UsbSerialPort.PARITY_ODD;
             }
             else {
-                parity = UsbSerialDriver.PARITY_EVEN;
+                parity = UsbSerialPort.PARITY_EVEN;
             }
             int stop = Integer.parseInt(tokens[3]);
-            mDriver.setParameters(rate, data, stop, parity);
+            mPort.setParameters(rate, data, stop, parity);
         } 
         catch (Exception e) {
             setState(Connection.DISCONNECTED);
@@ -180,7 +197,8 @@ public class USBConnectionIn extends Connection {
     public void disconnect() {
         
         try {
-            mDriver.close();
+            mPort.close();
+            mDriverConnection.close();
         }
         catch (Exception e) {
             
@@ -210,7 +228,7 @@ public class USBConnectionIn extends Connection {
     private int read(byte[] buffer) {
         int red = -1;
         try {
-            red = mDriver.read(buffer, 1000);
+            red = mPort.read(buffer, 1000);
         } 
         catch(Exception e) {
             red = -1;
