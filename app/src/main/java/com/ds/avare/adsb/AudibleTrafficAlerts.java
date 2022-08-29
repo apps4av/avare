@@ -15,6 +15,8 @@ public class AudibleTrafficAlerts implements Runnable {
     final private MediaPlayer mpTraffic;
     final private MediaPlayer mpBogey;
     final private MediaPlayer mpClosingIn;
+
+    final private MediaPlayer mpOver;
     final private MediaPlayer mpLow, mpHigh, mpLevel;
     final private MediaPlayer[] arrMpClockHours;
     final private MediaPlayer[] arrMpTrafficAliases;
@@ -102,14 +104,17 @@ public class AudibleTrafficAlerts implements Runnable {
                 MediaPlayer.create(ctx, R.raw.tr_cl_05), MediaPlayer.create(ctx, R.raw.tr_cl_06),
                 MediaPlayer.create(ctx, R.raw.tr_cl_07), MediaPlayer.create(ctx, R.raw.tr_cl_08),
                 MediaPlayer.create(ctx, R.raw.tr_cl_09), MediaPlayer.create(ctx, R.raw.tr_cl_10)
-            }
+            },
+                MediaPlayer.create(ctx, R.raw.tr_cl_over)
         );
 
     }
 
     protected AudibleTrafficAlerts(MediaPlayer mpTraffic, MediaPlayer mpBogey, MediaPlayer[] arrMpClockHours,
                                    MediaPlayer[] arrMpTrafficAliases, MediaPlayer mpHigh, MediaPlayer mpLow,
-                                   MediaPlayer mpLevel, MediaPlayer mpClosingIn, MediaPlayer[] arrMpClosingInSeconds)
+                                   MediaPlayer mpLevel, MediaPlayer mpClosingIn, MediaPlayer[] arrMpClosingInSeconds,
+                                   MediaPlayer mpOver)
+
     {
         alertQueue = new LinkedList<>();
         phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
@@ -124,6 +129,7 @@ public class AudibleTrafficAlerts implements Runnable {
         this.mpLevel = mpLevel;
         this.mpClosingIn = mpClosingIn;
         this.arrMpClosingInSeconds = arrMpClosingInSeconds;
+        this.mpOver = mpOver;
     }
 
     public synchronized static AudibleTrafficAlerts getAndStartAudibleTrafficAlerts(Context ctx) {
@@ -172,7 +178,12 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected MediaPlayer[] buildAudioMessage(AlertItem alertItem) {
         final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases
-                ? (alertItem.closingEvent != null ? 6 : 4) : (alertItem.closingEvent != null ? 5 : 3)];
+                ? (alertItem.closingEvent != null
+                    ? (  (int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length ? 7 : 6)
+                    : 4)
+                : (alertItem.closingEvent != null
+                    ? ( (int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length ? 6 : 5)
+                    : 3)];
         final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
         final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
                 alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
@@ -193,6 +204,8 @@ public class AudibleTrafficAlerts implements Runnable {
                 : (altitudeDiff > 0 ? mpLow : mpHigh);
         if (alertItem.closingEvent != null) {
             alertAudio[i++] = mpClosingIn;
+            if ((int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length)
+                alertAudio[i++] = mpOver;
             alertAudio[i++] = arrMpClosingInSeconds[
                     Math.min(arrMpClosingInSeconds.length-1, Math.max(0,
                             (int)alertItem.closingEvent.closingSeconds()-1))];

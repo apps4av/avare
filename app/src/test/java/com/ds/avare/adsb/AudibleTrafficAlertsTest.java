@@ -161,7 +161,7 @@ public class AudibleTrafficAlertsTest {
             mpPhoneticAliases[i] = mock(MediaPlayer.class);
         return new AudibleTrafficAlerts(mock(MediaPlayer.class), mock(MediaPlayer.class), mpClockHours,
                 mpPhoneticAliases, mock(MediaPlayer.class), mock(MediaPlayer.class), mock(MediaPlayer.class),
-                mock(MediaPlayer.class), mpSecondsMedia);
+                mock(MediaPlayer.class), mpSecondsMedia, mock(MediaPlayer.class));
     }
 
     private Location getMockedLocation(double latitude, double longitude, float bearing) {
