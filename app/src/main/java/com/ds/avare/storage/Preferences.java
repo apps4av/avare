@@ -349,6 +349,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return Integer.parseInt(mPref.getString(mContext.getString(R.string.AltitudeProximityDangerMinimum), "1000"));
     }
 
+    public int getAudibleClosingInAlertSeconds() {
+        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+    }
+
+    public float getAudibleClosingInAlertDistanceNmi() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+    }
+
     /**
      * @return
      */
@@ -913,6 +921,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public boolean isAudibleAlertTrafficId() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
+    }
+
+    public boolean isAudibleClosingInAlerts() {
+        System.out.println("Audible alert pref = "+mContext.getString(R.string.AudibleTrafficAlertsClosingDistance)+" and string value "+mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), ""));
+        return true; //mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) /*mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) */, false);
     }
 
     public boolean setTrackUp(boolean trackUp) {

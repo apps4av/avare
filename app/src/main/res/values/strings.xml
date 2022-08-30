@@ -167,6 +167,15 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AltitudeProximityDangerMinimum">&quot;Altitude Proximity Danger Distance Minimum&quot;</string>
     <string name="AltitudeProximityDangerMinimumSummary">&quot;Distance (feet) above or below traffic aircraft under which danger visual and audible warnings are triggered&quot;</string>
     <string name="AltitudeProximityDangerMinimumLabel">&quot;Altitude Proximity Min (ft)&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistance">&quot;Closing Distance Audible Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSummary">&quot;Play audible alerts for aircraft approaching within minimum approach distance soon&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceLabel">&quot;Closing Distance Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSeconds">&quot;Closing Distance Seconds&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSecondsSummary">&quot;Number of seconds within which closing distance alert will sound&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSecondsLabel">&quot;Closing Distance Alert Seconds&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistance">&quot;Closing Distance Alerts Nmi&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistanceSummary">&quot;Number of nautical miles for closest approach within which closing distance alert will sound&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistanceLabel">&quot;Closing Distance Alert Range (Nmi)&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>

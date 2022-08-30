@@ -29,6 +29,9 @@ public class AudibleTrafficAlerts implements Runnable {
     private static AudibleTrafficAlerts singleton;
     private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
+    private boolean closingTimeEnabled = true;
+    private int closingTimeThreasholdSeconds = 15;
+    private float closestApproachThreasholdNmi = 3.0f;
 
     protected static class ClosingEvent {
         private final double closingTimeSec;
@@ -157,6 +160,9 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setTopGunDorkMode(boolean topGunDorkMode) {
         this.topGunDorkMode = topGunDorkMode;
     }
+    public void setClosingTimeEnabled(boolean closingTimeEnabled) { this.closingTimeEnabled = closingTimeEnabled;  }
+    public void setClosingTimeThreasholdSeconds(int closingTimeThreasholdSeconds) {  this.closingTimeThreasholdSeconds = closingTimeThreasholdSeconds;  }
+    public void setClosestApproachThreasholdNmi(float closestApproachThreasholdNmi) {  this.closestApproachThreasholdNmi = closestApproachThreasholdNmi;  }
 
 
     @Override
@@ -215,23 +221,23 @@ public class AudibleTrafficAlerts implements Runnable {
             Traffic t = allTraffic.get(allTraffic.keyAt(i));
             double altDiff = ownAltitude - t.mAltitude;
             if (greatCircleDistance(
-                    ownLocation.getLatitude(), ownLocation.getLongitude(), (double) t.mLat, (double) t.mLon
+                    ownLocation.getLatitude(), ownLocation.getLongitude(),  t.mLat,  t.mLon
             ) < alertDistance
                     && Math.abs(altDiff) < altitudeProximityDangerMinimum
             ) {
                 ClosingEvent ce = null;
-                if (true) { //TODO: CE pref enabled
+                if (this.closingTimeEnabled) { //TODO: CE pref enabled
                     final double closingEventTimeSec = closestApproachTime(
                             t.mLat, t.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
                             t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, (int) ownLocation.getSpeed()
                     )*60.00*60.00;
-                    if (closingEventTimeSec > 0 && closingEventTimeSec < 15) {  // TODO: # secs = preference
+                    if (closingEventTimeSec > 0 && closingEventTimeSec < this.closingTimeThreasholdSeconds) {
                         final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
                                 ownLocation.getBearing(), ownLocation.getSpeed(), closingEventTimeSec/3600.00);
                         final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
                                 t.mHorizVelocity, closingEventTimeSec/3600.00);
                         final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
-                        if (caDistance < 3) { // TODO: CA distance CE threshold = preference
+                        if (caDistance < this.closestApproachThreasholdNmi) {
                             ce = new ClosingEvent(closingEventTimeSec, caDistance);
                         }
                     }
