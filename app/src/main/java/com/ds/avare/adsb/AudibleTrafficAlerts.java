@@ -193,9 +193,6 @@ public class AudibleTrafficAlerts implements Runnable {
             // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
             alertAudio.add(arrMpTrafficAliases[icaoIndex % arrMpTrafficAliases.length]);
         }
-        alertAudio.add(arrMpClockHours[clockHour - 1]);
-        alertAudio.add(Math.abs(altitudeDiff) < 100 ? mpLevel
-                : (altitudeDiff > 0 ? mpLow : mpHigh));
         if (alertItem.closingEvent != null) {
             alertAudio.add(mpClosingIn);
             if ((int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length)
@@ -204,6 +201,9 @@ public class AudibleTrafficAlerts implements Runnable {
                     Math.min(arrMpClosingInSeconds.length-1, Math.max(0,
                             (int)alertItem.closingEvent.closingSeconds()-1))]);
         }
+        alertAudio.add(arrMpClockHours[clockHour - 1]);
+        alertAudio.add(Math.abs(altitudeDiff) < 100 ? mpLevel
+                : (altitudeDiff > 0 ? mpLow : mpHigh));
         return alertAudio;
     }
 
