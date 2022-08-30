@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class AudibleTrafficAlertsTest {
 
@@ -131,9 +131,8 @@ public class AudibleTrafficAlertsTest {
                 mockLoc, 2225,
                 new AudibleTrafficAlerts.ClosingEvent(67, 1.0)
         );
-        MediaPlayer[] media = ata.buildAudioMessage(alert);
-        Assert.assertTrue("Last media used", Arrays.asList(media).contains(
-                ata.arrMpClosingInSeconds[ata.arrMpClosingInSeconds.length-1]));
+        List<MediaPlayer> media = ata.buildAudioMessage(alert);
+        Assert.assertTrue("Last media used", media.contains(ata.arrMpClosingInSeconds[ata.arrMpClosingInSeconds.length-1]));
     }
 
     @Test
@@ -145,8 +144,8 @@ public class AudibleTrafficAlertsTest {
                 mockLoc, 2225,
                 new AudibleTrafficAlerts.ClosingEvent(.25, 1.0)
         );
-        MediaPlayer[] media = ata.buildAudioMessage(alert);
-        Assert.assertTrue("First media used", Arrays.asList(media).contains(ata.arrMpClosingInSeconds[0]));
+        List<MediaPlayer> media = ata.buildAudioMessage(alert);
+        Assert.assertTrue("First media used", media.contains(ata.arrMpClosingInSeconds[0]));
     }
 
     private AudibleTrafficAlerts getMockedAudibleTrafficAlerts(int secondsCount) {

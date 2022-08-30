@@ -7,8 +7,9 @@ import android.util.SparseArray;
 
 import com.ds.avare.R;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class AudibleTrafficAlerts implements Runnable {
@@ -176,20 +177,13 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    protected MediaPlayer[] buildAudioMessage(AlertItem alertItem) {
-        final MediaPlayer[] alertAudio = new MediaPlayer[useTrafficAliases
-                ? (alertItem.closingEvent != null
-                    ? (  (int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length ? 7 : 6)
-                    : 4)
-                : (alertItem.closingEvent != null
-                    ? ( (int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length ? 6 : 5)
-                    : 3)];
+    protected List<MediaPlayer> buildAudioMessage(AlertItem alertItem) {
+        final List<MediaPlayer> alertAudio = new ArrayList<>();
         final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
         final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
                 alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
                 alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
-        int i = 0;
-        alertAudio[i++] = topGunDorkMode ? mpBogey : mpTraffic;
+        alertAudio.add(topGunDorkMode ? mpBogey : mpTraffic);
         if (useTrafficAliases) {
             int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(alertItem.traffic.mCallSign);
             if (icaoIndex == -1) {
@@ -197,18 +191,18 @@ public class AudibleTrafficAlerts implements Runnable {
                 icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
             }
             // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
-            alertAudio[i++] = arrMpTrafficAliases[icaoIndex % arrMpTrafficAliases.length];
+            alertAudio.add(arrMpTrafficAliases[icaoIndex % arrMpTrafficAliases.length]);
         }
-        alertAudio[i++] = arrMpClockHours[clockHour - 1];
-        alertAudio[i++] = Math.abs(altitudeDiff) < 100 ? mpLevel
-                : (altitudeDiff > 0 ? mpLow : mpHigh);
+        alertAudio.add(arrMpClockHours[clockHour - 1]);
+        alertAudio.add(Math.abs(altitudeDiff) < 100 ? mpLevel
+                : (altitudeDiff > 0 ? mpLow : mpHigh));
         if (alertItem.closingEvent != null) {
-            alertAudio[i++] = mpClosingIn;
+            alertAudio.add(mpClosingIn);
             if ((int)alertItem.closingEvent.closingSeconds() > arrMpClosingInSeconds.length)
-                alertAudio[i++] = mpOver;
-            alertAudio[i++] = arrMpClosingInSeconds[
+                alertAudio.add(mpOver);
+            alertAudio.add(arrMpClosingInSeconds[
                     Math.min(arrMpClosingInSeconds.length-1, Math.max(0,
-                            (int)alertItem.closingEvent.closingSeconds()-1))];
+                            (int)alertItem.closingEvent.closingSeconds()-1))]);
         }
         return alertAudio;
     }
@@ -272,7 +266,7 @@ public class AudibleTrafficAlerts implements Runnable {
      */
     private static class SequentialMediaPlayer implements MediaPlayer.OnCompletionListener {
 
-        private MediaPlayer[] media;
+        private List<MediaPlayer> media;
         private boolean isPlaying = false;
         private int mediaIndex = 0;
         final private Object playStatusMonitorObject;
@@ -286,7 +280,7 @@ public class AudibleTrafficAlerts implements Runnable {
         /**
          * @param media Media item sequence to queue in player
          */
-        public synchronized boolean setMedia(MediaPlayer... media) {
+        public synchronized boolean setMedia(List<MediaPlayer> media) {
             if (!isPlaying) {
                 this.media = media;
                 this.mediaIndex = 0;
@@ -299,7 +293,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            if (++mediaIndex <= media.length-1)
+            if (++mediaIndex <= media.size()-1)
                 play();
             else {
                 this.isPlaying = false;
@@ -310,10 +304,10 @@ public class AudibleTrafficAlerts implements Runnable {
         }
 
         public synchronized void play() {
-            if (media == null || mediaIndex > media.length-1)
+            if (media == null || mediaIndex > media.size()-1)
                 throw new IllegalStateException("No more media to play; finished sequence or no media set");
             isPlaying = true;
-            media[mediaIndex].start();
+            media.get(mediaIndex).start();
         }
     }
 
