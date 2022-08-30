@@ -33,7 +33,7 @@ public class AudibleTrafficAlerts implements Runnable {
     protected static class ClosingEvent {
         private final double closingTimeSec;
         private final double closestApproachDistanceNmi;
-        private long eventTimeMillis;
+        private final long eventTimeMillis;
 
         public ClosingEvent(double closingTimeSec, double closestApproachDistanceNmi) {
             this.closingTimeSec = closingTimeSec;
@@ -50,7 +50,7 @@ public class AudibleTrafficAlerts implements Runnable {
         final private Traffic traffic;
         final private Location ownLocation;
         final private int ownAltitude;
-        private ClosingEvent closingEvent = null;
+        final private ClosingEvent closingEvent;
 
         protected AlertItem(Traffic traffic, Location ownLocation, int ownAltitude, ClosingEvent closingEvent) {
             this.ownAltitude = ownAltitude;
@@ -226,16 +226,12 @@ public class AudibleTrafficAlerts implements Runnable {
                             t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, (int) ownLocation.getSpeed()
                     )*60.00*60.00;
                     if (closingEventTimeSec > 0 && closingEventTimeSec < 15) {  // TODO: # secs = preference
-                        //System.out.println(String.format("For %s closing time=%fsec, my bearing=%f, speed=%f",
-                        //        t.mCallSign, closingEventTimeSec, ownLocation.getBearing(), ownLocation.getSpeed()));
                         final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
                                 ownLocation.getBearing(), ownLocation.getSpeed(), closingEventTimeSec/3600.00);
                         final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
                                 t.mHorizVelocity, closingEventTimeSec/3600.00);
                         final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
                         if (caDistance < 3) { // TODO: CA distance CE threshold = preference
-                            //System.out.println(String.format("Closest approach distance will be %fnmi from %f,%f to %f,%f",
-                            //        caDistance, myNewLoc[0], myNewLoc[1], theirNewLoc[0], theirNewLoc[1]));
                             ce = new ClosingEvent(closingEventTimeSec, caDistance);
                         }
                     }
@@ -261,7 +257,7 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     /**
-     * Helpler class that uses media event handling to ensure strictly sequential play of a list
+     * Helper class that uses media event handling to ensure strictly sequential play of a list
      * of media resources
      */
     private static class SequentialMediaPlayer implements MediaPlayer.OnCompletionListener {
@@ -342,11 +338,11 @@ public class AudibleTrafficAlerts implements Runnable {
 
     /**
      * Great circle distance between two lat/lon's via Haversine formula, Java impl courtesy of https://introcs.cs.princeton.edu/java/12types/GreatCircle.java.html
-     * @param lat1
-     * @param lon1
-     * @param lat2
-     * @param lon2
-     * @return
+     * @param lat1 Latitude 1
+     * @param lon1 Longitude 1
+     * @param lat2 Latitude 2
+     * @param lon2 Longitude 2
+     * @return Great circle distance between two points
      */
     private static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
 
@@ -355,9 +351,9 @@ public class AudibleTrafficAlerts implements Runnable {
         final double x2 = Math.toRadians(lat2);
         final double y2 = Math.toRadians(lon2);
 
-        /*************************************************************************
+        /*
          * Compute using Haversine formula
-         *************************************************************************/
+         */
         final double a = Math.pow(Math.sin((x2-x1)/2), 2)
                 + Math.cos(x1) * Math.cos(x2) * Math.pow(Math.sin((y2-y1)/2), 2);
 
