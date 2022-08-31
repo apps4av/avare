@@ -250,8 +250,6 @@ public class AudibleTrafficAlerts implements Runnable {
 
     private void  alertTrafficPosition(AlertItem alertItem) {
         synchronized (alertQueue) {
-            if (alertItem.closingEvent != null)
-                System.out.println("Adding one with closing event");
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
                 this.alertQueue.add(alertItem);

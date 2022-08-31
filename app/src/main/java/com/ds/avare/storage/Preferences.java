@@ -924,7 +924,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public boolean isAudibleClosingInAlerts() {
-        System.out.println("Audible alert pref = "+mContext.getString(R.string.AudibleTrafficAlertsClosingDistance)+" and string value "+mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), ""));
         return true; //mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) /*mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) */, false);
     }
 
