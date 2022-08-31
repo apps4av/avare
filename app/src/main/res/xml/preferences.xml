@@ -276,6 +276,21 @@ authors: zkhan, jlmcgraw
             android:title="@string/AudibleAlertTopGunModeLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="@string/AudibleTrafficAlertsClosingDistance"
+            android:summary="@string/AudibleTrafficAlertsClosingDistanceSummary"
+            android:title="@string/AudibleTrafficAlertsClosingDistanceLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="15"
+            android:key="@string/AudibleTrafficAlertsClosingDistanceSeconds"
+            android:summary="@string/AudibleTrafficAlertsClosingDistanceSecondsSummary"
+            android:title="@string/AudibleTrafficAlertsClosingDistanceSecondsLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="3.0"
+            android:key="@string/AudibleTrafficAlertsClosingDistanceDistance"
+            android:summary="@string/AudibleTrafficAlertsClosingDistanceDistanceSummary"
+            android:title="@string/AudibleTrafficAlertsClosingDistanceDistanceLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="@string/drawTrafficCircles"
             android:summary="@string/drawTrafficCirclesSummary"
             android:title="@string/drawTrafficCirclesLabel" />

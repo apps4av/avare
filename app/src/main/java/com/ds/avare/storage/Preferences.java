@@ -924,7 +924,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public boolean isAudibleClosingInAlerts() {
-        return true; //mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) /*mContext.getString(R.string.AudibleTrafficAlertsClosingDistance) */, false);
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
     }
 
     public boolean setTrackUp(boolean trackUp) {
