@@ -107,7 +107,12 @@ public class AudibleTrafficAlerts implements Runnable {
                 MediaPlayer.create(ctx, R.raw.tr_cl_03), MediaPlayer.create(ctx, R.raw.tr_cl_04),
                 MediaPlayer.create(ctx, R.raw.tr_cl_05), MediaPlayer.create(ctx, R.raw.tr_cl_06),
                 MediaPlayer.create(ctx, R.raw.tr_cl_07), MediaPlayer.create(ctx, R.raw.tr_cl_08),
-                MediaPlayer.create(ctx, R.raw.tr_cl_09), MediaPlayer.create(ctx, R.raw.tr_cl_10)
+                MediaPlayer.create(ctx, R.raw.tr_cl_09), MediaPlayer.create(ctx, R.raw.tr_cl_10),
+                MediaPlayer.create(ctx, R.raw.tr_cl_11), MediaPlayer.create(ctx, R.raw.tr_cl_12),
+                MediaPlayer.create(ctx, R.raw.tr_cl_13), MediaPlayer.create(ctx, R.raw.tr_cl_14),
+                MediaPlayer.create(ctx, R.raw.tr_cl_15), MediaPlayer.create(ctx, R.raw.tr_cl_16),
+                MediaPlayer.create(ctx, R.raw.tr_cl_17), MediaPlayer.create(ctx, R.raw.tr_cl_18),
+                MediaPlayer.create(ctx, R.raw.tr_cl_19), MediaPlayer.create(ctx, R.raw.tr_cl_20)
             },
                 MediaPlayer.create(ctx, R.raw.tr_cl_over)
         );
