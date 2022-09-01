@@ -10,39 +10,37 @@ import android.util.SparseArray;
 
 import com.ds.avare.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class AudibleTrafficAlerts implements Runnable {
-    final private MediaPlayer mpTraffic;
+     private MediaPlayer mpTraffic;
     private int trafficSoundId;
-    final private MediaPlayer mpBogey;
+     private MediaPlayer mpBogey;
     private int bogeySoundId;
-    final private MediaPlayer mpClosingIn;
+     private MediaPlayer mpClosingIn;
     private int closingInSoundId;
 
-    final private MediaPlayer mpOver;
+     private MediaPlayer mpOver;
     private int overSoundId;
-    final private MediaPlayer mpLow, mpHigh, mpLevel;
+     private MediaPlayer mpLow, mpHigh, mpLevel;
     private int lowSoundId, highSoundId, levelSoundId;
-    final private MediaPlayer[] arrMpClockHours;
+     private MediaPlayer[] arrMpClockHours;
     private int[] clockHoursSoundIds;
     //final private int[] clockHourResourceIds;
-    final private MediaPlayer[] arrMpTrafficAliases;
+     private MediaPlayer[] arrMpTrafficAliases;
     private int[] trafficAliasesSoundIds;
     //final private int[] trafficAliasResourceIds;
-    final protected MediaPlayer[] arrMpClosingInSeconds;
+     protected MediaPlayer[] arrMpClosingInSeconds;
     private int[] closingInSecondsSoundIds;
     //final private int[] closingInSecondsResourceIds;
-    final private SequentialMediaPlayer sequentialMediaPlayer;
+     private SequentialMediaPlayer sequentialMediaPlayer;
     private static volatile Thread runnerThread;
-    final private LinkedList<AlertItem> alertQueue;
-    final private LinkedList<String> phoneticAlphaIcaoSequenceQueue;
+     private LinkedList<AlertItem> alertQueue;
+     private LinkedList<String> phoneticAlphaIcaoSequenceQueue;
     private static AudibleTrafficAlerts singleton;
     private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
@@ -50,10 +48,10 @@ public class AudibleTrafficAlerts implements Runnable {
     private int closingTimeThreasholdSeconds = 15;
     private float closestApproachThreasholdNmi = 3.0f;
 
-    private  SoundPool soundPool;
+    private  SequentialSoundPoolPlayer soundPlayer;
 
 
-    private static final float ALERT_AUDIO_PLAYBACK_SPEED = 1.25f;
+    private static final float ALERT_AUDIO_PLAYBACK_SPEED = 1f;
 
     protected static class ClosingEvent {
         private final double closingTimeSec;
@@ -100,51 +98,73 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     protected AudibleTrafficAlerts(Context ctx) {
-        this(
-                prepAlertAudio(ctx, R.raw.tr_traffic),
-                prepAlertAudio(ctx, R.raw.tr_bogey),
-                prepAlertAudioArray(ctx, R.raw.tr_one, R.raw.tr_two, R.raw.tr_three, R.raw.tr_four,
-                        R.raw.tr_five, R.raw.tr_six, R.raw.tr_seven, R.raw.tr_eight, R.raw.tr_nine,
-                        R.raw.tr_ten, R.raw.tr_eleven, R.raw.tr_twelve
-                ),
-                prepAlertAudioArray(ctx, R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta,
-                        R.raw.tr_echo, R.raw.tr_foxtrot, R.raw.tr_golf, R.raw.tr_hotel, R.raw.tr_india,
-                        R.raw.tr_juliet, R.raw.tr_kilo, R.raw.tr_lima, R.raw.tr_mike, R.raw.tr_november,
-                        R.raw.tr_oscar, R.raw.tr_papa, R.raw.tr_quebec, R.raw.tr_romeo, R.raw.tr_sierra,
-                        R.raw.tr_tango, R.raw.tr_uniform, R.raw.tr_victor, R.raw.tr_whiskey, R.raw.tr_xray,
-                        R.raw.tr_yankee, R.raw.tr_zulu
-                ),
-                prepAlertAudio(ctx, R.raw.tr_high),
-                prepAlertAudio(ctx, R.raw.tr_low),
-                prepAlertAudio(ctx, R.raw.tr_level),
-                prepAlertAudio(ctx, R.raw.tr_cl_closingin),
-                prepAlertAudioArray(ctx, R.raw.tr_cl_01, R.raw.tr_cl_02, R.raw.tr_cl_03, R.raw.tr_cl_04,
-                        R.raw.tr_cl_05, R.raw.tr_cl_06, R.raw.tr_cl_07, R.raw.tr_cl_08, R.raw.tr_cl_09,
-                        R.raw.tr_cl_10, R.raw.tr_cl_11, R.raw.tr_cl_12, R.raw.tr_cl_13, R.raw.tr_cl_14,
-                        R.raw.tr_cl_15, R.raw.tr_cl_16, R.raw.tr_cl_17, R.raw.tr_cl_18, R.raw.tr_cl_19,
-                        R.raw.tr_cl_20
-                ),
-                prepAlertAudio(ctx, R.raw.tr_cl_over)
-        );
-        soundPool = new SoundPool(110, AudioManager.STREAM_NOTIFICATION, 0);
-        this.trafficSoundId = soundPool.load(ctx, R.raw.tr_traffic, 1);
-        this.bogeySoundId = soundPool.load(ctx, R.raw.tr_bogey, 1);
-        this.clockHoursSoundIds = loadSoundArray(ctx, soundPool, R.raw.tr_one, R.raw.tr_two,
+//        this(
+//                prepAlertAudio(ctx, R.raw.tr_traffic),
+//                prepAlertAudio(ctx, R.raw.tr_bogey),
+//                prepAlertAudioArray(ctx, R.raw.tr_one, R.raw.tr_two, R.raw.tr_three, R.raw.tr_four,
+//                        R.raw.tr_five, R.raw.tr_six, R.raw.tr_seven, R.raw.tr_eight, R.raw.tr_nine,
+//                        R.raw.tr_ten, R.raw.tr_eleven, R.raw.tr_twelve
+//                ),
+//                prepAlertAudioArray(ctx, R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta,
+//                        R.raw.tr_echo, R.raw.tr_foxtrot, R.raw.tr_golf, R.raw.tr_hotel, R.raw.tr_india,
+//                        R.raw.tr_juliet, R.raw.tr_kilo, R.raw.tr_lima, R.raw.tr_mike, R.raw.tr_november,
+//                        R.raw.tr_oscar, R.raw.tr_papa, R.raw.tr_quebec, R.raw.tr_romeo, R.raw.tr_sierra,
+//                        R.raw.tr_tango, R.raw.tr_uniform, R.raw.tr_victor, R.raw.tr_whiskey, R.raw.tr_xray,
+//                        R.raw.tr_yankee, R.raw.tr_zulu
+//                ),
+//                prepAlertAudio(ctx, R.raw.tr_high),
+//                prepAlertAudio(ctx, R.raw.tr_low),
+//                prepAlertAudio(ctx, R.raw.tr_level),
+//                prepAlertAudio(ctx, R.raw.tr_cl_closingin),
+//                prepAlertAudioArray(ctx, R.raw.tr_cl_01, R.raw.tr_cl_02, R.raw.tr_cl_03, R.raw.tr_cl_04,
+//                        R.raw.tr_cl_05, R.raw.tr_cl_06, R.raw.tr_cl_07, R.raw.tr_cl_08, R.raw.tr_cl_09,
+//                        R.raw.tr_cl_10, R.raw.tr_cl_11, R.raw.tr_cl_12, R.raw.tr_cl_13, R.raw.tr_cl_14,
+//                        R.raw.tr_cl_15, R.raw.tr_cl_16, R.raw.tr_cl_17, R.raw.tr_cl_18, R.raw.tr_cl_19,
+//                        R.raw.tr_cl_20
+//                ),
+//                prepAlertAudio(ctx, R.raw.tr_cl_over)
+//        );
+        alertQueue = new LinkedList<>();
+        phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
+        sequentialMediaPlayer = new SequentialMediaPlayer(alertQueue);
+        soundPlayer = new SequentialSoundPoolPlayer();
+        this.trafficSoundId = soundPlayer.load(ctx, R.raw.tr_traffic);
+        this.bogeySoundId = soundPlayer.load(ctx, R.raw.tr_bogey);
+        this.clockHoursSoundIds = loadSoundArray(ctx, R.raw.tr_one, R.raw.tr_two,
                 R.raw.tr_three, R.raw.tr_four, R.raw.tr_five, R.raw.tr_six, R.raw.tr_seven,
                 R.raw.tr_eight, R.raw.tr_nine, R.raw.tr_ten, R.raw.tr_eleven, R.raw.tr_twelve);
+        this.trafficAliasesSoundIds = loadSoundArray(ctx, R.raw.tr_alpha, R.raw.tr_bravo,
+                R.raw.tr_charlie, R.raw.tr_delta, R.raw.tr_echo, R.raw.tr_foxtrot, R.raw.tr_golf,
+                R.raw.tr_hotel, R.raw.tr_india, R.raw.tr_juliet, R.raw.tr_kilo, R.raw.tr_lima,
+                R.raw.tr_mike, R.raw.tr_november, R.raw.tr_oscar, R.raw.tr_papa, R.raw.tr_quebec,
+                R.raw.tr_romeo, R.raw.tr_sierra, R.raw.tr_tango, R.raw.tr_uniform, R.raw.tr_victor,
+                R.raw.tr_whiskey, R.raw.tr_xray, R.raw.tr_yankee, R.raw.tr_zulu
+        );
+        this.highSoundId = soundPlayer.load(ctx, R.raw.tr_high);
+        this.lowSoundId = soundPlayer.load(ctx, R.raw.tr_low);
+        this.levelSoundId = soundPlayer.load(ctx, R.raw.tr_low);
+        this.closingInSoundId = soundPlayer.load(ctx, R.raw.tr_cl_closingin);
+        this.closingInSecondsSoundIds = loadSoundArray(ctx, R.raw.tr_cl_01, R.raw.tr_cl_02,
+                R.raw.tr_cl_03, R.raw.tr_cl_04, R.raw.tr_cl_05, R.raw.tr_cl_06, R.raw.tr_cl_07,
+                R.raw.tr_cl_08, R.raw.tr_cl_09, R.raw.tr_cl_10, R.raw.tr_cl_11, R.raw.tr_cl_12,
+                R.raw.tr_cl_13, R.raw.tr_cl_14, R.raw.tr_cl_15, R.raw.tr_cl_16, R.raw.tr_cl_17,
+                R.raw.tr_cl_18, R.raw.tr_cl_19, R.raw.tr_cl_20);
+        this.overSoundId = soundPlayer.load(ctx, R.raw.tr_cl_over);
+        //while (soundPlayer.isLoading())
+        //    try { System.out.println("Waiting for load"); Thread.sleep(300); } catch (InterruptedException e) { /* expected */ }
     }
 
-    private static int[] loadSoundArray(Context ctx, SoundPool sp, int... resourceIds) {
+    private int[] loadSoundArray(Context ctx, int... resourceIds) {
         int[] soundIds = new int[resourceIds.length];
         for (int i = 0; i < resourceIds.length; i++)
-            soundIds[i] = sp.load(ctx, resourceIds[i], 1);
+            soundIds[i] = soundPlayer.load(ctx, resourceIds[i]);
         return soundIds;
     }
 
     protected AudibleTrafficAlerts(MediaPlayer mpTraffic, MediaPlayer mpBogey, MediaPlayer[] arrMpClockHours,
                                    MediaPlayer[] arrMpTrafficAliases, MediaPlayer mpHigh, MediaPlayer mpLow,
                                    MediaPlayer mpLevel, MediaPlayer mpClosingIn, MediaPlayer[] arrMpClosingInSeconds,
-                                   MediaPlayer mpOver, SoundPool sp)
+                                   MediaPlayer mpOver)
 
     {
 
@@ -167,11 +187,6 @@ public class AudibleTrafficAlerts implements Runnable {
 
     private static MediaPlayer prepAlertAudio(Context ctx, int resid) {
         final MediaPlayer mp = MediaPlayer.create(ctx, resid);
-        try {
-            mp.prepare();
-        } catch (IOException e) {
-            //
-        }
         return mp;
     }
 
@@ -216,8 +231,12 @@ public class AudibleTrafficAlerts implements Runnable {
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
                 if (this.alertQueue.size() > 0 && !sequentialMediaPlayer.isPlaying) {
-                    if (sequentialMediaPlayer.setMedia(buildAudioMessage(alertQueue.removeFirst())))
-                        sequentialMediaPlayer.play();
+                    //if (sequentialMediaPlayer.setMedia(buildAudioMessage(alertQueue.removeFirst())))
+                    //    sequentialMediaPlayer.play();
+                    List<Integer> alertSoundSequence = buildAlertSoundIdSequence(alertQueue.removeFirst());
+                    //for (Integer soundId : alertSoundSequence) {
+                        soundPlayer.playSequence(alertSoundSequence, ALERT_AUDIO_PLAYBACK_SPEED);
+                    //}
                 } else {
                     try {
                         alertQueue.wait();
@@ -259,6 +278,39 @@ public class AudibleTrafficAlerts implements Runnable {
         alertAudio.add(arrMpClockHours[clockHour - 1]);
         alertAudio.add(Math.abs(altitudeDiff) < 100 ? mpLevel
                 : (altitudeDiff > 0 ? mpLow : mpHigh));
+        return alertAudio;
+    }
+
+    private List<Integer> buildAlertSoundIdSequence(AlertItem alertItem) {
+        final List<Integer> alertAudio = new ArrayList<>();
+        final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
+        final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
+                alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
+                alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
+        alertAudio.add(topGunDorkMode ? bogeySoundId : trafficSoundId);
+        if (useTrafficAliases) {
+            int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(alertItem.traffic.mCallSign);
+            if (icaoIndex == -1) {
+                phoneticAlphaIcaoSequenceQueue.add(alertItem.traffic.mCallSign);
+                icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
+            }
+            // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
+            alertAudio.add(trafficAliasesSoundIds[icaoIndex % trafficAliasesSoundIds.length]);
+        }
+        if (alertItem.closingEvent != null) {
+            alertAudio.add(closingInSoundId);
+            if ((int)alertItem.closingEvent.closingSeconds() > closingInSecondsSoundIds.length)
+                alertAudio.add(overSoundId);
+            alertAudio.add(closingInSecondsSoundIds[
+                    Math.min(closingInSecondsSoundIds.length-1, Math.max(0,
+                            (int)alertItem.closingEvent.closingSeconds()-1))]);
+            System.out.println(String.format("Seconds was %f and used index %d",
+                    alertItem.closingEvent.closingSeconds(), (int)alertItem.closingEvent.closingSeconds()-1
+            ));
+        }
+        alertAudio.add(clockHoursSoundIds[clockHour - 1]);
+        alertAudio.add(Math.abs(altitudeDiff) < 100 ? levelSoundId
+                : (altitudeDiff > 0 ? lowSoundId : highSoundId));
         return alertAudio;
     }
 
@@ -365,6 +417,58 @@ public class AudibleTrafficAlerts implements Runnable {
             System.out.println("SSP: Starting playing at "+System.currentTimeMillis());
             media.get(mediaIndex).start();
         }
+    }
+
+    private static class SequentialSoundPoolPlayer implements SoundPool.OnLoadCompleteListener {
+
+        private final SoundPool sp;
+        private final HashMap<Integer, Long> soundDurationMap;
+        private boolean isLoading = false;
+
+        SequentialSoundPoolPlayer() {
+            sp = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+            soundDurationMap = new HashMap<>();
+            sp.setOnLoadCompleteListener(this);
+        }
+
+        public synchronized int load(Context context, int resId) {
+            this.isLoading = true;
+            final int soundId = sp.load(context, resId, 1);
+            soundDurationMap.put(soundId, getSoundDuration(context, resId));
+            return soundId;
+        }
+
+        public synchronized void playSequence(List<Integer> soundIds, float rate) {
+            for (Integer soundId : soundIds)
+                synchronousPlay(soundId, rate);
+        }
+
+        private synchronized void synchronousPlay(int soundId, float rate) {
+            if (!soundDurationMap.containsKey(soundId))
+                throw new IllegalArgumentException("Can't find sound duration for "+soundId
+                        +" in the loaded duration map.  Are you sure you loaded it first?");
+            sp.play(soundId, 1f, 1f, 1,0, rate);
+            try {
+                Thread.sleep((long) Math.ceil(soundDurationMap.get(soundId) / rate));
+            } catch (InterruptedException e) { /* expected */ }
+        }
+
+        @Override
+        public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+            this.isLoading = status == 0;
+        }
+
+        public boolean isLoading() {
+            return this.isLoading;
+        }
+
+        private long getSoundDuration(Context context, int rawId){
+            final MediaPlayer player = MediaPlayer.create(context, rawId);
+            long duration = player.getDuration();
+            player.release();
+            return duration;
+        }
+
     }
 
     protected static double angleFromCoordinate(double lat1, double long1, double lat2,
