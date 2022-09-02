@@ -88,13 +88,13 @@ public class AudibleTrafficAlerts implements Runnable {
             R.raw.tr_traffic, R.raw.tr_bogey,
             new int[] { R.raw.tr_one, R.raw.tr_two, R.raw.tr_three, R.raw.tr_four, R.raw.tr_five,
                 R.raw.tr_six, R.raw.tr_seven, R.raw.tr_eight, R.raw.tr_nine, R.raw.tr_ten,
-                R.raw.tr_eleven, R.raw.tr_twelve},
+                R.raw.tr_eleven, R.raw.tr_twelve },
             new int[] { R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta, R.raw.tr_echo,
                 R.raw.tr_foxtrot, R.raw.tr_golf, R.raw.tr_hotel, R.raw.tr_india, R.raw.tr_juliet,
                 R.raw.tr_kilo, R.raw.tr_lima, R.raw.tr_mike, R.raw.tr_november, R.raw.tr_oscar,
                 R.raw.tr_papa, R.raw.tr_quebec, R.raw.tr_romeo, R.raw.tr_sierra, R.raw.tr_tango,
                 R.raw.tr_uniform, R.raw.tr_victor, R.raw.tr_whiskey, R.raw.tr_xray, R.raw.tr_yankee,
-                R.raw.tr_zulu},
+                R.raw.tr_zulu },
             R.raw.tr_high, R.raw.tr_low, R.raw.tr_level, R.raw.tr_cl_closingin,
             new int[] { R.raw.tr_cl_01, R.raw.tr_cl_02, R.raw.tr_cl_03, R.raw.tr_cl_04, R.raw.tr_cl_05,
                 R.raw.tr_cl_06, R.raw.tr_cl_07, R.raw.tr_cl_08, R.raw.tr_cl_09, R.raw.tr_cl_10,
@@ -110,7 +110,6 @@ public class AudibleTrafficAlerts implements Runnable {
                                    int overResId)
 
     {
-
         alertQueue = new LinkedList<>();
         phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
         this.soundPlayer = sp;
@@ -151,13 +150,8 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    public void setUseTrafficAliases(boolean useTrafficAliases) {
-        this.useTrafficAliases = useTrafficAliases;
-    }
-
-    public void setTopGunDorkMode(boolean topGunDorkMode) {
-        this.topGunDorkMode = topGunDorkMode;
-    }
+    public void setUseTrafficAliases(boolean useTrafficAliases) { this.useTrafficAliases = useTrafficAliases;     }
+    public void setTopGunDorkMode(boolean topGunDorkMode) { this.topGunDorkMode = topGunDorkMode; }
     public void setClosingTimeEnabled(boolean closingTimeEnabled) { this.closingTimeEnabled = closingTimeEnabled;  }
     public void setClosingTimeThreasholdSeconds(int closingTimeThreasholdSeconds) {  this.closingTimeThreasholdSeconds = closingTimeThreasholdSeconds;  }
     public void setClosestApproachThreasholdNmi(float closestApproachThreasholdNmi) {  this.closestApproachThreasholdNmi = closestApproachThreasholdNmi;  }
@@ -168,8 +162,8 @@ public class AudibleTrafficAlerts implements Runnable {
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
                 if (this.alertQueue.size() > 0) {
-                    List<Integer> alertSoundSequence = buildAlertSoundIdSequence(alertQueue.removeFirst());
-                    soundPlayer.playSequence(alertSoundSequence);
+                    List<Integer> alertMessage = buildAlertSoundIdSequence(alertQueue.removeFirst());
+                    soundPlayer.playSequence(alertMessage);
                 } else {
                     try {
                         alertQueue.wait();
@@ -374,6 +368,8 @@ public class AudibleTrafficAlerts implements Runnable {
         }
 
         private synchronized void sequentialPlay(int soundId) {
+            if (!loadedSounds.contains(soundId))
+                throw new IllegalStateException("This soundId is not yet loaded: "+soundId);
             sp.play(soundId, 1f, 1f, 1, 0, 1);
             try {
                 // Give sound time to finish before returning, based on known duration
