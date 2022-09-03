@@ -158,8 +158,8 @@ public class IOActivity extends Activity {
 
         Bundle args = new Bundle();
         int pos = 0;
-        mFragments[pos++] = new BlueToothInFragment();
         mFragments[pos++] = new WiFiInFragment();
+        mFragments[pos++] = new BlueToothInFragment();
         mFragments[pos++] = new XplaneFragment();
         mFragments[pos++] = new MsfsFragment();
         mFragments[pos++] = new BlueToothOutFragment();
@@ -190,16 +190,16 @@ public class IOActivity extends Activity {
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
                 new String[] {
-                getString(R.string.Bluetooth), 
-                getString(R.string.WIFI), 
-                getString(R.string.XPlane), 
-                getString(R.string.MSFS), 
-                getString(R.string.AP), 
-                getString(R.string.Play), 
-                getString(R.string.GPSSIM), 
-                getString(R.string.USBIN),
-                "Dump1090",
-                getString(R.string.Tools)
+                        getString(R.string.WIFI),
+                        getString(R.string.Bluetooth),
+                        getString(R.string.XPlane),
+                        getString(R.string.MSFS),
+                        getString(R.string.AP),
+                        getString(R.string.Play),
+                        getString(R.string.GPSSIM),
+                        getString(R.string.USBIN),
+                        "Dump1090",
+                        getString(R.string.Tools)
                 });
         mIO.setAdapter(adapter);
         mIO.setSelection(mPref.getFragmentIndex());
@@ -239,13 +239,13 @@ public class IOActivity extends Activity {
             switch(id) {
 
                 case 0:
-                    BlueToothInFragment btin = (BlueToothInFragment) mFragments[id];
-                    fragmentTransaction.replace(R.id.detailFragment, btin);
+                    WiFiInFragment wfin = (WiFiInFragment) mFragments[id];
+                    fragmentTransaction.replace(R.id.detailFragment, wfin);
                     break;
 
                 case 1:
-                    WiFiInFragment wfin = (WiFiInFragment) mFragments[id];
-                    fragmentTransaction.replace(R.id.detailFragment, wfin);
+                    BlueToothInFragment btin = (BlueToothInFragment) mFragments[id];
+                    fragmentTransaction.replace(R.id.detailFragment, btin);
                     break;
 
                 case 2:

@@ -42,16 +42,123 @@ import java.util.LinkedList;
  */
 public class LongTouchDestination {
 
-    public String airport;
-    public String info;
-    public String tfr;
-    public String mets;
-    public Taf taf;
-    public WindsAloft wa;
-    public Metar metar;
-    public String sua;
-    public String layer;
-    public LinkedList<Airep> airep;
-    public String performance;
-    public String navaids;
+    private String airport;
+    private String info;
+    private String tfr;
+    private String mets;
+    private Taf taf;
+    private WindsAloft wa;
+    private Metar metar;
+    private String sua;
+    private String layer;
+    private LinkedList<Airep> airep;
+    private String performance;
+    private String navaids;
+    private boolean more;
+
+
+    public String getAirport() {
+        return airport;
+    }
+
+    public void setAirport(String airport) {
+        this.airport = airport;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public String getTfr() {
+        return tfr;
+    }
+
+    public void setTfr(String tfr) {
+        this.tfr = tfr;
+    }
+
+    public String getMets() {
+        return mets;
+    }
+
+    public void setMets(String mets) {
+        this.mets = mets;
+    }
+
+    public Taf getTaf() {
+        return taf;
+    }
+
+    public void setTaf(Taf taf) {
+        this.taf = taf;
+    }
+
+    public WindsAloft getWa() {
+        return wa;
+    }
+
+    public void setWa(WindsAloft wa) {
+        this.wa = wa;
+    }
+
+    public Metar getMetar() {
+        return metar;
+    }
+
+    public void setMetar(Metar metar) {
+        this.metar = metar;
+    }
+
+    public String getSua() {
+        return sua;
+    }
+
+    public void setSua(String sua) {
+        this.sua = sua;
+    }
+
+    public String getLayer() {
+        return layer;
+    }
+
+    public void setLayer(String layer) {
+        this.layer = layer;
+    }
+
+    public LinkedList<Airep> getAirep() {
+        return airep;
+    }
+
+    public void setAirep(LinkedList<Airep> airep) {
+        this.airep = airep;
+    }
+
+    public String getPerformance() {
+        return performance;
+    }
+
+    public void setPerformance(String performance) {
+        this.performance = performance;
+    }
+
+    public String getNavaids() {
+        return navaids;
+    }
+
+    public void setNavaids(String navaids) {
+        this.navaids = navaids;
+    }
+
+    public boolean hasMoreButtons() {
+        return more;
+    }
+
+    public void setMoreButtons(boolean more) {
+        this.more = more;
+    }
+
 }

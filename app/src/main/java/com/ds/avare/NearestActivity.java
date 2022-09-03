@@ -31,7 +31,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.NearestAdapter;
-import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
@@ -39,6 +38,10 @@ import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.AirportInfo;
+import com.ds.avare.utils.DestinationAlertDialog;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import java.util.Observable;
@@ -56,18 +59,18 @@ public class NearestActivity extends Activity  implements Observer {
     private Toast mToast;
     private Preferences mPref;
     private Destination mDestination;
-    private AnimateButton mAnimateDest;
-    private AnimateButton mAnimatePlates;
-    private Button mPlatesButton;
     private Button mButton2000;
     private Button mButton4000;
     private Button mButton6000;
     private Button mButtonFuel;
 
-    
-    private Button mDestButton;
-    private String mSelectedAirportId;
-       
+    private DestinationAlertDialog mDestinationAlertDialog;
+    private AirportInfo mClosestTask;
+
+    private String mSelected;
+
+    private boolean mIsWaypoint;
+
     private GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override
@@ -104,6 +107,33 @@ public class NearestActivity extends Activity  implements Observer {
     }
 
     /**
+     *
+     * @param dst
+     */
+    private void goTo(String dst) {
+        mIsWaypoint = false;
+        mDestination = DestinationFactory.build(mService, dst, Destination.BASE);
+        mDestination.addObserver(NearestActivity.this);
+        mToast.setText(getString(R.string.Searching) + " " + dst);
+        mToast.show();
+        mDestination.find();
+    }
+
+    /**
+     *
+     * @param dst
+     */
+    private void planTo(String dst) {
+        mIsWaypoint = true;
+        mDestination = DestinationFactory.build(mService, dst, Destination.BASE);
+        mDestination.addObserver(NearestActivity.this);
+        mToast.setText(getString(R.string.Searching) + " " + dst);
+        mToast.show();
+        mDestination.find();
+    }
+
+
+    /**
      * 
      */
     @Override
@@ -111,6 +141,8 @@ public class NearestActivity extends Activity  implements Observer {
         
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
+
+        mIsWaypoint = false;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -123,51 +155,6 @@ public class NearestActivity extends Activity  implements Observer {
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.nearest, null);
         setContentView(view);
-        
-        /*
-         * Dest button
-         */
-        mDestButton = (Button)view.findViewById(R.id.nearest_button_dest);
-        mDestButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                
-                /*
-                 * On click, find destination that was pressed on in view
-                 */
-                Button b = (Button)v;
-                mDestination = DestinationFactory.build(mService, b.getText().toString(), Destination.BASE);
-                mDestination.addObserver(NearestActivity.this);
-                mToast.setText(getString(R.string.Searching) + " " + b.getText().toString());
-                mToast.show();
-                mDestination.find();
-            }
-            
-        });
-
-        
-        /*
-         * Plates button
-         */
-        mPlatesButton = (Button)view.findViewById(R.id.nearest_button_plates);
-        mPlatesButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                
-                /*
-                 * On click, find destination that was pressed on in view
-                 */
-                if(mService != null) {
-                    mService.setLastPlateAirport(mSelectedAirportId);
-                    mService.setLastPlateIndex(0);
-                }
-                ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
-            }           
-        });
-
-
 
         /*
          * Dest button
@@ -191,11 +178,7 @@ public class NearestActivity extends Activity  implements Observer {
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
-                mDestination.addObserver(NearestActivity.this);
-                mToast.setText(getString(R.string.Searching));
-                mToast.show();
-                mDestination.find();
+                goTo(a.getId());
             }
             
         });
@@ -222,11 +205,7 @@ public class NearestActivity extends Activity  implements Observer {
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
-                mDestination.addObserver(NearestActivity.this);
-                mToast.setText(getString(R.string.Searching));
-                mToast.show();
-                mDestination.find();
+                goTo(a.getId());
             }
             
         });
@@ -252,11 +231,8 @@ public class NearestActivity extends Activity  implements Observer {
                 }
                 Airport a = mService.getArea().getAirport(id);
 
-                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
-                mDestination.addObserver(NearestActivity.this);
-                mToast.setText(getString(R.string.Searching));
-                mToast.show();
-                mDestination.find();
+                goTo(a.getId());
+
             }
             
         });
@@ -281,12 +257,8 @@ public class NearestActivity extends Activity  implements Observer {
                     return;
                 }
                 Airport a = mService.getArea().getAirport(id);
+                goTo(a.getId());
 
-                mDestination = DestinationFactory.build(mService, a.getId(), Destination.BASE);
-                mDestination.addObserver(NearestActivity.this);
-                mToast.setText(getString(R.string.Searching));
-                mToast.show();
-                mDestination.find();
             }
             
         });
@@ -294,9 +266,58 @@ public class NearestActivity extends Activity  implements Observer {
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
         mPref = new Preferences(getApplicationContext());
-        mAnimatePlates = new AnimateButton(this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateDest = new AnimateButton(this, mDestButton, AnimateButton.DIRECTION_L_R, (View[])null);
         mService = null;
+
+
+        mDestinationAlertDialog = new DestinationAlertDialog(NearestActivity.this);
+        mDestinationAlertDialog.setCallback(
+                new GenericCallback() {
+                    @Override
+                    public Object callback(Object o, Object o1) {
+                        String param = (String) o;
+                        try {
+                            mDestinationAlertDialog.dismiss();
+                        } catch (Exception e) {
+                        }
+
+                        if (null == mSelected) {
+                            return null;
+                        }
+                        if (mService == null) {
+                            return null;
+                        }
+
+                        if (param.equals("CSup")) {
+                            if (null != mSelected) {
+                                if (mService != null) {
+                                    mService.setLastAfdAirport(mSelected);
+                                    ((MainActivity) NearestActivity.this.getParent()).showAfdTab();
+                                }
+                            }
+                        } else if (param.equals("Plate")) {
+                            if (null != mSelected) {
+                                if (PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), mSelected)) {
+                                    if (mService != null) {
+                                        mService.setLastPlateAirport(mSelected);
+                                        mService.setLastPlateIndex(0);
+                                        ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
+                                    }
+                                }
+                            }
+                        } else if (param.equals("+Plan")) {
+                            if (null != mSelected) {
+                                planTo(mSelected);
+                            }
+                        } else if (param.equals("->D")) {
+                            if (mSelected == null) {
+                                return null;
+                            }
+                            // It's ok if dbType is null
+                            goTo(mSelected);
+                        }
+                        return null;
+                    }
+                });
     }
 
     /**
@@ -364,21 +385,23 @@ public class NearestActivity extends Activity  implements Observer {
          */
         @Override
         public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
+                                       IBinder service) {
+
+
+            /*
              * We've bound to LocalService, cast the IBinder and get LocalService instance
              */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
+            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
             mService = binder.getService();
             mService.registerGpsListener(mGpsInfc);
 
-            if(mPref.isSimulationMode() || (!prepareAdapter(null))) {
+            if (mPref.isSimulationMode() || (!prepareAdapter(null))) {
                 mToast.setText(getString(R.string.AreaNF));
                 mToast.show();
                 return;
             }
             mNearest.setAdapter(mNearestAdapter);
-            
+
             mNearest.setClickable(true);
             mNearest.setDividerHeight(10);
             mNearest.setOnItemClickListener(new OnItemClickListener() {
@@ -389,48 +412,93 @@ public class NearestActivity extends Activity  implements Observer {
 
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View arg1,
-                        int position, long id) {
+                                        int position, long id) {
                     /*
                      * Set destination to this airport if clicked on it
                      */
-                    if(mDestination != null) {
-                        if(mDestination.isLooking()) {
+                    if (mDestination != null) {
+                        if (mDestination.isLooking()) {
                             /*
                              * Already looking for dest.
                              */
                             return;
                         }
-                    }              
+                    }
 
                     Airport a = mService.getArea().getAirport(position);
-                    if(null == a) {
+                    if (null == a) {
                         return;
                     }
-                    mSelectedAirportId = a.getId();
-                    mDestButton.setText(a.getId());
-                    
-                    if(PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), a.getId())) {
-                    	mAnimatePlates.animate(true);
+                    mSelected = a.getId();
+                    if (null != mSelected) {
+                        goTo(mSelected);
+                        mSelected = null;
                     }
-                    else {
-                    	mAnimatePlates.stopAndHide();
-                    }                    
-                    
-                    mAnimateDest.animate(true);
-                    if(!a.canGlide()) {
+
+                    if (!a.canGlide()) {
                         mToast.setText(R.string.NotGlideRange);
                         mToast.show();
                     }
                 }
             });
-            
-        }    
 
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
+            mNearest.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+                @Override
+                public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                                               int index, long arg3) {
+
+                    Airport a = mService.getArea().getAirport(index);
+                    if (null == a) {
+                        return true;
+                    }
+                    mSelected = a.getId();
+
+                    if (mSelected == null || null == mService) {
+                        return true;
+                    }
+
+                    // stop previous lookup
+                    if (null != mClosestTask) {
+                        mClosestTask.cancel(true);
+                    }
+
+
+                    //airport
+                    mClosestTask = new AirportInfo();
+
+                    mClosestTask.execute(null, null, a.getId(),
+                            NearestActivity.this, mService, mPref, null, false,
+                            new GenericCallback() {
+                                @Override
+                                public Object callback(Object o, Object o1) {
+                                    LongTouchDestination ltd = (LongTouchDestination) o1;
+                                    ltd.setMoreButtons(false);
+                                    mDestinationAlertDialog.show();
+                                    mDestinationAlertDialog.setData(ltd);
+
+                                    // If the long press event has already occurred, we need to do the gesture callback here
+                                    return null;
+                                }
+                            });
+                    return true;
+                }
+            });
+        }
+
         @Override
-        public void onServiceDisconnected(ComponentName arg0) {
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+
+        }
+
+        @Override
+        public void onNullBinding(ComponentName name) {
+
         }
     };
 
@@ -444,6 +512,15 @@ public class NearestActivity extends Activity  implements Observer {
         if(null != mService) {
             mService.unregisterGpsListener(mGpsInfc);
         }
+
+        if(null != mDestinationAlertDialog) {
+            try {
+                mDestinationAlertDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
+
 
         /*
          * Clean up on pause that was started in on resume
@@ -480,20 +557,51 @@ public class NearestActivity extends Activity  implements Observer {
      */
     @Override
     public void update(Observable arg0, Object arg1) {
+        /*
+         * Destination found?
+         */
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
-                Destination d = (Destination)arg0;
-                if(null != mService) {
-                    mService.setDestination(d);
+
+                /*
+                 * Temporarily move to destination by giving false GPS signal.
+                 */
+                if(null == mDestination) {
+                    mToast.setText(getString(R.string.DestinationNF));
+                    mToast.show();
+                    return;
                 }
-                StringPreference s = new StringPreference(d.getType(), d.getDbType(), d.getFacilityName(), d.getID());
+                if((Destination)arg0 != mDestination) {
+                    /*
+                     * If user presses a selection repeatedly, reject previous
+                     */
+                    return;
+                }
+                StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
                 mService.getDBResource().setUserRecent(s);
-                mToast.setText(getString(R.string.DestinationSet) + (d.getID()));
-                mToast.show();
-                MainActivity m = (MainActivity)this.getParent();
-                if(m != null) {
-                    m.showMapTab();
+
+                if(!mIsWaypoint) {
+                    if(mService != null) {
+                        mService.setDestination((Destination)arg0);
+                    }
+                    mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
+                    mToast.show();
+                    MainActivity m = (MainActivity)this.getParent();
+                    if(m != null) {
+                        m.showMapTab();
+                    }
+                }
+                else {
+                    if(mService != null) {
+                        if(mService.getPlan().appendDestination((Destination)arg0)) {
+                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
+                        }
+                        else {
+                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                        }
+                        mToast.show();
+                    }
                 }
             }
             else {

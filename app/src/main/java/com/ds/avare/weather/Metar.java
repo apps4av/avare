@@ -18,12 +18,67 @@ package com.ds.avare.weather;
  *
  */
 public class Metar {
-    public String rawText;
-    public String stationId;
-    public String time;
-    public String flightCategory;
-    public double lon;
-    public double lat;
+    private String rawText;
+    private String stationId;
+    private String time;
+    private String flightCategory;
+    private double lon;
+    private double lat;
+    private long timestamp;
 
-    public long timestamp;
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
+
+    public String getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(String stationId) {
+        this.stationId = stationId;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getFlightCategory() {
+        return flightCategory;
+    }
+
+    public void setFlightCategory(String flightCategory) {
+        this.flightCategory = flightCategory;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 }

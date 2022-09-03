@@ -19,10 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -30,13 +27,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -65,6 +58,7 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.DestinationAlertDialog;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -73,14 +67,11 @@ import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
 import com.ds.avare.views.LocationView;
-import com.ds.avare.webinfc.WebAppMapInterface;
 
 import java.io.File;
 import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 /**
  * @author zkhan, jlmcgraw
@@ -159,8 +150,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
-    private AlertDialog mAlertDialogDestination;
-    private WebAppMapInterface mInfc;
+    private DestinationAlertDialog mAlertDialogDestination;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -505,20 +495,17 @@ public class LocationActivity extends Activity implements Observer {
 
                 if (GestureInterface.LONG_PRESS == event) {
 
-                    if(mInfc != null) {
-                        mInfc.setData(data);
-                    }
+                    data.setMoreButtons(false); // map type data
+                    mAlertDialogDestination.setData(data);
                     if(!isFinishing()) {
                         mAlertDialogDestination.show();
-                        // make it full size
-                        mAlertDialogDestination.getWindow().setLayout(MATCH_PARENT, MATCH_PARENT);
                     }
 
                     /*
                      * Show the popout
                      * Now populate the pop out weather etc.
                      */
-                    mAirportPressed = data.airport;
+                    mAirportPressed = data.getAirport();
 
                 }
             }
@@ -913,121 +900,69 @@ public class LocationActivity extends Activity implements Observer {
         /*
          * Make a dialog to show destination info, when long pressed on it
          */
-        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(LocationActivity.this);
-        try {
-            /*
-             * Make a dialog to show destination info, when long pressed on it
-             */
-            WebView wv = new WebView(LocationActivity.this);
-            wv.loadUrl("file:///android_asset/map.html");
+        mAlertDialogDestination = new DestinationAlertDialog(LocationActivity.this);
 
-            mInfc = new WebAppMapInterface(LocationActivity.this, wv, new GenericCallback() {
-                /*
-                 * (non-Javadoc)
-                 * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
-                 */
-                @Override
-                public Object callback(Object o, Object o1) {
+        mAlertDialogDestination.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                String param = (String) o;
 
-                    String param = (String) o;
-                    String airport = (String) o;
-
-                    try {
-                        mAlertDialogDestination.dismiss();
-                    }
-                    catch (Exception e){}
+                try {
+                    mAlertDialogDestination.dismiss();
+                } catch (Exception e) {
+                }
 
 
-                    if (null == mAirportPressed) {
-                        return null;
-                    }
-                    if (mService == null) {
-                        return null;
-                    }
-
-                    if (param.equals("CSup")) {
-                        /*
-                         * Chart Supplement
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastAfdAirport(mAirportPressed);
-                            ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("Plate")) {
-                        /*
-                         * Plate
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastPlateAirport(mAirportPressed);
-                            mService.setLastPlateIndex(0);
-                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("+Plan")) {
-                        String type = Destination.BASE;
-                        if (mAirportPressed.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        planTo(mAirportPressed, type);
-                        mAirportPressed = null;
-                    } else if (param.equals("->D")) {
-
-                        /*
-                         * On click, find destination that was pressed on in view
-                         * If button pressed was a destination go there, otherwise if none, then delete current dest
-                         */
-                        String dest = mAirportPressed;
-                        mAirportPressed = null;
-                        String type = Destination.BASE;
-                        if (dest.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        goTo(dest, type);
-                    }
+                if (null == mAirportPressed) {
                     return null;
                 }
-            });
-            wv.addJavascriptInterface(mInfc, "AndroidMap");
-
-            wv.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
-
-                    return true;
+                if (mService == null) {
+                    return null;
                 }
-            });
 
-            wv.getSettings().setJavaScriptEnabled(true);
-            wv.getSettings().setBuiltInZoomControls(false);
-            // This is need on some old phones to get focus back to webview.
-            wv.setFocusable(true);
-            wv.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View arg0, MotionEvent arg1) {
-                    arg0.performClick();
-                    arg0.requestFocus();
-                    return false;
+                if (param.equals("CSup")) {
+                    /*
+                     * Chart Supplement
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastAfdAirport(mAirportPressed);
+                        ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("Plate")) {
+                    /*
+                     * Plate
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastPlateAirport(mAirportPressed);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("+Plan")) {
+                    String type = Destination.BASE;
+                    if (mAirportPressed.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    planTo(mAirportPressed, type);
+                    mAirportPressed = null;
+                } else if (param.equals("->D")) {
+
+                    /*
+                     * On click, find destination that was pressed on in view
+                     * If button pressed was a destination go there, otherwise if none, then delete current dest
+                     */
+                    String dest = mAirportPressed;
+                    mAirportPressed = null;
+                    String type = Destination.BASE;
+                    if (dest.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    goTo(dest, type);
                 }
-            });
-            // Do not let selecting text
-            wv.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return true;
-                }
-            });
-            wv.setLongClickable(false);
-
-
-            alert.setView(wv);
-        }
-        catch (RuntimeException e) {
-            // This is when webkit is updating, we get an exception that webview is not defined.
-        }
-        mAlertDialogDestination = alert.create();
-        mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                return null;
+            }
+        });
 
         // start connecting with a delay
         new Handler().postDelayed(new Runnable() {

@@ -35,6 +35,7 @@ import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.Airport;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.NavAid;
@@ -57,6 +58,7 @@ import com.ds.avare.content.DataSource;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.AirportInfo;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.DisplayIcon;
 import com.ds.avare.utils.GenericCallback;
@@ -125,7 +127,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     /**
      * Task that finds closets airport.
      */
-    private ClosestAirportTask mClosestTask;
+    private AirportInfo mClosestTask;
 
     /**
      * Storage service that contains all the state
@@ -1170,239 +1172,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
                 });
     }
 
-    /**
-     * @author zkhan
-     *
-     */
-    private class ClosestAirportTask extends AsyncTask<Object, String, String> {
-        private Double lon;
-        private Double lat;
-        private String tfr = "";
-        private String tfra = "";
-        private String textMets = "";
-        private String sua;
-        private String layer;
-        private LinkedList<Airep> aireps;
-        private LinkedList<String> runways;
-        private Taf taf;
-        private WindsAloft wa;
-        private Metar metar;
-        private String elev;
-        private Vector<NavAid> navaids;
-
-
-        private String getTfrTextOnTouch(LinkedList<TFRShape> shapes) {
-            String out = "";
-            if(null != shapes) {
-                for(int shape = 0; shape < shapes.size(); shape++) {
-                    TFRShape cshape = shapes.get(shape);
-                    /*
-                     * Get TFR text
-                     */
-                    String txt = cshape.getTextIfTouched(lon, lat);
-                    if(null != txt) {
-                        out += txt + "\n--\n";
-                    }
-                }
-            }
-            return out;
-        }
-
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#doInBackground(Params[])
-         */     
-        @Override
-        protected String doInBackground(Object... vals) {           
-            Thread.currentThread().setName("Closest");
-            if(null == mService) {
-                return null;
-            }
-
-            String airport = null;
-            lon = (Double)vals[0];
-            lat = (Double)vals[1];
-            
-            // if the user is moving instead of doing a long press, give them a chance
-            // to cancel us before we start doing anything
-            try {
-                Thread.sleep(200);
-            }
-            catch(Exception e) {
-            }
-            
-            if(isCancelled())
-                return "";
-
-            List<AirSigMet> mets = null;
-            if(null != mService) {
-                if(mPref.useAdsbWeather()) {
-                    mets = mService.getAdsbWeather().getAirSigMet();
-                }
-                else {
-                    mets = mService.getInternetWeatherCache().getAirSigMet();
-                }
-            }
-
-
-            /*
-             * Air/sigmets
-             */
-            if(null != mets) {
-                for(int i = 0; i < mets.size(); i++) {
-                    MetShape cshape = mets.get(i).shape;
-                    if(null != cshape) {
-                        /*
-                         * Set MET
-                         */
-                        textMets += cshape.getHTMLMetOnTouch(mContext, mets.get(i), lon, lat);
-                    }
-                }
-            }            
-
-            airport = mService.getDBResource().findClosestAirportID(lon, lat);
-            if(isCancelled()) {
-                return "";
-            }
-
-            if(null == airport) {
-                airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
-            }
-            else {
-                taf = mService.getDBResource().getTaf(airport);
-                if(isCancelled()) {
-                    return "";
-                }
-                
-                metar = mService.getDBResource().getMetar(airport);
-                if(isCancelled()) {
-                    return "";
-                }
-            
-                runways = mService.getDBResource().findRunways(airport);
-                if(isCancelled()) {
-                    return "";
-                }
-                
-                elev = mService.getDBResource().findElev(airport);
-                if(isCancelled()) {
-                    return "";
-                }
-
-            }
-            
-            /*
-             * ADSB gets this info from weather cache
-             */
-            if(!mPref.useAdsbWeather()) {              
-                aireps = mService.getDBResource().getAireps(lon, lat);
-                if(isCancelled()) {
-                    return "";
-                }
-                
-                wa = mService.getDBResource().getWindsAloft(lon, lat);
-                if(isCancelled()) {
-                    return "";
-                }
-                
-                sua = mService.getDBResource().getSua(lon, lat);
-                if(isCancelled()) {
-                    return "";
-                }
-
-                if(mLayer != null) {
-                    layer = mLayer.getDate();
-                }
-                if(isCancelled()) {
-                    return "";
-                }
-            }
-
-            navaids = mService.getDBResource().findNavaidsNearby(lat, lon);
-
-            mPointProjectionAirport = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
-            return airport;
-        }
-        
-        /* (non-Javadoc)
-         * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-         */
-        @Override
-        protected void onPostExecute(String airport) {
-            if(null != mGestureCallBack && null != mPointProjectionAirport && null != airport) {
-                mLongTouchDestination = new LongTouchDestination();
-                mLongTouchDestination.airport = airport;
-                mLongTouchDestination.info = Math.round(mPointProjectionAirport.getDistance()) + Preferences.distanceConversionUnit +
-                        "(" + mPointProjectionAirport.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                        Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(mPointProjectionAirport.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
-
-                /*
-                 * Clear old weather
-                 */
-                mService.getAdsbWeather().sweep();
-                mService.getAdsbTfrCache().sweep();
-
-                /*
-                 * Do not background ADSB weather as its a RAM opertation and quick,
-                 * also avoids concurrent mod exception.
-                 */
-
-                if(mPref.useAdsbWeather()) {
-                    taf = mService.getAdsbWeather().getTaf(airport);
-                    metar = mService.getAdsbWeather().getMETAR(airport);                    
-                    aireps = mService.getAdsbWeather().getAireps(lon, lat);
-                    wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
-                    layer = mService.getAdsbWeather().getNexrad().getDate();
-                    sua = mService.getAdsbWeather().getSua();
-                }
-                else {
-                    boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
-                    if(inWeatherOld) { // expired weather does not show
-                        taf = null;
-                        metar = null;
-                        aireps = null;
-                        textMets = null;
-                        wa = null;
-                    }
-                }
-                if(null != aireps) {
-                    for(Airep a : aireps) {
-                        a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());                
-                    }
-                }
-                if(null != wa) {
-                    wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
-                }
-                tfr = getTfrTextOnTouch(mService.getTFRShapes());
-                tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());
-                mLongTouchDestination.tfr = tfr + "\n" + tfra;
-                mLongTouchDestination.taf = taf;
-                mLongTouchDestination.metar = metar;
-                mLongTouchDestination.airep = aireps;
-                mLongTouchDestination.mets = textMets;
-                mLongTouchDestination.wa = wa;
-                mLongTouchDestination.sua = sua;
-                mLongTouchDestination.layer = layer;
-                //ideally we would pass altitude AGL for navaid reception calculations
-                mLongTouchDestination.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
-                if(metar != null) {
-                    mLongTouchDestination.performance =
-                            WeatherHelper.getMetarTime(metar.rawText) + "\n" +
-                            mContext.getString(R.string.DensityAltitude) + " " +
-                            WeatherHelper.getDensityAltitude(metar.rawText, elev) + "\n" +
-                            mContext.getString(R.string.BestRunway) + " " +
-                            WeatherHelper.getBestRunway(metar.rawText, runways);
-                }
-                
-                // If the long press event has already occurred, we need to do the gesture callback here
-                if(mDoCallbackWhenDone) {
-                    mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mLongTouchDestination);
-                }
-            }
-            invalidate();
-        }
-        
-    }
-
 
     /**
      * Center to the location
@@ -1521,7 +1290,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             mClosestTask.cancel(true);
         }
         mLongTouchDestination = null;
-        mClosestTask = new ClosestAirportTask();
+        mClosestTask = new AirportInfo();
 
         double lon2,lat2;
         if (mPref.isTrackUp()) {
@@ -1538,7 +1307,23 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             lon2 = mOrigin.getLongitudeOf(x);
             lat2 = mOrigin.getLatitudeOf(y);
         }
-        mClosestTask.execute(lon2, lat2);
+        if(null == mService) {
+            return;
+        }
+        mClosestTask.execute(lon2, lat2, null,
+                mContext, mService, mPref, mLayer, true,
+                new GenericCallback(){
+                    @Override
+                    public Object callback(Object o, Object o1) {
+                        mLongTouchDestination = (LongTouchDestination)o1;
+                        // If the long press event has already occurred, we need to do the gesture callback here
+                        if (mDoCallbackWhenDone) {
+                            mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, mLongTouchDestination);
+                        }
+                        invalidate();
+                        return null;
+                    }
+                });
     }
 
 

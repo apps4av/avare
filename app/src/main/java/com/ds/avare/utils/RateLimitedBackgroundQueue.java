@@ -91,7 +91,7 @@ public class RateLimitedBackgroundQueue {
     public void insertMetarInQueue(Metar metar) {
         synchronized (mQueueMetar) {
             // FAA database does not have K in it
-            mQueueMetar.put(metar.stationId.replaceAll("^K", ""), metar);
+            mQueueMetar.put(metar.getStationId().replaceAll("^K", ""), metar);
         }
     }
 }

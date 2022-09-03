@@ -612,20 +612,20 @@ public class Destination extends Observable {
             if (mPref.useAdsbWeather()) {
                 w = mService.getAdsbWeather().getWindsAloft(mLond, mLatd);
                 if (null != w) {
-                    if (null != w.station) {
-                        m = mService.getAdsbWeather().getMETAR(w.station);
+                    if (null != w.getStation()) {
+                        m = mService.getAdsbWeather().getMETAR(w.getStation());
                     }
                 }
             } else {
                 w = mService.getDBResource().getWindsAloft(mLond, mLatd);
                 if (null != w) {
-                    if (null != w.station) {
-                        m = mService.getDBResource().getMetar(w.station);
+                    if (null != w.getStation()) {
+                        m = mService.getDBResource().getMetar(w.getStation());
                     }
                 }
             }
             if (m != null) {
-                mWindMetar = WeatherHelper.getWindFromMetar(m.rawText);
+                mWindMetar = WeatherHelper.getWindFromMetar(m.getRawText());
             }
             mWinds = w;
         } catch (Exception e) {

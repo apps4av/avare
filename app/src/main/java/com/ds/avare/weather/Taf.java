@@ -16,9 +16,40 @@ package com.ds.avare.weather;
  *
  */
 public class Taf {
-    public String rawText;
-    public String stationId;
-    public String time;
-    
-    public long timestamp;
+    private String rawText;
+    private String stationId;
+    private String time;
+    private long timestamp;
+
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
+
+    public String getStationId() {
+        return stationId;
+    }
+
+    public void setStationId(String stationId) {
+        this.stationId = stationId;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 }

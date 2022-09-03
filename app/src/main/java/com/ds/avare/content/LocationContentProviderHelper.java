@@ -812,8 +812,8 @@ public class LocationContentProviderHelper {
                     String id = c.getString(c.getColumnIndex(LocationContract.AIRPORTS_LOCATION_ID));
                     Metar m = metars.get(id);
                     if (m != null) {
-                        m.lat = lat;
-                        m.lon = lon;
+                        m.setLat(lat);
+                        m.setLon(lon);
                     }
                 }
             }
