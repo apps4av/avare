@@ -6,8 +6,32 @@ package com.ds.avare.weather;
 
 public class Sua {
 
-    public String time;
-    public long timestamp;
+    private String time;
+    private long timestamp;
+    private String text;
 
-    public String text;
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
 }

@@ -143,9 +143,9 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     taf = new Taf();
-                    taf.rawText = c.getString(c.getColumnIndex(WeatherContract.TAF_TEXT));
-                    taf.time = c.getString(c.getColumnIndex(WeatherContract.TAF_TIME));
-                    taf.stationId = c.getString(c.getColumnIndex(WeatherContract.TAF_STATION));
+                    taf.setRawText(c.getString(c.getColumnIndex(WeatherContract.TAF_TEXT)));
+                    taf.setTime(c.getString(c.getColumnIndex(WeatherContract.TAF_TIME)));
+                    taf.setStationId(c.getString(c.getColumnIndex(WeatherContract.TAF_STATION)));
                 }
             }
         }
@@ -176,10 +176,10 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     metar = new Metar();
-                    metar.rawText = c.getString(c.getColumnIndex(WeatherContract.METAR_TEXT));
-                    metar.time = c.getString(c.getColumnIndex(WeatherContract.METAR_TIME));
-                    metar.stationId = c.getString(c.getColumnIndex(WeatherContract.METAR_STATION));
-                    metar.flightCategory = c.getString(c.getColumnIndex(WeatherContract.METAR_FLIGHT_CATEGORY));
+                    metar.setRawText(c.getString(c.getColumnIndex(WeatherContract.METAR_TEXT)));
+                    metar.setTime(c.getString(c.getColumnIndex(WeatherContract.METAR_TIME)));
+                    metar.setStationId(c.getString(c.getColumnIndex(WeatherContract.METAR_STATION)));
+                    metar.setFlightCategory(c.getString(c.getColumnIndex(WeatherContract.METAR_FLIGHT_CATEGORY)));
                 }
             }
         }
@@ -208,17 +208,17 @@ public class ContentProviderHelper {
             if(c != null) {
                 while(c.moveToNext()) {
                     AirSigMet a = new AirSigMet();
-                    a.rawText = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TEXT));
-                    a.timeFrom = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_FROM));
-                    a.timeTo = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_TO));
-                    a.points = c.getString(c.getColumnIndex(WeatherContract.AIRMET_POINTS));
-                    a.minFt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MIN));
-                    a.maxFt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MAX));
-                    a.movementDeg = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_DIRECTION));
-                    a.movementKt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_SPEED));
-                    a.hazard = c.getString(c.getColumnIndex(WeatherContract.AIRMET_HAZARD));
-                    a.severity = c.getString(c.getColumnIndex(WeatherContract.AIRMET_SEVERITY));
-                    a.reportType = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TYPE));
+                    a.setRawText(c.getString(c.getColumnIndex(WeatherContract.AIRMET_TEXT)));
+                    a.setTimeFrom(c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_FROM)));
+                    a.setTimeTo(c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_TO)));
+                    a.setPoints(c.getString(c.getColumnIndex(WeatherContract.AIRMET_POINTS)));
+                    a.setMinFt(c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MIN)));
+                    a.setMaxFt(c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MAX)));
+                    a.setMovementDeg(c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_DIRECTION)));
+                    a.setMovementKt(c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_SPEED)));
+                    a.setHazard(c.getString(c.getColumnIndex(WeatherContract.AIRMET_HAZARD)));
+                    a.setSeverity(c.getString(c.getColumnIndex(WeatherContract.AIRMET_SEVERITY)));
+                    a.setReportType(c.getString(c.getColumnIndex(WeatherContract.AIRMET_TYPE)));
                     airsig.add(a);
                 }
             }
@@ -261,12 +261,12 @@ public class ContentProviderHelper {
             if(c != null) {
                 while(c.moveToNext()) {
                     Airep a = new Airep();
-                    a.rawText = c.getString(c.getColumnIndex(WeatherContract.PIREP_TEXT));
-                    a.time = c.getString(c.getColumnIndex(WeatherContract.PIREP_TIME));
-                    a.lon = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LONGITUDE));
-                    a.lat = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LATITUDE));
-                    a.reportType = c.getString(c.getColumnIndex(WeatherContract.PIREP_TYPE));
-                    aireps.put(a.rawText, a);
+                    a.setRawText(c.getString(c.getColumnIndex(WeatherContract.PIREP_TEXT)));
+                    a.setTime(c.getString(c.getColumnIndex(WeatherContract.PIREP_TIME)));
+                    a.setLon(c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LONGITUDE)));
+                    a.setLat(c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LATITUDE)));
+                    a.setReportType(c.getString(c.getColumnIndex(WeatherContract.PIREP_TYPE)));
+                    aireps.put(a.getRawText(), a);
                 }
             }
         }
@@ -280,7 +280,7 @@ public class ContentProviderHelper {
         Collections.sort(list, new Comparator<Airep>() {
             @Override
             public int compare(Airep a1, Airep a2) {
-                return a1.rawText.compareTo(a2.rawText);
+                return a1.getRawText().compareTo(a2.getRawText());
             }
         });
         return list;
@@ -312,19 +312,19 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     wa = new WindsAloft();
-                    wa.station = c.getString(c.getColumnIndex(WeatherContract.WIND_STATION));
-                    wa.time = c.getString(c.getColumnIndex(WeatherContract.WIND_TIME));
-                    wa.lon = c.getFloat(c.getColumnIndex(WeatherContract.WIND_LONGITUDE));
-                    wa.lat = c.getFloat(c.getColumnIndex(WeatherContract.WIND_LATITUDE));
-                    wa.w3k = c.getString(c.getColumnIndex(WeatherContract.WIND_3K)).replaceAll("[ ]", "");
-                    wa.w6k = c.getString(c.getColumnIndex(WeatherContract.WIND_6K)).replaceAll("[ ]", "");
-                    wa.w9k = c.getString(c.getColumnIndex(WeatherContract.WIND_9K)).replaceAll("[ ]", "");
-                    wa.w12k = c.getString(c.getColumnIndex(WeatherContract.WIND_12K)).replaceAll("[ ]", "");
-                    wa.w18k = c.getString(c.getColumnIndex(WeatherContract.WIND_18K)).replaceAll("[ ]", "");
-                    wa.w24k = c.getString(c.getColumnIndex(WeatherContract.WIND_24K)).replaceAll("[ ]", "");
-                    wa.w30k = c.getString(c.getColumnIndex(WeatherContract.WIND_30K)).replaceAll("[ ]", "");
-                    wa.w34k = c.getString(c.getColumnIndex(WeatherContract.WIND_34K)).replaceAll("[ ]", "");
-                    wa.w39k = c.getString(c.getColumnIndex(WeatherContract.WIND_39K)).replaceAll("[ ]", "");
+                    wa.setStation(c.getString(c.getColumnIndex(WeatherContract.WIND_STATION)));
+                    wa.setTime(c.getString(c.getColumnIndex(WeatherContract.WIND_TIME)));
+                    wa.setLon(c.getFloat(c.getColumnIndex(WeatherContract.WIND_LONGITUDE)));
+                    wa.setLat(c.getFloat(c.getColumnIndex(WeatherContract.WIND_LATITUDE)));
+                    wa.setW3k(c.getString(c.getColumnIndex(WeatherContract.WIND_3K)).replaceAll("[ ]", ""));
+                    wa.setW6k(c.getString(c.getColumnIndex(WeatherContract.WIND_6K)).replaceAll("[ ]", ""));
+                    wa.setW9k(c.getString(c.getColumnIndex(WeatherContract.WIND_9K)).replaceAll("[ ]", ""));
+                    wa.setW12k(c.getString(c.getColumnIndex(WeatherContract.WIND_12K)).replaceAll("[ ]", ""));
+                    wa.setW18k(c.getString(c.getColumnIndex(WeatherContract.WIND_18K)).replaceAll("[ ]", ""));
+                    wa.setW24k(c.getString(c.getColumnIndex(WeatherContract.WIND_24K)).replaceAll("[ ]", ""));
+                    wa.setW30k(c.getString(c.getColumnIndex(WeatherContract.WIND_30K)).replaceAll("[ ]", ""));
+                    wa.setW34k(c.getString(c.getColumnIndex(WeatherContract.WIND_34K)).replaceAll("[ ]", ""));
+                    wa.setW39k(c.getString(c.getColumnIndex(WeatherContract.WIND_39K)).replaceAll("[ ]", ""));
                 }
             }
         }

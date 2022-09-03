@@ -43,11 +43,11 @@ authors: zkhan
 
         // set data
         function setData(type, airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
-            if(type === "map") {
-                $("#buttonGroup1").hide();
+            if(type === "more") {
+                $("#buttonGroup1").show();
             }
             else {
-                $("#buttonGroup1").show();
+                $("#buttonGroup1").hide();
             }
 
             $("#airportName").text(airport);

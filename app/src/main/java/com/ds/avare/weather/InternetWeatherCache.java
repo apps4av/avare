@@ -128,36 +128,36 @@ public class InternetWeatherCache {
                     /*
                      * Discard none intensity
                      */
-                    if(asm.severity.equals("NONE")) {
+                    if(asm.getSeverity().equals("NONE")) {
                         continue;
                     }
 
                     StringBuilder b = new StringBuilder();
-                    b.append(asm.reportType);
+                    b.append(asm.getReportType());
                     b.append(" ");
-                    b.append(asm.hazard);
-                    if(!asm.severity.equals("")) {
+                    b.append(asm.getHazard());
+                    if(!asm.getSeverity().equals("")) {
                         b.append(" ");
-                        b.append(asm.severity);
+                        b.append(asm.getSeverity());
                     }
                     b.append("\n");
-                    if(!asm.minFt.equals("")) {
-                        b.append(asm.minFt);
+                    if(!asm.getMinFt().equals("")) {
+                        b.append(asm.getMinFt());
                         b.append(" to ");
                     }
-                    if(!asm.maxFt.equals("")) {
-                        b.append(asm.maxFt);
+                    if(!asm.getMaxFt().equals("")) {
+                        b.append(asm.getMaxFt());
                         b.append(" ft MSL");
                     }
                     b.append("\n");
-                    b.append(asm.timeFrom);
+                    b.append(asm.getTimeFrom());
                     b.append(" to \n");
-                    b.append(asm.timeTo);
+                    b.append(asm.getTimeTo());
                     b.append("\n::\n");
-                    b.append(asm.rawText);
+                    b.append(asm.getRawText());
 
-                    asm.shape = new MetShape(b.toString(), mDate);
-                    String tokens[] = asm.points.split("[;]");
+                    asm.setShape(new MetShape(b.toString(), mDate));
+                    String tokens[] = asm.getPoints().split("[;]");
                     for(int j = 0; j < tokens.length; j++) {
                         String point[] = tokens[j].split("[:]");
                         double lon = Double.parseDouble(point[0]);
@@ -165,9 +165,9 @@ public class InternetWeatherCache {
                         if(0 == lat || 0 == lon) {
                             continue;
                         }
-                        asm.shape.add(lon, lat, false);
+                        asm.getShape().add(lon, lat, false);
                     }
-                    asm.shape.makePolygon();
+                    asm.getShape().makePolygon();
                 }
             }
             catch(Exception e) {

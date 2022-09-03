@@ -13,10 +13,8 @@ package com.ds.avare;
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
@@ -29,12 +27,10 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.NearestAdapter;
-import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.place.Airport;
@@ -44,7 +40,6 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.AirportInfo;
-import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.DestinationAlertDialog;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -478,7 +473,7 @@ public class NearestActivity extends Activity  implements Observer {
                                 @Override
                                 public Object callback(Object o, Object o1) {
                                     LongTouchDestination ltd = (LongTouchDestination) o1;
-                                    ltd.map = true;
+                                    ltd.setMoreButtons(false);
                                     mDestinationAlertDialog.show();
                                     mDestinationAlertDialog.setData(ltd);
 

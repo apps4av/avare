@@ -22,21 +22,141 @@ import com.ds.avare.utils.WindsAloftHelper;
  */
 public class WindsAloft {
 
-    public String time;
-    public String station;
-    public String w0k;
-    public String w3k; 
-    public String w6k; 
-    public String w9k; 
-    public String w12k; 
-    public String w18k; 
-    public String w24k; 
-    public String w30k; 
-    public String w34k; 
-    public String w39k; 
-    public float lon;
-    public float lat;
-    
+    private String time;
+    private String station;
+    private String w0k;
+    private String w3k;
+    private String w6k;
+    private String w9k;
+    private String w12k;
+    private String w18k;
+    private String w24k;
+    private String w30k;
+    private String w34k;
+    private String w39k;
+    private float lon;
+    private float lat;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getStation() {
+        return station;
+    }
+
+    public void setStation(String station) {
+        this.station = station;
+    }
+
+    public String getW0k() {
+        return w0k;
+    }
+
+    public void setW0k(String w0k) {
+        this.w0k = w0k;
+    }
+
+    public String getW3k() {
+        return w3k;
+    }
+
+    public void setW3k(String w3k) {
+        this.w3k = w3k;
+    }
+
+    public String getW6k() {
+        return w6k;
+    }
+
+    public void setW6k(String w6k) {
+        this.w6k = w6k;
+    }
+
+    public String getW9k() {
+        return w9k;
+    }
+
+    public void setW9k(String w9k) {
+        this.w9k = w9k;
+    }
+
+    public String getW12k() {
+        return w12k;
+    }
+
+    public void setW12k(String w12k) {
+        this.w12k = w12k;
+    }
+
+    public String getW18k() {
+        return w18k;
+    }
+
+    public void setW18k(String w18k) {
+        this.w18k = w18k;
+    }
+
+    public String getW24k() {
+        return w24k;
+    }
+
+    public void setW24k(String w24k) {
+        this.w24k = w24k;
+    }
+
+    public String getW30k() {
+        return w30k;
+    }
+
+    public void setW30k(String w30k) {
+        this.w30k = w30k;
+    }
+
+    public String getW34k() {
+        return w34k;
+    }
+
+    public void setW34k(String w34k) {
+        this.w34k = w34k;
+    }
+
+    public String getW39k() {
+        return w39k;
+    }
+
+    public void setW39k(String w39k) {
+        this.w39k = w39k;
+    }
+
+    public float getLon() {
+        return lon;
+    }
+
+    public void setLon(float lon) {
+        this.lon = lon;
+    }
+
+    public float getLat() {
+        return lat;
+    }
+
+    public void setLat(float lat) {
+        this.lat = lat;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public long timestamp;
     
     /**

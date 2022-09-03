@@ -136,7 +136,7 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
          */
         if (null != mets) {
             for (int i = 0; i < mets.size(); i++) {
-                MetShape cshape = mets.get(i).shape;
+                MetShape cshape = mets.get(i).getShape();
                 if (null != cshape) {
                     /*
                      * Set MET
@@ -212,10 +212,10 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
         Projection p = new Projection(mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude(), lon, lat);
         if (null != mCb && null != airport) {
             LongTouchDestination ltd = new LongTouchDestination();
-            ltd.airport = airport;
-            ltd.info = Math.round(p.getDistance()) + Preferences.distanceConversionUnit +
+            ltd.setAirport(airport);
+            ltd.setInfo(Math.round(p.getDistance()) + Preferences.distanceConversionUnit +
                     "(" + p.getGeneralDirectionFrom(mService.getGpsParams().getDeclinition()) + ") " +
-                    Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(p.getBearing(), mService.getGpsParams().getDeclinition()))) + '\u00B0';
+                    Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(p.getBearing(), mService.getGpsParams().getDeclinition()))) + '\u00B0');
 
             /*
              * Clear old weather
@@ -255,23 +255,22 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
             tfr = getTfrTextOnTouch(mService.getTFRShapes());
             tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());
-            ltd.tfr = tfr + "\n" + tfra;
-            ltd.taf = taf;
-            ltd.metar = metar;
-            ltd.airep = aireps;
-            ltd.mets = textMets;
-            ltd.wa = wa;
-            ltd.sua = sua;
-            ltd.layer = layer;
+            ltd.setTfr(tfr + "\n" + tfra);
+            ltd.setTaf(taf);
+            ltd.setMetar(metar);
+            ltd.setAirep(aireps);
+            ltd.setMets(textMets);
+            ltd.setWa(wa);
+            ltd.setSua(sua);
+            ltd.setLayer(layer);
             //ideally we would pass altitude AGL for navaid reception calculations
-            ltd.navaids = new NavAidHelper(mContext, lon, lat, mService.getGpsParams().getAltitude()).toHtmlString(navaids);
+            ltd.setNavaids(new NavAidHelper(mContext, lon, lat, mService.getGpsParams().getAltitude()).toHtmlString(navaids));
             if (metar != null) {
-                ltd.performance =
-                        WeatherHelper.getMetarTime(metar.rawText) + "\n" +
-                                mContext.getString(R.string.DensityAltitude) + " " +
-                                WeatherHelper.getDensityAltitude(metar.rawText, elev) + "\n" +
-                                mContext.getString(R.string.BestRunway) + " " +
-                                WeatherHelper.getBestRunway(metar.rawText, runways);
+                ltd.setPerformance(WeatherHelper.getMetarTime(metar.getRawText()) + "\n" +
+                        mContext.getString(R.string.DensityAltitude) + " " +
+                        WeatherHelper.getDensityAltitude(metar.getRawText(), elev) + "\n" +
+                        mContext.getString(R.string.BestRunway) + " " +
+                        WeatherHelper.getBestRunway(metar.getRawText(), runways));
             }
 
             mCb.callback(this, ltd);

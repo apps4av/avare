@@ -15,17 +15,17 @@ import java.util.Locale;
      * @return HTML fragment with a table containing decoded Winds Aloft up to up to altitude
      */
     public static String formatWindsHTML(WindsAloft wa, int upToAltitude) {
-        String header = p(wa.station) + p(wa.time);
+        String header = p(wa.getStation()) + p(wa.getTime());
         String winds;
-        winds =  (upToAltitude > 0) ? formatWindRow("3000", wa.w3k) : "";
-        winds += (upToAltitude > 3) ? formatWindRow("6000", wa.w6k) : "";
-        winds += (upToAltitude > 6) ? formatWindRow("9000", wa.w9k) : "";
-        winds += (upToAltitude > 9) ? formatWindRow("12000", wa.w12k) : "";
-        winds += (upToAltitude > 12) ? formatWindRow("18000", wa.w18k) : "";
-        winds += (upToAltitude > 18) ? formatWindRow("24000", wa.w24k) : "";
-        winds += (upToAltitude > 24) ? formatWindRow("30000", wa.w30k) : "";
-        winds += (upToAltitude > 30) ? formatWindRow("34000", wa.w34k) : "";
-        winds += (upToAltitude > 34) ? formatWindRow("39000", wa.w39k) : "";
+        winds =  (upToAltitude > 0) ? formatWindRow("3000", wa.getW3k()) : "";
+        winds += (upToAltitude > 3) ? formatWindRow("6000", wa.getW6k()) : "";
+        winds += (upToAltitude > 6) ? formatWindRow("9000", wa.getW9k()) : "";
+        winds += (upToAltitude > 9) ? formatWindRow("12000", wa.getW12k()) : "";
+        winds += (upToAltitude > 12) ? formatWindRow("18000", wa.getW18k()) : "";
+        winds += (upToAltitude > 18) ? formatWindRow("24000", wa.getW24k()) : "";
+        winds += (upToAltitude > 24) ? formatWindRow("30000", wa.getW30k()) : "";
+        winds += (upToAltitude > 30) ? formatWindRow("34000", wa.getW34k()) : "";
+        winds += (upToAltitude > 34) ? formatWindRow("39000", wa.getW39k()) : "";
         return header + table(winds);
     }
 

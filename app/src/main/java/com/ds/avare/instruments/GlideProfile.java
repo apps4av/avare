@@ -86,16 +86,16 @@ public class GlideProfile {
         if(mPref.useAdsbWeather()) {
             wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
             if(null != wa) {
-                if(null != wa.station) {
-                    m = mService.getAdsbWeather().getMETAR(wa.station);
+                if(null != wa.getStation()) {
+                    m = mService.getAdsbWeather().getMETAR(wa.getStation());
                 }
             }
         }
         else {
             wa = mService.getDBResource().getWindsAloft(lon, lat);
             if(null != wa) {
-                if(null != wa.station) {
-                    m = mService.getDBResource().getMetar(wa.station);
+                if(null != wa.getStation()) {
+                    m = mService.getDBResource().getMetar(wa.getStation());
                 }
             }
         }
@@ -105,7 +105,7 @@ public class GlideProfile {
             // no wind calc
         }
         if(null != m) {
-            metarWinds = WeatherHelper.getWindFromMetar(m.rawText);
+            metarWinds = WeatherHelper.getWindFromMetar(m.getRawText());
             if (metarWinds != null && metarWinds.length > 0) {
                 metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
             }

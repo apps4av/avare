@@ -29,18 +29,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.SearchAdapter;
-import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
@@ -245,8 +242,8 @@ public class SearchActivity extends Activity implements Observer {
                 String base = StringPreference.parseHashedNameDestType(mSelected);
                 if (!base.equals(Destination.BASE)) {
                     LongTouchDestination ltd = new LongTouchDestination();
-                    ltd.map = false;
-                    ltd.airport = id;
+                    ltd.setMoreButtons(true);
+                    ltd.setAirport(id);
 
                     mDestinationAlertDialog.setData(ltd);
                     mDestinationAlertDialog.show();
@@ -263,7 +260,7 @@ public class SearchActivity extends Activity implements Observer {
                                 @Override
                                 public Object callback(Object o, Object o1) {
                                     LongTouchDestination ltd = (LongTouchDestination) o1;
-                                    ltd.map = false;
+                                    ltd.setMoreButtons(true);
                                     mDestinationAlertDialog.show();
                                     mDestinationAlertDialog.setData(ltd);
 

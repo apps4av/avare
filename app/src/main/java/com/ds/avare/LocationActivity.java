@@ -73,8 +73,6 @@ import java.net.URI;
 import java.util.Observable;
 import java.util.Observer;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-
 /**
  * @author zkhan, jlmcgraw
  * Main activity
@@ -497,7 +495,7 @@ public class LocationActivity extends Activity implements Observer {
 
                 if (GestureInterface.LONG_PRESS == event) {
 
-                    data.map = true; // map type data
+                    data.setMoreButtons(false); // map type data
                     mAlertDialogDestination.setData(data);
                     if(!isFinishing()) {
                         mAlertDialogDestination.show();
@@ -507,7 +505,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the popout
                      * Now populate the pop out weather etc.
                      */
-                    mAirportPressed = data.airport;
+                    mAirportPressed = data.getAirport();
 
                 }
             }
