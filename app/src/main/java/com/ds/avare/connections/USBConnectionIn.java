@@ -127,11 +127,21 @@ public class USBConnectionIn extends Connection {
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
         if (availableDrivers.isEmpty()) {
             Logger.Logit("No USB serial device available");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return false;
         }
         mDriver = availableDrivers.get(0);
         if(mDriver == null) {
             Logger.Logit("No USB serial device available");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return false;
         }
         

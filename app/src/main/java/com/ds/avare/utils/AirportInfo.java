@@ -5,7 +5,10 @@ import android.os.AsyncTask;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.content.DataSource;
+import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.place.DatabaseDestination;
 import com.ds.avare.place.NavAid;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.Layer;
@@ -19,6 +22,7 @@ import com.ds.avare.weather.Metar;
 import com.ds.avare.weather.Taf;
 import com.ds.avare.weather.WindsAloft;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -44,7 +48,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
     private Vector<NavAid> navaids;
     private StorageService mService;
     private Context mContext;
-    private GpsParams mGpsParams;
     private GenericCallback mCb;
     private Layer mLayer;
     private Preferences mPref;
@@ -79,28 +82,52 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
         String airport = (String) vals[2];
         mContext = (Context) vals[3];
         mService = (StorageService) vals[4];
-        mGpsParams = (GpsParams) vals[5];
-        mPref = (Preferences) vals[6];
-        mLayer = (Layer) vals[7];
+        mPref = (Preferences) vals[5];
+        mLayer = (Layer) vals[6];
+        boolean delay = (Boolean) vals[7];
         mCb = (GenericCallback) vals[8];
+
+        if(mService == null) {
+            return null;
+        }
 
         // if the user is moving instead of doing a long press, give them a chance
         // to cancel us before we start doing anything
-        try {
-            Thread.sleep(200);
-        } catch (Exception e) {
+        if(delay) {
+            try {
+                Thread.sleep(200);
+            } catch (Exception e) {
+            }
         }
 
         if (isCancelled())
             return "";
 
+        // if airport is not know find from lat/lot
+        if(null == airport) {
+            airport = mService.getDBResource().findClosestAirportID(lon, lat);
+        }
+        // if lat lon not given then find from airport
+        else if (null == lon || null == lat) {
+            LinkedHashMap<String, String> params = new LinkedHashMap();
+            String ret = mService.getDBResource().findLonLat(airport, DatabaseDestination.BASE);
+            String lonlat[] = ret.split(",");
+            lon = Double.parseDouble(lonlat[0]);
+            lat = Double.parseDouble(lonlat[1]);
+        }
+        else {
+            return null; // never get here (only if lon/lat and airport both null.
+        }
+
+        if (isCancelled()) {
+            return "";
+        }
+
         List<AirSigMet> mets = null;
-        if (null != mService) {
-            if (mPref.useAdsbWeather()) {
-                mets = mService.getAdsbWeather().getAirSigMet();
-            } else {
-                mets = mService.getInternetWeatherCache().getAirSigMet();
-            }
+        if (mPref.useAdsbWeather()) {
+            mets = mService.getAdsbWeather().getAirSigMet();
+        } else {
+            mets = mService.getInternetWeatherCache().getAirSigMet();
         }
 
 
@@ -119,12 +146,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
         }
 
-        if(null == airport) {
-            airport = mService.getDBResource().findClosestAirportID(lon, lat);
-        }
-        if (isCancelled()) {
-            return "";
-        }
 
         if (null == airport) {
             airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
@@ -188,13 +209,13 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
      */
     @Override
     protected void onPostExecute(String airport) {
-        Projection p = new Projection(mGpsParams.getLongitude(), mGpsParams.getLatitude(), lon, lat);
+        Projection p = new Projection(mService.getGpsParams().getLongitude(), mService.getGpsParams().getLatitude(), lon, lat);
         if (null != mCb && null != airport) {
             LongTouchDestination ltd = new LongTouchDestination();
             ltd.airport = airport;
             ltd.info = Math.round(p.getDistance()) + Preferences.distanceConversionUnit +
-                    "(" + p.getGeneralDirectionFrom(mGpsParams.getDeclinition()) + ") " +
-                    Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(p.getBearing(), mGpsParams.getDeclinition()))) + '\u00B0';
+                    "(" + p.getGeneralDirectionFrom(mService.getGpsParams().getDeclinition()) + ") " +
+                    Helper.correctConvertHeading(Math.round(Helper.getMagneticHeading(p.getBearing(), mService.getGpsParams().getDeclinition()))) + '\u00B0';
 
             /*
              * Clear old weather
@@ -226,11 +247,11 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
             if (null != aireps) {
                 for (Airep a : aireps) {
-                    a.updateTextWithLocation(lon, lat, mGpsParams.getDeclinition());
+                    a.updateTextWithLocation(lon, lat, mService.getGpsParams().getDeclinition());
                 }
             }
             if (null != wa) {
-                wa.updateStationWithLocation(lon, lat, mGpsParams.getDeclinition());
+                wa.updateStationWithLocation(lon, lat, mService.getGpsParams().getDeclinition());
             }
             tfr = getTfrTextOnTouch(mService.getTFRShapes());
             tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());
@@ -243,7 +264,7 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             ltd.sua = sua;
             ltd.layer = layer;
             //ideally we would pass altitude AGL for navaid reception calculations
-            ltd.navaids = new NavAidHelper(mContext, lon, lat, mGpsParams.getAltitude()).toHtmlString(navaids);
+            ltd.navaids = new NavAidHelper(mContext, lon, lat, mService.getGpsParams().getAltitude()).toHtmlString(navaids);
             if (metar != null) {
                 ltd.performance =
                         WeatherHelper.getMetarTime(metar.rawText) + "\n" +

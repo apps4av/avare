@@ -1311,7 +1311,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             return;
         }
         mClosestTask.execute(lon2, lat2, null,
-                mContext, mService, mGpsParams, mPref, mLayer,
+                mContext, mService, mPref, mLayer, true,
                 new GenericCallback(){
                     @Override
                     public Object callback(Object o, Object o1) {

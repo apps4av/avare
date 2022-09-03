@@ -157,15 +157,23 @@ public class WebAppMapInterface {
                     winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
                 }
 
-                String navaids = "";
                 if (data.navaids != null) {
                     data.info += "<br>" + data.navaids;
                 }
 
-                mWebView.loadUrl("javascript:plan_clear()");
+                if(data.info == null) {
+                    data.info = "";
+                }
+                else {
+                    data.info = "<b><font color=\"yellow\">Position </font></b>" + data.info;
+                }
+
+                // type from map or from search
+                String type = data.map ? "map" : "search";
                 String func = "javascript:setData('" +
+                        type + "','" +
                         Helper.formatJsArgs(data.airport) + "','" +
-                        "<b><font color=\"yellow\">Position </font></b>" + Helper.formatJsArgs(data.info) + "','" +
+                        Helper.formatJsArgs(data.info) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +
                         Helper.formatJsArgs(airep) + "','" +

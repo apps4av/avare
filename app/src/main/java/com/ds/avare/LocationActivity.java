@@ -497,6 +497,7 @@ public class LocationActivity extends Activity implements Observer {
 
                 if (GestureInterface.LONG_PRESS == event) {
 
+                    data.map = true; // map type data
                     mAlertDialogDestination.setData(data);
                     if(!isFinishing()) {
                         mAlertDialogDestination.show();
