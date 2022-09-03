@@ -35,28 +35,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
     </ListView>
 
-    <Button
-        android:id="@+id/search_button_delete"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/search_button_save"
-        android:text="@string/Delete"
-        android:background="@drawable/button_bg"
-        android:layout_margin="5dp"
-        android:visibility="invisible" />    
-    
-    <Button
-        android:id="@+id/search_button_save"
-        android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Save"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/button_bg"
-        android:layout_margin="5dp"
-        android:visibility="invisible" />
-
     <ProgressBar
         android:id="@+id/search_progress_bar"
         style="?android:attr/progressBarStyleSmall"
@@ -67,6 +45,5 @@ Redistribution and use in source and binary forms, with or without modification,
         android:visibility="invisible"
         android:layout_marginRight="14dp"
         android:layout_marginTop="14dp" />
-
 
 </RelativeLayout>
