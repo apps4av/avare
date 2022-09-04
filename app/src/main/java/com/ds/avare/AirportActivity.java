@@ -58,9 +58,7 @@ import java.util.Observer;
  * @author zkhan,rasii
  * An activity that deals with Chart Supplement information
  */
-public class AirportActivity extends Activity implements Observer {   
-    private StorageService mService;
-    private Preferences mPref;
+public class AirportActivity extends BaseActivity implements Observer {
     private Destination mDestination;
     private ListView mAirportView;
     private Toast mToast;
@@ -75,47 +73,13 @@ public class AirportActivity extends Activity implements Observer {
     private String mDestString;
     private String mNearString;
 
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
-    
     /**
      * 
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences(getApplicationContext());
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
          */
@@ -199,7 +163,6 @@ public class AirportActivity extends Activity implements Observer {
             }
         });
         
-        mService = null;
     }
     
     private boolean arePopupsShowing() {
@@ -379,7 +342,7 @@ public class AirportActivity extends Activity implements Observer {
     }
     
     private void setViewFromPos(int pos) {
-        if(mDestination != null && mService != null && mListViews != null) {
+        if(mDestination != null && mListViews != null) {
             String[] afd = mDestination.getAfd();
             if(afd != null) {
                 if(pos > afd.length) {
@@ -419,7 +382,7 @@ public class AirportActivity extends Activity implements Observer {
     }
 
     private void setNewDestinationFromPos(int pos) {
-        if(mService != null && mListAirports != null) {
+        if(mListAirports != null) {
             Destination oldDest = mService.getLastAfdDestination();
             mDestination = null;
             String airport = mListAirports.get(pos);
@@ -498,101 +461,6 @@ public class AirportActivity extends Activity implements Observer {
         }                   
     }
     
-    
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Initialize the lists
-             */
-            mListViews = new ArrayList<String>();
-            mListViews.add(AirportActivity.this.getString(R.string.AFD));
-
-            mListAirports = new ArrayList<String>();
-            mListAirports.add(mDestString);
-            mListAirports.add(mNearString);
-            
-            /*
-             * Are we being told to load an airport?
-             */
-            String lastDest = mService.getLastAfdAirport();
-            if(null != lastDest) {
-                addAirport(lastDest);
-            }
-
-            /*
-             * Load the current destination
-             */
-            Destination curDestination = mService.getDestination();
-            if(null != curDestination && curDestination.getType().equals(Destination.BASE)) {
-                addAirport(curDestination.getID());
-            }
-            
-            /*
-             *  Load the nearest airport
-             */
-            int nearestNum = mService.getArea().getAirportsNumber();
-            Airport nearest = null;
-            if(nearestNum > 0) {
-                nearest = mService.getArea().getAirport(0);
-                addAirport(nearest.getId());
-            }
-            
-            /*
-             * Add anything in the plan
-             */
-            Plan plan = mService.getPlan();
-            if(null != plan) {
-                int nDest = plan.getDestinationNumber();
-                for(int i=0; i < nDest; i++) {
-                    Destination planDest = plan.getDestination(i);
-                    if(null != planDest && planDest.getType().equals(Destination.BASE)) {
-                        addAirport(planDest.getID());
-                    }
-                }
-            }
-            
-            /*
-             * Now add anything in the recently found list
-             */
-            String [] vals = mService.getDBResource().getUserRecents();
-            for(int pos=0; pos < vals.length; pos++) {
-                String destType = StringPreference.parseHashedNameDestType(vals[pos]);
-                if(destType != null && destType.equals(Destination.BASE)) {
-                    String id = StringPreference.parseHashedNameId(vals[pos]);
-
-                    addAirport(id);                
-                }
-            }
-
-            int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
-            setNewDestinationFromPos(lastIndex);            
-        }    
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
@@ -600,10 +468,8 @@ public class AirportActivity extends Activity implements Observer {
     protected void onPause() {
         super.onPause();
         
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-        
+        mService.unregisterGpsListener(mGpsInfc);
+
         try {
             mViewPopup.dismiss();
         }
@@ -614,10 +480,6 @@ public class AirportActivity extends Activity implements Observer {
         }
         catch(Exception e) {} 
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
     }
 
     /**
@@ -628,12 +490,74 @@ public class AirportActivity extends Activity implements Observer {
         super.onResume();
 
         mDestination = null;
+
+        mService.registerGpsListener(mGpsInfc);
+
         /*
-         * Registering our receiver
-         * Bind now.
-         */        
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+         * Initialize the lists
+         */
+        mListViews = new ArrayList<String>();
+        mListViews.add(AirportActivity.this.getString(R.string.AFD));
+
+        mListAirports = new ArrayList<String>();
+        mListAirports.add(mDestString);
+        mListAirports.add(mNearString);
+
+        /*
+         * Are we being told to load an airport?
+         */
+        String lastDest = mService.getLastAfdAirport();
+        if(null != lastDest) {
+            addAirport(lastDest);
+        }
+
+        /*
+         * Load the current destination
+         */
+        Destination curDestination = mService.getDestination();
+        if(null != curDestination && curDestination.getType().equals(Destination.BASE)) {
+            addAirport(curDestination.getID());
+        }
+
+        /*
+         *  Load the nearest airport
+         */
+        int nearestNum = mService.getArea().getAirportsNumber();
+        Airport nearest = null;
+        if(nearestNum > 0) {
+            nearest = mService.getArea().getAirport(0);
+            addAirport(nearest.getId());
+        }
+
+        /*
+         * Add anything in the plan
+         */
+        Plan plan = mService.getPlan();
+        if(null != plan) {
+            int nDest = plan.getDestinationNumber();
+            for(int i=0; i < nDest; i++) {
+                Destination planDest = plan.getDestination(i);
+                if(null != planDest && planDest.getType().equals(Destination.BASE)) {
+                    addAirport(planDest.getID());
+                }
+            }
+        }
+
+        /*
+         * Now add anything in the recently found list
+         */
+        String [] vals = mService.getDBResource().getUserRecents();
+        for(int pos=0; pos < vals.length; pos++) {
+            String destType = StringPreference.parseHashedNameDestType(vals[pos]);
+            if(destType != null && destType.equals(Destination.BASE)) {
+                String id = StringPreference.parseHashedNameId(vals[pos]);
+
+                addAirport(id);
+            }
+        }
+
+        int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
+        setNewDestinationFromPos(lastIndex);
 
         Helper.setOrientationAndOn(this);
     }

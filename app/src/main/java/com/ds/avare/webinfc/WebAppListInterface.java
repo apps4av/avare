@@ -41,7 +41,7 @@ import android.webkit.WebView;
  * This class feeds the WebView with data
  */
 public class WebAppListInterface {
-    private StorageService mService; 
+    private StorageService mService;
     private WebView mWebView;
     private ImportTask mImportTask;
     private GenericCallback mCallback;
@@ -62,19 +62,12 @@ public class WebAppListInterface {
     /** 
      * Instantiate the interface and set the context
      */
-    public WebAppListInterface(Context c, WebView ww, GenericCallback cb) {
+    public WebAppListInterface(WebView ww, GenericCallback cb) {
         mWebView = ww;
         mCallback = cb;
-        mPref = new Preferences(c);
+        mService = StorageService.getInstance();
+        mPref = mService.getPreferences();
         mList = new Checklist("");
-    }
-
-    /**
-     * When service connects.
-     * @param s
-     */
-    public void connect(StorageService s) { 
-        mService = s;
     }
 
     /**

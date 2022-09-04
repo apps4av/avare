@@ -97,7 +97,7 @@ public class RegisterActivity extends Activity {
         mPrivacy.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "privacy"));
 
 
-        mPref = new Preferences(this);
+        mPref = StorageService.getInstance().getPreferences();
 
         // Check if Internet present
         if (!Helper.isNetworkAvailable(this)) {

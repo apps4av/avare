@@ -56,13 +56,11 @@ import java.util.Observer;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlatesTagActivity extends Activity implements Observer {
+public class PlatesTagActivity extends BaseActivity implements Observer {
     private PlatesTagView                mPlatesView;
-    private StorageService               mService;
     private PixelCoordinate              mPoint[];
     private Coordinate                   mPointLL[];
     private Toast                        mToast;
-    private Preferences                  mPref;
     private AlertDialog                  mAlertDialog;
     private Destination                  mDest;
     private Destination                  mDestVerify;
@@ -85,28 +83,6 @@ public class PlatesTagActivity extends Activity implements Observer {
     private double mDy;
     private double mLonTopLeft;
     private double mLatTopLeft;
-
-    /*
-     * Start GPS
-     */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
 
     /**
      *
@@ -213,14 +189,6 @@ public class PlatesTagActivity extends Activity implements Observer {
 
         mPoint[point] = null;
         mPointLL[point] = null;
-        /*
-         * Cannot be null
-         */
-        if(mService == null) {
-            mToast.setText(getString(R.string.InvalidPoint));
-            mToast.show();
-            return;
-        }
 
         mPoint[point] = new PixelCoordinate(mPlatesView.getx(), mPlatesView.gety());
 
@@ -247,15 +215,6 @@ public class PlatesTagActivity extends Activity implements Observer {
     }
 
     private void verify() {
-
-        /*
-         * Cannot be null
-         */
-        if(mService == null) {
-            mToast.setText(getString(R.string.InvalidPoint));
-            mToast.show();
-            return;
-        }
 
         String item = ((OptionButton)findViewById(R.id.platestag_spinner)).getCurrentValue();
         String toFind = ((EditText)findViewById(R.id.platestag_text_input)).getText().toString().toUpperCase(Locale.getDefault());
@@ -285,11 +244,8 @@ public class PlatesTagActivity extends Activity implements Observer {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
-        mPref = new Preferences(this);
         mPoint = new PixelCoordinate[POINTS];
         mPointLL = new Coordinate[POINTS];
 
@@ -298,7 +254,7 @@ public class PlatesTagActivity extends Activity implements Observer {
          */
         mName = mAirport = "";
         mTagged = false;
-        
+
         /*
          * Get views from XML
          */
@@ -401,119 +357,8 @@ public class PlatesTagActivity extends Activity implements Observer {
             }
         });
 
-        mService = null;
     }
 
-
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-
-            mPoint[0] = null;
-            mPointLL[0] = null;
-            mPoint[1] = null;
-            mPointLL[1] = null;
-
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            
-            /*
-             * Get proc name
-             */
-            if(null == mService.getPlateDiagram()) {
-                mTagged = false;
-                return;
-            }
-            mName = PlatesActivity.getNameFromPath(mService.getPlateDiagram().getName());
-            if(mName != null) {
-                mAirport = mName.split("/")[0];
-            }
-            else {
-                mTagged = false;
-                return;
-            }
-
-            mPlatesView.setBitmap(mService.getPlateDiagram());
-
-            
-            /*
-             * Find who this plate is for, so we can verify its sane.
-             * By the time user is ready to tag, this should be found
-             */
-            mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);
-            mDest.addObserver(PlatesTagActivity.this);
-            mDest.find();
-
-            String tag = mService.getDBResource().getUserTag(mName);
-            if(null != tag) {
-                String tokens[] = tag.split(",");
-                mDx = Double.parseDouble(tokens[0]);
-                mDy = Double.parseDouble(tokens[1]);
-                mLonTopLeft = Double.parseDouble(tokens[2]);
-                mLatTopLeft = Double.parseDouble(tokens[3]);
-                mTagged = true;
-            }
-
-            /*
-             * If the plate not tagged, show help
-             */
-            if(!mTagged) {
-                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.ToTag));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                if(!isFinishing()) {
-                    mAlertDialog.show();
-                }
-            }
-            else {
-                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.AlreadyTagged));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                if(!isFinishing()) {
-                    mAlertDialog.show();
-                }
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
@@ -530,14 +375,7 @@ public class PlatesTagActivity extends Activity implements Observer {
             }
         }
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
+        mService.unregisterGpsListener(mGpsInfc);
     }
 
     /**
@@ -546,14 +384,86 @@ public class PlatesTagActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        
+
+        mPoint[0] = null;
+        mPointLL[0] = null;
+        mPoint[1] = null;
+        mPointLL[1] = null;
+
         /*
-         * Registering our receiver
-         * Bind now.
+         * Get proc name
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        if(null == mService.getPlateDiagram()) {
+            mTagged = false;
+            return;
+        }
+        mName = PlatesActivity.getNameFromPath(mService.getPlateDiagram().getName());
+        if(mName != null) {
+            mAirport = mName.split("/")[0];
+        }
+        else {
+            mTagged = false;
+            return;
+        }
+
+        mPlatesView.setBitmap(mService.getPlateDiagram());
+
+
+        /*
+         * Find who this plate is for, so we can verify its sane.
+         * By the time user is ready to tag, this should be found
+         */
+        mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);
+        mDest.addObserver(PlatesTagActivity.this);
+        mDest.find();
+
+        String tag = mService.getDBResource().getUserTag(mName);
+        if(null != tag) {
+            String tokens[] = tag.split(",");
+            mDx = Double.parseDouble(tokens[0]);
+            mDy = Double.parseDouble(tokens[1]);
+            mLonTopLeft = Double.parseDouble(tokens[2]);
+            mLatTopLeft = Double.parseDouble(tokens[3]);
+            mTagged = true;
+        }
+
+        /*
+         * If the plate not tagged, show help
+         */
+        if(!mTagged) {
+            mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
+            mAlertDialog.setCancelable(false);
+            mAlertDialog.setCanceledOnTouchOutside(false);
+            mAlertDialog.setMessage(getString(R.string.ToTag));
+            mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            if(!isFinishing()) {
+                mAlertDialog.show();
+            }
+        }
+        else {
+            mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
+            mAlertDialog.setCancelable(false);
+            mAlertDialog.setCanceledOnTouchOutside(false);
+            mAlertDialog.setMessage(getString(R.string.AlreadyTagged));
+            mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            if(!isFinishing()) {
+                mAlertDialog.show();
+            }
+        }
     }
 
 

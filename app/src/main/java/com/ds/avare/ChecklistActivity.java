@@ -49,7 +49,7 @@ import java.util.TimerTask;
  * @author zkhan
  * An activity that deals with lists - loading, creating, deleting and using
  */
-public class ChecklistActivity extends Activity {
+public class ChecklistActivity extends BaseActivity {
 
     /**
      * This view display location on the map.
@@ -64,17 +64,10 @@ public class ChecklistActivity extends Activity {
     // A timer object to handle things when GPS goes away
     private Timer mTimer;
 
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-    
     /*
      * If page it loaded
      */
     private boolean mIsPageLoaded;
-
-    private Context mContext;
 
     /*
      * Callback actions from web app
@@ -83,42 +76,6 @@ public class ChecklistActivity extends Activity {
     public static final int UNSHOW_BUSY = 2;
     private static final int MESSAGE = 14;
     public static final int INIT = 6;
-
-    /**
-     * App preferences
-     */
-
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
 
     /*
      * (non-Javadoc)
@@ -133,8 +90,6 @@ public class ChecklistActivity extends Activity {
      
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mContext = this;
-        mService = null;
         mIsPageLoaded = false;
         mInited = false;
 
@@ -144,7 +99,7 @@ public class ChecklistActivity extends Activity {
         mWebView = (WebView)view.findViewById(R.id.list_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppListInterface(mContext, mWebView, new GenericCallback() {
+        mInfc = new WebAppListInterface(mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
@@ -248,61 +203,6 @@ public class ChecklistActivity extends Activity {
 
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.content.ServiceConnection#onServiceConnected(android.content
-         * .ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get
-             * LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mInfc.connect(binder.getService());
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            
-            /*
-             * When both service and page loaded then proceed.
-             * The list will be loaded either from here or from page load end event
-             */
-            mTimer = new Timer();
-            TimerTask sim = new UpdateTask();
-            mTimer.scheduleAtFixedRate(sim, 0, 1000);
-
-
-            /*
-             * To load a list from other activities
-             */
-            String overList = mService.getOverrideListName();
-            if(overList != null) {
-                mInfc.loadList(overList);
-                mService.setOverrideListName(null);
-            }
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.content.ServiceConnection#onServiceDisconnected(android.content
-         * .ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
     /*
      * (non-Javadoc)
      * 
@@ -324,12 +224,25 @@ public class ChecklistActivity extends Activity {
         
         Helper.setOrientationAndOn(this);
 
-        /*
-         * Registering our receiver Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        mService.registerGpsListener(mGpsInfc);
 
+        /*
+         * When both service and page loaded then proceed.
+         * The list will be loaded either from here or from page load end event
+         */
+        mTimer = new Timer();
+        TimerTask sim = new UpdateTask();
+        mTimer.scheduleAtFixedRate(sim, 0, 1000);
+
+
+        /*
+         * To load a list from other activities
+         */
+        String overList = mService.getOverrideListName();
+        if(overList != null) {
+            mInfc.loadList(overList);
+            mService.setOverrideListName(null);
+        }
 		mWebView.requestFocus();        
     }
 
@@ -342,14 +255,7 @@ public class ChecklistActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
+        mService.unregisterGpsListener(mGpsInfc);
 
         // Cancel the timer if one is running
         if(mTimer != null) {
@@ -394,7 +300,7 @@ public class ChecklistActivity extends Activity {
     private class UpdateTask extends TimerTask {
 	    // Called whenever the timer fires.
 	    public void run() {
-	    	if(mService != null && mIsPageLoaded && !mInited) {
+	    	if(mIsPageLoaded && !mInited) {
 	    		// Load lists when done with service and page loading
 	    		mHandler.sendEmptyMessage(INIT);
 	    		mInited = true;
@@ -417,7 +323,7 @@ public class ChecklistActivity extends Activity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mService.getApplicationContext());
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {

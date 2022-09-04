@@ -82,7 +82,7 @@ public class MapsDestination extends Destination {
                  */
                 String strAddress = mName;
 
-                Geocoder coder = new Geocoder(mService);
+                Geocoder coder = new Geocoder(mService.getApplicationContext());
                 Address location = null;
 
                 /*

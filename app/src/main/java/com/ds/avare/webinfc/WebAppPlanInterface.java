@@ -99,15 +99,19 @@ public class WebAppPlanInterface implements Observer {
     /** 
      * Instantiate the interface and set the context
      */
-    public WebAppPlanInterface(Context c, WebView ww, GenericCallback cb) {
-        mPref = new Preferences(c);
+    public WebAppPlanInterface(WebView ww, GenericCallback cb) {
         mWebView = ww;
         mCallback = cb;
-        mContext = c;
+        mService = StorageService.getInstance();
+        mContext = mService.getApplicationContext();
+        mPref = mService.getPreferences();
         mPlanIdx = 0;
         mPlanCnt = 0;
         mPlanFilter = "";
-    }
+		// TODO: refactor in abstract plan management
+		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
+		setFilteredSize();
+	}
 
 	private String checkNull(String input) {
 		if(input == null) {
@@ -122,9 +126,6 @@ public class WebAppPlanInterface implements Observer {
 	 */
 	@JavascriptInterface
 	public void fillPlan() {
-		if(mService == null) {
-			return;
-		}
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
 		// Fill in from storage, this is going to be mostly reflecting the user's most
@@ -559,17 +560,6 @@ public class WebAppPlanInterface implements Observer {
 		mHandler.sendEmptyMessage(MSG_SET_EMAIL);
 	}
 
-	/**
-     * When service connects.
-     * @param s
-     */
-    public void connect(StorageService s) { 
-        mService = s;
-        
-        // TODO: refactor in abstract plan management
-		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
-		setFilteredSize();
-    }
 
     /**
      * 

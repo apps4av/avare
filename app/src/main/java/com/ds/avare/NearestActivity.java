@@ -51,13 +51,11 @@ import java.util.Observer;
  * @author zkhan
  * An activity that deals with plates
  */
-public class NearestActivity extends Activity  implements Observer {
+public class NearestActivity extends BaseActivity  implements Observer {
     
-    private StorageService mService;
     private ListView mNearest;
     private NearestAdapter mNearestAdapter;
     private Toast mToast;
-    private Preferences mPref;
     private Destination mDestination;
     private Button mButton2000;
     private Button mButton4000;
@@ -79,7 +77,7 @@ public class NearestActivity extends Activity  implements Observer {
 
         @Override
         public void locationCallback(Location location) {
-            if(location != null && mService != null) {
+            if(location != null) {
                 prepareAdapter(location);
             }
         }
@@ -92,19 +90,6 @@ public class NearestActivity extends Activity  implements Observer {
         public void enabledCallback(boolean enabled) {
         }
     };
-
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
 
     /**
      *
@@ -265,10 +250,6 @@ public class NearestActivity extends Activity  implements Observer {
 
         mNearest = (ListView)view.findViewById(R.id.nearest_list);
 
-        mPref = new Preferences(getApplicationContext());
-        mService = null;
-
-
         mDestinationAlertDialog = new DestinationAlertDialog(NearestActivity.this);
         mDestinationAlertDialog.setCallback(
                 new GenericCallback() {
@@ -283,25 +264,18 @@ public class NearestActivity extends Activity  implements Observer {
                         if (null == mSelected) {
                             return null;
                         }
-                        if (mService == null) {
-                            return null;
-                        }
 
                         if (param.equals("CSup")) {
                             if (null != mSelected) {
-                                if (mService != null) {
-                                    mService.setLastAfdAirport(mSelected);
-                                    ((MainActivity) NearestActivity.this.getParent()).showAfdTab();
-                                }
+                                mService.setLastAfdAirport(mSelected);
+                                ((MainActivity) NearestActivity.this.getParent()).showAfdTab();
                             }
                         } else if (param.equals("Plate")) {
                             if (null != mSelected) {
                                 if (PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), mSelected)) {
-                                    if (mService != null) {
-                                        mService.setLastPlateAirport(mSelected);
-                                        mService.setLastPlateIndex(0);
-                                        ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
-                                    }
+                                    mService.setLastPlateAirport(mSelected);
+                                    mService.setLastPlateIndex(0);
+                                    ((MainActivity) NearestActivity.this.getParent()).showPlatesTab();
                                 }
                             }
                         } else if (param.equals("+Plan")) {
@@ -374,144 +348,14 @@ public class NearestActivity extends Activity  implements Observer {
         return true;
     }
     
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-
-
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            if (mPref.isSimulationMode() || (!prepareAdapter(null))) {
-                mToast.setText(getString(R.string.AreaNF));
-                mToast.show();
-                return;
-            }
-            mNearest.setAdapter(mNearestAdapter);
-
-            mNearest.setClickable(true);
-            mNearest.setDividerHeight(10);
-            mNearest.setOnItemClickListener(new OnItemClickListener() {
-
-                /* (non-Javadoc)
-                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                 */
-
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View arg1,
-                                        int position, long id) {
-                    /*
-                     * Set destination to this airport if clicked on it
-                     */
-                    if (mDestination != null) {
-                        if (mDestination.isLooking()) {
-                            /*
-                             * Already looking for dest.
-                             */
-                            return;
-                        }
-                    }
-
-                    Airport a = mService.getArea().getAirport(position);
-                    if (null == a) {
-                        return;
-                    }
-                    mSelected = a.getId();
-                    if (null != mSelected) {
-                        goTo(mSelected);
-                        mSelected = null;
-                    }
-
-                    if (!a.canGlide()) {
-                        mToast.setText(R.string.NotGlideRange);
-                        mToast.show();
-                    }
-                }
-            });
-
-            mNearest.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-                @Override
-                public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                                               int index, long arg3) {
-
-                    Airport a = mService.getArea().getAirport(index);
-                    if (null == a) {
-                        return true;
-                    }
-                    mSelected = a.getId();
-
-                    if (mSelected == null || null == mService) {
-                        return true;
-                    }
-
-                    // stop previous lookup
-                    if (null != mClosestTask) {
-                        mClosestTask.cancel(true);
-                    }
-
-
-                    //airport
-                    mClosestTask = new AirportInfo();
-
-                    mClosestTask.execute(null, null, a.getId(),
-                            NearestActivity.this, mService, mPref, null, false,
-                            new GenericCallback() {
-                                @Override
-                                public Object callback(Object o, Object o1) {
-                                    LongTouchDestination ltd = (LongTouchDestination) o1;
-                                    ltd.setMoreButtons(false);
-                                    mDestinationAlertDialog.show();
-                                    mDestinationAlertDialog.setData(ltd);
-
-                                    // If the long press event has already occurred, we need to do the gesture callback here
-                                    return null;
-                                }
-                            });
-                    return true;
-                }
-            });
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-
-        @Override
-        public void onBindingDied(ComponentName name) {
-
-        }
-
-        @Override
-        public void onNullBinding(ComponentName name) {
-
-        }
-    };
-
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
      */
     @Override
     protected void onPause() {
         super.onPause();
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
+
+        mService.unregisterGpsListener(mGpsInfc);
 
         if(null != mDestinationAlertDialog) {
             try {
@@ -520,12 +364,6 @@ public class NearestActivity extends Activity  implements Observer {
             catch (Exception e) {
             }
         }
-
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
     }
 
     /**
@@ -534,22 +372,98 @@ public class NearestActivity extends Activity  implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-    }
 
-    /**
-     * 
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        mService.registerGpsListener(mGpsInfc);
+
+        if (mPref.isSimulationMode() || (!prepareAdapter(null))) {
+            mToast.setText(getString(R.string.AreaNF));
+            mToast.show();
+            return;
+        }
+        mNearest.setAdapter(mNearestAdapter);
+
+        mNearest.setClickable(true);
+        mNearest.setDividerHeight(10);
+        mNearest.setOnItemClickListener(new OnItemClickListener() {
+
+            /* (non-Javadoc)
+             * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+             */
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1,
+                                    int position, long id) {
+                /*
+                 * Set destination to this airport if clicked on it
+                 */
+                if (mDestination != null) {
+                    if (mDestination.isLooking()) {
+                        /*
+                         * Already looking for dest.
+                         */
+                        return;
+                    }
+                }
+
+                Airport a = mService.getArea().getAirport(position);
+                if (null == a) {
+                    return;
+                }
+                mSelected = a.getId();
+                if (null != mSelected) {
+                    goTo(mSelected);
+                    mSelected = null;
+                }
+
+                if (!a.canGlide()) {
+                    mToast.setText(R.string.NotGlideRange);
+                    mToast.show();
+                }
+            }
+        });
+
+        mNearest.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                                           int index, long arg3) {
+
+                Airport a = mService.getArea().getAirport(index);
+                if (null == a) {
+                    return true;
+                }
+                mSelected = a.getId();
+
+                if (mSelected == null) {
+                    return true;
+                }
+
+                // stop previous lookup
+                if (null != mClosestTask) {
+                    mClosestTask.cancel(true);
+                }
+
+
+                //airport
+                mClosestTask = new AirportInfo();
+
+                mClosestTask.execute(null, null, a.getId(),
+                        NearestActivity.this, mService, mPref, null, false,
+                        new GenericCallback() {
+                            @Override
+                            public Object callback(Object o, Object o1) {
+                                LongTouchDestination ltd = (LongTouchDestination) o1;
+                                ltd.setMoreButtons(false);
+                                mDestinationAlertDialog.show();
+                                mDestinationAlertDialog.setData(ltd);
+
+                                // If the long press event has already occurred, we need to do the gesture callback here
+                                return null;
+                            }
+                        });
+                return true;
+            }
+        });
     }
 
     /**
@@ -582,9 +496,7 @@ public class NearestActivity extends Activity  implements Observer {
                 mService.getDBResource().setUserRecent(s);
 
                 if(!mIsWaypoint) {
-                    if(mService != null) {
-                        mService.setDestination((Destination)arg0);
-                    }
+                    mService.setDestination((Destination)arg0);
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
                     MainActivity m = (MainActivity)this.getParent();
@@ -593,15 +505,13 @@ public class NearestActivity extends Activity  implements Observer {
                     }
                 }
                 else {
-                    if(mService != null) {
-                        if(mService.getPlan().appendDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
-                        }
-                        else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
-                        }
-                        mToast.show();
+                    if(mService.getPlan().appendDestination((Destination)arg0)) {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
                     }
+                    else {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                    }
+                    mToast.show();
                 }
             }
             else {

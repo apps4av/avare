@@ -265,7 +265,7 @@ public class InfoLines {
      * @param service used to read preferences
      */
     public InfoLines(StorageService service) {
-        mPref = new Preferences(service);
+        mPref = new Preferences(service.getApplicationContext());
         mService = service;
 
         // separate lines for portrait vs landscape
@@ -291,8 +291,8 @@ public class InfoLines {
         setRowCount(); // Determine how many rows to use
 
         // Read some string array values out of the resource list that we examine
-        mOptionList  = service.getResources().getStringArray(R.array.TextFieldOptions);
-        mFieldTitles = service.getResources().getStringArray(R.array.TextFieldOptionTitles);
+        mOptionList  = service.getApplicationContext().getResources().getStringArray(R.array.TextFieldOptions);
+        mFieldTitles = service.getApplicationContext().getResources().getStringArray(R.array.TextFieldOptionTitles);
     }
 
 

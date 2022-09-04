@@ -102,7 +102,7 @@ import java.util.TimerTask;
  * Also sends intent to display warning, since its too intrusive to show a 
  * warning every time activity starts.
  */
-public class StorageService extends Service {
+public class StorageService  {
 
     /**
      * The Sqlite database
@@ -221,10 +221,6 @@ public class StorageService extends Service {
      */
     private BitmapHolder mPlateDiagramBitmap;
 
-    /**
-     * Local binding as this runs in same thread
-     */
-    private final IBinder binder = new LocalBinder();
 
     private boolean mIsGpsOn;
     
@@ -305,105 +301,28 @@ public class StorageService extends Service {
         mOverrideListName = overrideListName;
     }
 
-    /**
-     * @author zkhan
-     *
-     */
-    public class LocalBinder extends Binder {
-        /**
-         * @return
-         */
-        public StorageService getService() {
-            return StorageService.this;
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Service#onBind(android.content.Intent)
-     */
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return binder;
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Service#onUnbind(android.content.Intent)
-     */
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return true;
-    }
 
-
-    private void stopForegroundService() {
-
-        // Stop foreground service and remove the notification.
-        stopForeground(true);
-
-        // Stop the foreground service.
-        stopSelf();
-    }
-
-    private void startInForeground() {
-        int icon = R.drawable.airport;
-
-        Notification notification;
-        Intent notificationIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        notificationIntent.setData(uri);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        if(Build.VERSION.SDK_INT >= 26) {
-            String NOTIFICATION_Service_CHANNEL_ID = "service_channel";
-
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_Service_CHANNEL_ID, "Storage Service", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-
-            notification = new Notification.Builder(this, NOTIFICATION_Service_CHANNEL_ID)
-                    .setSmallIcon(icon)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(getString(R.string.open_settings))
-                    .setContentIntent(pendingIntent)
-                    .build();
-        }
-        else {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(icon)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(getString(R.string.open_settings))
-                    .setContentIntent(pendingIntent);
-            notification = builder.build();
-        }
-        startForeground(121, notification);
-    }
 
     /* (non-Javadoc)
-     * @see android.app.Service#onCreate()
      */
-    @Override
-    public void onCreate() {
-          
-        super.onCreate();
+    public void create() {
 
-        startInForeground();
-
-        mDataSource = new DataSource(getApplicationContext());
+        mDataSource = new DataSource(mContext);
         
-        mArea = new Area(mDataSource, this);
-        mPlan = new Plan(this, this);
+        mArea = new Area(mDataSource, mContext);
+        mPlan = new Plan(mContext, this);
         mDownloading = false;
         
         /*
          * All tiles
          */
-        mTiles = new TileMap(getApplicationContext());
+        mTiles = new TileMap(mContext);
 
         mInternetWeatherCache = new InternetWeatherCache();
         mInternetWeatherCache.parse(this);
-        mTFRFetcher = new TFRFetcher(getApplicationContext());
+        mTFRFetcher = new TFRFetcher(mContext);
         mTFRFetcher.parse();
-        mShapeFetcher = new ShapeFetcher(getApplicationContext());
+        mShapeFetcher = new ShapeFetcher(mContext);
         mShapeFetcher.parse();
         mGpsParamsExtended = new ExtendedGpsParams();
 
@@ -418,13 +337,13 @@ public class StorageService extends Service {
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
-        mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
-        mAdsbTfrCache = new TfrCache(getApplicationContext());
+        mAdsbWeatherCache = new AdsbWeatherCache(mContext, this);
+        mAdsbTfrCache = new TfrCache(mContext);
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mLastLocationUpdate = 0;
 
-        mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mCap = new DrawCapLines(this, mContext, Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         mInfoLines = new InfoLines(this);
 
@@ -441,17 +360,17 @@ public class StorageService extends Service {
         /*
          * Start up the KML recorder feature
          */
-        mKMLRecorder = new KMLRecorder(getApplicationContext());
+        mKMLRecorder = new KMLRecorder(mContext);
         
         /*
          * Internet nexrad
          */
-        mRadarLayer = new RadarLayer(getApplicationContext());
+        mRadarLayer = new RadarLayer(mContext);
 
         /*
          * Internet metar
          */
-        mMetarLayer = new MetarLayer(getApplicationContext());
+        mMetarLayer = new MetarLayer(mContext);
 
         /*
          * Start the odometer now
@@ -468,19 +387,19 @@ public class StorageService extends Service {
         mVSI = new VSI();
         
         // Allocate a handler for PointsOfInterest
-        mUDWMgr = new UDWMgr(this, getApplicationContext()); 
+        mUDWMgr = new UDWMgr(this, mContext);
       
         // Allocate a new DistanceRing instrument
-        mDistanceRings = new DistanceRings(this, getApplicationContext(),
-                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mDistanceRings = new DistanceRings(this, mContext,
+                Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
 
-        mGlideProfile = new GlideProfile(this, getApplicationContext(),
-                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mGlideProfile = new GlideProfile(this, mContext,
+                Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
         // For handling external flight plans
-        mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
+        mExternalPlanMgr = new ExternalPlanMgr(this, mContext);
 
         // Allocate the nav comments object
         mNavComments = new NavComments();
@@ -489,7 +408,7 @@ public class StorageService extends Service {
         
         // Declare a fuel tank switching timer. Default to 30
         // minutes per tank
-        mFuelTimer = new FuelTimer(getApplicationContext());
+        mFuelTimer = new FuelTimer(mContext);
         mUpTimer = new UpTimer();
 
         // Create a BlueTooth Output connection and give it to the autopilot
@@ -642,7 +561,7 @@ public class StorageService extends Service {
                 }
             }
         };
-        mGps = new Gps(this, intf);
+        mGps = new Gps(mContext, intf);
 
         /*
          * Start orientation
@@ -671,12 +590,36 @@ public class StorageService extends Service {
         mFavorites = new Favorites(this);
 
     }
-        
+
+    private static StorageService mService = null;
+    private Context mContext = null;
+    private static Preferences mPref;
+
+    private StorageService() {
+    }
+
+    /**
+     * Call once only
+     * @param c
+     */
+    public void setContext(Context c) {
+        mContext = c;
+        mPref = new Preferences(c);
+        mService.create();
+    }
+
+    public static StorageService getInstance() {
+        if(null == mService) {
+            mService = new StorageService();
+            return mService;
+        }
+        return mService;
+    }
+
     /* (non-Javadoc)
      * @see android.app.Service#onDestroy()
      */
-    @Override
-    public void onDestroy() {
+    public void destroy() {
         /*
          * If we ever exit, reclaim memory
          */
@@ -700,10 +643,6 @@ public class StorageService extends Service {
         if(mGps != null) {
             mGps.stop();
         }
-
-        super.onDestroy();
-
-        stopForegroundService();
 
         System.runFinalizersOnExit(true);
         System.exit(0);
@@ -736,6 +675,10 @@ public class StorageService extends Service {
         return mTFRFetcher;
     }
 
+
+    public Context getApplicationContext() {
+        return mContext;
+    }
 
     /**
      *
@@ -921,14 +864,14 @@ public class StorageService extends Service {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan(this, this);
+        mPlan = new Plan(mContext, this);
     }
 
     /**
      * @return
      */
     public void newPlanFromStorage(String storage, boolean reverse) {
-        mPlan = new Plan(this, this, storage, reverse);
+        mPlan = new Plan(mContext, this, storage, reverse);
     }
 
     /**
@@ -1006,6 +949,10 @@ public class StorageService extends Service {
      */
     public void setMatrix(float[] matrix) {
         mMatrix = matrix;
+    }
+
+    public Preferences getPreferences() {
+        return mPref;
     }
 
     /**
@@ -1239,14 +1186,14 @@ public class StorageService extends Service {
      * 
      */
     public void deleteTFRFetcher() {
-        mTFRFetcher = new TFRFetcher(getApplicationContext());
+        mTFRFetcher = new TFRFetcher(mContext);
     }
 
     /**
      *
      */
     public void deleteShapeFetcher() {
-        mShapeFetcher = new ShapeFetcher(getApplicationContext());
+        mShapeFetcher = new ShapeFetcher(mContext);
     }
 
     /**
@@ -1302,7 +1249,7 @@ public class StorageService extends Service {
     
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
-            mShadowedText = new ShadowedText(getApplicationContext());
+            mShadowedText = new ShadowedText(mContext);
         }
     	return mShadowedText;
     }
@@ -1563,9 +1510,4 @@ public class StorageService extends Service {
         return object.toString();
     }
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        this.stopSelf();
-    }
 }

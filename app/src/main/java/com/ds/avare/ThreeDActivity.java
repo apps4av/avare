@@ -60,21 +60,9 @@ import java.util.LinkedList;
 /**
  * @author zkhan
  */
-public class ThreeDActivity extends Activity {
-
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    /**
-     * App preferences
-     */
-    private Preferences mPref;
+public class ThreeDActivity extends BaseActivity {
 
     private Toast mToast;
-
-    private Context mContext;
 
     private AreaMapper mAreaMapper;
 
@@ -162,31 +150,12 @@ public class ThreeDActivity extends Activity {
         mToast.show();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
-
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
-
-        mContext = this;
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -296,15 +265,15 @@ public class ThreeDActivity extends Activity {
                                  * Set tiles on new location.
                                  * Match so that elevation and map tiles have common level
                                  */
-                                int mZoomM = Tile.getMaxZoom(mContext, mPref.getChartType3D());
-                                int mZoomE = Tile.getMaxZoom(mContext, "6");  // 6 is elevation tile index
+                                int mZoomM = Tile.getMaxZoom(mService.getApplicationContext(), mPref.getChartType3D());
+                                int mZoomE = Tile.getMaxZoom(mService.getApplicationContext(), "6");  // 6 is elevation tile index
                                 if (mZoomE > mZoomM) {
-                                    tm = new SubTile(mContext, mPref, lon, lat, 0, mPref.getChartType3D());
-                                    te = new SubTile(mContext, mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                    tm = new SubTile(mService.getApplicationContext(), mPref, lon, lat, 0, mPref.getChartType3D());
+                                    te = new SubTile(mService.getApplicationContext(), mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
                                 }
                                 else {
-                                    tm = new SubTile(mContext, mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new SubTile(mContext, mPref, lon, lat, 0, "6");
+                                    tm = new SubTile(mService.getApplicationContext(), mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new SubTile(mService.getApplicationContext(), mPref, lon, lat, 0, "6");
                                 }
 
                                 mAreaMapper.setMapTile(tm);
@@ -337,7 +306,7 @@ public class ThreeDActivity extends Activity {
                                             if(mPref.getChartType3D().equals("6")) {
                                                 // Show palette when elevation is chosen for height guidance
                                                 mAreaMapper.getMapTile(); // clear flag
-                                                mTempBitmap = new BitmapHolder(mContext, R.drawable.palette);
+                                                mTempBitmap = new BitmapHolder(mService.getApplicationContext(), R.drawable.palette);
                                                 mRenderer.setAltitude((float)Helper.findPixelFromElevation((float)mAreaMapper.getGpsParams().getAltitude()));
                                             }
                                             else {
@@ -353,7 +322,7 @@ public class ThreeDActivity extends Activity {
                                         protected void onPreExecute () {
                                             // Show we are loading new data
                                             Message m = mHandler.obtainMessage();
-                                            m.obj = mContext.getString(R.string.LoadingMaps);
+                                            m.obj = mService.getApplicationContext().getString(R.string.LoadingMaps);
                                             m.what = MESSAGE_TEXT;
                                             mHandler.sendMessage(m);
                                         }
@@ -372,11 +341,11 @@ public class ThreeDActivity extends Activity {
                                                             Message m = mHandler.obtainMessage();
                                                             m.what = MESSAGE_TEXT;
                                                             if (!mRenderer.isMapSet()) {
-                                                                m.obj = mContext.getString(R.string.MissingElevation);
+                                                                m.obj = mService.getApplicationContext().getString(R.string.MissingElevation);
                                                             } else if (!mRenderer.isTextureSet()) {
-                                                                m.obj = mContext.getString(R.string.MissingMaps);
+                                                                m.obj = mService.getApplicationContext().getString(R.string.MissingMaps);
                                                             } else {
-                                                                m.obj = mContext.getString(R.string.Ready);
+                                                                m.obj = mService.getApplicationContext().getString(R.string.Ready);
                                                             }
                                                             mHandler.sendMessage(m);
                                                         }
@@ -494,36 +463,6 @@ public class ThreeDActivity extends Activity {
     }
 
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mGlassView.setService(mService);
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
     /**
      * Get elevation at this location
      * @return
@@ -562,13 +501,6 @@ public class ThreeDActivity extends Activity {
         mGlassView.setStatus(null);
         mGlassView.setAgl("");
 
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-
         if (mRenderer != null) {
             mGlSurfaceView.onResume();
         }
@@ -586,19 +518,9 @@ public class ThreeDActivity extends Activity {
             mService.unregisterGpsListener(mGpsInfc);
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
-
         if (mRenderer != null) {
             mGlSurfaceView.onPause();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     private Handler mHandler = new Handler(Looper.getMainLooper()) {

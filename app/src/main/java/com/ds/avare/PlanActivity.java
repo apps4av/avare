@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 
+import android.accessibilityservice.GestureDescription;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -49,7 +50,7 @@ import java.util.TimerTask;
  * @author zkhan
  * An activity that deals with flight plans - loading, creating, deleting and activating
  */
-public class PlanActivity extends Activity {
+public class PlanActivity extends BaseActivity {
 
     /**
      * This view display location on the map.
@@ -65,17 +66,10 @@ public class PlanActivity extends Activity {
     // A timer object to handle things when we are in sim mode
     private Timer mTimer;
     
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-    
     /*
      * If page it loaded
      */
     private boolean mIsPageLoaded;
-
-    private Context mContext;
 
     /*
      * Callback actions from web app
@@ -114,31 +108,13 @@ public class PlanActivity extends Activity {
     /*
      * (non-Javadoc)
      * 
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
      
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mContext = this;
-        mService = null;
         mIsPageLoaded = false;
         mInited = false;
 
@@ -148,7 +124,7 @@ public class PlanActivity extends Activity {
         mWebView = (WebView)view.findViewById(R.id.plan_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppPlanInterface(mContext, mWebView, new GenericCallback() {
+        mInfc = new WebAppPlanInterface(mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
@@ -254,61 +230,6 @@ public class PlanActivity extends Activity {
         });
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.content.ServiceConnection#onServiceConnected(android.content
-         * .ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get
-             * LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mInfc.connect(binder.getService());
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * When both service and page loaded then proceed.
-             * The plan will be loaded either from here or from page load end event
-             */
-            mTimer = new Timer();
-            TimerTask sim = new UpdateTask();
-            mTimer.scheduleAtFixedRate(sim, 0, 1000);
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.content.ServiceConnection#onServiceDisconnected(android.content
-         * .ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     /*
      * (non-Javadoc)
      * 
@@ -317,14 +238,16 @@ public class PlanActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        
-        Helper.setOrientationAndOn(this);
+
+        mService.registerGpsListener(mGpsInfc);
 
         /*
-         * Registering our receiver Bind now.
+         * When both service and page loaded then proceed.
+         * The plan will be loaded either from here or from page load end event
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        mTimer = new Timer();
+        TimerTask sim = new UpdateTask();
+        mTimer.scheduleAtFixedRate(sim, 0, 1000);
 		mWebView.requestFocus();
     }
 
@@ -337,39 +260,11 @@ public class PlanActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
-
+        mService.unregisterGpsListener(mGpsInfc);
         // Cancel the timer if one is running
         if(mTimer != null) {
         	mTimer.cancel();
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
     }
 
     /*
@@ -390,7 +285,7 @@ public class PlanActivity extends Activity {
     private class UpdateTask extends TimerTask {
 	    // Called whenever the timer fires.
 	    public void run() {
-	    	if(mService != null && mIsPageLoaded && !mInited) {
+	    	if(mIsPageLoaded && !mInited) {
 	    		// Load plans when done with service and page loading
 	    		mHandler.sendEmptyMessage(INIT);
 	    		mInited = true;
@@ -419,7 +314,7 @@ public class PlanActivity extends Activity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mContext);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mService.getApplicationContext());
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {

@@ -92,11 +92,6 @@ Redistribution and use in source and binary forms, with or without modification,
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <service android:name=".StorageService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="location"
-            />
         <activity android:name=".PrefActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".PlanActivity" />

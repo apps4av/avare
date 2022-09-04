@@ -47,7 +47,7 @@ public class DestinationAlertDialog extends AlertDialog {
         WebView wv = new WebView(mContext);
         wv.loadUrl("file:///android_asset/map.html");
 
-        mInfc = new WebAppMapInterface(mContext, wv, new GenericCallback() {
+        mInfc = new WebAppMapInterface(wv, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)

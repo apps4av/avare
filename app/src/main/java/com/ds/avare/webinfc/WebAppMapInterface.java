@@ -20,6 +20,7 @@ import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
@@ -34,10 +35,9 @@ import com.ds.avare.weather.Airep;
  * This class feeds the WebView with data
  */
 public class WebAppMapInterface {
-    private Context mContext;
     private WebView mWebView;
-    private Preferences mPref;
     private GenericCallback mCallback;
+    private Preferences mPref;
 
     private static final int MSG_SET_DATA = 1;
     private static final int MSG_ACTION = 2;
@@ -45,10 +45,9 @@ public class WebAppMapInterface {
     /**
      * Instantiate the interface and set the context
      */
-    public WebAppMapInterface(Context c, WebView v, GenericCallback cb) {
+    public WebAppMapInterface(WebView v, GenericCallback cb) {
         mWebView = v;
-        mContext = c;
-        mPref = new Preferences(c);
+        mPref = StorageService.getInstance().getPreferences();
         mCallback = cb;
     }
 

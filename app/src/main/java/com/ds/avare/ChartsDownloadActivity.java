@@ -30,6 +30,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -108,7 +109,11 @@ public class ChartsDownloadActivity extends Activity {
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences(this);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        mService = StorageService.getInstance();
+        mPref = mService.getPreferences();
+
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 
         /*
@@ -197,77 +202,6 @@ public class ChartsDownloadActivity extends Activity {
         RateApp.rateIt(this, mPref);
     }
             
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Downloading
-             */
-            mService.setDownloading(true);
-            
-            /*
-             * Since we are downloading new charts, clear everything old on screen.
-             */
-            mService.getTiles().clear();
-            
-            /**
-             * Download database if it does not exists. Download sectional at current position as well.
-             */
-            File dbase = new File(mPref.getServerDataFolder() + File.separator + mChartAdapter.getDatabaseName());
-            if(!dbase.exists()) {
-                mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
-                mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
-                mChartAdapter.notifyDataSetChanged();            
-                download();
-            }
-            else {
-                /*
-                 * Create toast beforehand so multiple clicks dont throw up a new toast
-                 */
-                mToast.setText(getString(R.string.DownloadInst));
-                mToast.show();
-            }
-
-            /*
-             * See if we need to download a chart.
-             * This will be done if charts do not exist.
-             * LocationActivity sends this intent to download chart at GPS location for the new
-             * user.
-             */
-            String chart = ChartsDownloadActivity.this.getIntent().getStringExtra(getString(R.string.download));
-            if(null != chart) {
-                mChartAdapter.setChecked(chart);
-                mChartAdapter.notifyDataSetChanged();            
-                download();                
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-
     /**
      * 
      */
@@ -276,18 +210,56 @@ public class ChartsDownloadActivity extends Activity {
         super.onResume();        
         Helper.setOrientationAndOn(this);
 
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        mService.registerGpsListener(mGpsInfc);
+
+        /*
+         * Downloading
+         */
+        mService.setDownloading(true);
+
+        /*
+         * Since we are downloading new charts, clear everything old on screen.
+         */
+        mService.getTiles().clear();
+
+        /**
+         * Download database if it does not exists. Download sectional at current position as well.
+         */
+        File dbase = new File(mPref.getServerDataFolder() + File.separator + mChartAdapter.getDatabaseName());
+        if(!dbase.exists()) {
+            mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
+            mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
+            mChartAdapter.notifyDataSetChanged();
+            download();
+        }
+        else {
+            /*
+             * Create toast beforehand so multiple clicks dont throw up a new toast
+             */
+            mToast.setText(getString(R.string.DownloadInst));
+            mToast.show();
+        }
+
+        /*
+         * See if we need to download a chart.
+         * This will be done if charts do not exist.
+         * LocationActivity sends this intent to download chart at GPS location for the new
+         * user.
+         */
+        String chart = ChartsDownloadActivity.this.getIntent().getStringExtra(getString(R.string.download));
+        if(null != chart) {
+            mChartAdapter.setChecked(chart);
+            mChartAdapter.notifyDataSetChanged();
+            download();
+        }
     }
 
+
     /**
-     * 
+     *
      */
     private boolean download() {
         
-        if(mService == null) {
-            return false;
-        }
         /*
          * Download first chart in list that is checked
          */
@@ -332,9 +304,6 @@ public class ChartsDownloadActivity extends Activity {
      */
     private boolean delete() {
         
-        if(mService == null) {
-            return false;
-        }
         /*
          * Download first chart in list that is checked
          */
@@ -380,18 +349,14 @@ public class ChartsDownloadActivity extends Activity {
     protected void onPause() {
         super.onPause();
         
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
+        mService.unregisterGpsListener(mGpsInfc);
         /*
          * Clean up on pause that was started in on resume
          */
         if(mDownload != null) {
             mDownload.cancel();
         }
-        getApplicationContext().unbindService(mConnection);
-        
+
         if(mAlertDialog != null) {
             try {
                 mAlertDialog.dismiss();
@@ -409,20 +374,15 @@ public class ChartsDownloadActivity extends Activity {
         }
 
         /*
-         * Download does update tiles
+         * Not downloading
          */
-        if(mService != null){
-            /*
-             * Not downloading
-             */
-            mService.setDownloading(false);
-            
-            /*
-             *  
-             */
-            mService.getTiles().forceReload();
-        }
-        
+        mService.setDownloading(false);
+
+        /*
+         *
+         */
+        mService.getTiles().forceReload();
+
     }
      
     /**

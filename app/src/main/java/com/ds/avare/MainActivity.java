@@ -13,6 +13,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import android.accessibilityservice.GestureDescription;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
@@ -75,10 +76,6 @@ public class MainActivity extends TabActivity {
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
         mButton.setVisibility(View.INVISIBLE);
-
-        // start service
-        final Intent intent = new Intent(MainActivity.this, StorageService.class);
-        startService(intent);
 
         /*
          * Make a tab host
@@ -153,11 +150,15 @@ public class MainActivity extends TabActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
-        mPref = new Preferences(this);
+
+        // static storage init
+        StorageService s = StorageService.getInstance();
+        s.setContext(getApplicationContext());
+        mPref = s.getPreferences();
+
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-         
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.main);
@@ -249,25 +250,6 @@ public class MainActivity extends TabActivity {
         return view;
     }
     
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Helper.setOrientationAndOn(this);
-    }
-
-    @Override 
-    public void onDestroy() {
-        /*
-         * Do not kill on orientation change
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        stopService(intent);
-        super.onDestroy();
-    }
-    
     /**
      * For switching tab from any tab activity
      */
@@ -308,4 +290,12 @@ public class MainActivity extends TabActivity {
         switchTab(tabAFD);
     }
 
+    /**
+     *
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        Helper.setOrientationAndOn(this);
+    }
 }
