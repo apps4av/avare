@@ -555,13 +555,11 @@ public class PlatesActivity extends BaseActivity implements Observer  {
     
     private String getLastIfAirport() {
         String airport = null;
-        if(null != mService) {
-            airport = mService.getLastPlateAirport();
-            if(null != airport && (airport.equals(mDestString) || airport.equals(nearString) || airport.equals(myString))) {
-                airport = null;
-            }
+        airport = mService.getLastPlateAirport();
+        if(null != airport && (airport.equals(mDestString) || airport.equals(nearString) || airport.equals(myString))) {
+            airport = null;
         }
-        
+
         return airport;
     }
     
@@ -637,7 +635,7 @@ public class PlatesActivity extends BaseActivity implements Observer  {
                 }
 
                 else {
-                    mDest = DestinationFactory.build(mService, airport, Destination.BASE);
+                    mDest = DestinationFactory.build(airport, Destination.BASE);
                     mDest.addObserver(PlatesActivity.this);
                     mDest.find();
 
@@ -807,7 +805,6 @@ public class PlatesActivity extends BaseActivity implements Observer  {
     public void onResume() {
         super.onResume();
         mService.registerGpsListener(mGpsInfc);
-        mPlatesView.setService(mService);
 
         mListPlates = new ArrayList<String>();
         mListApproaches = new ArrayList<String>();

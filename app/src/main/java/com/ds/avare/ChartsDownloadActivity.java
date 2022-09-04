@@ -205,7 +205,7 @@ public class ChartsDownloadActivity extends BaseActivity {
          */
         File dbase = new File(mPref.getServerDataFolder() + File.separator + mChartAdapter.getDatabaseName());
         if(!dbase.exists()) {
-            mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation(ChartsDownloadActivity.this)));
+            mChartAdapter.setChecked(mChartAdapter.getSectional(Gps.getLastLocation()));
             mChartAdapter.setChecked(mChartAdapter.getDatabaseName());
             mChartAdapter.notifyDataSetChanged();
             download();
@@ -252,7 +252,7 @@ public class ChartsDownloadActivity extends BaseActivity {
         }
         
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
-        mDownload.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
+        mDownload.start(StorageService.getInstance().getPreferences().getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -296,7 +296,7 @@ public class ChartsDownloadActivity extends BaseActivity {
         }
         
         mDelete = new Delete(mHandler);
-        mDelete.start((new Preferences(getApplicationContext())).getServerDataFolder(), mName);
+        mDelete.start(StorageService.getInstance().getPreferences().getServerDataFolder(), mName);
         
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
@@ -384,7 +384,7 @@ public class ChartsDownloadActivity extends BaseActivity {
             }
 
             // reset all databases on new downloads/deletes
-            DataSource.reset(getApplicationContext());
+            DataSource.reset();
 
             if(msg.obj instanceof Download) {
                 Telemetry t = new Telemetry(getApplicationContext());
@@ -453,7 +453,7 @@ public class ChartsDownloadActivity extends BaseActivity {
                     }
 
                     if(mName.equals("weather")) {
-                        mService.getInternetWeatherCache().parse(mService);
+                        mService.getInternetWeatherCache().parse();
                         mPref.setLayerType("METAR");
                         mService.getMetarLayer().parse();
                     }

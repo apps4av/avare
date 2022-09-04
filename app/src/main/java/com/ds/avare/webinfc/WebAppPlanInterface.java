@@ -109,7 +109,7 @@ public class WebAppPlanInterface implements Observer {
         mPlanCnt = 0;
         mPlanFilter = "";
 		// TODO: refactor in abstract plan management
-		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
+		mSavedPlans = Plan.getAllPlans(mService.getDBResource().getUserPlans());
 		setFilteredSize();
 	}
 
@@ -243,7 +243,7 @@ public class WebAppPlanInterface implements Observer {
 		// refresh
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 		if(null == mFaaPlans || null == mFaaPlans.getPlans() || mFaaPlans.mSelectedIndex >= mFaaPlans.getPlans().size()) {
 			mHandler.sendEmptyMessage(MSG_NOTBUSY);
 			return;
@@ -330,7 +330,7 @@ public class WebAppPlanInterface implements Observer {
 		pl.pilotInfo = pilotInfo.toUpperCase(Locale.getDefault());
 
 		// Now file and show error messages
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 		infc.fileFlightPlan(pl);
 		String err = infc.getError();
 		if(null == err) {
@@ -410,7 +410,7 @@ public class WebAppPlanInterface implements Observer {
 		pl.pilotInfo = pilotInfo.toUpperCase(Locale.getDefault());
 
 		// Now file and show error messages
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 		infc.amendFlightPlan(pl);
 		String err = infc.getError();
 		if(null == err) {
@@ -437,7 +437,7 @@ public class WebAppPlanInterface implements Observer {
 		/*
 		 * Do the action of the plan
 		 */
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 
 		String err = null;
 		String id = mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId();
@@ -478,7 +478,7 @@ public class WebAppPlanInterface implements Observer {
 	public void getPlans() {
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 
 		mFaaPlans = infc.getFlightPlans();
 		String err = infc.getError();
@@ -508,7 +508,7 @@ public class WebAppPlanInterface implements Observer {
 
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
-		LmfsInterface infc = new LmfsInterface(mContext);
+		LmfsInterface infc = new LmfsInterface();
 
 		// Get plan in fill in the form
 		LmfsPlan pl = infc.getFlightPlan(mFaaPlans.getPlans().get(mFaaPlans.mSelectedIndex).getId());
@@ -565,10 +565,6 @@ public class WebAppPlanInterface implements Observer {
      * 
      */
     public void timer() {
-		if(mService == null) {
-			return;
-		}
-
 		Plan plan = mService.getPlan();
 
     	// If we are in sim mode, then send a message
@@ -723,13 +719,9 @@ public class WebAppPlanInterface implements Observer {
     
     @JavascriptInterface
     public void refreshPlanList() {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
     	mService.getExternalPlanMgr().forceReload();
-		mSavedPlans = Plan.getAllPlans(mService, mService.getDBResource().getUserPlans());
+		mSavedPlans = Plan.getAllPlans(mService.getDBResource().getUserPlans());
 		setFilteredSize();
     	newSavePlan();
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -739,10 +731,6 @@ public class WebAppPlanInterface implements Observer {
      * New plan when the plan changes.
      */
     public void newPlan() {
-		if(mService == null) {
-			return;
-		}
-
 		clearPlan();
         Plan plan = mService.getPlan();
         int num = plan.getDestinationNumber();
@@ -771,10 +759,6 @@ public class WebAppPlanInterface implements Observer {
 		/*
 		 * Add to Plan that we found from add action
 		 */
-		if(mService == null) {
-			return;
-		}
-
 		Destination d = (Destination)arg0;
 		int num = mService.getPlan().getDestinationNumber();
 		// Make sure duplicates do not appear. This can happen with airways
@@ -801,10 +785,6 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void moveUp() {
     	// surround JS each call with busy indication / not busy 
-		if(mService == null) {
-			return;
-		}
-
     	Plan plan = mService.getPlan();
     	// move active point up
     	int next = plan.findNextNotPassed();
@@ -825,10 +805,6 @@ public class WebAppPlanInterface implements Observer {
     @JavascriptInterface
     public void moveDown() {
     	// surround JS each call with busy indication / not busy 
-		if(mService == null) {
-			return;
-		}
-
 		// move active point down
     	Plan plan = mService.getPlan();
     	
@@ -852,10 +828,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void discardPlan() {
-		if(mService == null) {
-			return;
-		}
-
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.newPlan();
@@ -870,10 +842,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void activateToggle() {
-		if(mService == null) {
-			return;
-		}
-
     	Plan plan = mService.getPlan();
     	if(plan.isActive()) {
     		plan.makeInactive();
@@ -895,10 +863,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void deleteWaypoint() {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
     	// Delete the one that has a mark on it, or the active waypoint
     	mService.getPlan().remove(mService.getPlan().findNextNotPassed());
@@ -929,10 +893,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveBack() {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().regress();
@@ -944,10 +904,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveTo(int index) {
-		if(mService == null) {
-			return;
-		}
-
 		mService.getPlan().moveTo(index);
     }
 
@@ -957,10 +913,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void moveForward() {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.getPlan().advance();
@@ -974,16 +926,12 @@ public class WebAppPlanInterface implements Observer {
      */	
     @JavascriptInterface
     public void addToPlan(String id, String type, String subtype) {
-		if(mService == null) {
-			return;
-		}
-
 		/*
     	 * Add from JS search query
     	 */
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
-    	Destination d = DestinationFactory.build(mService, id, type);
+    	Destination d = DestinationFactory.build(id, type);
     	d.addObserver(this);
     	d.find(subtype);
     	mHandler.sendEmptyMessage(MSG_NOTBUSY);
@@ -995,10 +943,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void savePlan(String name) {
-		if(mService == null) {
-			return;
-		}
-
 		Plan plan = mService.getPlan();
     	if(plan.getDestinationNumber() < 2) {
     		// Anything less than 2 is not a plan
@@ -1010,7 +954,7 @@ public class WebAppPlanInterface implements Observer {
     	plan.setName(name);
     	String format = plan.putPlanToStorageFormat();
     	mSavedPlans.put(name, format);
-    	mService.getDBResource().setUserPlans(Plan.putAllPlans(mService, mSavedPlans));
+    	mService.getDBResource().setUserPlans(Plan.putAllPlans(mSavedPlans));
     	setFilteredSize();
     	
     	newSavePlan();
@@ -1023,10 +967,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlan(String name) {
-		if(mService == null) {
-			return;
-		}
-
 		// surround JS each call with busy indication / not busy
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
@@ -1066,10 +1006,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void loadPlanReverse(String name) {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mService.newPlanFromStorage(mSavedPlans.get(name), true);
@@ -1084,10 +1020,6 @@ public class WebAppPlanInterface implements Observer {
 	 */
 	@JavascriptInterface
 	public void setAltitude(String altitude) {
-		if(mService == null) {
-			return;
-		}
-
 		mService.getPlan().setAltitude(Integer.parseInt(altitude) * 100);
 	}
 
@@ -1141,10 +1073,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public void saveDelete(String name) {
-		if(mService == null) {
-			return;
-		}
-
 		mHandler.sendEmptyMessage(MSG_BUSY);
 
     	// If we have a plan that is active, and it is the plan
@@ -1208,9 +1136,6 @@ public class WebAppPlanInterface implements Observer {
      */
     @JavascriptInterface
     public String getPlanData() {
-    	if(mService == null) {
-    		return "";
-		}
     	Plan plan = mService.getPlan();
     	
         /*
@@ -1316,10 +1241,6 @@ public class WebAppPlanInterface implements Observer {
 
             Thread.currentThread().setName("Create");
 
-            if(null == mService) {
-                return false;
-            }
-
             String srch[] = ((String)vals[0]).toUpperCase(Locale.US).split(" ");
             
             /*
@@ -1361,9 +1282,6 @@ public class WebAppPlanInterface implements Observer {
          */
         @Override
         protected void onPostExecute(Boolean result) {
-			if(mService == null) {
-				return;
-			}
             /*
              * Set new search adapter
              */
@@ -1384,7 +1302,7 @@ public class WebAppPlanInterface implements Observer {
 	        	/*
 	        	 * Add each
 	        	 */
-	        	Destination d = DestinationFactory.build(mService, id, type);
+	        	Destination d = DestinationFactory.build(id, type);
 	        	d.addObserver(WebAppPlanInterface.this);
 	        	d.find(dbtype);
             }
@@ -1410,9 +1328,6 @@ public class WebAppPlanInterface implements Observer {
             Thread.currentThread().setName("Search");
 
             String srch = ((String)vals[0]).toUpperCase(Locale.US);
-            if(null == mService) {
-                return false;
-            }
 
             /*
              * This is a geo coordinate?
@@ -1496,9 +1411,6 @@ public class WebAppPlanInterface implements Observer {
             	mWebView.loadUrl(func);
         	}
         	else if (MSG_TIMER == msg.what) {
-				if(mService == null) {
-					return;
-				}
 				Plan plan = mService.getPlan();
         		plan.simulate();
         	}
@@ -1601,10 +1513,6 @@ public class WebAppPlanInterface implements Observer {
             String planf = "";
             String plann = "";
             String plan = "";
-            if(null == mService) {
-                running = false;
-                return;
-            }
 
             int num = mService.getPlan().getDestinationNumber();
             for(int i = 0; i < num; i++) {

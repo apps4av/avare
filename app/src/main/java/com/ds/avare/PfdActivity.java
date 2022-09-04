@@ -56,9 +56,6 @@ public class PfdActivity extends BaseActivity {
         @Override
         public void locationCallback(Location location) {
 
-            if(mService == null) {
-                return;
-            }
             if(mService.getGpsParams() == null || mService.getExtendedGpsParams() == null) {
                 return;
             }

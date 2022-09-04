@@ -307,22 +307,22 @@ public class StorageService  {
      */
     public void create() {
 
-        mDataSource = new DataSource(mContext);
+        mDataSource = new DataSource();
         
-        mArea = new Area(mDataSource, mContext);
-        mPlan = new Plan(mContext, this);
+        mArea = new Area();
+        mPlan = new Plan();
         mDownloading = false;
         
         /*
          * All tiles
          */
-        mTiles = new TileMap(mContext);
+        mTiles = new TileMap();
 
         mInternetWeatherCache = new InternetWeatherCache();
-        mInternetWeatherCache.parse(this);
+        mInternetWeatherCache.parse();
         mTFRFetcher = new TFRFetcher(mContext);
         mTFRFetcher.parse();
-        mShapeFetcher = new ShapeFetcher(mContext);
+        mShapeFetcher = new ShapeFetcher();
         mShapeFetcher.parse();
         mGpsParamsExtended = new ExtendedGpsParams();
 
@@ -333,11 +333,11 @@ public class StorageService  {
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
         mPlateDiagramBitmap = null;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
-        mAdsbWeatherCache = new AdsbWeatherCache(mContext, this);
+        mAdsbWeatherCache = new AdsbWeatherCache();
         mAdsbTfrCache = new TfrCache(mContext);
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
@@ -345,7 +345,7 @@ public class StorageService  {
 
         mCap = new DrawCapLines(this, mContext, Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
-        mInfoLines = new InfoLines(this);
+        mInfoLines = new InfoLines();
 
         mShadowedText = null;
 
@@ -365,7 +365,7 @@ public class StorageService  {
         /*
          * Internet nexrad
          */
-        mRadarLayer = new RadarLayer(mContext);
+        mRadarLayer = new RadarLayer();
 
         /*
          * Internet metar
@@ -387,14 +387,12 @@ public class StorageService  {
         mVSI = new VSI();
         
         // Allocate a handler for PointsOfInterest
-        mUDWMgr = new UDWMgr(this, mContext);
+        mUDWMgr = new UDWMgr();
       
         // Allocate a new DistanceRing instrument
-        mDistanceRings = new DistanceRings(this, mContext,
-                Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
+        mDistanceRings = new DistanceRings(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
 
-        mGlideProfile = new GlideProfile(this, mContext,
-                Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
+        mGlideProfile = new GlideProfile(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
@@ -408,7 +406,7 @@ public class StorageService  {
         
         // Declare a fuel tank switching timer. Default to 30
         // minutes per tank
-        mFuelTimer = new FuelTimer(mContext);
+        mFuelTimer = new FuelTimer();
         mUpTimer = new UpTimer();
 
         // Create a BlueTooth Output connection and give it to the autopilot
@@ -561,7 +559,7 @@ public class StorageService  {
                 }
             }
         };
-        mGps = new Gps(mContext, intf);
+        mGps = new Gps(intf);
 
         /*
          * Start orientation
@@ -729,7 +727,7 @@ public class StorageService  {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
 
         // A direct destination implies a new plan. Ensure to turn off
         // the plan
@@ -743,7 +741,7 @@ public class StorageService  {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
         
         // Update the right side of the nav comments from the destination
         // TODO: I don't like this here, it should be pushed into the PLAN itself
@@ -864,14 +862,14 @@ public class StorageService  {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan(mContext, this);
+        mPlan = new Plan();
     }
 
     /**
      * @return
      */
     public void newPlanFromStorage(String storage, boolean reverse) {
-        mPlan = new Plan(mContext, this, storage, reverse);
+        mPlan = new Plan(storage, reverse);
     }
 
     /**
@@ -1193,7 +1191,7 @@ public class StorageService  {
      *
      */
     public void deleteShapeFetcher() {
-        mShapeFetcher = new ShapeFetcher(mContext);
+        mShapeFetcher = new ShapeFetcher();
     }
 
     /**

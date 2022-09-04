@@ -201,13 +201,13 @@ public class PlatesTagActivity extends BaseActivity implements Observer {
          */
         Destination d;
         if(item.equals("GPS")) {
-            d = DestinationFactory.build(mService, toFind, Destination.GPS);
+            d = DestinationFactory.build(toFind, Destination.GPS);
         }
         else if(item.equals("Maps")) {
-            d = DestinationFactory.build(mService, toFind, Destination.MAPS);
+            d = DestinationFactory.build(toFind, Destination.MAPS);
         }
         else {
-            d = DestinationFactory.build(mService, toFind, item);
+            d = DestinationFactory.build(toFind, item);
         }
         mDestPoint[point] = d;
         d.addObserver(PlatesTagActivity.this);
@@ -225,13 +225,13 @@ public class PlatesTagActivity extends BaseActivity implements Observer {
          */
         Destination d;
         if(item.equals("GPS")) {
-            d = DestinationFactory.build(mService, toFind, Destination.GPS);
+            d = DestinationFactory.build(toFind, Destination.GPS);
         }
         else if(item.equals("Maps")) {
-            d = DestinationFactory.build(mService, toFind, Destination.MAPS);
+            d = DestinationFactory.build(toFind, Destination.MAPS);
         }
         else {
-            d = DestinationFactory.build(mService, toFind, item);
+            d = DestinationFactory.build(toFind, item);
         }
         mDestVerify = d;
         d.addObserver(PlatesTagActivity.this);
@@ -359,6 +359,11 @@ public class PlatesTagActivity extends BaseActivity implements Observer {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
+
 
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
@@ -413,7 +418,7 @@ public class PlatesTagActivity extends BaseActivity implements Observer {
          * Find who this plate is for, so we can verify its sane.
          * By the time user is ready to tag, this should be found
          */
-        mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);
+        mDest = DestinationFactory.build(mAirport, Destination.BASE);
         mDest.addObserver(PlatesTagActivity.this);
         mDest.find();
 

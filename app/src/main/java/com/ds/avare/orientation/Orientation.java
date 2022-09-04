@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.MovingAverage;
 
@@ -49,8 +50,6 @@ import static android.content.Context.SENSOR_SERVICE;
 
 public class Orientation implements SensorEventListener {
 
-    private Preferences mPref;
-    private Context mContext;
     private OrientationInterface mOrientationCallback;
     private SensorManager mManager;
     private float[] mOrientationTmps;
@@ -61,12 +60,9 @@ public class Orientation implements SensorEventListener {
 
     /**
      * Calls back with orientation
-     * @param ctx
      * @param callback
      */
-    public Orientation(Context ctx, OrientationInterface callback) {
-        mPref = new Preferences(ctx);
-        mContext = ctx;
+    public Orientation(OrientationInterface callback) {
         mOrientationCallback = callback;
         mOrientationTmps = new float[3];
         mGravityTemps = new double[3];
@@ -80,7 +76,7 @@ public class Orientation implements SensorEventListener {
     public void start() {
 
 
-        mManager = (SensorManager)mContext.getSystemService(SENSOR_SERVICE);
+        mManager = (SensorManager) StorageService.getInstance().getApplicationContext().getSystemService(SENSOR_SERVICE);
         List<Sensor> typedSensors = mManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
         if ((typedSensors == null) || (typedSensors.size() <= 0)) {
             mIsAvailable = false;

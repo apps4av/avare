@@ -65,21 +65,17 @@ public class GPSSimulatorConnection extends Connection {
                  * Start the GPS Simulator
                  */
                 while (isRunning()) {
-
-                    if(mService != null) {
-
-                        Destination d = mService.getDestination();
-                        if(d != null) {
-                            mDestBearing = d.getBearing();
-                            mDestDistance = d.getDistance();
-                            mDestElevation = d.getElevation() * FEET_TO_METERS;
-                            mDestValid = true;
-                        }
-                        else {
-                            mDestValid = false;
-                        }
-
+                    Destination d = mService.getDestination();
+                    if(d != null) {
+                        mDestBearing = d.getBearing();
+                        mDestDistance = d.getDistance();
+                        mDestElevation = d.getElevation() * FEET_TO_METERS;
+                        mDestValid = true;
                     }
+                    else {
+                        mDestValid = false;
+                    }
+
                     double time = 1; // in seconds
                     if (isStopped()) {
                         break;

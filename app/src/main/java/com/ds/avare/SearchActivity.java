@@ -89,7 +89,7 @@ public class SearchActivity extends BaseActivity implements Observer {
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -103,7 +103,7 @@ public class SearchActivity extends BaseActivity implements Observer {
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();

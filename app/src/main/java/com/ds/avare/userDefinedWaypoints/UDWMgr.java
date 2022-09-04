@@ -46,8 +46,6 @@ public class UDWMgr {
 	static final int MAXUDW = 100;
 	Paint 			mPaint;		// Paint object used to do the display work
 	List<Waypoint>  mPoints;	// Collection of points of interest
-	StorageService	mService;
-	Context			mContext;
 	float			mPix;
 	float 			m2Pix;
 	float 			m15Pix;
@@ -55,13 +53,9 @@ public class UDWMgr {
 
 	/***
 	 * public constructor for user defined waypoints collection
-	 * @param service the storage service
-	 * @param context context
 	 */
-	public UDWMgr(StorageService service, Context context) {
-		mService = service;
-		mContext = context;
-		
+	public UDWMgr() {
+
 		// Time to load all the points in
 		forceReload();
 		
@@ -69,9 +63,9 @@ public class UDWMgr {
 		mPaint = new Paint();
         mPaint.setAntiAlias(true);
         
-        setDipToPix(Helper.getDpiToPix(context));
+        setDipToPix(Helper.getDpiToPix(StorageService.getInstance().getApplicationContext()));
 
-    	UDWDESCRIPTION = mContext.getString(R.string.UDWDescription);
+    	UDWDESCRIPTION = StorageService.getInstance().getApplicationContext().getString(R.string.UDWDescription);
 	}
 
 	public int getCount() {
@@ -93,11 +87,9 @@ public class UDWMgr {
 	 * Reload the datapoints from the configured directory
 	 */
 	public void forceReload() {
-		// Find out where to look for the files
-		Preferences pref = new Preferences(mContext);
-		
+
 		// Load them all in
-		populate(pref.getUserDataFolder());
+		populate(StorageService.getInstance().getPreferences().getUserDataFolder());
 	}
 	
 	/***
@@ -197,7 +189,7 @@ public class UDWMgr {
 		// Loop through every point that we have and draw them if its set visible
 		for (Waypoint p : mPoints) {
 			if(true == p.getVisible()) {
-				p.draw(canvas, origin, trackUp, gpsParams, mPaint, mService, whereAndHowFar(p), m2Pix);
+				p.draw(canvas, origin, trackUp, gpsParams, mPaint, StorageService.getInstance(), whereAndHowFar(p), m2Pix);
 			}
 		}
 	}
@@ -205,7 +197,7 @@ public class UDWMgr {
     // Calculate the distance and bearing to the point from our current location
     //
     String whereAndHowFar(Waypoint p) {
-    	GpsParams gpsParams = mService.getGpsParams();
+    	GpsParams gpsParams = StorageService.getInstance().getGpsParams();
     	if(null == gpsParams) {
     		return "";
     	}

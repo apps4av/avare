@@ -31,6 +31,7 @@ package com.ds.avare.network;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.storage.Preferences;
 
@@ -48,14 +49,12 @@ public class ShapeFetcher {
 
     private ShapeTask mTask;
     private ArrayList<ShapeFileShape> mShapes;
-    private Context mContext;
 
     /**
      *
      */
-    public ShapeFetcher(Context ctx) {
+    public ShapeFetcher() {
         mShapes = new ArrayList<ShapeFileShape>();
-        mContext = ctx;
     }
 
     /**
@@ -101,7 +100,7 @@ public class ShapeFetcher {
             Thread.currentThread().setName("Shapes");
 
             try {
-                Preferences pref = new Preferences(mContext);
+                Preferences pref = StorageService.getInstance().getPreferences();
                 mShapes = ShapeFileShape.readFile(pref.getUserDataFolder() + File.separator + pref.getShapeFileName());
             }
             catch (Exception e) {

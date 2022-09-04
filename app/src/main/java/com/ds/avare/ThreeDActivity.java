@@ -218,7 +218,7 @@ public class ThreeDActivity extends BaseActivity {
 
                             Location location = null;
                             // Simulate destination in sim mode and get altitude from terrain
-                            if (mPref.isSimulationMode() && mService != null) {
+                            if (mPref.isSimulationMode()) {
                                 Location l = new Location("");
                                 if(mService.getDestination() != null) {
                                     l = mService.getDestination().getLocation();
@@ -268,12 +268,12 @@ public class ThreeDActivity extends BaseActivity {
                                 int mZoomM = Tile.getMaxZoom(mService.getApplicationContext(), mPref.getChartType3D());
                                 int mZoomE = Tile.getMaxZoom(mService.getApplicationContext(), "6");  // 6 is elevation tile index
                                 if (mZoomE > mZoomM) {
-                                    tm = new SubTile(mService.getApplicationContext(), mPref, lon, lat, 0, mPref.getChartType3D());
-                                    te = new SubTile(mService.getApplicationContext(), mPref, lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
+                                    tm = new SubTile(lon, lat, 0, mPref.getChartType3D());
+                                    te = new SubTile(lon, lat, mZoomE - mZoomM, "6"); // lower res elev tile
                                 }
                                 else {
-                                    tm = new SubTile(mService.getApplicationContext(), mPref, lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
-                                    te = new SubTile(mService.getApplicationContext(), mPref, lon, lat, 0, "6");
+                                    tm = new SubTile(lon, lat, mZoomM - mZoomE, mPref.getChartType3D()); // lower res map tile
+                                    te = new SubTile(lon, lat, 0, "6");
                                 }
 
                                 mAreaMapper.setMapTile(tm);
@@ -365,19 +365,17 @@ public class ThreeDActivity extends BaseActivity {
                             Traffic.draw(mService, mAreaMapper, mRenderer);
 
                             // Draw obstacles
-                            if(mService != null) {
-                                LinkedList<Obstacle> obs = mService.getObstacles();
-                                if (null != obs) {
+                            LinkedList<Obstacle> obs = mService.getObstacles();
+                            if (null != obs) {
 
-                                    Vector4d obstacles[] = new Vector4d[obs.size()];
-                                    int count = 0;
-                                    for (Obstacle ob : obs) {
-                                        obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
-                                    }
+                                Vector4d obstacles[] = new Vector4d[obs.size()];
+                                int count = 0;
+                                for (Obstacle ob : obs) {
+                                    obstacles[count++] = mAreaMapper.gpsToAxis(ob.getLongitude(), ob.getLatitude(), ob.getHeight(), 0);
+                                }
 
-                                    if (obstacles != null && obstacles.length != 0) {
-                                        mRenderer.setObstacles(obstacles);
-                                    }
+                                if (obstacles != null && obstacles.length != 0) {
+                                    mRenderer.setObstacles(obstacles);
                                 }
                             }
 
@@ -490,7 +488,6 @@ public class ThreeDActivity extends BaseActivity {
         mService.registerGpsListener(mGpsInfc);
 
         // Clean messages
-        mGlassView.setService(mService);
         mText.setText("");
         mGlassView.setStatus(null);
         mGlassView.setAgl("");

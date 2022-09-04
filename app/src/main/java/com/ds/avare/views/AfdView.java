@@ -17,6 +17,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
@@ -31,19 +33,16 @@ public class AfdView extends PanZoomView {
 
 	private Paint                        mPaint;
     private BitmapHolder                 mBitmap;
-    private Preferences                  mPref;
-    
+
     private static final double MAX_AFD_SCALE = 8;
     
     /**
      * 
-     * @param context
      */
-    private void  setup(Context context) {
+    private void  setup() {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         setBackgroundColor(Color.BLACK);
-        mPref = new Preferences(context);
     }
     
     /**
@@ -52,7 +51,7 @@ public class AfdView extends PanZoomView {
      */
 	public AfdView(Context context) {
 		super(context);
-		setup(context);
+		setup();
 	}
 
     /**
@@ -61,7 +60,7 @@ public class AfdView extends PanZoomView {
      */
     public AfdView(Context context, AttributeSet set) {
         super(context, set);
-        setup(context);
+        setup();
     }
 
     /**
@@ -70,7 +69,7 @@ public class AfdView extends PanZoomView {
      */
     public AfdView(Context context, AttributeSet set, int arg) {
         super(context, set, arg);
-        setup(context);
+        setup();
     }
 
     /**
@@ -134,7 +133,7 @@ public class AfdView extends PanZoomView {
                 + getHeight() / 2
                 - mBitmap.getHeight() / 2 * scale);
         
-        if(mPref.isNightMode()) {
+        if(StorageService.getInstance().getPreferences().isNightMode()) {
             Helper.invertCanvasColors(mPaint);
         }
     	canvas.drawBitmap(mBitmap.getBitmap(), mBitmap.getTransform(), mPaint);

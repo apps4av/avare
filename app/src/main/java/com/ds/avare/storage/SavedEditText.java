@@ -15,6 +15,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
+import com.ds.avare.StorageService;
+
 /**
  * Sticky edit text, value stored in Preferences
  * @author zkhan
@@ -27,12 +29,12 @@ public class SavedEditText extends EditText {
 	/**
 	 * Get value from saved
 	 */
-	private void setup(Context ctx) {
+	private void setup() {
 		
 		/*
 		 * Get value from stored prefs
 		 */
-		mPref = new Preferences(ctx);
+		mPref = StorageService.getInstance().getPreferences();
 		String val  = mPref.getEditTextValue(getId());
 		if(val != null) {
 			setText(val);
@@ -41,20 +43,20 @@ public class SavedEditText extends EditText {
 	
 	public SavedEditText(Context context) {
 		super(context);
-		setup(context);
+		setup();
 		// TODO Auto-generated constructor stub
 	}
 
 	public SavedEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
-		setup(context);
+		setup();
 	}
 
 	public SavedEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		// TODO Auto-generated constructor stub
-		setup(context);
+		setup();
 	}
 
 

@@ -446,7 +446,7 @@ public class AirportActivity extends BaseActivity implements Observer {
             }
             else {
                 viewPos = 0;
-                mDestination = DestinationFactory.build(mService, airport, Destination.BASE);
+                mDestination = DestinationFactory.build(airport, Destination.BASE);
                 mService.setLastAfdDestination(mDestination);
                 mDestination.addObserver(AirportActivity.this);
                 mToast.setText(getString(R.string.Searching) + " " + mDestination.getID());

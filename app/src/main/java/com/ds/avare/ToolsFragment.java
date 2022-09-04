@@ -80,8 +80,6 @@ public class ToolsFragment extends Fragment {
 
     private TextView mGpsText;
 
-    private Preferences mPref;
-
     // Request code for selecting a document.
     private static final int IMPORT = 2;
     private static final int EXPORT = 3;
@@ -94,11 +92,12 @@ public class ToolsFragment extends Fragment {
     private ProgressBar mProgressBarDelete;
     private Spinner mSpinnerTypeExport;
     private Spinner mSpinnerTypeDelete;
+    private Preferences mPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = container.getContext();
-        mPref = new Preferences(mContext);
+        mPref = StorageService.getInstance().getPreferences();
 
         View view = inflater.inflate(R.layout.layout_satellite, container, false);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
@@ -197,9 +196,6 @@ public class ToolsFragment extends Fragment {
 
     public void update() {
         mService = ((IOActivity)getActivity()).getService();
-        if(mService == null) {
-            return;
-        }
         // valid
         updateMem();
         updateMapArea();

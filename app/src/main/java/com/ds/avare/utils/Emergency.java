@@ -24,7 +24,10 @@ import com.ds.avare.storage.Preferences;
  * Created by zkhan on 7/25/16.
  */
 public class Emergency {
-    public static String declare(Context ctx, final Preferences pref, final StorageService service) {
+    public static String declare() {
+        Context ctx = StorageService.getInstance().getApplicationContext();
+        Preferences pref = StorageService.getInstance().getPreferences();
+        StorageService service = StorageService.getInstance();
         String ret = ctx.getString(R.string.Done);
 
         // Turn on distance guidance
@@ -38,7 +41,7 @@ public class Emergency {
         if(service.getArea() != null) {
             Airport a = service.getArea().getAirport(0);
             if(a != null) {
-                Destination d = DestinationFactory.build(service, a.getId(), Destination.BASE);
+                Destination d = DestinationFactory.build(a.getId(), Destination.BASE);
                 d.find();
                 service.setDestination(d);
             }

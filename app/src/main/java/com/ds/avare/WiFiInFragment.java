@@ -90,7 +90,7 @@ public class WiFiInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
                     mWifi.setFileSave(fl);
                 }
                 else {

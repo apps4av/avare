@@ -16,13 +16,13 @@ public class UDWDestination extends Destination {
 
     private String mCmt;
 
-    public UDWDestination(StorageService service, String name) {
-        super(service, name);
+    public UDWDestination(String name) {
+        super(name);
 
         mDbType = UDW;
         mDestType = UDW;
 
-        Waypoint p = mService.getUDWMgr().get(mName);
+        Waypoint p = StorageService.getInstance().getUDWMgr().get(mName);
         if(null != p) {
             mLatd = p.getLat();
             mLond = p.getLon();

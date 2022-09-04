@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.position.Epsg900913;
 import com.ds.avare.storage.Preferences;
@@ -79,7 +80,7 @@ public class Tile {
      * @param row
      * @param col
      */
-    public Tile(Context ctx, Preferences pref, Tile t, int col, int row) {
+    public Tile(Tile t, int col, int row) {
     	mChartIndex = t.mChartIndex;
         mZoom = t.getZoom();
     	// Make a new tile from a given center tile, at an offset of row/col
@@ -87,7 +88,7 @@ public class Tile {
     	int tx = proj.getTilex() + col;
     	int ty = proj.getTiley() - row; // row increase up
     	mProj = new Epsg900913(tx, ty, mZoom);
-    	setup(pref);
+    	setup(StorageService.getInstance().getPreferences());
     }
 
     /**
@@ -99,39 +100,37 @@ public class Tile {
         return Boundaries.getZoom(Integer.valueOf(index));
     }
 
-    private void CommonTile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
+    private void CommonTile(double lon, double lat, double zoom) {
     	/*
     	 * Zoom appropriate to the given chart type.
     	 * Max zoom is specified in arrays.xml, from where we find the
     	 * max zoom for this tile of this chart type.
     	 * Zoom will go from max to max - zoom of scale
     	 */
-        mZoom = getMaxZoom(ctx, mChartIndex) - zoom;
+        mZoom = getMaxZoom(StorageService.getInstance().getApplicationContext(), mChartIndex) - zoom;
 
         mProj = new Epsg900913(lat, lon, mZoom);
-        setup(pref);
+        setup(StorageService.getInstance().getPreferences());
     }
 
     /**
      * Get a tile for a particular position
-     * @param pref
      * @param lon
      * @param lat
      */
-    public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom) {
-    	mChartIndex = pref.getChartType();
-        CommonTile(ctx, pref, lon, lat, zoom);
+    public Tile(double lon, double lat, double zoom) {
+    	mChartIndex = StorageService.getInstance().getPreferences().getChartType();
+        CommonTile(lon, lat, zoom);
     }
 
     /**
      * Get a tile for a particular position
-     * @param pref
      * @param lon
      * @param lat
      */
-    public Tile(Context ctx, Preferences pref, double lon, double lat, double zoom, String index) {
+    public Tile(double lon, double lat, double zoom, String index) {
         mChartIndex = index;
-        CommonTile(ctx, pref, lon, lat, zoom);
+        CommonTile(lon, lat, zoom);
     }
 
     /**
@@ -140,9 +139,9 @@ public class Tile {
      * @param lon
      * @param lat
      */
-    public Tile(Context ctx, Preferences pref, String type, double lon, double lat, double zoom) {
+    public Tile(String type, double lon, double lat, double zoom) {
         mChartIndex = type;
-        CommonTile(ctx, pref, lon, lat, zoom);
+        CommonTile(lon, lat, zoom);
     }
 
     /**

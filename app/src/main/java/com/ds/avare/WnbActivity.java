@@ -229,7 +229,7 @@ public class WnbActivity extends BaseActivity {
     private class UpdateTask extends TimerTask {
 	    // Called whenever the timer fires.
 	    public void run() {
-	    	if(mService != null && mIsPageLoaded && !mInited) {
+	    	if(mIsPageLoaded && !mInited) {
 	    		// Load lists when done with service and page loading
 	    		mHandler.sendEmptyMessage(INIT);
 	    		mInited = true;

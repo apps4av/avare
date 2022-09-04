@@ -40,18 +40,16 @@ public class GlideProfile {
     /***
      * Instrument to handle displaying of rings based on glide upon speed, glide ratio, wind speed, and terrain
      *
-     * @param service background storage service
-     * @param context application context
      * @param textSize size of the text to draw
      */
-    public GlideProfile(StorageService service, Context context, float textSize) {
-        mService = service;
-        mDipToPix = Helper.getDpiToPix(context);
-        mPref = new Preferences(context);
+    public GlideProfile(float textSize) {
+        mService = StorageService.getInstance();
+        mDipToPix = Helper.getDpiToPix(mService.getApplicationContext());
+        mPref = mService.getPreferences();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(textSize);
-        mPaint.setTypeface(Helper.getTypeFace(context));
+        mPaint.setTypeface(Helper.getTypeFace(mService.getApplicationContext()));
         mDistanceTotal = new double[DIRECTION_STEPS];
         mLastTime = System.currentTimeMillis() + UPDATE_TIME;
     }

@@ -15,6 +15,7 @@ package com.ds.avare.shapes;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
@@ -36,10 +37,9 @@ public class TileMap extends MapBase {
     private int mNumShowing;
 
     /**
-     * @param context
      */
-    public TileMap(Context context) {
-        super(context, SIZE, (new Preferences(context)).getTilesNumber(context));
+    public TileMap() {
+        super(SIZE);
         mNumShowing = 0;
         mTileTask = null;
     }
@@ -93,7 +93,7 @@ public class TileMap extends MapBase {
                  * Now draw in background, but first find tiles in foreground
                  * Find tile at my GPS location
                  */
-                gpsTile = new Tile(mContext, mPref, lon, lat, (double) scale.downSample());
+                gpsTile = new Tile(lon, lat, (double) scale.downSample());
 
                 offsets[0] = gpsTile.getOffsetX(lon);
                 offsets[1] = gpsTile.getOffsetY(lat);
@@ -110,7 +110,7 @@ public class TileMap extends MapBase {
                 double n_x = pan.getMoveX();
                 double n_y = pan.getMoveY();
 
-                if (mPref.isTrackUp()) {
+                if (StorageService.getInstance().getPreferences().isTrackUp()) {
                     double p[] = new double[2];
                     p = Helper.rotateCoord(0.0, 0.0, bearing, n_x, n_y);
                     pan.setMove((float) (p[0] * factor), (float) (p[1] * factor));
@@ -121,7 +121,7 @@ public class TileMap extends MapBase {
                 movey = pan.getTileMoveYWithoutTear();
 
                 // Find tile of where I am on screen
-                centerTile = new Tile(mContext, mPref, gpsTile, movex, movey);
+                centerTile = new Tile(gpsTile, movex, movey);
 
                 /*
                  * Neighboring tiles with center and pan

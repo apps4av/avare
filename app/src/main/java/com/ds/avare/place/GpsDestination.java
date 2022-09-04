@@ -13,8 +13,8 @@ import com.ds.avare.utils.Helper;
 
 public class GpsDestination extends Destination {
 
-    public GpsDestination(StorageService service, String name) {
-        super(service, name);
+    public GpsDestination(String name) {
+        super(name);
 
         mDbType = GPS;
         mDestType = GPS;

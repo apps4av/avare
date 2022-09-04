@@ -58,14 +58,14 @@ public class AdsbWeatherCache {
     /**
      * 
      */
-    public AdsbWeatherCache(Context context, StorageService service) {
-        mPref = new Preferences(context);
+    public AdsbWeatherCache() {
+        mPref = StorageService.getInstance().getPreferences();
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();
         mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
-        mMetarQueue = new RateLimitedBackgroundQueue(service);
+        mMetarQueue = new RateLimitedBackgroundQueue(StorageService.getInstance());
         mNexradConus = new NexradImageConus();
         mSua = new HashMap<String, Sua>();
         mAirSig = new HashMap<String, AirSigMet>();

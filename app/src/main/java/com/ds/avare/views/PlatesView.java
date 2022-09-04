@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.views;
 
+import android.accessibilityservice.GestureDescription;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -83,23 +84,24 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         mContext = context;
 
         mPaint = new Paint();
-        mPaint.setTypeface(Helper.getTypeFace(context));
+        mPaint.setTypeface(Helper.getTypeFace(mContext));
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
 
-        mGestureDetector = new GestureDetector(context, new GestureListener());
+        mGestureDetector = new GestureDetector(mContext, new GestureListener());
         mMatrix = null;
         mShowingAD = false;
         mGpsParams = new GpsParams(null);
         mAirportLon = 0;
         mAirportLat = 0;
         mDrawing = false;
-        mPref = new Preferences(context);
+        mPref = StorageService.getInstance().getPreferences();
         setOnTouchListener(this);
         setBackgroundColor(Color.BLACK);
-        mAirplaneBitmap = DisplayIcon.getDisplayIcon(context, mPref);
-        mLineHeadingBitmap = new BitmapHolder(context, R.drawable.line_heading);
-        mDipToPix = Helper.getDpiToPix(context);
+        mAirplaneBitmap = DisplayIcon.getDisplayIcon(mContext, mPref);
+        mLineHeadingBitmap = new BitmapHolder(mContext, R.drawable.line_heading);
+        mDipToPix = Helper.getDpiToPix(mContext);
+        mService = StorageService.getInstance();
 
     }
 
@@ -177,11 +179,6 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
      * @param canvas
      */
     private void drawDrawing(Canvas canvas) {
-        if(null == mService) {
-            return;
-        }
-
-
         Paint.Cap oldCaps = mPaint.getStrokeCap();
         mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
         mPaint.setColor(Color.BLACK);
@@ -298,9 +295,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
             float endX = mBitmap.getWidth() * scale;
             float endY = mBitmap.getHeight()* scale;
 
-            if(null != mService){
-                mService.getPixelDraw().setMapPoints(x,y,endX+x,endY + y);
-            }
+            mService.getPixelDraw().setMapPoints(x,y,endX+x,endY + y);
 
             // Add plates tag PG's website
             mPaint.setColor(0x007F00);
@@ -388,30 +383,20 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         }
 
         // do not rotate info lines
-        if(mService != null) {
-            if(mPref.showPlateInfoLines()) {
-                mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR,
-                ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext).isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE,
-                SHADOW, getWidth(), getHeight(), mErrorStatus, null);
-            }
+        if(mPref.showPlateInfoLines()) {
+            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint, TEXT_COLOR,
+            ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, mContext).isConnected() ? Color.BLUE : TEXT_COLOR_OPPOSITE,
+            SHADOW, getWidth(), getHeight(), mErrorStatus, null);
+        }
 
-            if(mPref.getShowCDI()) {
-                Destination dest = mService.getDestination();
-                if (dest != null) {
-                    mService.getVNAV().drawVNAV(canvas, getWidth(), getHeight(), dest);
-                }
+        if(mPref.getShowCDI()) {
+            Destination dest = mService.getDestination();
+            if (dest != null) {
+                mService.getVNAV().drawVNAV(canvas, getWidth(), getHeight(), dest);
             }
         }
     }
-    
-    /**
-     * 
-     * @param s
-     */
-    public void setService(StorageService s) {
-        mService = s;
-    }
-    
+
     /**
      * Center to the location
      */
@@ -470,7 +455,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         }
 
         // drawing stuff
-        if(e.getPointerCount() == 1 && mDraw && mService != null) { // only draw with 1 pointer
+        if(e.getPointerCount() == 1 && mDraw) { // only draw with 1 pointer
             switch (e.getAction() & MotionEvent.ACTION_MASK) { // draw when moving with 1 pointer and there was a pointer down before
                 case MotionEvent.ACTION_DOWN:
                     mDrawing = true;
@@ -513,12 +498,10 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            if(null != mService) {
-                /*
-                 * Add separation between chars
-                 */
-                mService.getPixelDraw().addSeparation();
-            }
+            /*
+             * Add separation between chars
+             */
+            mService.getPixelDraw().addSeparation();
             return true;
         }
 

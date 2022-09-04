@@ -18,8 +18,8 @@ import java.util.List;
 public class MapsDestination extends Destination {
 
 
-    public MapsDestination(StorageService service, String name) {
-        super(service, name);
+    public MapsDestination(String name) {
+        super(name);
 
         mDbType = MAPS;
         mDestType = MAPS;
@@ -82,7 +82,7 @@ public class MapsDestination extends Destination {
                  */
                 String strAddress = mName;
 
-                Geocoder coder = new Geocoder(mService.getApplicationContext());
+                Geocoder coder = new Geocoder(StorageService.getInstance().getApplicationContext());
                 Address location = null;
 
                 /*

@@ -171,7 +171,7 @@ public class Cifp {
 
             Thread.currentThread().setName("CreateApproach");
 
-            StorageService service = (StorageService)vals[1];
+            StorageService service = StorageService.getInstance();
 
             service.newPlan();
 
@@ -215,7 +215,7 @@ public class Cifp {
                     String rw = wp.replace("RW", "");
                     Coordinate c = service.getDBResource().findRunwayCoordinates(rw, mAirport);
                     if(c != null) {
-                        Destination d = DestinationFactory.build(service, Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
+                        Destination d = DestinationFactory.build(Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
                         d.find();
                         d.setFacilityName(mAirport + rw);
                         d.setElevation(fixEle);
@@ -238,7 +238,7 @@ public class Cifp {
                     /*
                      * Add each
                      */
-                    Destination d = DestinationFactory.build(service, id, type);
+                    Destination d = DestinationFactory.build(id, type);
                     d.find(dbtype);
                     d.setElevation(fixEle);
                     service.getPlan().appendDestination(d);

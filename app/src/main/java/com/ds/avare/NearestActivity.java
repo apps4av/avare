@@ -97,7 +97,7 @@ public class NearestActivity extends BaseActivity  implements Observer {
      */
     private void goTo(String dst) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, Destination.BASE);
+        mDestination = DestinationFactory.build(dst, Destination.BASE);
         mDestination.addObserver(NearestActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -110,7 +110,7 @@ public class NearestActivity extends BaseActivity  implements Observer {
      */
     private void planTo(String dst) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, Destination.BASE);
+        mDestination = DestinationFactory.build(dst, Destination.BASE);
         mDestination.addObserver(NearestActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();

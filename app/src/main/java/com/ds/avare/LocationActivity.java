@@ -240,7 +240,7 @@ public class LocationActivity extends BaseActivity implements Observer {
      */
     private void goTo(String dst, String type) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -253,7 +253,7 @@ public class LocationActivity extends BaseActivity implements Observer {
      */
     private void planTo(String dst, String type) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -599,7 +599,7 @@ public class LocationActivity extends BaseActivity implements Observer {
                      */
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        String ret = Emergency.declare(getApplicationContext(), mPref, mService);
+                        String ret = Emergency.declare();
                         hideMenu();
                         Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
 
@@ -700,7 +700,7 @@ public class LocationActivity extends BaseActivity implements Observer {
         /*
          * Throw this in case GPS is disabled.
          */
-        if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
+        if(Gps.isGpsDisabled()) {
             mGpsWarnDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setCancelable(false);
@@ -819,7 +819,7 @@ public class LocationActivity extends BaseActivity implements Observer {
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
 
-        mInitLocation = Gps.getLastLocation(getApplicationContext());
+        mInitLocation = Gps.getLastLocation();
         if (null == mInitLocation) {
             mInitLocation = mPref.getLastLocation();
         }
@@ -1155,7 +1155,7 @@ public class LocationActivity extends BaseActivity implements Observer {
             }
         }
 
-        mLocationView.initParams(mService.getGpsParams(), mService);
+        mLocationView.initParams(mService.getGpsParams());
         mLocationView.updateParams(mService.getGpsParams());
 
         /*
@@ -1170,7 +1170,7 @@ public class LocationActivity extends BaseActivity implements Observer {
                  */
                 addr = StringPreference.formatAddressName(addr);
 
-                mDestination = DestinationFactory.build(mService, addr, Destination.MAPS);
+                mDestination = DestinationFactory.build(addr, Destination.MAPS);
                 mDestination.addObserver(LocationActivity.this);
                 mToast.setText(getString(R.string.Searching) + " " + addr);
                 mToast.show();

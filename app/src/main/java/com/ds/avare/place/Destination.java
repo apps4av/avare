@@ -89,10 +89,6 @@ public class Destination extends Observable {
     protected double mEle;
 
     private String mWindString;
-    
-    protected Preferences mPref;
-    
-    protected StorageService mService;
 
     protected boolean mLooking;
     protected boolean mInited;
@@ -122,9 +118,7 @@ public class Destination extends Observable {
     protected LinkedHashMap <String, String>mParams;
     private double mWindMetar[] = null;
 
-    public Destination(StorageService service, String name) {
-        mPref = new Preferences(service.getApplicationContext());
-        mService = service;
+    public Destination(String name) {
         mTrackShape = new TrackShape();
         mEte = "--:--";
         mEta = "--:--";
@@ -140,7 +134,7 @@ public class Destination extends Observable {
         mFound = false;
         mLooking = false;
 
-        GpsParams params = service.getGpsParams();
+        GpsParams params = StorageService.getInstance().getGpsParams();
 
         mName = name.toUpperCase(Locale.getDefault());
 
@@ -233,7 +227,9 @@ public class Destination extends Observable {
             mWindString = "-";
         }
 
-        if(!mPref.isSimulationMode()) {
+        Preferences pref = StorageService.getInstance().getPreferences();
+
+        if(!pref.isSimulationMode()) {
             double t[] = WindTriagle.getTrueFromGroundAndWind(params.getSpeed(), params.getBearing(), ws, wd);
             tas = t[0];
             hd = t[1];
@@ -244,7 +240,7 @@ public class Destination extends Observable {
         mWca = -Math.toDegrees(Math.atan2(ws * Math.sin((hd - wd) * Math.PI / 180.0), tas - ws * Math.cos((hd - wd) * Math.PI / 180.0)));
         mCrs = (hd + mWca + 360) % 360;
 
-        if(mPref.useBearingForETEA() && (!mService.getPlan().isActive())) {
+        if(pref.useBearingForETEA() && (!StorageService.getInstance().getPlan().isActive())) {
             // This is just when we have a destination set and no plan is active
             // We can't assume that we are heading DIRECTLY for the destination, so
             // we need to figure out the multiply factor by taking the COS of the difference
@@ -272,7 +268,7 @@ public class Destination extends Observable {
         }
         else {
             mEteSec = (long)(mDistance / mGroundSpeed * 3600);
-            mFuelGallons = (float)mEteSec / 3600 * mPref.getFuelBurn();
+            mFuelGallons = (float)mEteSec / 3600 * pref.getFuelBurn();
             mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
         }
 
@@ -309,7 +305,7 @@ public class Destination extends Observable {
          */
         mTrackShape.updateShape(new GpsParams(getLocationInit()), Destination.this);
         // Save last known good location
-        mPref.setLastLocation(getLocation().getLongitude(), getLocation().getLatitude());
+        StorageService.getInstance().getPreferences().setLastLocation(getLocation().getLongitude(), getLocation().getLatitude());
 
         mLooking = false;
         Destination.this.setChanged();
@@ -609,18 +605,19 @@ public class Destination extends Observable {
             // Find winds
             Metar m = null;
             WindsAloft w = null;
-            if (mPref.useAdsbWeather()) {
-                w = mService.getAdsbWeather().getWindsAloft(mLond, mLatd);
+            StorageService s = StorageService.getInstance();
+            if (s.getPreferences().useAdsbWeather()) {
+                w = s.getAdsbWeather().getWindsAloft(mLond, mLatd);
                 if (null != w) {
                     if (null != w.getStation()) {
-                        m = mService.getAdsbWeather().getMETAR(w.getStation());
+                        m = s.getAdsbWeather().getMETAR(w.getStation());
                     }
                 }
             } else {
-                w = mService.getDBResource().getWindsAloft(mLond, mLatd);
+                w = s.getDBResource().getWindsAloft(mLond, mLatd);
                 if (null != w) {
                     if (null != w.getStation()) {
-                        m = mService.getDBResource().getMetar(w.getStation());
+                        m = s.getDBResource().getMetar(w.getStation());
                     }
                 }
             }
