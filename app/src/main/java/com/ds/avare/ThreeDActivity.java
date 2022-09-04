@@ -481,22 +481,16 @@ public class ThreeDActivity extends BaseActivity {
 
 
     /* (non-Javadoc)
-     * @see android.app.Activity#onStart()
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
+
+        mService.registerGpsListener(mGpsInfc);
 
         // Clean messages
+        mGlassView.setService(mService);
         mText.setText("");
         mGlassView.setStatus(null);
         mGlassView.setAgl("");
@@ -514,9 +508,7 @@ public class ThreeDActivity extends BaseActivity {
     protected void onPause() {
         super.onPause();
 
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
+        mService.unregisterGpsListener(mGpsInfc);
 
         if (mRenderer != null) {
             mGlSurfaceView.onPause();

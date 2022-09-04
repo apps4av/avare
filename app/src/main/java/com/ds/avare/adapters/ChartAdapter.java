@@ -39,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
@@ -98,7 +99,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @param context
      */
     public ChartAdapter(Context context) {
-        mPref = new Preferences(context);
+        mPref = StorageService.getInstance().getPreferences();
         mContext = context;
         
         /*

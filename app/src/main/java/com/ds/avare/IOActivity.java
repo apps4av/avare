@@ -110,9 +110,7 @@ public class IOActivity extends BaseActivity {
         mIO = (Spinner)view.findViewById(R.id.main_spinner_ios);
         Logger.setTextView(mTextLog);
         Logger.setContext(this);
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(view);
-        mService.registerGpsListener(mGpsInfc);
 
         Bundle args = new Bundle();
         int pos = 0;
@@ -246,9 +244,16 @@ public class IOActivity extends BaseActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mService.unregisterGpsListener(mGpsInfc);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         changeFragment(mPref.getFragmentIndex());
+        mService.registerGpsListener(mGpsInfc);
     }
 
 }

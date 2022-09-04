@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -38,7 +39,7 @@ import java.util.Random;
  * @author zkhan
  *
  */
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends BaseActivity {
     
     private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
@@ -49,7 +50,6 @@ public class RegisterActivity extends Activity {
     private Button mButtonRegister;
     private EditText mEmailEditText;
     private WebView mPrivacy;
-    private Preferences mPref;
 
     private void setButtonStates() {
         if(mPref.isRegistered()) {
@@ -64,6 +64,14 @@ public class RegisterActivity extends Activity {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
 
     /**
      *
@@ -79,7 +87,6 @@ public class RegisterActivity extends Activity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        com.ds.avare.utils.Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_register);
@@ -95,9 +102,6 @@ public class RegisterActivity extends Activity {
          */
         mPrivacy = (WebView)findViewById(R.id.privacy_webview);
         mPrivacy.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "privacy"));
-
-
-        mPref = StorageService.getInstance().getPreferences();
 
         // Check if Internet present
         if (!Helper.isNetworkAvailable(this)) {

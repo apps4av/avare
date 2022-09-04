@@ -42,44 +42,31 @@ import android.widget.ProgressBar;
  * @author zkhan
  *
  */
-public class WebActivity extends Activity  {
+public class WebActivity extends BaseActivity  {
     
     private WebView mWebView;
     private EditText mSearchText;
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
-    private StorageService mService;
 
-    private GpsInterface mGpsInfc = new GpsInterface() {
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
 
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
 
     /*
      * Show views from web
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
         
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mService = StorageService.getInstance();
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.web, null);
         setContentView(view);
@@ -169,8 +156,6 @@ public class WebActivity extends Activity  {
     @Override
     public void onResume() {
         super.onResume();
-
-        Helper.setOrientationAndOn(this);
 
         mService.registerGpsListener(mGpsInfc);
 

@@ -49,9 +49,8 @@ public class Dump1090Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (((CheckBox) v).isChecked()) {
-                    mDump1090.setHelper(((IOActivity)getActivity()).getService());
                     mDump1090.connect(mIpAddress.getText().toString(), false);
-                    mDump1090.start(new Preferences(getActivity()));
+                    mDump1090.start();
                 } else {
                     mDump1090.stop();
                     mDump1090.disconnect();

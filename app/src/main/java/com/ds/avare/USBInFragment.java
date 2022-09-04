@@ -80,12 +80,11 @@ public class USBInFragment extends Fragment {
                  * Connect to the given device in list
                  */
                 if (!mUSB.isConnected()) {
-                    mUSB.setHelper(((IOActivity)getActivity()).getService());
                     mConnectButton.setText(getString(R.string.Connect));
                     mUSB.connect(mParamsText.getText().toString(), false);
-                    Preferences pref = new Preferences(getActivity());
+                    Preferences pref = StorageService.getInstance().getPreferences();
                     if (mUSB.isConnected()) {
-                        mUSB.start(pref);
+                        mUSB.start();
                         pref.setLastConnectedUSB(mParamsText.getText().toString()); // save where we connected
                     }
                     else {

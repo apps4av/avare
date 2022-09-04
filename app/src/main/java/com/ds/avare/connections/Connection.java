@@ -75,6 +75,7 @@ public abstract class Connection {
         mState = DISCONNECTED;
         mRunning = false;
         mName = name;
+        mService = StorageService.getInstance();
     }
 
     protected void setCallback(GenericCallback cb) {
@@ -144,14 +145,6 @@ public abstract class Connection {
 
 
     /**
-     * @param service
-     */
-    public void setHelper(StorageService service) {
-        mService = service;
-    }
-
-
-    /**
      *
      */
     public void stop() {
@@ -171,7 +164,7 @@ public abstract class Connection {
     /**
      *
      */
-    public void start(final Preferences pref) {
+    public void start() {
         Logger.Logit("Starting " + mName);
         if (getState() != Connection.CONNECTED) {
             Logger.Logit(mName + ": Starting failed because already started");
@@ -185,7 +178,7 @@ public abstract class Connection {
             @Override
             public void run() {
                 mRunning = true;
-                mCb.callback((Object) pref, null);
+                mCb.callback((Object) mService.getPreferences(), null);
             }
         };
         mThread.start();

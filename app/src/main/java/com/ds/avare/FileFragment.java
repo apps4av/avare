@@ -74,14 +74,13 @@ public class FileFragment extends Fragment {
                  * Connect to the given file
                  */
                 String val = mTextFile.getText().toString();
-                Preferences pref = new Preferences(getActivity());
+                Preferences pref = StorageService.getInstance().getPreferences();
                 String fl = pref.getUserDataFolder() + File.separatorChar + val;
                 if(null != val && (!mFile.isConnected())) {                    
                     mConnectButton.setText(mContext.getString(R.string.Start));
-                    mFile.setHelper(((IOActivity)getActivity()).getService());
                     mFile.connect(fl, false);
                     if(mFile.isConnected()) {
-                        mFile.start(pref);
+                        mFile.start();
                     }
                     setStates();
                 }

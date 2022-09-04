@@ -558,8 +558,6 @@ public class AirportActivity extends BaseActivity implements Observer {
 
         int lastIndex = Math.max(mListAirports.indexOf(mService.getLastAfdAirport()), 0);
         setNewDestinationFromPos(lastIndex);
-
-        Helper.setOrientationAndOn(this);
     }
 
     @Override

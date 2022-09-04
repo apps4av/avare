@@ -55,18 +55,16 @@ import java.io.File;
  * @author zkhan
  *
  */
-public class ChartsDownloadActivity extends Activity {
+public class ChartsDownloadActivity extends BaseActivity {
     
     private String mName;
     private ProgressDialog mProgressDialog;
     private Download mDownload;
     private Delete mDelete;
     
-    private Preferences mPref;
     private static ChartAdapter mChartAdapter = null;
     private Toast mToast;
     
-    private StorageService mService;
     private Button mDLButton;
     private Button mUpdateButton;
     private Button mDeleteButton;
@@ -80,39 +78,20 @@ public class ChartsDownloadActivity extends Activity {
     private AlertDialog mAlertDialog;
 
     /*
-     * Start GPS
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
      */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
 
     /**
      * 
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        mService = StorageService.getInstance();
-        mPref = mService.getPreferences();
 
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
 
@@ -207,8 +186,7 @@ public class ChartsDownloadActivity extends Activity {
      */
     @Override
     public void onResume() {
-        super.onResume();        
-        Helper.setOrientationAndOn(this);
+        super.onResume();
 
         mService.registerGpsListener(mGpsInfc);
 

@@ -23,6 +23,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
+import android.view.Window;
 
 /**
  * 
@@ -56,8 +57,9 @@ public class PrefActivity extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         Helper.setTheme(this);
-        super.onCreate(savedInstanceState); 
+        super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);

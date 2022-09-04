@@ -81,7 +81,7 @@ public class BlueToothOutFragment extends Fragment {
                 /*
                  * If connected, disconnect
                  */
-                Preferences pref = new Preferences(getActivity());
+                Preferences pref = StorageService.getInstance().getPreferences();
                 if (mBt.isConnected()) {
                     mBt.stop();
                     mBt.disconnect();
@@ -95,10 +95,9 @@ public class BlueToothOutFragment extends Fragment {
                 String val = (String) mSpinner.getSelectedItem();
                 if (null != val && (!mBt.isConnected())) {
                     mConnectButton.setText(getString(R.string.Connect));
-                    mBt.setHelper(((IOActivity)getActivity()).getService());
                     mBt.connect(val, mSecureCb.isChecked());
                     if (mBt.isConnected()) {
-                        mBt.start(pref);
+                        mBt.start();
                         pref.setLastConnectedBtOut(val); // save where we connected
                     }
                     setStates();

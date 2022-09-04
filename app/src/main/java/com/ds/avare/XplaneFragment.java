@@ -59,9 +59,8 @@ public class XplaneFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (((CheckBox) v).isChecked()) {
-                    mXp.setHelper(((IOActivity)getActivity()).getService());
                     mXp.connect(mTextXplanePort.getText().toString(), false);
-                    mXp.start(new Preferences(getActivity()));
+                    mXp.start();
                 }
                 else {
                     mXp.stop();

@@ -124,7 +124,6 @@ public class NearestActivity extends BaseActivity  implements Observer {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
         mIsWaypoint = false;

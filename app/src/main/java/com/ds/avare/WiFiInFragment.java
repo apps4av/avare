@@ -64,13 +64,12 @@ public class WiFiInFragment extends Fragment {
             
             @Override
             public void onClick(View v) {
-                Preferences pref = new Preferences(getActivity());
+                Preferences pref = StorageService.getInstance().getPreferences();
 
                 if (((CheckBox) v).isChecked()) {
-                    mWifi.setHelper(((IOActivity)getActivity()).getService());
                     mWifi.connect(mTextWifiPort.getText().toString(), false);
                     pref.setLastConnectedWifi(mTextWifiPort.getText().toString()); //  save for connect next time
-                    mWifi.start(pref);
+                    mWifi.start();
                 }
                 else {
                     mWifi.stop();

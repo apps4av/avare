@@ -85,11 +85,7 @@ public class ChecklistActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-     
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         mIsPageLoaded = false;
         mInited = false;
 
@@ -222,8 +218,6 @@ public class ChecklistActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         
-        Helper.setOrientationAndOn(this);
-
         mService.registerGpsListener(mGpsInfc);
 
         /*

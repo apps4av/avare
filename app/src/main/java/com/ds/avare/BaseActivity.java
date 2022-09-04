@@ -43,6 +43,10 @@ public class BaseActivity extends Activity {
         }
     }
 
+    public void onBackPressedExit() {
+        super.onBackPressed();
+    }
+
     protected GpsInterface mGpsInfc = new GpsInterface() {
 
         @Override

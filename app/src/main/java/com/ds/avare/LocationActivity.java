@@ -288,7 +288,7 @@ public class LocationActivity extends BaseActivity implements Observer {
                  * Go to background
                  */
                 setTrackState(false);   // ensure tracks are turned off
-                LocationActivity.super.onBackPressed();
+                LocationActivity.super.onBackPressedExit();
                 dialog.dismiss();
             }
         });
@@ -347,10 +347,7 @@ public class LocationActivity extends BaseActivity implements Observer {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -947,7 +944,7 @@ public class LocationActivity extends BaseActivity implements Observer {
         if (null != to && (!c.isConnected())) {
             c.connect(to, secure);
             if (c.isConnected()) {
-                c.start(mPref);
+                c.start();
             }
         }
     }
@@ -1093,10 +1090,10 @@ public class LocationActivity extends BaseActivity implements Observer {
             startActivity(i);
         }
         // connect to all external receivers
-        ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()).setHelper(mService);
-        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()).setHelper(mService);
-        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()).setHelper(mService);
-        ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()).setHelper(mService);
+        ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext());
 
         mService.registerGpsListener(mGpsInfc);
         mService.getFlightStatus().registerListener(mFSInfc);

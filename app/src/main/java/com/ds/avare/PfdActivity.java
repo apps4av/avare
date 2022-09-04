@@ -129,8 +129,6 @@ public class PfdActivity extends BaseActivity {
         mPitotStaticRates = new PitotStaticRates();
         mPfdView = (PfdView) view.findViewById(R.id.pfd_view);
 
-        mService.registerGpsListener(mGpsInfc);
-        mService.registerOrientationListener(mOrientationInfc);
 
     }
     /* (non-Javadoc)
@@ -140,6 +138,8 @@ public class PfdActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
 
+        mService.registerGpsListener(mGpsInfc);
+        mService.registerOrientationListener(mOrientationInfc);
         mRollReverse = mPref.reverseRollInAhrs();
     }
 
