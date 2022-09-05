@@ -115,6 +115,16 @@ public class AudibleTrafficAlertsTest {
     }
 
     @Test
+    public void locationAfterTime_eastForAShortTimeSlowlyShowsSomeMovement() {
+        final double lat = 41.184505, lon = -95.948730, time = .008952 /* hour */;
+        final float velo = 37; /* knots */
+        final float heading = 90; /* East */
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading,velo, time);
+        Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
+        Assert.assertNotEquals("new lon", lon, latLonOverTime[1], 0.0000001);
+    }
+
+    @Test
     public void locationAfterTime_eastAt60ktsNearEquatorIsAboutOneDegreeLonHalfHour() {
         final double lat = 10, lon = -95, time = .5 /* hour */;
         final float velo = 60; /* knots */
