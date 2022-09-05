@@ -140,7 +140,7 @@ public class KMLRecorder {
      * Default constructor. Allocate the list that holds our collection
      * of gps points
      */
-    public KMLRecorder(Context ctx){
+    public KMLRecorder() {
     	mPositionHistory = new LinkedList<>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);

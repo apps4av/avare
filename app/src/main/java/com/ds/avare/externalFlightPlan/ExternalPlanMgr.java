@@ -25,10 +25,8 @@ public class ExternalPlanMgr {
 
 	/***
 	 * public constructor for user defined waypoints collection
-	 * @param service the storage service
-	 * @param context context
 	 */
-	public ExternalPlanMgr(StorageService service, Context context) {
+	public ExternalPlanMgr() {
 
 		// Time to load all the points in
 		forceReload();

@@ -57,6 +57,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
     private GestureDetector            mGestureDetector;
     private Context                     mContext;
     private boolean                     mDrawing;
+    private String                      mOldBitmapName;
 
 
     /*
@@ -163,14 +164,27 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         postInvalidate();
     }
 
-    
+
+    @Override
+    public void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        center();
+    }
 
     /**
      * @param holder
      */
     public void setBitmap(BitmapHolder holder) {
         mBitmap = holder;
-        center();
+        if(null != holder) {
+            if(mOldBitmapName != null && holder.getName() != null) {
+                if(!mOldBitmapName.equals(holder.getName())) {
+                    center(); // center when new plate loaded
+                }
+                mOldBitmapName = holder.getName();
+            }
+            mOldBitmapName = holder.getName();
+        }
     }
 
 

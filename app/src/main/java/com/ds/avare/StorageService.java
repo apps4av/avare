@@ -11,23 +11,10 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.os.Binder;
-import android.os.Build;
-import android.os.IBinder;
-import android.provider.Settings;
-
-import androidx.core.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
@@ -221,11 +208,8 @@ public class StorageService  {
      */
     private BitmapHolder mPlateDiagramBitmap;
 
-
-    private boolean mIsGpsOn;
-    
     private int mCounter;
-    
+
     private TileMap mTiles;
     
     // Handler for the top two lines of status information
@@ -320,7 +304,7 @@ public class StorageService  {
 
         mInternetWeatherCache = new InternetWeatherCache();
         mInternetWeatherCache.parse();
-        mTFRFetcher = new TFRFetcher(mContext);
+        mTFRFetcher = new TFRFetcher();
         mTFRFetcher.parse();
         mShapeFetcher = new ShapeFetcher();
         mShapeFetcher.parse();
@@ -328,7 +312,6 @@ public class StorageService  {
 
         mTimer = new Timer();
         TimerTask gpsTime = new UpdateTask();
-        mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
@@ -338,12 +321,12 @@ public class StorageService  {
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
         mAdsbWeatherCache = new AdsbWeatherCache();
-        mAdsbTfrCache = new TfrCache(mContext);
+        mAdsbTfrCache = new TfrCache();
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mLastLocationUpdate = 0;
 
-        mCap = new DrawCapLines(this, mContext, Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
+        mCap = new DrawCapLines(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         mInfoLines = new InfoLines();
 
@@ -360,7 +343,7 @@ public class StorageService  {
         /*
          * Start up the KML recorder feature
          */
-        mKMLRecorder = new KMLRecorder(mContext);
+        mKMLRecorder = new KMLRecorder();
         
         /*
          * Internet nexrad
@@ -370,7 +353,7 @@ public class StorageService  {
         /*
          * Internet metar
          */
-        mMetarLayer = new MetarLayer(mContext);
+        mMetarLayer = new MetarLayer();
 
         /*
          * Start the odometer now
@@ -397,7 +380,7 @@ public class StorageService  {
         mFlightStatus = new FlightStatus(mGpsParams);
         
         // For handling external flight plans
-        mExternalPlanMgr = new ExternalPlanMgr(this, mContext);
+        mExternalPlanMgr = new ExternalPlanMgr();
 
         // Allocate the nav comments object
         mNavComments = new NavComments();
@@ -964,14 +947,8 @@ public class StorageService  {
          */
         public void run() {
 
-            /*
-             * Stop the GPS delayed by 1 to 2 minutes if no other activity is registered 
-             * to it for 1 to 2 minutes.
-             */
+            // load things periodically
             synchronized(this) {
-                if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2 * 60)) {
-                    mGps.stop();
-                }
                 if(0 == mCounter % 5) {
                     if(null != mGpsParams) {
                         mObstacles = mDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
@@ -994,9 +971,6 @@ public class StorageService  {
          * If first listener, start GPS
          */
         mGps.start();
-        synchronized(this) {
-            mIsGpsOn = true;
-        }
         synchronized(mGpsCallbacks) {
             mGpsCallbacks.add(gps);
         }
@@ -1007,23 +981,11 @@ public class StorageService  {
      * @param gps
      */
     public void unregisterGpsListener(GpsInterface gps) {
-        
-        boolean isempty = false;
-        
+
         synchronized(mGpsCallbacks) {
             mGpsCallbacks.remove(gps);
-            isempty = mGpsCallbacks.isEmpty();
         }
         
-        /*
-         * If no listener, relinquish GPS control
-         */
-        if(isempty) {
-            synchronized(this) {
-                mCounter = 0;
-                mIsGpsOn = false;                
-            }            
-        }
     }
 
     /**
@@ -1184,7 +1146,7 @@ public class StorageService  {
      * 
      */
     public void deleteTFRFetcher() {
-        mTFRFetcher = new TFRFetcher(mContext);
+        mTFRFetcher = new TFRFetcher();
     }
 
     /**
@@ -1247,7 +1209,8 @@ public class StorageService  {
     
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
-            mShadowedText = new ShadowedText(mContext);
+            mShadowedText = new ShadowedText();
+            mShadowedText = new ShadowedText();
         }
     	return mShadowedText;
     }

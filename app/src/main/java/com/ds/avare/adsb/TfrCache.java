@@ -31,7 +31,7 @@ public class TfrCache {
     private HashMap<String, AdsbTfr> mTfrs;
     private Preferences mPref;
 
-    public TfrCache(Context ctx) {
+    public TfrCache() {
         mTfrs = new HashMap<String, AdsbTfr>();
         mPref = StorageService.getInstance().getPreferences();
     }

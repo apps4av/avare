@@ -13,9 +13,17 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Application;
+
 /**
  * Created by zkhan on 1/25/16.
  */
 
 public class AvareApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // init storage class
+        StorageService s = StorageService.getInstance();
+        s.setContext(getApplicationContext());
+    }
 }

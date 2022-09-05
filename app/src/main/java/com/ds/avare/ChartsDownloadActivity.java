@@ -178,7 +178,7 @@ public class ChartsDownloadActivity extends BaseActivity {
             }
         });
 
-        RateApp.rateIt(this, mPref);
+        RateApp.rateIt(ChartsDownloadActivity.this, mPref);
     }
             
     /**

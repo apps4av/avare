@@ -314,7 +314,7 @@ public class PlanActivity extends BaseActivity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(mService.getApplicationContext());
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(PlanActivity.this);
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {

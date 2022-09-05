@@ -194,8 +194,14 @@ public class PlatesTagView extends PanZoomView {
 
         postInvalidate();
     }
-    
-    
+
+    @Override
+    public void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        center();
+    }
+
+
     /**
      * Current X with scale adjusted
      */

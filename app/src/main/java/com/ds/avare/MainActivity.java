@@ -51,10 +51,8 @@ import com.ds.avare.utils.Helper;
 public class MainActivity extends TabActivity {
 
     TabHost mTabHost;
-    float    mTabHeight;
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
-    Preferences mPref;
     TextView mTextView;
     Button mButton;
 
@@ -86,7 +84,7 @@ public class MainActivity extends TabActivity {
          * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
          * also add the new tab to the preferences.getTabs() method.
          */
-        long tabItems = mPref.getTabs();
+        long tabItems = StorageService.getInstance().getPreferences().getTabs();
 
         // We will always show the main chart tab
         setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
@@ -150,11 +148,6 @@ public class MainActivity extends TabActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        // static storage init
-        StorageService s = StorageService.getInstance();
-        s.setContext(getApplicationContext());
-        mPref = s.getPreferences();
 
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
