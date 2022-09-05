@@ -285,9 +285,10 @@ public class LocationActivity extends BaseActivity implements Observer {
              */
             public void onClick(DialogInterface dialog, int which) {
                 /*
-                 * Go to background
+                 * Exit
                  */
                 setTrackState(false);   // ensure tracks are turned off
+                mService.destroy();
                 LocationActivity.super.onBackPressedExit();
                 dialog.dismiss();
             }

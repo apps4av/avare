@@ -424,7 +424,13 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
         if(mBitmap != null) {
             float h = getHeight();
             float ih = mBitmap.getHeight();
+            float w = getWidth();
+            float iw = mBitmap.getWidth();
             float fac = h / ih;
+            float fac2 = w / iw;
+            if(fac > fac2) {
+                fac = fac2;
+            }
             mScale.setScaleFactor(fac);
         }
 
