@@ -57,14 +57,16 @@ public class AudibleTrafficAlerts implements Runnable {
     protected static class AlertItem {
         final private Traffic traffic;
         final private Location ownLocation;
+        final private double distanceNmi;
         final private int ownAltitude;
         final private ClosingEvent closingEvent;
 
-        protected AlertItem(Traffic traffic, Location ownLocation, int ownAltitude, ClosingEvent closingEvent) {
+        protected AlertItem(Traffic traffic, Location ownLocation, int ownAltitude, ClosingEvent closingEvent, double distnaceNmi) {
             this.ownAltitude = ownAltitude;
             this.traffic = traffic;
             this.ownLocation = ownLocation;
             this.closingEvent = closingEvent;
+            this.distanceNmi = distnaceNmi;
         }
 
         @Override
@@ -236,7 +238,7 @@ public class AudibleTrafficAlerts implements Runnable {
                         }
                     }
                 }
-                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude, ce));
+                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude, ce, currentDistance));
             }
         }
 
