@@ -298,7 +298,12 @@ public class ThreeDActivity extends BaseActivity {
                                                 mTempBitmap.recycle();
                                             }
                                             mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
-                                            mObstacles = StorageService.getInstance().getDBResource().getObstacles(mAreaMapper.getElevationTile().getLongitude(), mAreaMapper.getElevationTile().getLatitude(), 0); // show all obstacles
+                                            if(mPref.showObstacles()) {
+                                                mObstacles = StorageService.getInstance().getDBResource().getObstacles(mAreaMapper.getElevationTile().getLongitude(), mAreaMapper.getElevationTile().getLatitude(), 0); // show all obstacles
+                                            }
+                                            else {
+                                                mObstacles = null;
+                                            }
                                             if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.getServerDataFolder())) {
                                                 mVertices = null;
                                             }

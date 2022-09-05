@@ -145,7 +145,10 @@ public class TileMap extends MapBase {
                 Thread.currentThread().setName("Tile");
 
                 // Get obstacles where user is looking
-                LinkedList<Obstacle> obs = StorageService.getInstance().getDBResource().getObstacles(centerTile.getLongitude(), centerTile.getLatitude(), altitude);
+                LinkedList<Obstacle> obs = null;
+                if(StorageService.getInstance().getPreferences().showObstacles()) {
+                    obs = StorageService.getInstance().getDBResource().getObstacles(centerTile.getLongitude(), centerTile.getLatitude(), altitude);
+                }
 
                 /*
                  * Load tiles, draw in UI thread

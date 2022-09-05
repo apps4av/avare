@@ -219,6 +219,14 @@ public class DataSource {
         ContentProviderHelper.replaceUserRecentName(mContext, id, newName);
     }
 
+    public LinkedList<Coordinate> getUserDraw() {
+        return ContentProviderHelper.getUserDraw(mContext);
+    }
+
+    public void setUserDraw(LinkedList<Coordinate> points) {
+        ContentProviderHelper.setUserDraw(mContext, points);
+    }
+
     public void setUserLists(LinkedList<Checklist> lists) {
         ContentProviderHelper.setUserLists(mContext, lists);
     }
