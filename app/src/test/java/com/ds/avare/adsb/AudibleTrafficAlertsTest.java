@@ -82,7 +82,7 @@ public class AudibleTrafficAlertsTest {
         final int velo1 = 60, velo2 = 60;
         final float heading1 = 270, heading2 = 90;
         final double caTime = AudibleTrafficAlerts.closestApproachTime(lat1, lon1, lat2, lon2, heading1, heading2, velo1, velo2);
-        Assert.assertEquals("Closest approach seconds", .25, caTime, .5);
+        Assert.assertEquals("Closest approach seconds", .35, Math.abs(caTime), .1);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AudibleTrafficAlertsTest {
         final int velo1 = 60, velo2 = 60;
         final float heading1 = 180, heading2 = 0;
         final double caTime = AudibleTrafficAlerts.closestApproachTime(lat1, lon1, lat2, lon2, heading1, heading2, velo1, velo2);
-        Assert.assertEquals("Closest approach seconds", .25, caTime, .1);
+        Assert.assertEquals("Closest approach seconds", .5, Math.abs(caTime), .1);
     }
 
     @Test

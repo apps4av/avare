@@ -311,10 +311,10 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
                                            float heading1, float heading2, int velocity1, int velocity2) {
-        final double a = (lon2 - lon1) * (60.0 * Math.cos(Math.toRadians((lat1+lat2)/2.0000))) ;
-        final double b = velocity2*Math.cos(Math.toDegrees(heading2)) - velocity1*Math.cos(Math.toDegrees(heading1));
-        final double c = (lat2 - lat1) * 60.0;
-        final double d = velocity2*Math.sin(Math.toDegrees(heading2)) - velocity1*Math.sin(Math.toDegrees(heading1));
+        final double a = (lon2 - lon1) * (60.0000 * Math.cos(Math.toRadians((lat1+lat2)/2.0000))) ;
+        final double b = velocity2*Math.sin(Math.toRadians(heading2)) - velocity1*Math.sin(Math.toRadians(heading1));
+        final double c = (lat2 - lat1) * 60.0000;
+        final double d = velocity2*Math.cos(Math.toRadians(heading2)) - velocity1*Math.cos(Math.toRadians(heading1));
 
         return - ((a*b + c*d) / (b*b + d*d));
     }
