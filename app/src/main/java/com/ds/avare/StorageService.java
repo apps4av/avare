@@ -132,8 +132,6 @@ public class StorageService  {
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
-    private LinkedList<Obstacle> mObstacles;
-
     private float[] mMatrix;
 
 	/*
@@ -183,11 +181,6 @@ public class StorageService  {
 
     private ShapeFetcher mShapeFetcher;
 
-    /**
-     * For performing periodic activities.
-     */
-    private Timer mTimer;
-    
     /*
      * A list of GPS listeners
      */
@@ -310,8 +303,6 @@ public class StorageService  {
         mShapeFetcher.parse();
         mGpsParamsExtended = new ExtendedGpsParams();
 
-        mTimer = new Timer();
-        TimerTask gpsTime = new UpdateTask();
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
@@ -392,13 +383,7 @@ public class StorageService  {
         mFuelTimer = new FuelTimer();
         mUpTimer = new UpTimer();
 
-        // Create a BlueTooth Output connection and give it to the autopilot
-        //BTOutConnection btOut = BTOutConnection.getInstance(this);
-        //btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
-        //mAutoPilot = new AutoPilot(btOut);
 
-        mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
-        
         /*
          * Start GPS, and call all activities registered to listen to GPS
          */
@@ -618,9 +603,6 @@ public class StorageService  {
         
         System.gc();
         
-        if(mTimer != null) {
-            mTimer.cancel();
-        }
         if(mGps != null) {
             mGps.stop();
         }
@@ -937,32 +919,6 @@ public class StorageService  {
     }
 
     /**
-     * @author zkhan
-     *
-     */
-    private class UpdateTask extends TimerTask {
-        
-        /* (non-Javadoc)
-         * @see java.util.TimerTask#run()
-         */
-        public void run() {
-
-            // load things periodically
-            synchronized(this) {
-                if(0 == mCounter % 5) {
-                    if(null != mGpsParams) {
-                        mObstacles = mDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
-                    }
-                }
-                if(0 == mCounter % 60) {
-                }
-                mCounter++;
-            }
-
-        }
-    }
-    
-    /**
      * 
      * @param gps
      */
@@ -1249,10 +1205,6 @@ public class StorageService  {
 	public DrawCapLines getCap() {
 		return mCap;
 	}
-
-    public LinkedList<Obstacle> getObstacles() {
-        return mObstacles;
-    }
 
 
     /**

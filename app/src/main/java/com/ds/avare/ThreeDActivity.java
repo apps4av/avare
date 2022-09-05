@@ -86,6 +86,8 @@ public class ThreeDActivity extends BaseActivity {
     private ThreeDSurfaceView mGlSurfaceView;
     private TerrainRenderer mRenderer = null;
 
+    private LinkedList<Obstacle> mObstacles;
+
     // This task loads bitmaps and makes elevation vertices in background
     private AsyncTask<Object, Void, Float> mLoadTask;
 
@@ -296,6 +298,7 @@ public class ThreeDActivity extends BaseActivity {
                                                 mTempBitmap.recycle();
                                             }
                                             mTempBitmap = new BitmapHolder(SubTile.DIM, SubTile.DIM);
+                                            mObstacles = StorageService.getInstance().getDBResource().getObstacles(mAreaMapper.getElevationTile().getLongitude(), mAreaMapper.getElevationTile().getLatitude(), 0); // show all obstacles
                                             if(!mAreaMapper.getElevationTile().load(mTempBitmap, mPref.getServerDataFolder())) {
                                                 mVertices = null;
                                             }
@@ -365,7 +368,7 @@ public class ThreeDActivity extends BaseActivity {
                             Traffic.draw(mService, mAreaMapper, mRenderer);
 
                             // Draw obstacles
-                            LinkedList<Obstacle> obs = mService.getObstacles();
+                            LinkedList<Obstacle> obs = mObstacles;
                             if (null != obs) {
 
                                 Vector4d obstacles[] = new Vector4d[obs.size()];

@@ -160,6 +160,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     private Projection mPointProjection;
     private Projection mPointProjectionAirport;
+    private LinkedList<Obstacle> mObstacles;
 
     /*
      * Is it drawing?
@@ -712,7 +713,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
     private void drawObstacles(Canvas canvas, DrawingContext ctx) {
         if(mPref.showObstacles()) {
-            LinkedList<Obstacle> obs = mService.getObstacles();
+            LinkedList<Obstacle> obs = mObstacles;
             if((obs != null) && (null == mPointProjection)) {
                 mPaint.setShadowLayer(0, 0, 0, 0);
                 for (Obstacle o : obs) {
@@ -1115,7 +1116,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     private void loadTiles() {
         TileMap map = mService.getTiles();
-        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mPan, mScale, mGpsParams.getBearing(),
+        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude(), mPan, mScale, mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
@@ -1132,6 +1133,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
                         mGpsTile = t.gpsTile;
                         mOnChart = type + "\n" + t.chart;
+                        mObstacles = t.obstacles;
                         /*
                          * And pan
                          */

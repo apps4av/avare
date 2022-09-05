@@ -17,12 +17,15 @@ import android.os.AsyncTask;
 
 import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+
+import java.util.LinkedList;
 
 
 /**
@@ -66,7 +69,7 @@ public class TileMap extends MapBase {
      * Function that loads new tiles in background
      *
      */
-    public void loadTiles(final double lon, final double lat, final Pan panIn, final Scale scale, final double bearing, final GenericCallback callbackDone) {
+    public void loadTiles(final double lon, final double lat, final double altitude, final Pan panIn, final Scale scale, final double bearing, final GenericCallback callbackDone) {
 
         if(mTileTask != null && mTileTask.getStatus() == AsyncTask.Status.RUNNING) {
             mTileTask.cancel(true);
@@ -140,6 +143,10 @@ public class TileMap extends MapBase {
             @Override
             protected TileUpdate doInBackground(Void... vals) {
                 Thread.currentThread().setName("Tile");
+
+                // Get obstacles where user is looking
+                LinkedList<Obstacle> obs = StorageService.getInstance().getDBResource().getObstacles(centerTile.getLongitude(), centerTile.getLatitude(), altitude);
+
                 /*
                  * Load tiles, draw in UI thread
                  */
@@ -165,6 +172,7 @@ public class TileMap extends MapBase {
                 t.offsets = offsets;
                 t.factor = factor;
                 t.chart = chart;
+                t.obstacles = obs;
 
                 return t;
             }
@@ -204,6 +212,7 @@ public class TileMap extends MapBase {
         public float factor;
         public Tile centerTile;
         public Tile gpsTile;
+        public LinkedList<Obstacle> obstacles;
     }
 
 }
