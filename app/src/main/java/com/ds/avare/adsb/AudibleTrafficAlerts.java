@@ -1,11 +1,14 @@
 package com.ds.avare.adsb;
 
+
 import android.content.Context;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 
 import com.ds.avare.R;
@@ -352,21 +355,35 @@ public class AudibleTrafficAlerts implements Runnable {
      * Helper class for playing synchronous, sequential sound samples
      */
     protected static class SequentialSoundPoolPlayer implements SoundPool.OnLoadCompleteListener {
-        private final SoundPool sp;
+        private static final SoundPool sp = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
         private final HashMap<Integer, Long> soundDurationMap;
         private final List<Integer> loadedSounds;
         private Handler handler;
         private boolean isPlaying = false;
         private Context ctx;
+        private int delayCounter = 0;
+        private long lastPlayTime = 0;
 
+        private static class SoundPlayer implements Runnable {
+            final private int soundId;
+            public SoundPlayer(int soundId) {
+                this.soundId = soundId;
+            }
+
+            @Override
+            public void run() {
+                sp.play(soundId, 1, 1, 1, 0, 1);
+            }
+        }
 
         SequentialSoundPoolPlayer(Context ctx) {
-            sp = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
             this.ctx = ctx;
             soundDurationMap = new HashMap<>();
             loadedSounds = new ArrayList<>();
-            handler = new Handler();
-            sp.setOnLoadCompleteListener(this);
+            handler = new Handler(Looper.getMainLooper());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+                sp.setOnLoadCompleteListener(this);
+            }
         }
 
         public synchronized int load(int resId) {
@@ -382,20 +399,21 @@ public class AudibleTrafficAlerts implements Runnable {
         }
 
         public synchronized void playSequence(List<Integer> soundIds) {
-                for (Integer soundId : soundIds)
-                    sequentialPlay(soundId);
+            final long timeSinceLastPlay = System.currentTimeMillis()-this.lastPlayTime;
+            if (timeSinceLastPlay/1000.0 < singleton.MAX_ALERT_FREQUENCY_SECONDS)
+                delayCounter += MAX_ALERT_FREQUENCY_SECONDS*1000 - timeSinceLastPlay;
+            else
+                delayCounter = 0;
+            for (Integer soundId : soundIds)
+                delayedPlay(soundId);
+            this.lastPlayTime = System.currentTimeMillis();
         }
 
-        private synchronized void sequentialPlay(int soundId) {
+        private synchronized  void delayedPlay(int soundId) {
             if (!loadedSounds.contains(soundId))
-                throw new IllegalStateException("This soundId is not yet loaded: "+soundId);
-            sp.play(soundId, 1f, 1f, 1, 0, 1);
-            try {
-                // Give sound time to finish before returning, based on known duration
-                Thread.sleep(soundDurationMap.get(soundId));
-            } catch (InterruptedException e) {
-                /* Expected */
-            }
+                throw new IllegalStateException("SoundId not loaded yet: "+soundId);
+            handler.postDelayed(new SoundPlayer(soundId), delayCounter);
+            delayCounter += soundDurationMap.get(soundId);
         }
 
         private long getSoundDuration(Context context, int rawId){
