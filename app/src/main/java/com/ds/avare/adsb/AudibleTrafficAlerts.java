@@ -138,7 +138,9 @@ public class AudibleTrafficAlerts implements Runnable {
             new int[] { R.raw.tr_cl_01, R.raw.tr_cl_02, R.raw.tr_cl_03, R.raw.tr_cl_04, R.raw.tr_cl_05,
                 R.raw.tr_cl_06, R.raw.tr_cl_07, R.raw.tr_cl_08, R.raw.tr_cl_09, R.raw.tr_cl_10,
                 R.raw.tr_cl_11, R.raw.tr_cl_12, R.raw.tr_cl_13, R.raw.tr_cl_14, R.raw.tr_cl_15,
-                R.raw.tr_cl_16, R.raw.tr_cl_17, R.raw.tr_cl_18, R.raw.tr_cl_19, R.raw.tr_cl_20 },
+                R.raw.tr_cl_16, R.raw.tr_cl_17, R.raw.tr_cl_18, R.raw.tr_cl_19, R.raw.tr_cl_20,
+                R.raw.tr_cl_21, R.raw.tr_cl_22, R.raw.tr_cl_23, R.raw.tr_cl_24, R.raw.tr_cl_25,
+                R.raw.tr_cl_26, R.raw.tr_cl_27, R.raw.tr_cl_28, R.raw.tr_cl_29, R.raw.tr_cl_30 },
             R.raw.tr_cl_over
         );
     }
@@ -385,7 +387,7 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     /**
-     * Player synchronous, sequential sound samples (e.g., an audio alert) via in-memory SoundPool samples
+     * Plays synchronous, sequential sound samples (e.g., an audio alert) via in-memory SoundPool
      */
     protected static class SequentialSoundPoolPlayer
             implements SoundPool.OnLoadCompleteListener, SoundSequenceOnCompletionListener
