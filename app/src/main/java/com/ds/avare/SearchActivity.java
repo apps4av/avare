@@ -59,13 +59,10 @@ import java.util.Observer;
  * @author zkhan
  *
  */
-public class SearchActivity extends Activity implements Observer {
+public class SearchActivity extends BaseActivity implements Observer {
 
-    private StorageService mService;
-    
     private ListView mSearchListView;
     private EditText mSearchText;
-    private Preferences mPref;
     private Toast mToast;
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
@@ -86,47 +83,13 @@ public class SearchActivity extends Activity implements Observer {
      */
     private Destination mDestination;
 
-    
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
-
-    
     /**
      * 
      * @param dst
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -140,7 +103,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -152,9 +115,6 @@ public class SearchActivity extends Activity implements Observer {
      * 
      */
     private void initList() {
-        if(null == mService) {
-            return; // this could be called in race condition to get service
-        }
         String [] vals = mService.getDBResource().getUserRecents();
         mAdapter = new SearchAdapter(SearchActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
@@ -166,15 +126,9 @@ public class SearchActivity extends Activity implements Observer {
      * 
      */
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-
-        mService = null;
         mIsWaypoint = false;
-        mPref = new Preferences(getApplicationContext());
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.search, null);
@@ -228,7 +182,7 @@ public class SearchActivity extends Activity implements Observer {
             public boolean onItemLongClick(AdapterView<?> arg0, View v,
                                            int index, long arg3) {
                 mSelected = mAdapter.getItem(index);
-                if (mSelected == null || null == mService) {
+                if (mSelected == null) {
                     return true;
                 }
 
@@ -289,9 +243,6 @@ public class SearchActivity extends Activity implements Observer {
                         if (null == mSelected) {
                             return null;
                         }
-                        if (mService == null) {
-                            return null;
-                        }
 
                         if (param.equals("CSup")) {
                             if (null != mSelected) {
@@ -304,10 +255,8 @@ public class SearchActivity extends Activity implements Observer {
                                     return null; // no CSup for !airport
                                 }
 
-                                if (mService != null) {
-                                    mService.setLastAfdAirport(id);
-                                    ((MainActivity) SearchActivity.this.getParent()).showAfdTab();
-                                }
+                                mService.setLastAfdAirport(id);
+                                ((MainActivity) SearchActivity.this.getParent()).showAfdTab();
                             }
                         } else if (param.equals("Plate")) {
                             if (null != mSelected) {
@@ -316,11 +265,9 @@ public class SearchActivity extends Activity implements Observer {
                                     return null;
                                 }
                                 if (PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), id)) {
-                                    if (mService != null) {
-                                        mService.setLastPlateAirport(id);
-                                        mService.setLastPlateIndex(0);
-                                        ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
-                                    }
+                                    mService.setLastPlateAirport(id);
+                                    mService.setLastPlateIndex(0);
+                                    ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
                                 }
                             }
                         } else if (param.equals("+Plan")) {
@@ -479,41 +426,6 @@ public class SearchActivity extends Activity implements Observer {
     }
 
 
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Now initialize the list to recent in case someone needs to go there, and not search
-             */
-            initList();
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
      */
@@ -528,14 +440,12 @@ public class SearchActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
 
         /*
-         * Registering our receiver
-         * Bind now.
+         * Now initialize the list to recent in case someone needs to go there, and not search
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        initList();
+        mService.registerGpsListener(mGpsInfc);
     }
     
     /* (non-Javadoc)
@@ -545,10 +455,8 @@ public class SearchActivity extends Activity implements Observer {
     protected void onPause() {
         super.onPause();
         
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-        
+        mService.unregisterGpsListener(mGpsInfc);
+
         if(null != mSearchText) {
             mSearchText.setText("");
         }
@@ -569,37 +477,8 @@ public class SearchActivity extends Activity implements Observer {
             }
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
-
     }
     
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
- 
     /**
      * 
      */
@@ -630,9 +509,7 @@ public class SearchActivity extends Activity implements Observer {
                 mService.getDBResource().setUserRecent(s);
 
                 if(!mIsWaypoint) {
-                    if(mService != null) {
-                        mService.setDestination((Destination)arg0);
-                    }
+                    mService.setDestination((Destination)arg0);
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
                     MainActivity m = (MainActivity)this.getParent();
@@ -641,15 +518,13 @@ public class SearchActivity extends Activity implements Observer {
                     }
                 }
                 else {
-                    if(mService != null) {
-                        if(mService.getPlan().appendDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
-                        }
-                        else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
-                        }
-                        mToast.show();                            
+                    if(mService.getPlan().appendDestination((Destination)arg0)) {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
                     }
+                    else {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                    }
+                    mToast.show();
                 }
             }
             else {
@@ -676,9 +551,6 @@ public class SearchActivity extends Activity implements Observer {
             Thread.currentThread().setName("Search");
 
             String srch = (String)vals[0];
-            if(null == mService) {
-                return false;
-            }
 
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             synchronized (SearchActivity.class) {

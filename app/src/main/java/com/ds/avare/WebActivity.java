@@ -42,43 +42,30 @@ import android.widget.ProgressBar;
  * @author zkhan
  *
  */
-public class WebActivity extends Activity  {
+public class WebActivity extends BaseActivity  {
     
     private WebView mWebView;
     private EditText mSearchText;
     private Button mNextButton;
     private Button mLastButton;
     private ProgressBar mProgressBar;
-    private StorageService mService;
 
-    private GpsInterface mGpsInfc = new GpsInterface() {
+    /*
+     * (non-Javadoc)
+     * @see android.app.Activity#onBackPressed()
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
 
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
 
     /*
      * Show views from web
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.web, null);
@@ -161,8 +148,7 @@ public class WebActivity extends Activity  {
             }
             
         });
-
-    }    
+    }
     
     /**
      * 
@@ -171,48 +157,10 @@ public class WebActivity extends Activity  {
     public void onResume() {
         super.onResume();
 
-        Helper.setOrientationAndOn(this);
-        
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-        
+        mService.registerGpsListener(mGpsInfc);
+
 		mWebView.requestFocus();
-
     }
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-
-            mService.registerGpsListener(mGpsInfc);
-
-        }    
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /**
      * 
@@ -221,11 +169,7 @@ public class WebActivity extends Activity  {
     public void onPause() {
         super.onPause();
 
-        getApplicationContext().unbindService(mConnection);
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
+        mService.unregisterGpsListener(mGpsInfc);
     }
             
 

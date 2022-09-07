@@ -35,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.message.NetworkHelper;
 import com.ds.avare.storage.Preferences;
 
@@ -62,9 +63,9 @@ public class LmfsInterface {
 	 * 
 	 * All replies are JSON
 	 */
-	public LmfsInterface(Context ctx) {
-		mContext = ctx;
-        mPref = new Preferences(ctx);
+	public LmfsInterface() {
+		mContext = StorageService.getInstance().getApplicationContext();
+        mPref = StorageService.getInstance().getPreferences();
 	}
 
 	/**

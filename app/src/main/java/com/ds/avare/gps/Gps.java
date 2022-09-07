@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.nmea.GGAPacket;
 import com.ds.avare.storage.Preferences;
 
@@ -51,8 +52,6 @@ import static android.os.Build.VERSION.*;
  *
  */
 public class Gps implements LocationListener, android.location.GpsStatus.Listener {
-
-    private Context mContext;
 
     Object mNmeaMessageListener;
 
@@ -106,9 +105,8 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
     /**
      * 
      */
-    public Gps(Context ctx, GpsInterface callback) {
-        mPref = new Preferences(ctx);
-        mContext = ctx;
+    public Gps(GpsInterface callback) {
+        mPref = StorageService.getInstance().getPreferences();
         mLocationManager = null;
         mTimer = null;
         mAltitude = 0;
@@ -125,9 +123,9 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return void
      */
-    public static boolean isGpsAvailable(Context ctx) {
+    public static boolean isGpsAvailable() {
         
-        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager lm = (LocationManager)StorageService.getInstance().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         if(null == lm) {
             return false;
@@ -146,8 +144,8 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return void
      */
-    public static Location getLastLocation(Context ctx) {
-        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+    public static Location getLastLocation() {
+        LocationManager lm = (LocationManager)StorageService.getInstance().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         if(null == lm) {
             return null;
@@ -188,7 +186,7 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
          */
         if(null == mLocationManager) {
             
-            mLocationManager = (LocationManager)mContext.getSystemService(Context.LOCATION_SERVICE);
+            mLocationManager = (LocationManager)StorageService.getInstance().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
             try {
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -256,13 +254,13 @@ public class Gps implements LocationListener, android.location.GpsStatus.Listene
      * 
      * @return boolean
      */
-    public static boolean isGpsDisabled(Context ctx, Preferences pref) {
-        LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+    public static boolean isGpsDisabled() {
+        LocationManager lm = (LocationManager)StorageService.getInstance().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         if(null == lm) {
             return true;
         }
-        return(pref.isGpsWarn() &&
+        return(StorageService.getInstance().getPreferences().isGpsWarn() &&
                 (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)));
     }
 

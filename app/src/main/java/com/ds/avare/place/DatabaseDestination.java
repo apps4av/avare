@@ -30,8 +30,8 @@ public class DatabaseDestination extends Destination {
      */
     private DataSource mDataSource;
 
-    public DatabaseDestination(StorageService service, String name, String type) {
-        super(service, name);
+    public DatabaseDestination(String name, String type) {
+        super(name);
 
         mRunways = new LinkedList<Runway>();
         mFreq = new LinkedHashMap<String, String>();
@@ -41,7 +41,7 @@ public class DatabaseDestination extends Destination {
         mDbType = "";
         mDestType = type;
 
-        mDataSource = mService.getDBResource();
+        mDataSource = StorageService.getInstance().getDBResource();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DatabaseDestination extends Destination {
              * If we dont know type, find with a guess.
              */
             if(guess) {
-                StringPreference s = mService.getDBResource().searchOne(mName);
+                StringPreference s = StorageService.getInstance().getDBResource().searchOne(mName);
                 if(null == s) {
                     return false;
                 }
@@ -135,7 +135,7 @@ public class DatabaseDestination extends Destination {
                         }
                     };
                     String afd[] = null;
-                    afd = new File(mPref.getServerDataFolder() + File.separator + "afd" + File.separator).list(filter);
+                    afd = new File(StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator).list(filter);
                     if(null != afd) {
                         java.util.Arrays.sort(afd);
                         int len1 = afd.length;
@@ -145,7 +145,7 @@ public class DatabaseDestination extends Destination {
                              * Add Chart Supplement
                              */
                             String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[count] = mPref.getServerDataFolder() + File.separator + "afd" + File.separator +
+                            tmp1[count] = StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator +
                                     tokens[0];
                         }
                         if(len1 > 0) {

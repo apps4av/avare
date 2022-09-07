@@ -64,13 +64,12 @@ public class WiFiInFragment extends Fragment {
             
             @Override
             public void onClick(View v) {
-                Preferences pref = new Preferences(getActivity());
+                Preferences pref = StorageService.getInstance().getPreferences();
 
                 if (((CheckBox) v).isChecked()) {
-                    mWifi.setHelper(((IOActivity)getActivity()).getService());
                     mWifi.connect(mTextWifiPort.getText().toString(), false);
                     pref.setLastConnectedWifi(mTextWifiPort.getText().toString()); //  save for connect next time
-                    mWifi.start(pref);
+                    mWifi.start();
                 }
                 else {
                     mWifi.stop();
@@ -91,7 +90,7 @@ public class WiFiInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
                     mWifi.setFileSave(fl);
                 }
                 else {

@@ -42,28 +42,16 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class IOActivity extends Activity {
+public class IOActivity extends BaseActivity {
     
     private TextView mTextLog;
     private Spinner mIO;
-    private StorageService mService;
     private Location mCurrentLocation;
     private GpsStatus mCurrentGpsStatus;
-
-
-    private Preferences mPref;
 
     private Fragment[] mFragments = new Fragment[10];
 
     private WifiManager.MulticastLock mMulticastLock;
-
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
 
     /*
      * Start GPS
@@ -112,38 +100,8 @@ public class IOActivity extends Activity {
         }
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mService = null;
-        }
-    };
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -152,9 +110,7 @@ public class IOActivity extends Activity {
         mIO = (Spinner)view.findViewById(R.id.main_spinner_ios);
         Logger.setTextView(mTextLog);
         Logger.setContext(this);
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(view);
-        mPref = new Preferences(getApplicationContext());
 
         Bundle args = new Bundle();
         int pos = 0;
@@ -212,12 +168,8 @@ public class IOActivity extends Activity {
 
     
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
-        /*
-         * Clean up stuff on exit
-         */
-        getApplicationContext().unbindService(mConnection);        
 
         // Release multicast lock.
         mMulticastLock.release();
@@ -292,18 +244,16 @@ public class IOActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
+    public void onPause() {
+        super.onPause();
+        mService.unregisterGpsListener(mGpsInfc);
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-
         changeFragment(mPref.getFragmentIndex());
-
+        mService.registerGpsListener(mGpsInfc);
     }
 
 }

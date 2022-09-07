@@ -69,10 +69,8 @@ import java.util.TreeMap;
  * @author zkhan,rasii
  * An activity that deals with plates
  */
-public class PlatesActivity extends Activity implements Observer  {
-    private Preferences mPref;
+public class PlatesActivity extends BaseActivity implements Observer  {
     private PlatesView mPlatesView;
-    private StorageService mService;
     private Destination mDestination;
     private ImageButton mCenterButton;
     private Button mAirportButton;
@@ -148,7 +146,7 @@ public class PlatesActivity extends Activity implements Observer  {
             return(mMatrix);            
         }
 
-        if(mService != null && mService.getPlateDiagram() != null && mService.getPlateDiagram().getName() != null) {
+        if(mService.getPlateDiagram() != null && mService.getPlateDiagram().getName() != null) {
 
 
             String aname = getNameFromPath(mService.getPlateDiagram().getName());
@@ -248,19 +246,6 @@ public class PlatesActivity extends Activity implements Observer  {
         }
     };
 
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        MainActivity m = (MainActivity)this.getParent();
-        if(m != null) {
-            m.showMapTab();
-        }
-    }
-    
     private boolean arePopupsShowing() {
         return (null != mPlatesPopup && mPlatesPopup.isShowing()) || 
                 (null != mAirportPopup && mAirportPopup.isShowing()) ||
@@ -272,11 +257,8 @@ public class PlatesActivity extends Activity implements Observer  {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
 
-        mPref = new Preferences(getApplicationContext());
-        
         mDestString = "<" + getString(R.string.Destination) + ">";
         nearString = "<" + getString(R.string.Nearest) + ">";
         myString = "<" + getString(R.string.MyPlates) + ">";
@@ -428,12 +410,10 @@ public class PlatesActivity extends Activity implements Observer  {
 
             @Override
             public void onClick(View v) {
-                if(mService != null) {
-                    if(mPlatesView.getDraw()) {
-                        mService.getPixelDraw().clear();
-                    }
+                if(mPlatesView.getDraw()) {
+                    mService.getPixelDraw().clear();
                 }
-            }            
+            }
         });
         
         mAirportButton = (Button)view.findViewById(R.id.plates_button_airports);
@@ -495,7 +475,7 @@ public class PlatesActivity extends Activity implements Observer  {
         mPlatesTagButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mService != null && mService.getPlateDiagram() != null) {
+                if (mService.getPlateDiagram() != null) {
                     String name = mService.getPlateDiagram().getName();
                     if (name != null) {
                         Intent intent = new Intent(PlatesActivity.this, PlatesTagActivity.class);
@@ -519,11 +499,10 @@ public class PlatesActivity extends Activity implements Observer  {
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
 
-        mService = null;
     }
     
     private void setPlateFromPos(int pos) {
-        if(mService != null && mPlateFound != null) {
+        if(mPlateFound != null) {
             if(pos >= mPlateFound.length) {
                 pos = 0;
             }
@@ -576,18 +555,16 @@ public class PlatesActivity extends Activity implements Observer  {
     
     private String getLastIfAirport() {
         String airport = null;
-        if(null != mService) {
-            airport = mService.getLastPlateAirport();
-            if(null != airport && (airport.equals(mDestString) || airport.equals(nearString) || airport.equals(myString))) {
-                airport = null;
-            }
+        airport = mService.getLastPlateAirport();
+        if(null != airport && (airport.equals(mDestString) || airport.equals(nearString) || airport.equals(myString))) {
+            airport = null;
         }
-        
+
         return airport;
     }
     
     private void setAirportFromPos(int pos) {
-        if(mService != null && mListAirports != null && mListAirports.size() > pos) {
+        if(mListAirports != null && mListAirports.size() > pos) {
             String airport = mListAirports.get(pos);
             
             Destination curDest = mService.getDestination();
@@ -658,7 +635,7 @@ public class PlatesActivity extends Activity implements Observer  {
                 }
 
                 else {
-                    mDest = DestinationFactory.build(mService, airport, Destination.BASE);
+                    mDest = DestinationFactory.build(airport, Destination.BASE);
                     mDest.addObserver(PlatesActivity.this);
                     mDest.find();
 
@@ -735,103 +712,6 @@ public class PlatesActivity extends Activity implements Observer  {
         }        
     }
     
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);         
-            mPlatesView.setService(mService);
-
-            mListPlates = new ArrayList<String>();
-            mListApproaches = new ArrayList<String>();
-
-            mListAirports = new ArrayList<String>();
-            mListAirports.add(mDestString);
-            mListAirports.add(nearString);
-            mListAirports.add(myString);
-
-            /*
-             * Are we being told to load an airport?
-             */
-            if(null != mService.getLastPlateAirport()) {
-                addAirport(mService.getLastPlateAirport());
-            }
-            
-            /*
-             *  Load the nearest airport
-             */
-            int nearestNum = mService.getArea().getAirportsNumber();
-            if(nearestNum > 0) {
-                Airport nearest = mService.getArea().getAirport(0);
-                addAirport(nearest.getId());
-            }
-
-            /*
-             * See if we have a destination, if we do - add it to the airports list
-             */
-            mDestination = mService.getDestination();
-            String dest = null;
-            if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
-                dest = mDestination.getID();
-                addAirport(dest);
-            }
-            
-            /*
-             * Add airports in the plan
-             */
-            Plan plan = mService.getPlan();
-            if(null != plan) {
-                int nDest = plan.getDestinationNumber();
-                for(int i=0; i < nDest; i++) {
-                    Destination planDest = plan.getDestination(i);
-                    if(planDest.getType().equals(Destination.BASE)) {
-                        addAirport(planDest.getID());
-                    }
-                }
-            }
-            
-            /*
-             * Now add all the airports that are in the recently found list
-             */
-            String [] vals = mService.getDBResource().getUserRecents();
-            for(int pos=0; pos < vals.length; pos++) {
-                String destType = StringPreference.parseHashedNameDestType(vals[pos]);
-                if(destType != null && destType.equals("Base")) {
-                    String id = StringPreference.parseHashedNameId(vals[pos]);
-
-                    addAirport(id);
-                }
-            }
-
-            int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
-            setAirportFromPos(lastIndex);
-            
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
     /**
      * We are interested in events from the fuel tank timer
      * @author Ron
@@ -893,11 +773,9 @@ public class PlatesActivity extends Activity implements Observer  {
     protected void onPause() {
         super.onPause();
         
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            mService.getFuelTimer().removeObserver(mTankObserver);
-            mService.getUpTimer().removeObserver(mTimerObserver);
-        }
+        mService.unregisterGpsListener(mGpsInfc);
+        mService.getFuelTimer().removeObserver(mTankObserver);
+        mService.getUpTimer().removeObserver(mTimerObserver);
 
         try {
             mPlatesPopup.dismiss();
@@ -918,10 +796,6 @@ public class PlatesActivity extends Activity implements Observer  {
             
         }
         
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
     }
 
     /**
@@ -930,20 +804,76 @@ public class PlatesActivity extends Activity implements Observer  {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        
+        mService.registerGpsListener(mGpsInfc);
+
+        mListPlates = new ArrayList<String>();
+        mListApproaches = new ArrayList<String>();
+
+        mListAirports = new ArrayList<String>();
+        mListAirports.add(mDestString);
+        mListAirports.add(nearString);
+        mListAirports.add(myString);
+
         /*
-         * Registering our receiver
-         * Bind now.
+         * Are we being told to load an airport?
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-        
-        if(null != mService) {
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
+        if(null != mService.getLastPlateAirport()) {
+            addAirport(mService.getLastPlateAirport());
         }
+
+        /*
+         *  Load the nearest airport
+         */
+        int nearestNum = mService.getArea().getAirportsNumber();
+        if(nearestNum > 0) {
+            Airport nearest = mService.getArea().getAirport(0);
+            addAirport(nearest.getId());
+        }
+
+        /*
+         * See if we have a destination, if we do - add it to the airports list
+         */
+        mDestination = mService.getDestination();
+        String dest = null;
+        if(null != mDestination && mDestination.getType().equals(Destination.BASE)) {
+            dest = mDestination.getID();
+            addAirport(dest);
+        }
+
+        /*
+         * Add airports in the plan
+         */
+        Plan plan = mService.getPlan();
+        if(null != plan) {
+            int nDest = plan.getDestinationNumber();
+            for(int i=0; i < nDest; i++) {
+                Destination planDest = plan.getDestination(i);
+                if(planDest.getType().equals(Destination.BASE)) {
+                    addAirport(planDest.getID());
+                }
+            }
+        }
+
+        /*
+         * Now add all the airports that are in the recently found list
+         */
+        String [] vals = mService.getDBResource().getUserRecents();
+        for(int pos=0; pos < vals.length; pos++) {
+            String destType = StringPreference.parseHashedNameDestType(vals[pos]);
+            if(destType != null && destType.equals("Base")) {
+                String id = StringPreference.parseHashedNameId(vals[pos]);
+
+                addAirport(id);
+            }
+        }
+
+        int lastIndex = Math.max(mListAirports.indexOf(mService.getLastPlateAirport()), 0);
+        setAirportFromPos(lastIndex);
+
+        // Tell the fuel tank timer we need to know when it runs out
+        mService.getFuelTimer().addObserver(mTankObserver);
+        mService.getUpTimer().addObserver(mTimerObserver);
+
 
         // Button colors to be synced across activities
         if(mPref.isTrackUpPlates()) {

@@ -65,8 +65,8 @@ public class SubTile extends Tile {
 
 
 
-    public SubTile(Context ctx, Preferences pref, double lon, double lat, double zoom, String index) {
-        super(ctx, pref, lon, lat, zoom, index);
+    public SubTile(double lon, double lat, double zoom, String index) {
+        super(lon, lat, zoom, index);
         calculate(lon, lat);
     }
 

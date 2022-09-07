@@ -188,14 +188,26 @@ public class PlatesTagView extends PanZoomView {
         if(mBitmap != null) {
             float h = getHeight();
             float ih = mBitmap.getHeight();
+            float w = getWidth();
+            float iw = mBitmap.getWidth();
             float fac = h / ih;
+            float fac2 = w / iw;
+            if(fac > fac2) {
+                fac = fac2;
+            }
             mScale.setScaleFactor(fac);
         }
 
         postInvalidate();
     }
-    
-    
+
+    @Override
+    public void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        center();
+    }
+
+
     /**
      * Current X with scale adjusted
      */

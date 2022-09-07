@@ -72,12 +72,10 @@ public class Plan implements Observer {
 
     /**
      *
-     * @param ctx
-     * @param service
      */
-    public Plan(Context ctx, StorageService service) {
-        mPref = new Preferences(ctx);
-        mService = service;
+    public Plan() {
+        mPref = StorageService.getInstance().getPreferences();
+        mService = StorageService.getInstance();
         clear();
     }
 
@@ -430,12 +428,10 @@ public class Plan implements Observer {
 
         // If this is an externally defined plan, then it specifically
         // needs to be turned on
-        if (null != mService) {
-            ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
-            if (null != efp) {
-                efp.setActive(true);
-                mService.getNavComments().setLeft(efp.getCmt());
-            }
+        ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
+        if (null != efp) {
+            efp.setActive(true);
+            mService.getNavComments().setLeft(efp.getCmt());
         }
         mActive = true;
     }
@@ -446,12 +442,10 @@ public class Plan implements Observer {
     public void makeInactive() {
         // If this is an externally defined plan, then it specifically
         // needs to be turned off
-        if (null != mService) {
-            ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
-            if (null != efp) {
-                efp.setActive(false); // Turn off the plan
-                mService.getNavComments().clear();
-            }
+        ExternalFlightPlan efp = mService.getExternalPlanMgr().get(mName);
+        if (null != efp) {
+            efp.setActive(false); // Turn off the plan
+            mService.getNavComments().clear();
         }
         mActive = false;
     }
@@ -577,16 +571,16 @@ public class Plan implements Observer {
 
             Destination d;
             if (null != airport) {
-                d = DestinationFactory.build(mService, airport, Destination.BASE);
+                d = DestinationFactory.build(airport, Destination.BASE);
             } else {
-                d = DestinationFactory.build(mService, Helper.getGpsAddress(lon, lat), Destination.GPS);
+                d = DestinationFactory.build(Helper.getGpsAddress(lon, lat), Destination.GPS);
             }
             d.addObserver(this);
             d.find();
         } else {
 
             // replace
-            mDestination[id] = DestinationFactory.build(mService,Helper.getGpsAddress(lon, lat), Destination.GPS);
+            mDestination[id] = DestinationFactory.build(Helper.getGpsAddress(lon, lat), Destination.GPS);
 
             mTrackShape.updateShapeFromPlan(getCoordinates());
         }
@@ -887,19 +881,16 @@ public class Plan implements Observer {
     /**
      * Get plan made from JSON object
      *
-     * @param ctx
      * @param json
      * @param reverse
      * @return
      */
-    public Plan(Context ctx, StorageService service, String json,
-            boolean reverse) {
+    public Plan(String json, boolean reverse) {
         /*
          * Do as the other constructor does, but make a plan from json
          */
-
-        mPref = new Preferences(ctx);
-        mService = service;
+        mPref = StorageService.getInstance().getPreferences();
+        mService = StorageService.getInstance();
         clear();
 
         JSONArray jsonArr = null;
@@ -928,7 +919,7 @@ public class Plan implements Observer {
                 } else {
                     num = i;
                 }
-                mDestination[num] = DestinationFactory.build(mService, id, type);
+                mDestination[num] = DestinationFactory.build(id, type);
                 mDestination[num].find(dbtype);
             } catch (Exception e) {
                 continue;
@@ -939,20 +930,16 @@ public class Plan implements Observer {
     /**
      * Hashmap is used for storing ALL plans
      * 
-     * @param plans
      * @return
      */
-    public static LinkedHashMap<String, String> getAllPlans(
-            StorageService service, LinkedHashMap<String, String> map) {
+    public static LinkedHashMap<String, String> getAllPlans(LinkedHashMap<String, String> map) {
 
         // fetch the external plans
-        if (null != service) {
-            ExternalPlanMgr epm = service.getExternalPlanMgr();
-            ArrayList<String> planNames = epm.getPlanNames(null);
-            for (String planName : planNames) {
-                ExternalFlightPlan extPlan = epm.get(planName);
-                map.put(planName, extPlan.toJSONString());
-            }
+        ExternalPlanMgr epm = StorageService.getInstance().getExternalPlanMgr();
+        ArrayList<String> planNames = epm.getPlanNames(null);
+        for (String planName : planNames) {
+            ExternalFlightPlan extPlan = epm.get(planName);
+            map.put(planName, extPlan.toJSONString());
         }
 
         // Return the map
@@ -963,15 +950,12 @@ public class Plan implements Observer {
      * Build and return a string for storage that represents all internally
      * managed plans
      * 
-     * @param service
-     *            - the Storage service
      * @param map
      *            collection of known flight plans
      * @return plans to save
      */
     @SuppressWarnings("unchecked")
-    public static LinkedHashMap<String, String> putAllPlans(StorageService service,
-            LinkedHashMap<String, String> map) {
+    public static LinkedHashMap<String, String> putAllPlans(LinkedHashMap<String, String> map) {
 
         // We need to make a copy here to work on. "map" as passed in may
         // contain externally saved
@@ -984,13 +968,11 @@ public class Plan implements Observer {
         // map so that it will not be saved to memory
         // TODO: Abstract all plans to a single base class and this step can be
         // removed
-        if (null != service) {
-            ExternalPlanMgr epm = service.getExternalPlanMgr();
-            ArrayList<String> planNames = epm.getPlanNames(null);
-            for (String planName : planNames) {
-                if (true == localMap.containsKey(planName)) {
-                    localMap.remove(planName);
-                }
+        ExternalPlanMgr epm = StorageService.getInstance().getExternalPlanMgr();
+        ArrayList<String> planNames = epm.getPlanNames(null);
+        for (String planName : planNames) {
+            if (true == localMap.containsKey(planName)) {
+                localMap.remove(planName);
             }
         }
 

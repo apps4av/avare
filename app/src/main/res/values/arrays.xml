@@ -239,7 +239,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>St Louis</item>
 		<item>Twin Cities</item>
 		<item>Washington</item>
-		<item>Whitehorse</item>
 		<item>Wichita</item>
     </string-array>
     <string-array name="resNamePlate">
@@ -1683,7 +1682,6 @@ Redistribution and use in source and binary forms, with or without modification,
 		<item>StLouis</item>
 		<item>TwinCities</item>
 		<item>Washington</item>
-		<item>Whitehorse</item>
 		<item>Wichita</item>
     </string-array>
 

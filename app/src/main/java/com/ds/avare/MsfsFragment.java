@@ -58,9 +58,8 @@ public class MsfsFragment extends Fragment {
             @Override
             public void onClick(View v) {
               if (((CheckBox) v).isChecked()) {
-                  mMsfs.setHelper(((IOActivity)getActivity()).getService());
                   mMsfs.connect(mTextMsfsPort.getText().toString(), false);
-                  mMsfs.start(new Preferences(getActivity()));
+                  mMsfs.start();
               }
               else {
                   mMsfs.stop();

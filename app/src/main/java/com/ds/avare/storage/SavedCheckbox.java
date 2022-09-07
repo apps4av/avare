@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.ds.avare.StorageService;
+
 /**
  * Sticky edit text, value stored in Preferences
  * @author zkhan
@@ -28,12 +30,12 @@ public class SavedCheckbox extends CheckBox {
 	/**
 	 * Get value from saved
 	 */
-	private void setup(Context ctx) {
+	private void setup() {
 
 		/*
 		 * Get value from stored prefs
 		 */
-		mPref = new Preferences(ctx);
+		mPref = StorageService.getInstance().getPreferences();
 		boolean val  = mPref.getCheckboxValue(getId());
 		setChecked(val);
 
@@ -48,20 +50,20 @@ public class SavedCheckbox extends CheckBox {
 
 	public SavedCheckbox(Context context) {
 		super(context);
-		setup(context);
+		setup();
 		// TODO Auto-generated constructor stub
 	}
 
 	public SavedCheckbox(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// TODO Auto-generated constructor stub
-		setup(context);
+		setup();
 	}
 
 	public SavedCheckbox(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		// TODO Auto-generated constructor stub
-		setup(context);
+		setup();
 	}
 
 }

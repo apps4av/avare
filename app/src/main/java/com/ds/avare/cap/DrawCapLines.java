@@ -51,7 +51,6 @@ import com.ds.avare.utils.Helper;
 public class DrawCapLines {
 
     private Paint mPaint;
-    private StorageService mService;
 	private LinkedList<Chart> mCharts;
 	private Chart mRecentChart;
 	
@@ -59,12 +58,11 @@ public class DrawCapLines {
     /*
      * Setup paint and styles to draw
      */
-	public DrawCapLines(StorageService service, Context context, float textSize) {
-		mService = service;
+	public DrawCapLines(float textSize) {
     	mPaint = new Paint();
     	mPaint.setTextSize(textSize);
         mPaint.setStyle(Style.FILL);
-        mPaint.setStrokeWidth(Helper.getDpiToPix(context) * 2);
+        mPaint.setStrokeWidth(Helper.getDpiToPix(StorageService.getInstance().getApplicationContext()) * 2);
     	mPaint.setAntiAlias(true);
     	
     	// Get charts from static list
@@ -119,7 +117,7 @@ public class DrawCapLines {
 				/*
 				 * Draw grid segment names
 				 */
-		        mService.getShadowedText().draw(canvas, mPaint, getGridName(lat, lon), Color.BLACK, 
+		        StorageService.getInstance().getShadowedText().draw(canvas, mPaint, getGridName(lat, lon), Color.BLACK,
 		        		(int)origin.getOffsetX(lon + CapChartFetcher.GRID_SIZE / 2), 
 		        		(int)origin.getOffsetY(lat - CapChartFetcher.GRID_SIZE / 2));
 			}

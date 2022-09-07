@@ -42,6 +42,7 @@ import java.util.Locale;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.shapes.CrumbsShape;
 import com.ds.avare.shapes.Shape;
@@ -139,11 +140,11 @@ public class KMLRecorder {
      * Default constructor. Allocate the list that holds our collection
      * of gps points
      */
-    public KMLRecorder(Context ctx){
+    public KMLRecorder() {
     	mPositionHistory = new LinkedList<>();
     	mShape = new CrumbsShape();
     	mLastFix = new GpsParams(null);
-		mFolder = new Preferences(ctx).getUserDataFolder() + File.separator + "tracks";
+		mFolder = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separator + "tracks";
     }
     
     /** 

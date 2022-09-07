@@ -13,6 +13,7 @@ package com.ds.avare.shapes;
 
 import android.content.Context;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 
 import java.io.File;
@@ -26,21 +27,19 @@ import java.io.File;
  */
 public class RadarLayer extends Layer {
 
-    private Preferences mPref;
-
     /**
-     * @param ctx
      */
-    public RadarLayer(Context ctx) {
-        mPref = new Preferences(ctx);
+    public RadarLayer(){
+
     }
 
     /**
      *
      */
     public void parse() {
+        Preferences pref = StorageService.getInstance().getPreferences();
         super.parse(
-                mPref.getServerDataFolder() + File.separator + "latest_radaronly",
-                mPref.getServerDataFolder() + File.separator + "latest.txt");
+                pref.getServerDataFolder() + File.separator + "latest_radaronly",
+                pref.getServerDataFolder() + File.separator + "latest.txt");
      }
 }

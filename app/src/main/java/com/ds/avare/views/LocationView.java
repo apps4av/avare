@@ -160,6 +160,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     private Projection mPointProjection;
     private Projection mPointProjectionAirport;
+    private LinkedList<Obstacle> mObstacles;
 
     /*
      * Is it drawing?
@@ -234,7 +235,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         mDraw = false;
         mDrawing = false;
 
-        mPref = new Preferences(context);
+        mService = StorageService.getInstance();
+        mPref = mService.getPreferences();
 
         mFace = Helper.getTypeFace(context);
         mPaint.setTypeface(mFace);
@@ -386,19 +388,16 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         }
         else if (e.getAction() == MotionEvent.ACTION_DOWN) {
 
-            if(mService != null) {
-                /*
-                 * Find if this is close to a plan point. Do rubber banding if true
-                 * This is where rubberbanding starts
-                 */
-                if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
-                    double lon = mOrigin.getLongitudeOf(e.getX());
-                    double lat = mOrigin.getLatitudeOf(e.getY());
-                    mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mScale.getScaleFactor());
-                    mDragStartedX = e.getX();
-                    mDragStartedY = e.getY();
-                }
-
+            /*
+             * Find if this is close to a plan point. Do rubber banding if true
+             * This is where rubberbanding starts
+             */
+            if(mService.getPlan() != null && mDragPlanPoint < 0 && mPref.allowRubberBanding()) {
+                double lon = mOrigin.getLongitudeOf(e.getX());
+                double lat = mOrigin.getLatitudeOf(e.getY());
+                mDragPlanPoint = mService.getPlan().findClosePointId(lon, lat, mScale.getScaleFactor());
+                mDragStartedX = e.getX();
+                mDragStartedY = e.getY();
             }
 
             mGestureCallBack.gestureCallBack(GestureInterface.TOUCH, (LongTouchDestination)null);
@@ -435,7 +434,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         }
 
         // drawing stuff
-        if(e.getPointerCount() == 1 && mDraw && mService != null) { // only draw with 1 pointer
+        if(e.getPointerCount() == 1 && mDraw) { // only draw with 1 pointer
             switch (e.getAction() & MotionEvent.ACTION_MASK) { // draw when moving with 1 pointer and there was a pointer down before
                 case MotionEvent.ACTION_DOWN:
                     mDrawing = true;
@@ -714,7 +713,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
     private void drawObstacles(Canvas canvas, DrawingContext ctx) {
         if(mPref.showObstacles()) {
-            LinkedList<Obstacle> obs = mService.getObstacles();
+            LinkedList<Obstacle> obs = mObstacles;
             if((obs != null) && (null == mPointProjection)) {
                 mPaint.setShadowLayer(0, 0, 0, 0);
                 for (Obstacle o : obs) {
@@ -909,10 +908,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     private void drawMap(Canvas canvas) {
 
-        if(mService == null) {
-            return;
-        }
-
     	// If our track is supposed to be at the top, save the current
     	// canvas and rotate it based upon our bearing if we have one
     	boolean bRotated = false;
@@ -982,9 +977,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         /*
          * Comes from database
          */
-        if(null == mService) {
-            return;
-        }
         if(null != mService.getDestination()) {
             if(mService.getDestination().isFound()) {
                 /*
@@ -1057,12 +1049,11 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     /**
      * @param params
      */
-    public void initParams(GpsParams params, StorageService service) {
+    public void initParams(GpsParams params) {
         /*
          * Comes from storage service. This will do nothing for fresh start,
          * but it will load previous combo on re-activation
          */
-        mService = service;
 
         mMovement = mService.getMovement();
         mImageDataSource = mService.getDBResource();
@@ -1124,16 +1115,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      *
      */
     private void loadTiles() {
-        if(mService == null) {
-            return;
-        }
-
-        if(mImageDataSource == null) {
-            return;
-        }
-
         TileMap map = mService.getTiles();
-        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mPan, mScale, mGpsParams.getBearing(),
+        map.loadTiles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude(), mPan, mScale, mGpsParams.getBearing(),
                 new GenericCallback() {
                     @Override
                     public Object callback(Object map, Object tu) {
@@ -1150,6 +1133,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
                         mGpsTile = t.gpsTile;
                         mOnChart = type + "\n" + t.chart;
+                        mObstacles = t.obstacles;
                         /*
                          * And pan
                          */
@@ -1181,10 +1165,8 @@ public class LocationView extends PanZoomView implements OnTouchListener {
          * On double tap, move to center
          */
         mPan = new Pan();
-        if(mService != null) {
-            mService.setPan(mPan);
-            mService.getTiles().forceReload();
-        }
+        mService.setPan(mPan);
+        mService.getTiles().forceReload();
         loadTiles();
         updateCoordinates();
         postInvalidate();
@@ -1198,12 +1180,10 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            if(null != mService) {
-                /*
-                 * Add separation between chars
-                 */
-                mService.getDraw().addSeparation();
-            }
+            /*
+             * Add separation between chars
+             */
+            mService.getDraw().addSeparation();
             return true;
         }
 
@@ -1211,7 +1191,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         public boolean onSingleTapConfirmed(MotionEvent e) {
         	
         	// Ignore this gesture if we are not configured to use dynamic fields
-        	if((mPref.useDynamicFields() == false) || (mService == null)) {
+        	if((mPref.useDynamicFields() == false)) {
         		return false;
         	}
         	
@@ -1229,7 +1209,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         public boolean onDoubleTap(MotionEvent e) {
         	
         	// Ignore this gesture if we are not configured to use dynamic fields
-        	if((mPref.useDynamicFields() == false) || (mService == null)) {
+        	if((mPref.useDynamicFields() == false)) {
         		return false;
         	}
         	
@@ -1254,13 +1234,11 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             double x = e.getX();
             double y = e.getY();
 
-            if(mService != null) {
-            	InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, (float)x, (float)y);
-            	if(infoLineFieldLoc != null) {
-                	// We have the row and field. Send the gesture off for processing
-                	mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
-                	return;
-            	}
+            InfoLineFieldLoc infoLineFieldLoc = mService.getInfoLines().findField(mPaint, (float)x, (float)y);
+            if(infoLineFieldLoc != null) {
+                // We have the row and field. Send the gesture off for processing
+                mGestureCallBack.gestureCallBack(GestureInterface.LONG_PRESS, infoLineFieldLoc);
+                return;
             }
 
             /*
@@ -1306,9 +1284,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         else {
             lon2 = mOrigin.getLongitudeOf(x);
             lat2 = mOrigin.getLatitudeOf(y);
-        }
-        if(null == mService) {
-            return;
         }
         mClosestTask.execute(lon2, lat2, null,
                 mContext, mService, mPref, mLayer, true,
@@ -1375,10 +1350,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
 
     public void setLayerType(String type) {
         mLayerType = type;
-        if(mService == null) {
-
-        }
-        else if(mLayerType.equals("NEXRAD")) {
+        if(mLayerType.equals("NEXRAD")) {
             mService.getRadarLayer().parse();
         }
         else if(mLayerType.equals("METAR")) {

@@ -14,6 +14,7 @@ package com.ds.avare.instruments;
 
 import android.content.Context;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
@@ -48,8 +49,8 @@ public class FuelTimer extends Observable {
 	/**
 	 * ctor 
 	 */
-	public FuelTimer(Context ctx) {
-		mInterval = new Preferences(ctx).getFuelTimerInterval();
+	public FuelTimer() {
+		mInterval = StorageService.getInstance().getPreferences().getFuelTimerInterval();
 		mCounting = false;
 		mObservers = new ArrayList<Observer>();
 		reset();

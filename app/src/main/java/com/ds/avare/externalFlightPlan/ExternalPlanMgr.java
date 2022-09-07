@@ -22,19 +22,11 @@ import com.ds.avare.storage.Preferences;
 
 public class ExternalPlanMgr {
 	List<ExternalFlightPlan> 	mPlans;	// Collection of external flight plans
-	StorageService	mService;
-	Context			mContext;
-	Preferences		mPref;
-	
+
 	/***
 	 * public constructor for user defined waypoints collection
-	 * @param service the storage service
-	 * @param context context
 	 */
-	public ExternalPlanMgr(StorageService service, Context context) {
-		mService = service;
-		mContext = context;
-		mPref = new Preferences(mContext);
+	public ExternalPlanMgr() {
 
 		// Time to load all the points in
 		forceReload();
@@ -45,7 +37,7 @@ public class ExternalPlanMgr {
 	 * @return
 	 */
 	private String getDir() {
-		return mPref.getUserDataFolder();
+		return StorageService.getInstance().getPreferences().getUserDataFolder();
 	}
 	
 	/***

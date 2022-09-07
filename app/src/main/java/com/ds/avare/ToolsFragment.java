@@ -80,8 +80,6 @@ public class ToolsFragment extends Fragment {
 
     private TextView mGpsText;
 
-    private Preferences mPref;
-
     // Request code for selecting a document.
     private static final int IMPORT = 2;
     private static final int EXPORT = 3;
@@ -94,11 +92,12 @@ public class ToolsFragment extends Fragment {
     private ProgressBar mProgressBarDelete;
     private Spinner mSpinnerTypeExport;
     private Spinner mSpinnerTypeDelete;
+    private Preferences mPref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = container.getContext();
-        mPref = new Preferences(mContext);
+        mPref = StorageService.getInstance().getPreferences();
 
         View view = inflater.inflate(R.layout.layout_satellite, container, false);
         mSatelliteView = (SatelliteView)view.findViewById(R.id.satellite);
@@ -197,9 +196,6 @@ public class ToolsFragment extends Fragment {
 
     public void update() {
         mService = ((IOActivity)getActivity()).getService();
-        if(mService == null) {
-            return;
-        }
         // valid
         updateMem();
         updateMapArea();
@@ -348,6 +344,9 @@ public class ToolsFragment extends Fragment {
                     while ((count = origin.read(data, 0, IO_BUFFER_SIZE)) != -1) {
                         out.write(data, 0, count);
                     }
+
+                    Logger.Logit("Exp " + files.get(filec).getAbsolutePath());
+
                     // next file
                     origin.close();
                     publishProgress(filec, total);
@@ -378,9 +377,17 @@ public class ToolsFragment extends Fragment {
 
             try {
                 // get list of internal files
-                String folder = mPref.getServerDataFolder() + (filter.startsWith("*") ?  "" : (File.separatorChar + filter));
-                File dir = new File(folder);
-                LinkedList<File> files = Helper.getDirectoryContents(dir, filter);
+                LinkedList<File> files;
+                if(filter.startsWith("*")) {
+                    String folder = mPref.getServerDataFolder();
+                    File dir = new File(folder);
+                    files = Helper.getDirectoryContents(dir, filter);
+                }
+                else {
+                    String folder = mPref.getServerDataFolder() +  File.separatorChar + filter;
+                    File dir = new File(folder);
+                    files = Helper.getDirectoryContents(dir, null);
+                }
 
                 int total = files.size();
 
@@ -388,6 +395,7 @@ public class ToolsFragment extends Fragment {
                 for (int filec = 0; filec < total; filec++) {
                     files.get(filec).delete();
                     publishProgress(filec, total);
+                    Logger.Logit("Del " + files.get(filec).getAbsolutePath());
                 }
                 publishProgress(total, total);
                 mService.getUDWMgr().forceReload();	// Tell the UDWs to reload
@@ -433,13 +441,15 @@ public class ToolsFragment extends Fragment {
                     if(!parent.exists()) {
                         parent.mkdirs();
                     }
-                    FileOutputStream fout = new FileOutputStream(folder + File.separatorChar + name);
+                    String outfile = folder + File.separatorChar + name;
+                    FileOutputStream fout = new FileOutputStream(outfile);
                     int count;
 
                     while ((count = in.read(data)) != -1) {
                         fout.write(data, 0, count);
                     }
 
+                    Logger.Logit("Imp " + outfile);
                     fout.close();
                     in.closeEntry();
                     // publish after each file bytes remaining

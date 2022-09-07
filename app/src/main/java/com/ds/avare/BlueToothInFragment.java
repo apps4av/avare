@@ -93,7 +93,7 @@ public class BlueToothInFragment extends Fragment {
                 /*
                  * If connected, disconnect
                  */
-                Preferences pref = new Preferences(getActivity());
+                Preferences pref = StorageService.getInstance().getPreferences();
                 if (mBt.isConnected()) {
                     mBt.stop();
                     mBt.disconnect();
@@ -107,10 +107,9 @@ public class BlueToothInFragment extends Fragment {
                 String val = (String) mSpinner.getSelectedItem();
                 if (null != val && (!mBt.isConnected())) {
                     mConnectButton.setText(getString(R.string.Connect));
-                    mBt.setHelper(((IOActivity)getActivity()).getService());
                     mBt.connect(val, mSecureCb.isChecked());
                     if (mBt.isConnected()) {
-                        mBt.start(pref);
+                        mBt.start();
                         pref.setLastConnectedBtIn(val); // save where we connected
                     }
                     setStates();
@@ -129,7 +128,7 @@ public class BlueToothInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = new Preferences(getActivity()).getUserDataFolder() + File.separatorChar + val;
+                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
                     mBt.setFileSave(fl);
                 }
                 else {

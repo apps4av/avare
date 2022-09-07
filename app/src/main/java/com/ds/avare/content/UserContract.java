@@ -65,4 +65,17 @@ public class UserContract {
     public static Uri buildTagsUri(long id){
         return ContentUris.withAppendedId(CONTENT_URI_TAG, id);
     }
+
+    public static final String BASE_DRAW = "draw";
+    public static final Uri CONTENT_URI_DRAW = Uri.withAppendedPath(AUTHORITY_URI, BASE_DRAW);
+    public static final String TABLE_DRAW = "draws";
+    public static final String DRAW_COLUMN_ID = "id";
+    public static final String DRAW_COLUMN_POINTS_X = "x";
+    public static final String DRAW_COLUMN_POINTS_Y = "y";
+    public static final String DRAW_COLUMN_SEP = "separate";
+
+    public static Uri buildDrawsUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_DRAW, id);
+    }
+
 }

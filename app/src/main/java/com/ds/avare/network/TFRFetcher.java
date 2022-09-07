@@ -29,6 +29,7 @@ package com.ds.avare.network;
 
 import java.util.LinkedList;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.utils.Helper;
 
@@ -46,14 +47,12 @@ public class TFRFetcher {
     
     private TFRTask mTask;
     private LinkedList<TFRShape> mShapes;
-    private Context mContext;
-    
+
     /**
      * 
      */
-    public TFRFetcher(Context ctx) {
+    public TFRFetcher() {
         mShapes = null;
-        mContext = ctx;
     }
 
     /**
@@ -98,7 +97,7 @@ public class TFRFetcher {
         protected Boolean doInBackground(Object... vals) {
             Thread.currentThread().setName("TFR");
 
-            mShapes = Helper.getShapesInTFR(mContext);
+            mShapes = Helper.getShapesInTFR(StorageService.getInstance().getApplicationContext());
             return true;
         }
     } 

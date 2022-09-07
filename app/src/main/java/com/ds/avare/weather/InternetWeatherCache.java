@@ -44,7 +44,7 @@ public class InternetWeatherCache {
         mWeatherTask = null;
         mWeatherThread = null;
         mAirSig = null;
-        mService = null;
+        mService = StorageService.getInstance();
         mDate = null;
     }
 
@@ -67,14 +67,9 @@ public class InternetWeatherCache {
 
     /**
      * 
-     * @param service
      */
-    public void parse(StorageService service) {
+    public void parse() {
         
-        if(service == null) {
-            return;
-        }
-        mService = service;
         /*
          * Do weather parsing in background. It takes a long time.
          */
@@ -107,7 +102,7 @@ public class InternetWeatherCache {
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
 
-                String filenameManifest = new Preferences(mService).getServerDataFolder() + File.separator + "weather";
+                String filenameManifest = StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "weather";
                 String dataManifest = Helper.readTimestampFromFile(filenameManifest);
                 if(null != dataManifest) {
                     // Find date of TFRs of format 09_03_2015_15:30_UTC, first line in manifest

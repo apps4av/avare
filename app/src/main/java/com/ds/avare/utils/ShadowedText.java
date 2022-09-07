@@ -19,6 +19,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Paint.Style;
 
+import com.ds.avare.StorageService;
+
 // A class that handles the drawing of text to the display screen
 // with a rectangular shadow curved at the corners
 // All object allocation occurs during construction so that the paint 
@@ -36,9 +38,9 @@ public class ShadowedText {
     // Build the shadowText object. This means allocating the paint
     // and required rectangle objects that we use during the draw
     // phase
-	public ShadowedText(Context context) {
+	public ShadowedText() {
         mShadowPaint = new Paint();
-        mShadowPaint.setTypeface(Helper.getTypeFace(context));
+        mShadowPaint.setTypeface(Helper.getTypeFace(StorageService.getInstance().getApplicationContext()));
         mShadowPaint.setShadowLayer(0, 0, 0, 0);
         mShadowPaint.setAlpha(0x7f);
         mShadowPaint.setStyle(Style.FILL);
@@ -46,7 +48,7 @@ public class ShadowedText {
         mTextSize = new Rect();
         mShadowBox = new RectF(mTextSize);
         
-        mDipToPix = Helper.getDpiToPix(context);
+        mDipToPix = Helper.getDpiToPix(StorageService.getInstance().getApplicationContext());
 
         XMARGIN = (int) (5 * mDipToPix);
         YMARGIN = (int) (5 * mDipToPix);

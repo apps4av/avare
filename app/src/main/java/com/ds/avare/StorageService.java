@@ -11,23 +11,10 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.os.Binder;
-import android.os.Build;
-import android.os.IBinder;
-import android.provider.Settings;
-
-import androidx.core.app.NotificationCompat;
 
 import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
@@ -102,7 +89,7 @@ import java.util.TimerTask;
  * Also sends intent to display warning, since its too intrusive to show a 
  * warning every time activity starts.
  */
-public class StorageService extends Service {
+public class StorageService  {
 
     /**
      * The Sqlite database
@@ -145,8 +132,6 @@ public class StorageService extends Service {
     
     private String mLastPlateAirport;
     private int mLastPlateIndex;
-    private LinkedList<Obstacle> mObstacles;
-
     private float[] mMatrix;
 
 	/*
@@ -196,11 +181,6 @@ public class StorageService extends Service {
 
     private ShapeFetcher mShapeFetcher;
 
-    /**
-     * For performing periodic activities.
-     */
-    private Timer mTimer;
-    
     /*
      * A list of GPS listeners
      */
@@ -221,15 +201,8 @@ public class StorageService extends Service {
      */
     private BitmapHolder mPlateDiagramBitmap;
 
-    /**
-     * Local binding as this runs in same thread
-     */
-    private final IBinder binder = new LocalBinder();
-
-    private boolean mIsGpsOn;
-    
     private int mCounter;
-    
+
     private TileMap mTiles;
     
     // Handler for the top two lines of status information
@@ -305,128 +278,48 @@ public class StorageService extends Service {
         mOverrideListName = overrideListName;
     }
 
-    /**
-     * @author zkhan
-     *
-     */
-    public class LocalBinder extends Binder {
-        /**
-         * @return
-         */
-        public StorageService getService() {
-            return StorageService.this;
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Service#onBind(android.content.Intent)
-     */
-    @Override
-    public IBinder onBind(Intent arg0) {
-        return binder;
-    }
-    
-    /* (non-Javadoc)
-     * @see android.app.Service#onUnbind(android.content.Intent)
-     */
-    @Override
-    public boolean onUnbind(Intent intent) {
-        return true;
-    }
 
-
-    private void stopForegroundService() {
-
-        // Stop foreground service and remove the notification.
-        stopForeground(true);
-
-        // Stop the foreground service.
-        stopSelf();
-    }
-
-    private void startInForeground() {
-        int icon = R.drawable.airport;
-
-        Notification notification;
-        Intent notificationIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        notificationIntent.setData(uri);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
-
-        if(Build.VERSION.SDK_INT >= 26) {
-            String NOTIFICATION_Service_CHANNEL_ID = "service_channel";
-
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_Service_CHANNEL_ID, "Storage Service", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-
-            notification = new Notification.Builder(this, NOTIFICATION_Service_CHANNEL_ID)
-                    .setSmallIcon(icon)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(getString(R.string.open_settings))
-                    .setContentIntent(pendingIntent)
-                    .build();
-        }
-        else {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(icon)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(getString(R.string.open_settings))
-                    .setContentIntent(pendingIntent);
-            notification = builder.build();
-        }
-        startForeground(121, notification);
-    }
 
     /* (non-Javadoc)
-     * @see android.app.Service#onCreate()
      */
-    @Override
-    public void onCreate() {
-          
-        super.onCreate();
+    public void create() {
 
-        startInForeground();
-
-        mDataSource = new DataSource(getApplicationContext());
+        mDataSource = new DataSource();
         
-        mArea = new Area(mDataSource, this);
-        mPlan = new Plan(this, this);
+        mArea = new Area();
+        mPlan = new Plan();
         mDownloading = false;
         
         /*
          * All tiles
          */
-        mTiles = new TileMap(getApplicationContext());
+        mTiles = new TileMap();
 
         mInternetWeatherCache = new InternetWeatherCache();
-        mInternetWeatherCache.parse(this);
-        mTFRFetcher = new TFRFetcher(getApplicationContext());
+        mInternetWeatherCache.parse();
+        mTFRFetcher = new TFRFetcher();
         mTFRFetcher.parse();
-        mShapeFetcher = new ShapeFetcher(getApplicationContext());
+        mShapeFetcher = new ShapeFetcher();
         mShapeFetcher.parse();
         mGpsParamsExtended = new ExtendedGpsParams();
 
-        mTimer = new Timer();
-        TimerTask gpsTime = new UpdateTask();
-        mIsGpsOn = false;
         mGpsCallbacks = new LinkedList<GpsInterface>();
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
         mPlateDiagramBitmap = null;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
         mLocationSem = new Mutex();
-        mAdsbWeatherCache = new AdsbWeatherCache(getApplicationContext(), this);
-        mAdsbTfrCache = new TfrCache(getApplicationContext());
+        mAdsbWeatherCache = new AdsbWeatherCache();
+        mAdsbTfrCache = new TfrCache();
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mLastLocationUpdate = 0;
 
-        mCap = new DrawCapLines(this, getApplicationContext(), Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mCap = new DrawCapLines(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
-        mInfoLines = new InfoLines(this);
+        mInfoLines = new InfoLines();
 
         mShadowedText = null;
 
@@ -441,17 +334,17 @@ public class StorageService extends Service {
         /*
          * Start up the KML recorder feature
          */
-        mKMLRecorder = new KMLRecorder(getApplicationContext());
+        mKMLRecorder = new KMLRecorder();
         
         /*
          * Internet nexrad
          */
-        mRadarLayer = new RadarLayer(getApplicationContext());
+        mRadarLayer = new RadarLayer();
 
         /*
          * Internet metar
          */
-        mMetarLayer = new MetarLayer(getApplicationContext());
+        mMetarLayer = new MetarLayer();
 
         /*
          * Start the odometer now
@@ -468,19 +361,17 @@ public class StorageService extends Service {
         mVSI = new VSI();
         
         // Allocate a handler for PointsOfInterest
-        mUDWMgr = new UDWMgr(this, getApplicationContext()); 
+        mUDWMgr = new UDWMgr();
       
         // Allocate a new DistanceRing instrument
-        mDistanceRings = new DistanceRings(this, getApplicationContext(),
-                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mDistanceRings = new DistanceRings(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
 
-        mGlideProfile = new GlideProfile(this, getApplicationContext(),
-                Helper.adjustTextSize(getApplicationContext(), R.dimen.distanceRingNumberTextSize));
+        mGlideProfile = new GlideProfile(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
         mFlightStatus = new FlightStatus(mGpsParams);
         
         // For handling external flight plans
-        mExternalPlanMgr = new ExternalPlanMgr(this, getApplicationContext());
+        mExternalPlanMgr = new ExternalPlanMgr();
 
         // Allocate the nav comments object
         mNavComments = new NavComments();
@@ -489,16 +380,10 @@ public class StorageService extends Service {
         
         // Declare a fuel tank switching timer. Default to 30
         // minutes per tank
-        mFuelTimer = new FuelTimer(getApplicationContext());
+        mFuelTimer = new FuelTimer();
         mUpTimer = new UpTimer();
 
-        // Create a BlueTooth Output connection and give it to the autopilot
-        //BTOutConnection btOut = BTOutConnection.getInstance(this);
-        //btOut.connect(mDataSource.getPreferences().getAutopilotBluetoothDevice(), false);
-        //mAutoPilot = new AutoPilot(btOut);
 
-        mTimer.scheduleAtFixedRate(gpsTime, 1000, 1000);
-        
         /*
          * Start GPS, and call all activities registered to listen to GPS
          */
@@ -642,7 +527,7 @@ public class StorageService extends Service {
                 }
             }
         };
-        mGps = new Gps(this, intf);
+        mGps = new Gps(intf);
 
         /*
          * Start orientation
@@ -671,12 +556,36 @@ public class StorageService extends Service {
         mFavorites = new Favorites(this);
 
     }
-        
+
+    private static StorageService mService = null;
+    private Context mContext = null;
+    private static Preferences mPref;
+
+    private StorageService() {
+    }
+
+    /**
+     * Call once only
+     * @param c
+     */
+    public void setContext(Context c) {
+        mContext = c;
+        mPref = new Preferences(c);
+        mService.create();
+    }
+
+    public static StorageService getInstance() {
+        if(null == mService) {
+            mService = new StorageService();
+            return mService;
+        }
+        return mService;
+    }
+
     /* (non-Javadoc)
      * @see android.app.Service#onDestroy()
      */
-    @Override
-    public void onDestroy() {
+    public void destroy() {
         /*
          * If we ever exit, reclaim memory
          */
@@ -694,16 +603,9 @@ public class StorageService extends Service {
         
         System.gc();
         
-        if(mTimer != null) {
-            mTimer.cancel();
-        }
         if(mGps != null) {
             mGps.stop();
         }
-
-        super.onDestroy();
-
-        stopForegroundService();
 
         System.runFinalizersOnExit(true);
         System.exit(0);
@@ -736,6 +638,10 @@ public class StorageService extends Service {
         return mTFRFetcher;
     }
 
+
+    public Context getApplicationContext() {
+        return mContext;
+    }
 
     /**
      *
@@ -786,7 +692,7 @@ public class StorageService extends Service {
      */
     public void setDestination(Destination destination) {
         mDestination = destination;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
 
         // A direct destination implies a new plan. Ensure to turn off
         // the plan
@@ -800,7 +706,7 @@ public class StorageService extends Service {
      */
     public void setDestinationPlanNoChange(Destination destination) {
         mDestination = destination;
-        mAfdIndex = mDataSource.getPreferences().isDefaultAFDImage() ? 1 : 0;
+        mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
         
         // Update the right side of the nav comments from the destination
         // TODO: I don't like this here, it should be pushed into the PLAN itself
@@ -921,14 +827,14 @@ public class StorageService extends Service {
      * @return
      */
     public void newPlan() {
-        mPlan = new Plan(this, this);
+        mPlan = new Plan();
     }
 
     /**
      * @return
      */
     public void newPlanFromStorage(String storage, boolean reverse) {
-        mPlan = new Plan(this, this, storage, reverse);
+        mPlan = new Plan(storage, reverse);
     }
 
     /**
@@ -1008,38 +914,10 @@ public class StorageService extends Service {
         mMatrix = matrix;
     }
 
-    /**
-     * @author zkhan
-     *
-     */
-    private class UpdateTask extends TimerTask {
-        
-        /* (non-Javadoc)
-         * @see java.util.TimerTask#run()
-         */
-        public void run() {
-
-            /*
-             * Stop the GPS delayed by 1 to 2 minutes if no other activity is registered 
-             * to it for 1 to 2 minutes.
-             */
-            synchronized(this) {
-                if((!mIsGpsOn) && (mGps != null) && (mCounter >= 2 * 60)) {
-                    mGps.stop();
-                }
-                if(0 == mCounter % 5) {
-                    if(null != mGpsParams) {
-                        mObstacles = mDataSource.getObstacles(mGpsParams.getLongitude(), mGpsParams.getLatitude(), mGpsParams.getAltitude());
-                    }
-                }
-                if(0 == mCounter % 60) {
-                }
-                mCounter++;
-            }
-
-        }
+    public Preferences getPreferences() {
+        return mPref;
     }
-    
+
     /**
      * 
      * @param gps
@@ -1049,9 +927,6 @@ public class StorageService extends Service {
          * If first listener, start GPS
          */
         mGps.start();
-        synchronized(this) {
-            mIsGpsOn = true;
-        }
         synchronized(mGpsCallbacks) {
             mGpsCallbacks.add(gps);
         }
@@ -1062,23 +937,11 @@ public class StorageService extends Service {
      * @param gps
      */
     public void unregisterGpsListener(GpsInterface gps) {
-        
-        boolean isempty = false;
-        
+
         synchronized(mGpsCallbacks) {
             mGpsCallbacks.remove(gps);
-            isempty = mGpsCallbacks.isEmpty();
         }
         
-        /*
-         * If no listener, relinquish GPS control
-         */
-        if(isempty) {
-            synchronized(this) {
-                mCounter = 0;
-                mIsGpsOn = false;                
-            }            
-        }
     }
 
     /**
@@ -1239,14 +1102,14 @@ public class StorageService extends Service {
      * 
      */
     public void deleteTFRFetcher() {
-        mTFRFetcher = new TFRFetcher(getApplicationContext());
+        mTFRFetcher = new TFRFetcher();
     }
 
     /**
      *
      */
     public void deleteShapeFetcher() {
-        mShapeFetcher = new ShapeFetcher(getApplicationContext());
+        mShapeFetcher = new ShapeFetcher();
     }
 
     /**
@@ -1302,7 +1165,8 @@ public class StorageService extends Service {
     
     public ShadowedText getShadowedText() {
         if (mShadowedText==null) {
-            mShadowedText = new ShadowedText(getApplicationContext());
+            mShadowedText = new ShadowedText();
+            mShadowedText = new ShadowedText();
         }
     	return mShadowedText;
     }
@@ -1341,10 +1205,6 @@ public class StorageService extends Service {
 	public DrawCapLines getCap() {
 		return mCap;
 	}
-
-    public LinkedList<Obstacle> getObstacles() {
-        return mObstacles;
-    }
 
 
     /**
@@ -1563,9 +1423,4 @@ public class StorageService extends Service {
         return object.toString();
     }
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        this.stopSelf();
-    }
 }

@@ -9,19 +9,19 @@ import com.ds.avare.StorageService;
 
 public class DestinationFactory {
 
-    public static Destination build(StorageService service, String name, String type) {
+    public static Destination build(String name, String type) {
 
         if(type.equals(Destination.GPS)) {
-            return new GpsDestination(service, name);
+            return new GpsDestination(name);
         }
         else if(type.equals(Destination.MAPS)) {
-            return new MapsDestination(service, name);
+            return new MapsDestination(name);
         }
         else if(type.equals(Destination.UDW)) {
-            return new UDWDestination(service, name);
+            return new UDWDestination(name);
         }
         else {
-            return new DatabaseDestination(service, name, type);
+            return new DatabaseDestination(name, type);
         }
     }
 }

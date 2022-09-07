@@ -65,6 +65,18 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
         }
         catch (Exception e) {
         }
+
+        try {
+            db.execSQL(
+                    "CREATE TABLE " + UserContract.TABLE_DRAW + " (" +
+                            UserContract.DRAW_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            UserContract.DRAW_COLUMN_POINTS_X + " FLOAT, " +
+                            UserContract.DRAW_COLUMN_POINTS_Y + " FLOAT, " +
+                            UserContract.DRAW_COLUMN_SEP + " INTEGER);");
+        }
+        catch (Exception e) {
+        }
+
     }
 
     @Override

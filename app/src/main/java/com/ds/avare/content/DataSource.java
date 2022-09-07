@@ -17,6 +17,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Airport;
@@ -52,15 +53,10 @@ public class DataSource {
     private Preferences mPref;
 
     /**
-     * @param context
      */
-    public DataSource(Context context) {
-        mContext = context;
-        mPref = new Preferences(context);
-    }
-
-    public Preferences getPreferences() {
-        return mPref;
+    public DataSource() {
+        mContext = StorageService.getInstance().getApplicationContext();
+        mPref = StorageService.getInstance().getPreferences();
     }
 
     public boolean isPresent() {
@@ -68,9 +64,9 @@ public class DataSource {
         return null != LocationContentProviderHelper.findNavaid(mContext, "BOS");
     }
 
-    public static void reset(Context context) {
+    public static void reset() {
         ContentProviderClient client;
-        ContentResolver resolver = context.getContentResolver();
+        ContentResolver resolver = StorageService.getInstance().getApplicationContext().getContentResolver();
 
         client = resolver.acquireContentProviderClient(ObstaclesContract.AUTHORITY_URI);
         ObstaclesProvider oprovider = (ObstaclesProvider) client.getLocalContentProvider();
@@ -221,6 +217,14 @@ public class DataSource {
 
     public void replaceUserRecentName(String id, String newName) {
         ContentProviderHelper.replaceUserRecentName(mContext, id, newName);
+    }
+
+    public LinkedList<Coordinate> getUserDraw() {
+        return ContentProviderHelper.getUserDraw(mContext);
+    }
+
+    public void setUserDraw(LinkedList<Coordinate> points) {
+        ContentProviderHelper.setUserDraw(mContext, points);
     }
 
     public void setUserLists(LinkedList<Checklist> lists) {

@@ -87,10 +87,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
         boolean delay = (Boolean) vals[7];
         mCb = (GenericCallback) vals[8];
 
-        if(mService == null) {
-            return null;
-        }
-
         // if the user is moving instead of doing a long press, give them a chance
         // to cancel us before we start doing anything
         if(delay) {

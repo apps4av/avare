@@ -45,19 +45,13 @@ public class WebAppWnbInterface {
     /**
      * Instantiate the interface and set the context
      */
-    public WebAppWnbInterface(Context c, WebView ww, GenericCallback cb) {
+    public WebAppWnbInterface(WebView ww, GenericCallback cb) {
         mWebView = ww;
-    }
+        mService = StorageService.getInstance();
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_C172R));
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
 
-    /**
-     * When service connects.
-     * @param s
-     */
-    public void connect(StorageService s) {
-        mService = s;
-        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_C172R));
-        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
-        s.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
     }
 
     /**

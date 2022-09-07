@@ -16,6 +16,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.content.DataSource;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.storage.Preferences;
@@ -38,20 +39,17 @@ public class Area {
     private double mLat;
     private long mLastTime;
     private double mAltitude;
-    private Preferences mPref;
-    
+
     private static final int UPDATE_TIME = 10000;
     
     /**
      * 
-     * @param dataSource
      */
-    public Area(DataSource dataSource, Context ctx) {
-        mDataSource = dataSource;
+    public Area() {
+        mDataSource = StorageService.getInstance().getDBResource();
         mLon = mLat = 0;
         mAltitude = 0;
         mLastTime = SystemClock.elapsedRealtime() - UPDATE_TIME;
-        mPref = new Preferences(ctx);
         mAirportCache = new LinkedHashMap<String, Airport>();
     }
 
@@ -154,7 +152,7 @@ public class Area {
                 return null;
             }
             
-            mAirportCache = mDataSource.findClosestAirports(mLon, mLat, mAirportCache, mPref.getLongestRunway());
+            mAirportCache = mDataSource.findClosestAirports(mLon, mLat, mAirportCache, StorageService.getInstance().getPreferences().getLongestRunway());
             airports = mAirportCache.values().toArray(new Airport[0]);
 
 
