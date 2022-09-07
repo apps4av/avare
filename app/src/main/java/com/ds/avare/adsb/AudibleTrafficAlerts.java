@@ -6,7 +6,6 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
@@ -20,19 +19,20 @@ import java.util.List;
 
 
 public class AudibleTrafficAlerts implements Runnable {
-    private int trafficSoundId;
-    private int bogeySoundId;
-    private int closingInSoundId;
+    private final int trafficSoundId;
+    private final int bogeySoundId;
+    private final int closingInSoundId;
 
-    private  SequentialSoundPoolPlayer soundPlayer;
-    private int overSoundId;
-    private int lowSoundId, highSoundId, levelSoundId;
-    private int[] clockHoursSoundIds;
-    private int[] trafficAliasesSoundIds;
+    private final SequentialSoundPoolPlayer soundPlayer;
+    private final int overSoundId;
+    private final int lowSoundId, highSoundId, levelSoundId;
+    private final int[] clockHoursSoundIds;
+    private final int[] trafficAliasesSoundIds;
     protected final int[] closingInSecondsSoundIds;
 
     private static volatile Thread runnerThread;
-    private static final LinkedList<AlertItem> alertQueue = new LinkedList<>();;
+    // This object's monitor is used for inter-thread communication and synchronization
+    private static final LinkedList<AlertItem> alertQueue = new LinkedList<>();
     private final LinkedList<String> phoneticAlphaIcaoSequenceQueue;
     private final HashMap<String,Long> lastAlertTime;
     private final HashMap<String,String> lastDistanceUpdate;
@@ -93,7 +93,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected AudibleTrafficAlerts(Context ctx) {
         this(
-            SequentialSoundPoolPlayer.instance(ctx),
+            SequentialSoundPoolPlayer.instance(alertQueue), ctx,
             R.raw.tr_traffic, R.raw.tr_bogey,
             new int[] { R.raw.tr_one, R.raw.tr_two, R.raw.tr_three, R.raw.tr_four, R.raw.tr_five,
                 R.raw.tr_six, R.raw.tr_seven, R.raw.tr_eight, R.raw.tr_nine, R.raw.tr_ten,
@@ -113,7 +113,7 @@ public class AudibleTrafficAlerts implements Runnable {
         );
     }
 
-    protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, int trafficResId, int bogeyResId, int[] clockHoursResId,
+    protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, Context ctx, int trafficResId, int bogeyResId, int[] clockHoursResId,
                                    int[] trafficAliasesResIds, int highResId, int lowResId,
                                    int levelResId, int closingInResId, int[] closingInSecondsResIds,
                                    int overResId)
@@ -123,22 +123,22 @@ public class AudibleTrafficAlerts implements Runnable {
         this.lastAlertTime = new HashMap<>();
         this.lastDistanceUpdate = new HashMap<>();
         this.soundPlayer = sp;
-        this.trafficSoundId = sp.load(trafficResId);
-        this.bogeySoundId = sp.load(bogeyResId);
-        this.clockHoursSoundIds = loadSoundArray(sp, clockHoursResId);
-        this.trafficAliasesSoundIds = loadSoundArray(sp, trafficAliasesResIds);
-        this.highSoundId = sp.load(highResId);
-        this.lowSoundId = sp.load(lowResId);
-        this.levelSoundId = sp.load(levelResId);
-        this.closingInSoundId = sp.load(closingInResId);
-        this.closingInSecondsSoundIds = loadSoundArray(sp, closingInSecondsResIds);
-        this.overSoundId = sp.load(overResId);
+        this.trafficSoundId = sp.load(trafficResId, ctx);
+        this.bogeySoundId = sp.load(bogeyResId, ctx);
+        this.clockHoursSoundIds = loadSoundArray(sp, ctx, clockHoursResId);
+        this.trafficAliasesSoundIds = loadSoundArray(sp, ctx, trafficAliasesResIds);
+        this.highSoundId = sp.load(highResId, ctx);
+        this.lowSoundId = sp.load(lowResId, ctx);
+        this.levelSoundId = sp.load(levelResId, ctx);
+        this.closingInSoundId = sp.load(closingInResId, ctx);
+        this.closingInSecondsSoundIds = loadSoundArray(sp, ctx, closingInSecondsResIds);
+        this.overSoundId = sp.load(overResId, ctx);
     }
 
-    private int[] loadSoundArray(SequentialSoundPoolPlayer sp, int... resourceIds) {
+    private int[] loadSoundArray(SequentialSoundPoolPlayer sp, Context ctx, int... resourceIds) {
         int[] soundIds = new int[resourceIds.length];
         for (int i = 0; i < resourceIds.length; i++)
-            soundIds[i] = sp.load(resourceIds[i]);
+            soundIds[i] = sp.load(resourceIds[i], ctx);
         return soundIds;
     }
 
@@ -166,19 +166,18 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setClosingTimeThreasholdSeconds(int closingTimeThreasholdSeconds) {  this.closingTimeThreasholdSeconds = closingTimeThreasholdSeconds;  }
     public void setClosestApproachThreasholdNmi(float closestApproachThreasholdNmi) {  this.closestApproachThreasholdNmi = closestApproachThreasholdNmi;  }
 
-
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
-                if (this.alertQueue.size() > 0 && !soundPlayer.isPlaying()) {
+                if (alertQueue.size() > 0 && !soundPlayer.isPlaying()) {
                     final AlertItem alert = alertQueue.getFirst();
-                    final Traffic t = alert.traffic;
-                    if (!lastAlertTime.containsKey(t.mCallSign)
-                            || (System.currentTimeMillis()-lastAlertTime.get(t.mCallSign))/1000.0 > MAX_ALERT_FREQUENCY_SECONDS)
+                    if (!lastAlertTime.containsKey(alert.traffic.mCallSign)
+                        || (System.currentTimeMillis()-lastAlertTime.get(alert.traffic.mCallSign))/1000.0
+                            > MAX_ALERT_FREQUENCY_SECONDS)
                     {
-                            lastAlertTime.put(t.mCallSign, System.currentTimeMillis());
-                            List<Integer> alertMessage = buildAlertSoundIdSequence(alertQueue.removeFirst());
+                            lastAlertTime.put(alert.traffic.mCallSign, System.currentTimeMillis());
+                            final List<Integer> alertMessage = buildAlertSoundIdSequence(alertQueue.removeFirst());
                             soundPlayer.playSequence(alertMessage);
                     }
                 } else {
@@ -268,9 +267,9 @@ public class AudibleTrafficAlerts implements Runnable {
         synchronized (alertQueue) {
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
-                this.alertQueue.add(alertItem);
+                alertQueue.add(alertItem);
             } else {    // if already in queue, update with the most recent data prior to speaking
-                this.alertQueue.set(alertIndex, alertItem);
+                alertQueue.set(alertIndex, alertItem);
             }
             alertQueue.notifyAll();
         }
@@ -312,7 +311,6 @@ public class AudibleTrafficAlerts implements Runnable {
      * @return Great circle distance between two points
      */
     private static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
-
         final double x1 = Math.toRadians(lat1);
         final double y1 = Math.toRadians(lon1);
         final double x2 = Math.toRadians(lat2);
@@ -332,7 +330,8 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
-                                           float heading1, float heading2, int velocity1, int velocity2) {
+                                           float heading1, float heading2, int velocity1, int velocity2)
+    {
         final double a = (lon2 - lon1) * (60.0000 * Math.cos(Math.toRadians((lat1+lat2)/2.0000))) ;
         final double b = velocity2*Math.sin(Math.toRadians(heading2)) - velocity1*Math.sin(Math.toRadians(heading1));
         final double c = (lat2 - lat1) * 60.0000;
@@ -351,29 +350,32 @@ public class AudibleTrafficAlerts implements Runnable {
         };
     }
 
+    private interface SoundSequenceOnCompletionListener {
+        void onSoundSequenceCompletion(List<Integer> soundIdSequence);
+    }
+
     /**
-     * Helper class for playing synchronous, sequential sound samples (e.g., an audio alert)
+     * Player synchronous, sequential sound samples (e.g., an audio alert) via in-memory SoundPool samples
      */
-    protected static class SequentialSoundPoolPlayer implements SoundPool.OnLoadCompleteListener {
+    protected static class SequentialSoundPoolPlayer
+            implements SoundPool.OnLoadCompleteListener, SoundSequenceOnCompletionListener
+    {
         private static final SoundPool sp = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
         private static final HashMap<Integer, Long> soundDurationMap = new HashMap<>();
         private static final List<Integer> loadedSounds = new ArrayList<>();
         private static final Handler handler = new Handler(Looper.getMainLooper());
         private static boolean isPlaying = false;
-        private Context ctx;
-        private List<Integer> playingSequence;
         private static SequentialSoundPoolPlayer singleton;
+        private final Object synchNotificationMonitor;
 
-        private SequentialSoundPoolPlayer(Context ctx) {
-            this.ctx = ctx;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-                sp.setOnLoadCompleteListener(this);
-            }
+        private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
+            this.synchNotificationMonitor = synchNotificationMonitor;
+            sp.setOnLoadCompleteListener(this);
         }
 
-        public static SequentialSoundPoolPlayer instance(Context ctx) {
+        public static SequentialSoundPoolPlayer instance(Object synchNotificationObject) {
             if (singleton == null)
-                singleton = new SequentialSoundPoolPlayer(ctx);
+                singleton = new SequentialSoundPoolPlayer(synchNotificationObject);
             return singleton;
         }
 
@@ -381,7 +383,7 @@ public class AudibleTrafficAlerts implements Runnable {
             return isPlaying;
         }
 
-        public synchronized int load(int resId) {
+        public synchronized int load(int resId, Context ctx) {
             final int soundId = sp.load(ctx, resId, 1);
             soundDurationMap.put(soundId, getSoundDuration(ctx, resId));
             return soundId;
@@ -394,12 +396,12 @@ public class AudibleTrafficAlerts implements Runnable {
         }
 
         public synchronized void playSequence(List<Integer> soundIds) {
-            if (isPlaying) {
-                return;
-            }
-            synchronized (alertQueue) {
+            synchronized (synchNotificationMonitor) {
+                if (isPlaying) {
+                    return;
+                }
                 isPlaying = true;
-                handler.post(new SoundPlayRunnable(soundIds, handler, alertQueue));
+                handler.post(new SequentialSoundPlayRunnable(soundIds, this));
             }
         }
 
@@ -410,25 +412,32 @@ public class AudibleTrafficAlerts implements Runnable {
             return duration;
         }
 
-        private static class SoundPlayRunnable implements Runnable {
+        @Override
+        public void onSoundSequenceCompletion(List<Integer> soundIdSequence) {
+            synchronized (synchNotificationMonitor) {
+                isPlaying = false;
+                synchNotificationMonitor.notifyAll();
+            }
+        }
+
+        /**
+         * Runnable to put on Android looper for each alert (sound sequence)
+         */
+        private static class SequentialSoundPlayRunnable implements Runnable {
             final private List<Integer> soundIds;
             private int curSoundIndex = 0;
-            private final Handler handler;
             private final Runnable soundPlayCompletionRunnable;
 
-            public SoundPlayRunnable(List<Integer> soundIds, Handler handler, Object notifyeeMonitor) {
+            public SequentialSoundPlayRunnable(List<Integer> soundIds, SoundSequenceOnCompletionListener listener) {
                 this.soundIds = soundIds;
-                this.handler = handler;
                 this.soundPlayCompletionRunnable = new Runnable() {
                     @Override
                     public void run() {
                         if (curSoundIndex < soundIds.size()) {
-                            handler.post(SoundPlayRunnable.this);
+                            handler.post(SequentialSoundPlayRunnable.this);
                         } else {
-                            synchronized (notifyeeMonitor) {
-                                isPlaying = false;
-                                notifyeeMonitor.notifyAll();
-                            }
+                            if (listener != null)
+                                listener.onSoundSequenceCompletion(soundIds);
                         }
                     }
                 };
