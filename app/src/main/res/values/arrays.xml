@@ -2011,9 +2011,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="Opacity">
         <item>Transparent</item>
-        <item>25 Percent</item>
-        <item>50 Percent</item>
-        <item>75 Percent</item>
+        <item>25&#xFF05;</item>
+        <item>50&#xFF05;</item>
+        <item>75&#xFF05;</item>
         <item>Opaque</item>
     </string-array>
 
@@ -2404,5 +2404,215 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>
         <item>&quot;You can modify the quantity of fields on the top of the display by adjusting the Avare font size scaling at Preferences->UI Configuration->Adjust Font Size&quot;</item>
     </string-array>
+
+
+    <string-array name="ClosingCriticalAlertPct">
+        <item>NEVER (No critical time/distance chirp)</item>
+        <item>&lt;= 1&#xFF05; (distance &amp; time)</item>
+        <item>&lt;= 2&#xFF05; (time &amp; distance)</item>
+        <item>&quot;&lt;= 3&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 4&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 5&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 6&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 7&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 8&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 9&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 10&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 11&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 12&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 13&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 14&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 15&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 16&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 17&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 18&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 19&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 20&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 21&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 22&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 23&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 24&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 25&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 26&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 27&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 28&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 29&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 30&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 31&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 32&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 33&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 34&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 35&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 36&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 37&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 38&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 39&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 40&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 41&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 42&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 43&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 44&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 45&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 46&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 47&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 48&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 49&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 50&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 51&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 52&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 53&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 54&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 55&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 56&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 57&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 58&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 59&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 60&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 61&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 62&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 63&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 64&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 65&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 66&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 67&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 68&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 69&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 70&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 71&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 72&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 73&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 74&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 75&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 76&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 77&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 78&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 79&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 80&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 81&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 82&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 83&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 84&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 85&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 86&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 87&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 88&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 89&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 90&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 91&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 92&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 93&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 94&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 95&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 96&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 97&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 98&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;&lt;= 99&#xFF05; (time &amp; distance)&quot;</item>
+        <item>&quot;100&#xFF05; (ALWAYS CHIRP FOR CLOSING ALERTS)&quot;</item>
+    </string-array>
+
+    <string-array name="ClosingCriticalAlertPctValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+        <item>36</item>
+        <item>37</item>
+        <item>38</item>
+        <item>39</item>
+        <item>40</item>
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>47</item>
+        <item>48</item>
+        <item>49</item>
+        <item>50</item>
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+        <item>55</item>
+        <item>56</item>
+        <item>57</item>
+        <item>58</item>
+        <item>59</item>
+        <item>60</item>
+        <item>61</item>
+        <item>62</item>
+        <item>63</item>
+        <item>64</item>
+        <item>65</item>
+        <item>66</item>
+        <item>67</item>
+        <item>68</item>
+        <item>69</item>
+        <item>70</item>
+        <item>71</item>
+        <item>72</item>
+        <item>73</item>
+        <item>74</item>
+        <item>75</item>
+        <item>76</item>
+        <item>77</item>
+        <item>78</item>
+        <item>79</item>
+        <item>80</item>
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+        <item>85</item>
+        <item>86</item>
+        <item>87</item>
+        <item>88</item>
+        <item>89</item>
+        <item>90</item>
+        <item>91</item>
+        <item>92</item>
+        <item>93</item>
+        <item>94</item>
+        <item>95</item>
+        <item>96</item>
+        <item>97</item>
+        <item>98</item>
+        <item>99</item>
+        <item>100</item>
+    </string-array>
+
 
 </resources>

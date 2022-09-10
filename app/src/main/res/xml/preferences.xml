@@ -289,6 +289,13 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsClosingDistanceDistance"
             android:summary="@string/AudibleTrafficAlertsClosingDistanceDistanceSummary"
             android:title="@string/AudibleTrafficAlertsClosingDistanceDistanceLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="51"
+            android:entries="@array/ClosingCriticalAlertPct"
+            android:entryValues="@array/ClosingCriticalAlertPctValues"
+            android:key="@string/AudibleTrafficAlertsClosingCritalAlert"
+            android:summary="@string/AudibleTrafficAlertsClosingCritalAlertSummary"
+            android:title="@string/AudibleTrafficAlertsClosingCritalAlertLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/drawTrafficCircles"

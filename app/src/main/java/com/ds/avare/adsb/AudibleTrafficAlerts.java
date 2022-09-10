@@ -59,6 +59,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final int[] clockHoursSoundIds;
     private final int[] trafficAliasesSoundIds;
     protected final int[] closingInSecondsSoundIds;
+    private final int criticallyCloseChirp;
 
     private static volatile Thread runnerThread;
     // This object's monitor is used for inter-thread communication and synchronization
@@ -72,6 +73,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private boolean closingTimeEnabled = true;
     private int closingTimeThreasholdSeconds = 15;
     private float closestApproachThreasholdNmi = 3.0f;
+    private float criticalClosingAlertRatio = .4f;
 
     private final static float MAX_ALERT_FREQUENCY_SECONDS = 5f;
 
@@ -79,11 +81,13 @@ public class AudibleTrafficAlerts implements Runnable {
         private final double closingTimeSec;
         private final double closestApproachDistanceNmi;
         private final long eventTimeMillis;
+        private boolean isCriticallyClose;
 
-        public ClosingEvent(double closingTimeSec, double closestApproachDistanceNmi) {
+        public ClosingEvent(double closingTimeSec, double closestApproachDistanceNmi, boolean isCriticallyClose) {
             this.closingTimeSec = closingTimeSec;
             this.closestApproachDistanceNmi = closestApproachDistanceNmi;
             this.eventTimeMillis = System.currentTimeMillis();
+            this.isCriticallyClose = isCriticallyClose;
         }
 
         public double closingSeconds() {
@@ -141,14 +145,14 @@ public class AudibleTrafficAlerts implements Runnable {
                 R.raw.tr_cl_16, R.raw.tr_cl_17, R.raw.tr_cl_18, R.raw.tr_cl_19, R.raw.tr_cl_20,
                 R.raw.tr_cl_21, R.raw.tr_cl_22, R.raw.tr_cl_23, R.raw.tr_cl_24, R.raw.tr_cl_25,
                 R.raw.tr_cl_26, R.raw.tr_cl_27, R.raw.tr_cl_28, R.raw.tr_cl_29, R.raw.tr_cl_30 },
-            R.raw.tr_cl_over
+            R.raw.tr_cl_over, R.raw.tr_cl_chirp
         );
     }
 
     protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, Context ctx, int trafficResId, int bogeyResId, int[] clockHoursResId,
                                    int[] trafficAliasesResIds, int highResId, int lowResId,
                                    int levelResId, int closingInResId, int[] closingInSecondsResIds,
-                                   int overResId)
+                                   int overResId, int criticallyCloseChirp)
 
     {
         this.phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
@@ -165,6 +169,7 @@ public class AudibleTrafficAlerts implements Runnable {
         this.closingInSoundId = sp.load(closingInResId, ctx);
         this.closingInSecondsSoundIds = loadSoundArray(sp, ctx, closingInSecondsResIds);
         this.overSoundId = sp.load(overResId, ctx);
+        this.criticallyCloseChirp = sp.load(criticallyCloseChirp, ctx);
     }
 
     private int[] loadSoundArray(SequentialSoundPoolPlayer sp, Context ctx, int... resourceIds) {
@@ -197,7 +202,11 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setClosingTimeEnabled(boolean closingTimeEnabled) { this.closingTimeEnabled = closingTimeEnabled;  }
     public void setClosingTimeThreasholdSeconds(int closingTimeThreasholdSeconds) {  this.closingTimeThreasholdSeconds = closingTimeThreasholdSeconds;  }
     public void setClosestApproachThreasholdNmi(float closestApproachThreasholdNmi) {  this.closestApproachThreasholdNmi = closestApproachThreasholdNmi;  }
+    public void setCriticalClosingAlertRatio(float criticalClosingAlertRatio) {  this.criticalClosingAlertRatio = criticalClosingAlertRatio;  }
 
+    /**
+     * Process alert queue in a separate thread
+     */
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()) {
@@ -223,12 +232,19 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
+    /**
+     * Construct soundId sequence based on alert properties
+     * @param alertItem
+     * @return
+     */
     protected List<Integer> buildAlertSoundIdSequence(AlertItem alertItem) {
         final List<Integer> alertAudio = new ArrayList<>();
         final double altitudeDiff = alertItem.ownAltitude - alertItem.traffic.mAltitude;
         final int clockHour = (int) nearestClockHourFromHeadingAndLocations(
                 alertItem.ownLocation.getLatitude(), alertItem.ownLocation.getLongitude(),
                 alertItem.traffic.mLat, alertItem.traffic.mLon, alertItem.ownLocation.getBearing());
+        if (alertItem.closingEvent != null && alertItem.closingEvent.isCriticallyClose)
+            alertAudio.add(criticallyCloseChirp);
         alertAudio.add(topGunDorkMode ? bogeySoundId : trafficSoundId);
         if (useTrafficAliases) {
             int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(alertItem.traffic.mCallSign);
@@ -253,6 +269,14 @@ public class AudibleTrafficAlerts implements Runnable {
         return alertAudio;
     }
 
+    /**
+     * Process ADSB traffic list and decide which traffic needs to be added to the alert queue
+     * @param ownLocation
+     * @param allTraffic
+     * @param alertDistance
+     * @param ownAltitude
+     * @param altitudeProximityDangerMinimum
+     */
     public void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
                                     float alertDistance, int ownAltitude,
                                     int altitudeProximityDangerMinimum)
@@ -284,7 +308,14 @@ public class AudibleTrafficAlerts implements Runnable {
                                 t.mHorizVelocity, closingEventTimeSec/3600.000);
                         final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
                         if (caDistance < this.closestApproachThreasholdNmi && currentDistance > caDistance) {
-                            ce = new ClosingEvent(closingEventTimeSec, caDistance);
+                                boolean criticallyClose = false;
+                                if (
+                                    this.criticalClosingAlertRatio > 0
+                                    &&(closingEventTimeSec / this.closingTimeThreasholdSeconds*1.0) <= criticalClosingAlertRatio
+                                    && (caDistance / this.closestApproachThreasholdNmi*1.0) <= criticalClosingAlertRatio
+                                )
+                                    criticallyClose = true;
+                                ce = new ClosingEvent(closingEventTimeSec, caDistance, criticallyClose);
                         }
                     }
                 }
@@ -299,7 +330,14 @@ public class AudibleTrafficAlerts implements Runnable {
         synchronized (alertQueue) {
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
-                alertQueue.add(alertItem);
+                // If if is critical, and the first one on the queue isn't, put it at the front
+//                final AlertItem firstAlert = alertQueue.size() > 0 ? alertQueue.getFirst() : null;
+//                if (alertItem.closingEvent != null && alertItem.closingEvent.isCriticallyClose
+//                    && (firstAlert == null || firstAlert.closingEvent == null || !firstAlert.closingEvent.isCriticallyClose)
+//                )
+//                    alertQueue.addFirst(alertItem);
+//                else
+                    alertQueue.add(alertItem);
             } else {    // if already in queue, update with the most recent data prior to speaking
                 alertQueue.set(alertIndex, alertItem);
             }
@@ -325,12 +363,14 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     protected static long nearestClockHourFromHeadingAndLocations(
-            double lat1, double long1, double lat2, double long2,  double myBearing) {
+            double lat1, double long1, double lat2, double long2,  double myBearing)
+    {
         final long nearestClockHour = Math.round(relativeBearingFromHeadingAndLocations(lat1, long1, lat2, long2, myBearing)/30.0);
         return nearestClockHour != 0 ? nearestClockHour : 12;
     }
 
-    protected static double relativeBearingFromHeadingAndLocations(double lat1, double long1, double lat2, double long2,  double myBearing) {
+    protected static double relativeBearingFromHeadingAndLocations(double lat1, double long1, double lat2, double long2,  double myBearing)
+    {
         return (angleFromCoordinate(lat1, long1, lat2, long2) - myBearing + 360) % 360;
     }
 
@@ -392,7 +432,8 @@ public class AudibleTrafficAlerts implements Runnable {
     protected static class SequentialSoundPoolPlayer
             implements SoundPool.OnLoadCompleteListener, SoundSequenceOnCompletionListener
     {
-        private static final SoundPool sp = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
+        private static final SoundPool sp = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
         private static final HashMap<Integer, Long> soundDurationMap = new HashMap<>();
         private static final List<Integer> loadedSounds = new ArrayList<>();
         private static final Handler handler = new Handler(Looper.getMainLooper());
@@ -427,6 +468,14 @@ public class AudibleTrafficAlerts implements Runnable {
                 loadedSounds.add(sampleId);
         }
 
+        @Override
+        public void onSoundSequenceCompletion(List<Integer> soundIdSequence) {
+            synchronized (synchNotificationMonitor) {
+                isPlaying = false;
+                synchNotificationMonitor.notifyAll();
+            }
+        }
+
         public synchronized void playSequence(List<Integer> soundIds) {
             synchronized (synchNotificationMonitor) {
                 if (isPlaying) {
@@ -444,16 +493,8 @@ public class AudibleTrafficAlerts implements Runnable {
             return duration;
         }
 
-        @Override
-        public void onSoundSequenceCompletion(List<Integer> soundIdSequence) {
-            synchronized (synchNotificationMonitor) {
-                isPlaying = false;
-                synchNotificationMonitor.notifyAll();
-            }
-        }
-
         /**
-         * Runnable to put on Android looper for each alert (sound sequence)
+         * Runnable to put on Android looper each alert (sound sequence)
          */
         private static class SequentialSoundPlayRunnable implements Runnable {
             final private List<Integer> soundIds;

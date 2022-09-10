@@ -357,6 +357,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
     }
 
+    public float getAudibleClosingInCriticalAlertRatio() {
+        return (float) (Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingCritalAlert), "0")) / 100.00);
+    }
+
     /**
      * @return
      */
