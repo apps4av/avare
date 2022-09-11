@@ -316,6 +316,7 @@ public class StorageService  {
         mLastPlateAirport = null;
         mLastPlateIndex = 0;
         mLastLocationUpdate = 0;
+        mGpsParams = new GpsParams(null);
 
         mCap = new DrawCapLines(Helper.adjustTextSize(mContext, R.dimen.distanceRingNumberTextSize));
         
