@@ -139,7 +139,7 @@ public class AudibleTrafficAlertsTest {
         AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
                 new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
                 mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(67, 1.0), 99.9f
+                new AudibleTrafficAlerts.ClosingEvent(67, 1.0, false), 99.9f
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
         Assert.assertTrue("Last media used", media.contains(ata.closingInSecondsSoundIds[ata.closingInSecondsSoundIds.length-1]));
@@ -152,7 +152,7 @@ public class AudibleTrafficAlertsTest {
         AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
                 new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
                 mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(.25, 1.0), 99.9f
+                new AudibleTrafficAlerts.ClosingEvent(.25, 1.0, false), 99.9f
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
         Assert.assertTrue("First media used", media.contains(ata.closingInSecondsSoundIds[0]));
@@ -164,7 +164,7 @@ public class AudibleTrafficAlertsTest {
             seconds[i] = 2000 + i;
         return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class), -1, -2,
                 new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, new int[] { 13, 14 }, -3, -4,
-                -5, -6, seconds, -7);
+                -5, -6, seconds, -7, -8);
     }
 
     private Location getMockLocation(double latitude, double longitude, float bearing) {
