@@ -43,37 +43,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Audible ADSB nearby traffic alerts, with optional "closest approach" closing time alerts
  */
 public class AudibleTrafficAlerts implements Runnable {
+
+    private final SequentialSoundPoolPlayer soundPlayer;
     private final int trafficSoundId;
     private final int bogeySoundId;
     private final int closingInSoundId;
-
-    private final SequentialSoundPoolPlayer soundPlayer;
     private final int overSoundId;
     private final int lowSoundId, highSoundId, levelSoundId;
     private final int[] clockHoursSoundIds;
     private final int[] trafficAliasesSoundIds;
     protected final int[] closingInSecondsSoundIds;
     private final int criticallyCloseChirp;
+    private final List<Integer> soundIdsToLoad;
 
-    private static volatile Thread runnerThread;
-    // This object's monitor is used for inter-thread communication and synchronization
-    private static final LinkedList<AlertItem> alertQueue = new LinkedList<>();
     private final LinkedList<String> phoneticAlphaIcaoSequenceQueue;
-    private final HashMap<String,Long> lastAlertTime;
-    private final HashMap<String,String> lastDistanceUpdate;
-    private static AudibleTrafficAlerts singleton;
+    private final Map<String,Long> lastAlertTime;
+    private final Map<String,String> lastDistanceUpdate;
+
     private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
     private boolean closingTimeEnabled = true;
     private int closingTimeThreasholdSeconds = 15;
     private float closestApproachThreasholdNmi = 3.0f;
     private float criticalClosingAlertRatio = .4f;
-    private final List<Integer> soundIdsToLoad;
+
+    private static volatile Thread runnerThread;
+    // This object's monitor is used for inter-thread communication and synchronization
+    private static final LinkedList<AlertItem> alertQueue = new LinkedList<>();
+    private static AudibleTrafficAlerts singleton;
 
     private final static float MAX_ALERT_FREQUENCY_SECONDS = 5f;
 
@@ -196,6 +199,7 @@ public class AudibleTrafficAlerts implements Runnable {
             runnerThread = new Thread(singleton, "AudibleAlerts");
             runnerThread.start();
         }
+
         return singleton;
     }
 
@@ -230,7 +234,7 @@ public class AudibleTrafficAlerts implements Runnable {
      */
     @Override
     public void run() {
-        // Wait for all sounds to load before really starting our work
+        // Wait for all sounds to load before starting alert queue processing
         soundPlayer.waitUntilAllSoundsAreLoaded(soundIdsToLoad);
         // Alert queue processing loop
         while(!Thread.currentThread().isInterrupted()) {
@@ -259,7 +263,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
     /**
      * Construct soundId sequence based on alert properties
-     * @param alertItem Alert item to build soundId seaeuqnce for
+     * @param alertItem Alert item to build soundId sequence for
      * @return Sequence of soundId's for the soundplayer that represents the assembled alert
      */
     protected List<Integer> buildAlertSoundIdSequence(AlertItem alertItem) {
@@ -350,13 +354,6 @@ public class AudibleTrafficAlerts implements Runnable {
         synchronized (alertQueue) {
             final int alertIndex = alertQueue.indexOf(alertItem);
             if (alertIndex == -1) {
-//                // If if is critical, and the first one on the queue isn't, put it at the front
-//                final AlertItem firstAlert = alertQueue.size() > 0 ? alertQueue.getFirst() : null;
-//                if (alertItem.closingEvent != null && alertItem.closingEvent.isCriticallyClose
-//                    && (firstAlert == null || firstAlert.closingEvent == null || !firstAlert.closingEvent.isCriticallyClose)
-//                )
-//                    alertQueue.addFirst(alertItem);
-//                else
                     alertQueue.add(alertItem);
             } else {    // if already in queue, update with the most recent data prior to speaking
                 alertQueue.set(alertIndex, alertItem);
@@ -424,7 +421,8 @@ public class AudibleTrafficAlerts implements Runnable {
     protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
                                            float heading1, float heading2, int velocity1, int velocity2)
     {
-        final double a = (lon2 - lon1) * (60.0000 * Math.cos(Math.toRadians((lat1+lat2)/2.0000))) ;
+        // Use cosine of average of two latitudes, to give some weighting for lesser intra-lon distance at higher latitudes
+        final double a = (lon2 - lon1) * (60.0000 * Math.cos(Math.toRadians((lat1+lat2)/2.0000)));
         final double b = velocity2*Math.sin(Math.toRadians(heading2)) - velocity1*Math.sin(Math.toRadians(heading1));
         final double c = (lat2 - lat1) * 60.0000;
         final double d = velocity2*Math.cos(Math.toRadians(heading2)) - velocity1*Math.cos(Math.toRadians(heading1));
@@ -452,20 +450,21 @@ public class AudibleTrafficAlerts implements Runnable {
     protected static class SequentialSoundPoolPlayer
             implements SoundPool.OnLoadCompleteListener, SoundSequenceOnCompletionListener, AutoCloseable
     {
-        private static SoundPool soundPool;
-        private static final HashMap<Integer, Long> soundDurationMap = new HashMap<>();
-        private static final List<Integer> loadedSounds = new ArrayList<>();
-        private static final Handler handler = new Handler(Looper.getMainLooper());
+        private final SoundPool soundPool;
+        private final Map<Integer, Long> soundDurationMap;
+        private final List<Integer> loadedSounds;
+        private final Handler handler;
         private boolean isPlaying = false;
         private final Object synchNotificationMonitor;
 
         private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
             // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
-            soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
-            soundDurationMap.clear();
-            loadedSounds.clear();
+            this.soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
+            this.soundPool.setOnLoadCompleteListener(this);
+            this.loadedSounds = new ArrayList<>();
+            this.soundDurationMap = new HashMap<>();
             this.synchNotificationMonitor = synchNotificationMonitor;
-            soundPool.setOnLoadCompleteListener(this);
+            this.handler = new Handler(Looper.getMainLooper());
         }
 
         public synchronized boolean isPlaying() {
@@ -480,20 +479,21 @@ public class AudibleTrafficAlerts implements Runnable {
 
         @Override
         public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-            if(status == 0)
-                loadedSounds.add(sampleId);
-            synchronized (synchNotificationMonitor) {
-                synchNotificationMonitor.notifyAll();
+            synchronized (loadedSounds) {
+                if (status == 0) {
+                    loadedSounds.add(sampleId);
+                    loadedSounds.notifyAll();
+                }
             }
         }
 
-        public void waitUntilAllSoundsAreLoaded(List<Integer> soundIds) {
-            synchronized (synchNotificationMonitor) {
-                while (!loadedSounds.containsAll(soundIds))
+        public synchronized void  waitUntilAllSoundsAreLoaded(List<Integer> soundIds) {
+            synchronized (loadedSounds) {
+                while (!(loadedSounds.size() >= soundIds.size() && loadedSounds.containsAll(soundIds)))
                     try {
-                        synchNotificationMonitor.wait();
+                        loadedSounds.wait();
                     } catch (InterruptedException ie) {
-                        /* Expected notification of each loading from onLoadComplete above */
+                        /* Expected */
                     }
             }
         }
@@ -512,13 +512,13 @@ public class AudibleTrafficAlerts implements Runnable {
                     return;
                 }
                 isPlaying = true;
-                handler.post(new SequentialSoundPlayRunnable(soundIds, this));
+                handler.post(new SequentialSoundPlayRunnable(soundIds, this, handler, soundPool, soundDurationMap));
             }
         }
 
         private static long getSoundDuration(Context context, int rawId){
             final MediaPlayer player = MediaPlayer.create(context, rawId);
-            long duration = player.getDuration();
+            final long duration = player.getDuration();
             player.release();
             return duration;
         }
@@ -526,27 +526,33 @@ public class AudibleTrafficAlerts implements Runnable {
         @Override
         public void close() throws Exception {
             soundPool.release();
-            soundPool = null;
-            loadedSounds.clear();
-            soundDurationMap.clear();
         }
 
         /**
-         * Runnable to put on Android looper each alert (sound sequence)
+         * Runnable to put on Android looper for each alert (sound sequence)
          */
         private static class SequentialSoundPlayRunnable implements Runnable {
             private final List<Integer> soundIds;
             private int curSoundIndex = 0;
             private final Runnable soundPlayCompletionRunnable;
+            private final Handler handler;
+            private final SoundPool soundPool;
+            private final Map<Integer,Long> soundDurationMap;
 
-            public SequentialSoundPlayRunnable(List<Integer> soundIds, SoundSequenceOnCompletionListener listener)
+            private static final float SOUND_PLAY_RATE = 1f;
+
+            public SequentialSoundPlayRunnable(List<Integer> soundIds, SoundSequenceOnCompletionListener listener,
+                                               Handler handler, SoundPool soundPool, Map<Integer,Long> soundDurationMap)
             {
                 this.soundIds = soundIds;
+                this.handler = handler;
+                this.soundPool = soundPool;
+                this.soundDurationMap = soundDurationMap;
                 this.soundPlayCompletionRunnable = new Runnable() {
                     @Override
                     public void run() {
                         if (curSoundIndex < soundIds.size()) {
-                            handler.post(SequentialSoundPlayRunnable.this);
+                            SequentialSoundPlayRunnable.this.handler.post(SequentialSoundPlayRunnable.this);
                         } else {
                             if (listener != null)
                                 listener.onSoundSequenceCompletion(soundIds);
@@ -558,10 +564,8 @@ public class AudibleTrafficAlerts implements Runnable {
             @Override
             public void run() {
                 final int soundId = this.soundIds.get(curSoundIndex++);
-                if (!loadedSounds.contains(soundId))
-                    throw new IllegalStateException("Sound id not yet loaded: "+soundId);
-                soundPool.play(soundId, 1, 1, 1, 0, 1);
-                handler.postDelayed(this.soundPlayCompletionRunnable, soundDurationMap.get(soundId));
+                soundPool.play(soundId, 1, 1, 1, 0, SOUND_PLAY_RATE);
+                handler.postDelayed(this.soundPlayCompletionRunnable, (long) Math.ceil(soundDurationMap.get(soundId)/SOUND_PLAY_RATE));
             }
         }
     }
