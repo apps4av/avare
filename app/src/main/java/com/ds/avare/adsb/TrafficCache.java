@@ -13,7 +13,6 @@ package com.ds.avare.adsb;
 
 
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -47,7 +46,6 @@ public class TrafficCache {
          * For any new entries, check max traffic objects.
          */
         Traffic traffic = mTraffic.get(address);
-        //mpWatchOut.start();
         if(traffic == null) {
             if(mTraffic.size() >= MAX_ENTRIES) {
                 return;

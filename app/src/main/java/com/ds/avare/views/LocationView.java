@@ -124,7 +124,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
     // Which layer to draw
     private String mLayerType;
     private Layer mLayer;
-    private AudibleTrafficAlerts audibleTrafficAlerts;
 
     /**
      * Task that finds closets airport.

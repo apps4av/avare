@@ -2,8 +2,6 @@ package com.ds.avare.adsb;
 
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.location.Location;
-import android.media.MediaPlayer;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -29,7 +27,6 @@ public class Traffic {
     public String mCallSign;
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
-    private AudibleTrafficAlerts audibleTrafficAlerts;
 
     
     // ms
@@ -55,8 +52,6 @@ public class Traffic {
         mHeading = heading;
         mHorizVelocity = speed;
         mLastUpdate = time;
-
-        this.audibleTrafficAlerts = audibleTrafficAlerts;
 
         /*
          * Limit
@@ -138,10 +133,8 @@ public class Traffic {
                 traffic.delete(key);
                 continue;
             }
-            //System.out.println("drawing");
             if(t.mIcaoAddress == ownIcao) {
                 // Do not draw shadow of own
-                //System.out.println(String.format("I am %s, at %f, %f heading %f", ownIcao, t.mLat, t.mLon, t.mHeading));
                 continue;
             }
 
