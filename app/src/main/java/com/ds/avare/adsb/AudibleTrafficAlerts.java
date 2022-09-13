@@ -200,19 +200,21 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     public static synchronized void stopAudibleTrafficAlerts() {
-        if (runnerThread != null) {
-            if (!runnerThread.isInterrupted()) {
-                runnerThread.interrupt();
+        synchronized (alertQueue) {
+            if (runnerThread != null) {
+                if (!runnerThread.isInterrupted()) {
+                    runnerThread.interrupt();
+                }
+                runnerThread = null;
             }
-            runnerThread = null;
-        }
-        alertQueue.clear();
-        if (singleton != null) {
-            try {
-                singleton.soundPlayer.close();
-            } catch (Exception e) { /* At least we tried to close resources */ }
-            singleton = null;
-            System.gc();    // Good-faith effort to reclaim feature memory, if possible
+            alertQueue.clear();
+            if (singleton != null) {
+                try {
+                    singleton.soundPlayer.close();
+                } catch (Exception e) { /* At least we tried to close resources */ }
+                singleton = null;
+                System.gc();    // Good-faith effort to reclaim feature memory, if possible
+            }
         }
     }
 
