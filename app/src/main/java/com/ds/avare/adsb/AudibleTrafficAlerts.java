@@ -84,7 +84,7 @@ public class AudibleTrafficAlerts implements Runnable {
         private final double closingTimeSec;
         private final double closestApproachDistanceNmi;
         private final long eventTimeMillis;
-        private boolean isCriticallyClose;
+        private final boolean isCriticallyClose;
 
         public ClosingEvent(double closingTimeSec, double closestApproachDistanceNmi, boolean isCriticallyClose) {
             this.closingTimeSec = closingTimeSec;
