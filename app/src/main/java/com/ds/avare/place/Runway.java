@@ -312,7 +312,7 @@ public class Runway {
      */
     public static void draw(DrawingContext ctx, BitmapHolder runwayBitmap, Destination destination, GpsParams params, boolean shouldShow) {
 
-        if((!shouldShow) || (!ctx.pref.isExtendRunways()) || (null == destination)) {
+        if((!shouldShow) || (!ctx.pref.isExtendRunways()) || (null == destination) || (null == runwayBitmap)) {
             return;
         }
 

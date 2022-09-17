@@ -1081,9 +1081,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         mService.getCDI().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         mService.getVNAV().setSize(mPaint, Math.min(getWidth(),  getHeight()));
         
-        // Tell the odometer how to access preferences
-        mService.getOdometer().setPref(mPref);
-
         mService.getEdgeTape().setPaint(mPaint);
         
         
