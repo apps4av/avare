@@ -29,9 +29,10 @@ package com.ds.avare.adsb;
 
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.location.Location;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.MediaMetadataRetriever;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Looper;
@@ -338,7 +339,7 @@ public class AudibleTrafficAlerts implements Runnable {
                         final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
                         if (caDistance < this.closestApproachThreasholdNmi && currentDistance > caDistance) {
                                 final boolean criticallyClose = this.criticalClosingAlertRatio > 0
-                                    &&(closingEventTimeSec / this.closingTimeThreasholdSeconds*1.0) <= criticalClosingAlertRatio
+                                    &&(closingEventTimeSec / this.closingTimeThreasholdSeconds) <= criticalClosingAlertRatio
                                     && (caDistance / this.closestApproachThreasholdNmi*1.0) <= criticalClosingAlertRatio;
                                 ce = new ClosingEvent(closingEventTimeSec, caDistance, criticallyClose);
                         }
@@ -456,6 +457,8 @@ public class AudibleTrafficAlerts implements Runnable {
         private final Handler handler;
         private boolean isPlaying = false;
         private final Object synchNotificationMonitor;
+        private int waitingForLoadSoundCount = -1;
+        private static final MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
 
         private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
             // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
@@ -482,19 +485,23 @@ public class AudibleTrafficAlerts implements Runnable {
             synchronized (loadedSounds) {
                 if (status == 0) {
                     loadedSounds.add(sampleId);
-                    loadedSounds.notifyAll();
+                    if (this.waitingForLoadSoundCount != -1 && loadedSounds.size() >= waitingForLoadSoundCount) {
+                        loadedSounds.notifyAll();
+                    }
                 }
             }
         }
 
         public synchronized void  waitUntilAllSoundsAreLoaded(List<Integer> soundIds) {
             synchronized (loadedSounds) {
-                while (!(loadedSounds.size() >= soundIds.size() && loadedSounds.containsAll(soundIds)))
+                this.waitingForLoadSoundCount = soundIds.size();
+                while (!loadedSounds.containsAll(soundIds))
                     try {
                         loadedSounds.wait();
                     } catch (InterruptedException ie) {
                         /* Expected */
                     }
+                this.waitingForLoadSoundCount = -1;
             }
         }
 
@@ -516,11 +523,11 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        private static long getSoundDuration(Context context, int rawId){
-            final MediaPlayer player = MediaPlayer.create(context, rawId);
-            final long duration = player.getDuration();
-            player.release();
-            return duration;
+        private static long getSoundDuration(Context context, int rawId) {
+            final AssetFileDescriptor afd = context.getResources().openRawResourceFd(rawId);
+            metaRetriever.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            final String durStr = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            return Long.parseLong(durStr);
         }
 
         @Override
