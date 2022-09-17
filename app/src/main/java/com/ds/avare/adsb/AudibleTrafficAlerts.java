@@ -458,7 +458,7 @@ public class AudibleTrafficAlerts implements Runnable {
         private boolean isPlaying = false;
         private final Object synchNotificationMonitor;
         private int waitingForLoadSoundCount = -1;
-        private static final MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+        private final MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
 
         private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
             // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
@@ -523,7 +523,7 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        private static long getSoundDuration(Context context, int rawId) {
+        private long getSoundDuration(Context context, int rawId) {
             final AssetFileDescriptor afd = context.getResources().openRawResourceFd(rawId);
             metaRetriever.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             final String durStr = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -533,6 +533,7 @@ public class AudibleTrafficAlerts implements Runnable {
         @Override
         public void close() throws Exception {
             soundPool.release();
+            metaRetriever.release();
         }
 
         /**
