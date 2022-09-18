@@ -419,6 +419,18 @@ public class AudibleTrafficAlerts implements Runnable {
         return 60 * Math.toDegrees(angle2);
     }
 
+    /**
+     * Time to closest approach between two 2-d kinematic vectors; credit to: https://math.stackexchange.com/questions/1775476/shortest-distance-between-two-objects-moving-along-two-lines
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @param heading1
+     * @param heading2
+     * @param velocity1
+     * @param velocity2
+     * @return
+     */
     protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
                                            float heading1, float heading2, int velocity1, int velocity2)
     {
@@ -436,6 +448,7 @@ public class AudibleTrafficAlerts implements Runnable {
         return new double[]  {
                 newLat,
                 lon + Math.sin(Math.toRadians(heading))
+                        // Again, use cos of average lat to give some weighting based on shorter intra-lon distance changes at higher latitudes
                         * (velocityInKt / (60.00000*Math.cos(Math.toRadians((newLat+lat)/2.0000))))
                         * timeInHrs
         };
