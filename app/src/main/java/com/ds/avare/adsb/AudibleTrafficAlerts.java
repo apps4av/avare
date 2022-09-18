@@ -331,7 +331,7 @@ public class AudibleTrafficAlerts implements Runnable {
                             t.mLat, t.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
                             t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, ownSpeedInKts
                     ))*60.00*60.00;
-                    if (closingEventTimeSec > 0 && closingEventTimeSec < this.closingTimeThreasholdSeconds) {
+                    if (closingEventTimeSec < this.closingTimeThreasholdSeconds) {
                         final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
                                 ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000);
                         final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
