@@ -1151,7 +1151,7 @@ public class LocationActivity extends BaseActivity implements Observer {
         }
         else {
             // In navigate mode, leave location to GPS location, or last known location
-            if(mService.getGpsParams() == null && mInitLocation != null) {
+            if((mService.getGpsParams() == null) || (mService.getGpsParams().getLatitude() == 0) && mInitLocation != null) {
                 mService.setGpsParams(new GpsParams(mInitLocation));
             }
         }
