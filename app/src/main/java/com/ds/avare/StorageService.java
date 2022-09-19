@@ -587,6 +587,8 @@ public class StorageService  {
      * @see android.app.Service#onDestroy()
      */
     public void destroy() {
+        mPref.setLastLocation(mGpsParams.getLongitude(), mGpsParams.getLatitude());
+
         /*
          * If we ever exit, reclaim memory
          */
