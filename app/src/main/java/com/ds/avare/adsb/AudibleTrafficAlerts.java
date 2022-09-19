@@ -79,7 +79,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private static final LinkedList<AlertItem> alertQueue = new LinkedList<>();
     private static AudibleTrafficAlerts singleton;
 
-    private final static float MAX_ALERT_FREQUENCY_SECONDS = 5f;
+    private float maxAlertFrequencySeconds = 15f;
 
     protected static class ClosingEvent {
         private final double closingTimeSec;
@@ -229,6 +229,7 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setClosingTimeThreasholdSeconds(int closingTimeThreasholdSeconds) {  this.closingTimeThreasholdSeconds = closingTimeThreasholdSeconds;  }
     public void setClosestApproachThreasholdNmi(float closestApproachThreasholdNmi) {  this.closestApproachThreasholdNmi = closestApproachThreasholdNmi;  }
     public void setCriticalClosingAlertRatio(float criticalClosingAlertRatio) {  this.criticalClosingAlertRatio = criticalClosingAlertRatio;  }
+    public void setAlertMaxFrequencySec(float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
 
     /**
      * Process alert queue in a separate thread
@@ -244,7 +245,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     final AlertItem alert = alertQueue.getFirst();
                     if (!lastAlertTime.containsKey(alert.traffic.mCallSign)
                         || (System.currentTimeMillis()-lastAlertTime.get(alert.traffic.mCallSign))/1000.0
-                            > MAX_ALERT_FREQUENCY_SECONDS)
+                            > this.maxAlertFrequencySeconds)
                     {
                             lastAlertTime.put(alert.traffic.mCallSign, System.currentTimeMillis());
                             final List<Integer> alertMessage = buildAlertSoundIdSequence(alertQueue.removeFirst());
