@@ -177,7 +177,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsClosingDistanceSecondsLabel">&quot;Closing Alert (TCPA) Seconds&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceDistance">&quot;Closing Distance Alerts Nmi&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceDistanceSummary">&quot;Number of nautical miles for closest approach within which closing (TCPA) alert will sound&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceDistanceLabel">&quot;Closing Alert (TCPA) Range (Nmi)&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistanceLabel">&quot;Closing Alert (TCPA) Range (nmi)&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlert">&quot;Closing Critical Alert Pct&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlertSummary">&#xFF05; of closing distance &amp; time within which a chirp will precede the voice alert (e.g., closing alert seconds=60s &amp; range=2nmi, a setting of 25&#xFF05; &#x21D2; chirp when within 15s of a &lt;= ½nmi closest approach).</string>
     <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alert (TCPA) Chirp &#xFF05;</string>

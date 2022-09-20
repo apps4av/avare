@@ -1310,6 +1310,8 @@ public class StorageService  {
 
                 // set pressure altitude for traffic alerts
                 getTrafficCache().setOwnAltitude((int) alt);
+                // set own location for proximity traffic alerts
+                getTrafficCache().setOwnLocation(l);
 
                 // For own height prefer geo altitude, do not use deviceAltitude here because
                 // we could get into rising altitude condition through feedback
