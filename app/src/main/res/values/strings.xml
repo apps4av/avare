@@ -153,6 +153,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="AudibleTrafficAlertsPreferenceGroup">&quot;Audible Traffic Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsClosingAlertsPreferenceGroup">&quot;Time Until the Closest Point of Approach (TCPA) Alerts&quot;</string>
     <string name="AudibleTrafficAlerts">&quot;Audible Traffic Alerts&quot;</string>
     <string name="AudibleTrafficAlertsSummary">&quot;Play audible alerts for ADSB traffic within danger minimums&quot;</string>
     <string name="AudibleTrafficAlertsLabel">&quot;Audible Traffic Alerts&quot;</string>
@@ -169,17 +170,17 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AltitudeProximityDangerMinimumSummary">&quot;Distance (feet) above or below traffic aircraft under which danger visual and audible warnings are triggered&quot;</string>
     <string name="AltitudeProximityDangerMinimumLabel">&quot;Altitude Proximity Min (ft)&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistance">&quot;Closing Distance Audible Alerts&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceSummary">&quot;Play audible alerts for aircraft approaching within minimum approach distance soon&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceLabel">&quot;Closing Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSummary">&quot;Play audible alerts for aircraft approaching a configured minimum approach distance within a configured time until that closest point of approach (TCPA)&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceLabel">&quot;Closing Alerts (TCPA)&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceSeconds">&quot;Closing Distance Seconds&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceSecondsSummary">&quot;Number of seconds within which closing distance alert will sound&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceSecondsLabel">&quot;Closing Alert Seconds&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSecondsSummary">&quot;Number of seconds until closest point of approach within which alert will sound announcing that time&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceSecondsLabel">&quot;Closing Alert (TCPA) Seconds&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceDistance">&quot;Closing Distance Alerts Nmi&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceDistanceSummary">&quot;Number of nautical miles for closest approach within which closing distance alert will sound&quot;</string>
-    <string name="AudibleTrafficAlertsClosingDistanceDistanceLabel">&quot;Closing Alert Range (Nmi)&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistanceSummary">&quot;Number of nautical miles for closest approach within which closing (TCPA) alert will sound&quot;</string>
+    <string name="AudibleTrafficAlertsClosingDistanceDistanceLabel">&quot;Closing Alert (TCPA) Range (Nmi)&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlert">&quot;Closing Critical Alert Pct&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlertSummary">&#xFF05; of closing distance &amp; time within which a chirp will precede the voice alert (e.g., closing alert seconds=60s &amp; range=2nmi, a setting of 25&#xFF05; &#x21D2; chirp when within 15s of a &lt;= ½nmi closest approach).</string>
-    <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alert Critical &#xFF05; Chirp</string>
+    <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alert (TCPA) Chirp &#xFF05;</string>
     <string name="AudibleTrafficAlertsMaxFrequency">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
     <string name="AudibleTrafficAlertsMaxFrequencySummary">&quot;Max frequency in seconds between which an alert for the same aircraft (by ICAO callsign) is alerted again.&quot;</string>
     <string name="AudibleTrafficAlertsMaxFrequencyLabel">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
