@@ -306,11 +306,9 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param allTraffic Traffic array
      * @param alertDistance Horizontal istance in which alert is triggered
      * @param ownAltitude Ownship altitude
-     * @param altitudeProximityDangerMinimum Altitude difference in which alert is triggered
      */
     public void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
-                                    float alertDistance, int ownAltitude,
-                                    int altitudeProximityDangerMinimum)
+                                    float alertDistance, int ownAltitude)
     {
         for (int i = 0; i < allTraffic.size(); i++) {
             final Traffic t = allTraffic.get(allTraffic.keyAt(i));
@@ -320,7 +318,7 @@ public class AudibleTrafficAlerts implements Runnable {
             double currentDistance;
             if (
                 (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
-                && Math.abs(altDiff) < altitudeProximityDangerMinimum
+                && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
                 && (currentDistance = greatCircleDistance(
                     ownLocation.getLatitude(), ownLocation.getLongitude(),  t.mLat,  t.mLon
                 )) < alertDistance

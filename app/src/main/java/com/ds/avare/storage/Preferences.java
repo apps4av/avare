@@ -349,10 +349,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
     }
 
-    public int getAltitudeProximityDangerMinimum() {
-        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AltitudeProximityDangerMinimum), "1000"));
-    }
-
     public int getAudibleClosingInAlertSeconds() {
         return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
     }

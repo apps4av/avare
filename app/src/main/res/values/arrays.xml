@@ -2011,9 +2011,9 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="Opacity">
         <item>Transparent</item>
-        <item>25&#xFF05;</item>
-        <item>50&#xFF05;</item>
-        <item>75&#xFF05;</item>
+        <item>25 Percent</item>
+        <item>50 Percent</item>
+        <item>75 Percent</item>
         <item>Opaque</item>
     </string-array>
 

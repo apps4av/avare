@@ -57,7 +57,6 @@ public class TrafficCache {
                 callsign = traffic.mCallSign;
             }
         }
-
         mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude,
                 heading, speed, time));
     }

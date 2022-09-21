@@ -28,6 +28,10 @@ public class Traffic {
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
 
+
+    public static final double TRAFFIC_ALTITUDE_DIFF_DANGEROUS = 1000; //ft 300m required minimum
+    
+
     
     // ms
     private static final long EXPIRES = 1000 * 60 * 1;
@@ -81,22 +85,22 @@ public class Traffic {
      * 
      * @return
      */
-    public static int getColorFromAltitude(double myAlt, double theirAlt, int proximityDangerMinimum) {
+    public static int getColorFromAltitude(double myAlt, double theirAlt) {
         int color;
         double diff = myAlt - theirAlt;
-        if(diff > proximityDangerMinimum) {
+        if(diff > TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
             /*
              * Much below us
              */
             color = Color.GREEN;
         }
-        else if (diff < proximityDangerMinimum && diff > 0) {
+        else if (diff < TRAFFIC_ALTITUDE_DIFF_DANGEROUS && diff > 0) {
             /*
              * Dangerously below us
              */
             color = Color.RED;
         }
-        else if (diff < -proximityDangerMinimum) {
+        else if (diff < -TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
             /*
              * Much above us
              */
@@ -113,7 +117,7 @@ public class Traffic {
     }
 
     public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
-                            BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta, int proximityDangerMinimum) {
+                            BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
         int filterAltitude = ctx.pref.showAdsbTrafficWithin();
         boolean circles = ctx.pref.shouldDrawTrafficCircles();
@@ -133,6 +137,7 @@ public class Traffic {
                 traffic.delete(key);
                 continue;
             }
+
             if(t.mIcaoAddress == ownIcao) {
                 // Do not draw shadow of own
                 continue;
@@ -154,7 +159,7 @@ public class Traffic {
             /*
              * Find color from altitude
              */
-            int color = Traffic.getColorFromAltitude(altitude, t.mAltitude, proximityDangerMinimum);
+            int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
 
             int diff;
             String text = "";
@@ -259,7 +264,6 @@ public class Traffic {
 
 
     }
-
 
 
     /**

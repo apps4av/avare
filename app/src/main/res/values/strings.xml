@@ -74,7 +74,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="degree">&quot;\u00B0&quot;</string>
     <string name="Done">&quot;Done&quot;</string>
     <string name="Main">&quot;Map&quot;</string>
-    <string name="Plates">&quot;Plate"</string>
+    <string name="Plates">&quot;Plate&quot;</string>
     <string name="AFD">&quot;CSup&quot;</string>
     <string name="ThreeD">&quot;3D&quot;</string>
     <string name="Lon">&quot;Lon&quot;</string>
@@ -166,9 +166,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleAlertTopGunMode">&quot;Top Gun Lingo Mode&quot;</string>
     <string name="AudibleAlertTopGunModeSummary">&quot;Use the term "bogey" rather than "traffic" for proximate ADSB traffic&quot;</string>
     <string name="AudibleAlertTopGunModeLabel">&quot;Top Gun Lingo Mode&quot;</string>
-    <string name="AltitudeProximityDangerMinimum">&quot;Altitude Proximity Danger Distance Minimum&quot;</string>
-    <string name="AltitudeProximityDangerMinimumSummary">&quot;Distance (feet) above or below traffic aircraft under which danger visual and audible warnings are triggered&quot;</string>
-    <string name="AltitudeProximityDangerMinimumLabel">&quot;Altitude Proximity Min (ft)&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistance">&quot;Closing Distance Audible Alerts&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceSummary">&quot;Play audible alerts for aircraft approaching a configured minimum approach distance within a configured time until that closest point of approach (TCPA)&quot;</string>
     <string name="AudibleTrafficAlertsClosingDistanceLabel">&quot;Closing Alerts (TCPA)&quot;</string>

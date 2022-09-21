@@ -313,14 +313,8 @@ authors: zkhan, jlmcgraw
                     android:title="@string/AudibleTrafficAlertsClosingCritalAlertLabel" />
             </PreferenceCategory>
         </PreferenceScreen>
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:defaultValue="1000"
-            android:key="@string/AltitudeProximityDangerMinimum"
-            android:summary="@string/AltitudeProximityDangerMinimumSummary"
-            android:title="@string/AltitudeProximityDangerMinimumLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="@string/AudibleTrafficAlerts"
             android:key="@string/drawTrafficCircles"
             android:summary="@string/drawTrafficCirclesSummary"
             android:title="@string/drawTrafficCirclesLabel" />
@@ -392,9 +386,7 @@ authors: zkhan, jlmcgraw
 
 	<PreferenceScreen 
     	    android:title="@string/prefTracksCategoryTitle" 
-        	android:icon="@android:drawable/ic_menu_myplaces"
-            android:tint="@android:color/black"
-    >
+        	android:icon="@android:drawable/ic_menu_myplaces" >
         <CheckBoxPreference
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
