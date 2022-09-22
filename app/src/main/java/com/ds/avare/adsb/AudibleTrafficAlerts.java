@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Audible ADSB nearby traffic alerts, with optional "closest approach" closing time alerts
@@ -80,6 +82,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private static AudibleTrafficAlerts singleton;
 
     private float maxAlertFrequencySeconds = 15f;
+    private ExecutorService handleTrafficExecutor = Executors.newSingleThreadExecutor();
 
     protected static class ClosingEvent {
         private final double closingTimeSec;
@@ -310,44 +313,47 @@ public class AudibleTrafficAlerts implements Runnable {
     public void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
                                     float alertDistance, int ownAltitude)
     {
-        for (int i = 0; i < allTraffic.size(); i++) {
-            final Traffic t = allTraffic.get(allTraffic.keyAt(i));
-            final double altDiff = ownAltitude - t.mAltitude;
-            final String distanceCalcUpdateKey = t.getLastUpdate()+"_"+ownLocation.getTime();
-            final String lastDistanceUpdateKey = lastDistanceUpdate.get(t.mCallSign);
-            double currentDistance;
-            if (
-                (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
-                && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
-                && (currentDistance = greatCircleDistance(
-                    ownLocation.getLatitude(), ownLocation.getLongitude(),  t.mLat,  t.mLon
-                )) < alertDistance
-            ) {
-                ClosingEvent ce = null;
-                if (this.closingTimeEnabled) {
-                    final int ownSpeedInKts = (int)Math.round(1.0/0.514444f * ownLocation.getSpeed());
-                    final double closingEventTimeSec = Math.abs(closestApproachTime(
-                            t.mLat, t.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
-                            t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, ownSpeedInKts
-                    ))*60.00*60.00;
-                    if (closingEventTimeSec < this.closingTimeThreasholdSeconds) {
-                        final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
-                                ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000);
-                        final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
-                                t.mHorizVelocity, closingEventTimeSec/3600.000);
-                        final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
-                        if (caDistance < this.closestApproachThreasholdNmi && currentDistance > caDistance) {
+        // Make traffic handling loop async thread, to not delay view handling loop
+        handleTrafficExecutor.execute(() -> {
+            for (int i = 0; i < allTraffic.size(); i++) {
+                final Traffic t = allTraffic.get(allTraffic.keyAt(i));
+                final double altDiff = ownAltitude - t.mAltitude;
+                final String distanceCalcUpdateKey = t.getLastUpdate()+"_"+ownLocation.getTime();
+                final String lastDistanceUpdateKey = lastDistanceUpdate.get(t.mCallSign);
+                double currentDistance;
+                if (
+                        (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
+                                && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                                && (currentDistance = greatCircleDistance(
+                                ownLocation.getLatitude(), ownLocation.getLongitude(),  t.mLat,  t.mLon
+                        )) < alertDistance
+                ) {
+                    ClosingEvent ce = null;
+                    if (this.closingTimeEnabled) {
+                        final int ownSpeedInKts = (int)Math.round(1.0/0.514444f * ownLocation.getSpeed());
+                        final double closingEventTimeSec = Math.abs(closestApproachTime(
+                                t.mLat, t.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
+                                t.mHeading, ownLocation.getBearing(), t.mHorizVelocity, ownSpeedInKts
+                        ))*60.00*60.00;
+                        if (closingEventTimeSec < this.closingTimeThreasholdSeconds) {
+                            final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
+                                    ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000);
+                            final double[] theirCaLoc = locationAfterTime(t.mLat, t.mLon, t.mHeading,
+                                    t.mHorizVelocity, closingEventTimeSec/3600.000);
+                            final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
+                            if (caDistance < this.closestApproachThreasholdNmi && currentDistance > caDistance) {
                                 final boolean criticallyClose = this.criticalClosingAlertRatio > 0
-                                    &&(closingEventTimeSec / this.closingTimeThreasholdSeconds) <= criticalClosingAlertRatio
-                                    && (caDistance / this.closestApproachThreasholdNmi*1.0) <= criticalClosingAlertRatio;
+                                        &&(closingEventTimeSec / this.closingTimeThreasholdSeconds) <= criticalClosingAlertRatio
+                                        && (caDistance / this.closestApproachThreasholdNmi*1.0) <= criticalClosingAlertRatio;
                                 ce = new ClosingEvent(closingEventTimeSec, caDistance, criticallyClose);
+                            }
                         }
                     }
+                    alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude, ce, currentDistance));
                 }
-                alertTrafficPosition(new AlertItem(t, ownLocation, ownAltitude, ce, currentDistance));
+                lastDistanceUpdate.put(t.mCallSign, distanceCalcUpdateKey);
             }
-            lastDistanceUpdate.put(t.mCallSign, distanceCalcUpdateKey);
-        }
+        });
     }
 
     private void  alertTrafficPosition(AlertItem alertItem) {
