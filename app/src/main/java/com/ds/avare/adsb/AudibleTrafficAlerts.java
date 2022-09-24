@@ -310,13 +310,13 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param alertDistance Horizontal istance in which alert is triggered
      * @param ownAltitude Ownship altitude
      */
-    public void handleAudibleAlerts(Location ownLocation, SparseArray<Traffic> allTraffic,
+    public void handleAudibleAlerts(Location ownLocation, LinkedList<Traffic> allTraffic,
                                     float alertDistance, int ownAltitude)
     {
         // Make traffic handling loop async thread, to not delay view handling loop
         handleTrafficExecutor.execute(() -> {
             for (int i = 0; i < allTraffic.size(); i++) {
-                final Traffic t = allTraffic.get(allTraffic.keyAt(i));
+                final Traffic t = allTraffic.get(i);
                 final double altDiff = ownAltitude - t.mAltitude;
                 final String distanceCalcUpdateKey = t.getLastUpdate()+"_"+ownLocation.getTime();
                 final String lastDistanceUpdateKey = lastDistanceUpdate.get(t.mCallSign);
