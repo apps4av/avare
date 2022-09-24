@@ -33,6 +33,7 @@ public class OwnshipMessage extends Message {
     boolean mIsTrackHeadingTrueTrackAngle;
     boolean mIsTrackHeadingHeading;
     boolean mIsTrackHeadingTrueHeading;
+    public int mIcaoAddress;
 
 
     public OwnshipMessage() {
@@ -43,6 +44,9 @@ public class OwnshipMessage extends Message {
      * @param msg
      */
     public void parse(byte msg[]) {
+
+        mIcaoAddress = 0;
+        mIcaoAddress = ((((int) msg[1]) & 0xFF) << 16) + ((((int) (msg[2]) & 0xFF) << 8)) + ((((int) msg[3]) & 0xFF));
 
         /*
          * Lon/lat

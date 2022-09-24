@@ -518,6 +518,7 @@ public class BufferProcessor {
                     object.put("bearing", (double)om.mDirection);
                     object.put("time", (long)om.getTime());
                     object.put("altitude", (double) om.mAltitude);
+                    object.put("address", (int)om.mIcaoAddress);
                 } catch (JSONException e1) {
                     continue;
                 }

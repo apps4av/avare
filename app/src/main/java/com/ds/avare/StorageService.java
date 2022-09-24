@@ -267,6 +267,8 @@ public class StorageService  {
 
     LinkedList<LabelCoordinate> mGameTfrLabels;
 
+    private int mIcaoAddress;
+
     // Last time location was updated
     private long mLastLocationUpdate;
 
@@ -307,6 +309,7 @@ public class StorageService  {
         mOrientationCallbacks = new LinkedList<OrientationInterface>();
         mAfdDiagramBitmap = null;
         mPlateDiagramBitmap = null;
+        mIcaoAddress = 0;
         mAfdIndex = mPref.isDefaultAFDImage() ? 1 : 0;
         mOverrideListName = null;
         mTrafficCache = new TrafficCache();
@@ -1100,6 +1103,10 @@ public class StorageService  {
     public RadarLayer getRadarLayer() {
        return mRadarLayer;
     }
+
+    public int getIcaoAddress() {
+        return mIcaoAddress;
+    }
     
     /**
      * 
@@ -1265,7 +1272,7 @@ public class StorageService  {
                 l.setSpeed((float) object.getDouble("speed"));
                 l.setBearing((float) object.getDouble("bearing"));
                 l.setTime(object.getLong("time"));
-
+                mIcaoAddress = object.getInt("address");
                 // Choose most appropriate altitude. This is because people fly all sorts
                 // of equipment with or without altitudes
                 // convert all altitudes in feet

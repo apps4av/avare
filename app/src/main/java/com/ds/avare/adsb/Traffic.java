@@ -126,7 +126,7 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, LinkedList<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
+    public static void draw(DrawingContext ctx, LinkedList<Traffic> traffic, double altitude, GpsParams params, boolean shouldDraw,
                             BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
         boolean circles = ctx.pref.shouldDrawTrafficCircles();
@@ -142,10 +142,6 @@ public class Traffic {
         for(Traffic t : traffic) {
 
             if(null == t) {
-                continue;
-            }
-            if(t.mIcaoAddress == ownIcao) {
-                // Do not draw shadow of own
                 continue;
             }
 

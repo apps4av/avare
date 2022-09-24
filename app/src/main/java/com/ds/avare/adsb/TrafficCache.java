@@ -101,6 +101,10 @@ public class TrafficCache {
         handleAudibleAlerts();
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
+        if(address == mPref.getAircraftICAOCode() || address == StorageService.getInstance().getIcaoAddress()) {
+            // do not show own traffic
+            return;
+        }
 
         for(int i = 0; i < MAX_ENTRIES; i++) {
             if(mTraffic[i] == null) {

@@ -1006,7 +1006,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     public int getAircraftICAOCode() {
         int code = 0;
         try {
-            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
+            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode, 16), ""));
         } catch (Exception e) {
 
         }

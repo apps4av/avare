@@ -674,7 +674,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
      */
     private void drawTraffic(Canvas canvas, DrawingContext ctx) {
         Traffic.draw(ctx, mService.getTrafficCache().getTraffic(),
-                mService.getTrafficCache().getOwnAltitude(), mGpsParams, mPref.getAircraftICAOCode(), null == mPointProjection,
+                mService.getTrafficCache().getOwnAltitude(), mGpsParams, null == mPointProjection,
                 mTrafficRed, mTrafficGreen, mTrafficBlue, mTrafficMagenta);
     }
 
