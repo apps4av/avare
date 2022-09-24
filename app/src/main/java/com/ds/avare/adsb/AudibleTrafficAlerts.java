@@ -317,6 +317,9 @@ public class AudibleTrafficAlerts implements Runnable {
         handleTrafficExecutor.execute(() -> {
             for (int i = 0; i < allTraffic.size(); i++) {
                 final Traffic t = allTraffic.get(i);
+                if(null == t) {
+                    continue;
+                }
                 final double altDiff = ownAltitude - t.mAltitude;
                 final String distanceCalcUpdateKey = t.getLastUpdate()+"_"+ownLocation.getTime();
                 final String lastDistanceUpdateKey = lastDistanceUpdate.get(t.mCallSign);
