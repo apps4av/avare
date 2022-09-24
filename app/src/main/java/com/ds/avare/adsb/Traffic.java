@@ -16,6 +16,8 @@ import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import java.util.LinkedList;
+
 public class Traffic {
 
     public int mIcaoAddress;
@@ -35,6 +37,14 @@ public class Traffic {
     
     // ms
     private static final long EXPIRES = 1000 * 60 * 1;
+
+    public Traffic() {
+        mIcaoAddress = 0;
+        mCallSign = "";
+        mLat = 0;
+        mLon = 0;
+        mAltitude = 0;
+    }
 
     /**
      * 
@@ -116,10 +126,9 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
+    public static void draw(DrawingContext ctx, LinkedList<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
                             BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
-        int filterAltitude = ctx.pref.showAdsbTrafficWithin();
         boolean circles = ctx.pref.shouldDrawTrafficCircles();
 
         /*
@@ -130,14 +139,11 @@ public class Traffic {
         }
 
         ctx.paint.setColor(Color.WHITE);
-        for(int i = 0; i < traffic.size(); i++) {
-            int key = traffic.keyAt(i);
-            Traffic t = traffic.get(key);
-            if(t.isOld()) {
-                traffic.delete(key);
+        for(Traffic t : traffic) {
+
+            if(null == t) {
                 continue;
             }
-
             if(t.mIcaoAddress == ownIcao) {
                 // Do not draw shadow of own
                 continue;
@@ -179,10 +185,6 @@ public class Traffic {
             else {
                 // Own PA is known, show height difference
                 diff = (int)(t.mAltitude - altitude);
-                // filter
-                if(Math.abs(diff) > filterAltitude) {
-                    continue;
-                }
                 diff = (int)Math.round(diff / 100.0);
                 
                 if(diff > 0) {
@@ -274,11 +276,12 @@ public class Traffic {
      */
     public static void draw(StorageService service, AreaMapper mapper, TerrainRenderer renderer) {
         if (service != null) {
-            SparseArray<Traffic> t = service.getTrafficCache().getTraffic();
-            Vector4d ships[] = new Vector4d[t.size()];
-            for (int count = 0; count < t.size(); count++) {
-                Traffic tr = t.valueAt(count);
-                ships[count] = mapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
+            LinkedList<Traffic> traffic = service.getTrafficCache().getTraffic();
+            Vector4d ships[] = new Vector4d[traffic.size()];
+            int i = 0;
+            for (Traffic t : traffic) {
+                ships[i] = mapper.gpsToAxis(t.mLon, t.mLat, t.mAltitude, t.mHeading);
+                i++;
             }
             renderer.setShips(ships);
         }

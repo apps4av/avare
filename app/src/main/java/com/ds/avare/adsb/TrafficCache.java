@@ -12,11 +12,14 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adsb;
 
 
-import android.location.Location;
-import android.util.SparseArray;
-
 import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import android.location.Location;
 
 /**
  * 
@@ -24,16 +27,50 @@ import com.ds.avare.storage.Preferences;
  *
  */
 public class TrafficCache {
-    private static final int MAX_ENTRIES = 100;
-    private SparseArray<Traffic> mTraffic;
+    private static final int MAX_ENTRIES = 20;
+    private Traffic[] mTraffic;
     private int mOwnAltitude;
     private Location mOwnLocation;
     Preferences mPref;
-    
-    public TrafficCache() { 
-        mTraffic = new SparseArray<Traffic>();
+
+    public TrafficCache() {
+        mTraffic = new Traffic[MAX_ENTRIES + 1];
         mOwnAltitude = StorageService.MIN_ALTITUDE;
         mPref = StorageService.getInstance().getPreferences();
+    }
+
+    private class TrafficComparator implements Comparator<Traffic>
+    {
+        public int compare(Traffic left, Traffic right) {
+            if(null == left && null != right) {
+                return 1;
+            }
+            if(null != left && null == right) {
+                return -1;
+            }
+            if(null == left && null == right) {
+                return 0;
+            }
+            double l = findDistance(left.mLon, left.mLat);
+            double r = findDistance(right.mLon, right.mLat);
+            if(l > r) {
+                return 1;
+            }
+            if(l < r) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+
+    private double findDistance(double lon, double lat) {
+        // find 3d distance between current position and airplane
+        // treat 1 NM of horz separation as 500 feet of altitude (C182 120kts, 1000 fpm)
+        GpsParams p = StorageService.getInstance().getGpsParams();
+        double horDist = Projection.getStaticDistance(p.getLongitude(), p.getLatitude(), lon, lat) * Preferences.feetConversion;
+        double altDist = Math.abs(p.getAltitude() - mOwnAltitude) * Preferences.feetConversion / 500;
+        double fac = horDist + altDist;
+        return fac;
     }
 
     private void handleAudibleAlerts() {
@@ -63,23 +100,45 @@ public class TrafficCache {
 
         handleAudibleAlerts();
 
-        /*
-         * For any new entries, check max traffic objects.
-         */
-        Traffic traffic = mTraffic.get(address);
-        if(traffic == null) {
-            if(mTraffic.size() >= MAX_ENTRIES) {
+        int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
+
+        for(int i = 0; i < MAX_ENTRIES; i++) {
+            if(mTraffic[i] == null) {
+                continue;
+            }
+            if(mTraffic[i].isOld()) {
+                // purge old
+                mTraffic[i] = null;
+                continue;
+            }
+            // filter traffic too high
+            int altDiff = Math.abs(mOwnAltitude - mTraffic[i].mAltitude);
+            if(Math.abs(altDiff) > filterAltitude) {
+                mTraffic[i] = null;
+                continue;
+            }
+            // update
+            if(mTraffic[i].mIcaoAddress == address) {
+                // callsign not available. use last one
+                if(callsign.equals("")) {
+                    callsign = mTraffic[i].mCallSign;
+                }
+                mTraffic[i] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+
                 return;
-            }            
-        }
-        else {
-            if(callsign.equals("")) {
-                // sometimes callsign does not come, reuse
-                callsign = traffic.mCallSign;
             }
         }
-        mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude,
-                heading, speed, time));
+
+        // filter traffic too high
+        int altDiff = Math.abs(mOwnAltitude - altitude);
+        if(Math.abs(altDiff) > filterAltitude) {
+            return;
+        }
+        // put it in the end
+        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+
+        // sort
+        Arrays.sort(mTraffic, new TrafficComparator());
     }
 
     public void setOwnAltitude(int altitude) {
@@ -99,7 +158,15 @@ public class TrafficCache {
      * 
      * @return
      */
-    public SparseArray<Traffic> getTraffic() {
-        return mTraffic;
-    }    
+    public LinkedList<Traffic> getTraffic() {
+        LinkedList<Traffic> t = new LinkedList<>();
+
+        for(int i = 0; i < MAX_ENTRIES; i++) {
+            if(null != mTraffic[i]) {
+                t.add(mTraffic[i]);
+            }
+        }
+        return t;
+    }
+
 }
