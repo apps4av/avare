@@ -31,6 +31,7 @@ import android.view.ViewConfiguration;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.adsb.AudibleTrafficAlerts;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.connections.ConnectionFactory;
@@ -582,6 +583,26 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         }
     }
 
+    private void handleAudibleAlerts() {
+        if (mPref.isAudibleTrafficAlerts()) {
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(mContext);
+            audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
+            audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
+            audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
+            audibleTrafficAlerts.setClosingTimeThreasholdSeconds(mPref.getAudibleClosingInAlertSeconds());
+            audibleTrafficAlerts.setClosestApproachThreasholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
+            audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
+            audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
+            audibleTrafficAlerts.handleAudibleAlerts(mService.getTrafficCache().getOwnLocation(),
+                    mService.getTrafficCache().getTraffic(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
+                    mService.getTrafficCache().getOwnAltitude());
+        } else
+            AudibleTrafficAlerts.stopAudibleTrafficAlerts();
+    }
+
+
+
+
     /**
      *
      * @param canvas
@@ -944,6 +965,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         drawDrawing(canvas, ctx);
         drawCapGrids(canvas, ctx);
         drawTraffic(canvas, ctx);
+        handleAudibleAlerts();
         drawObstacles(canvas, ctx);
         drawTFR(canvas, ctx);
         drawShapes(canvas, ctx);

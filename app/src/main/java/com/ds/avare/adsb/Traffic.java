@@ -76,6 +76,10 @@ public class Traffic {
 
         return diff > EXPIRES;
     }
+
+    public long getLastUpdate() {
+        return mLastUpdate;
+    }
     
     /**
      * 

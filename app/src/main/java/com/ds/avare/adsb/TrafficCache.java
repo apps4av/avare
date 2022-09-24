@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adsb;
 
 
+import android.location.Location;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
@@ -25,11 +26,14 @@ public class TrafficCache {
     private static final int MAX_ENTRIES = 100;
     private SparseArray<Traffic> mTraffic;
     private int mOwnAltitude;
+    private Location mOwnLocation;
     
     public TrafficCache() { 
         mTraffic = new SparseArray<Traffic>();
         mOwnAltitude = StorageService.MIN_ALTITUDE;
     }
+
+
     
     /**
      * 
@@ -64,7 +68,12 @@ public class TrafficCache {
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
-    
+
+    public void setOwnLocation(Location loc) {
+        this.mOwnLocation = loc;
+    }
+    public Location getOwnLocation() { return this.mOwnLocation; }
+
     /**
      * 
      * @return

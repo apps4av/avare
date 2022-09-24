@@ -340,6 +340,27 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
     }
 
+
+    public float getAudibleTrafficAlertsDistanceMinimum() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+    }
+
+    public float getAudibleTrafficAlertsMaxFrequency() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+    }
+
+    public int getAudibleClosingInAlertSeconds() {
+        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+    }
+
+    public float getAudibleClosingInAlertDistanceNmi() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+    }
+
+    public float getAudibleClosingInCriticalAlertRatio() {
+        return (float) (Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingCritalAlert), "0")) / 100.00);
+    }
+
     /**
      * @return
      */
@@ -894,9 +915,28 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.TrackUp), false);
     }
 
+    public boolean isAudibleTrafficAlerts() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlerts), true);
+    }
+
+    public boolean isAudibleTrafficAlertsTopGunMode() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
+    }
+
+    public boolean isAudibleAlertTrafficId() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
+    }
+
+    public boolean isAudibleClosingInAlerts() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
+    }
+
     public boolean setTrackUp(boolean trackUp) {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }
+
+
+
 
     public boolean isTrackUpPlates() {
         return mPref.getBoolean(mContext.getString(R.string.TrackUpPlates), false);
