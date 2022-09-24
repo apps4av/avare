@@ -31,6 +31,7 @@ import android.view.ViewConfiguration;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
+import com.ds.avare.adsb.AudibleTrafficAlerts;
 import com.ds.avare.adsb.NexradBitmap;
 import com.ds.avare.adsb.Traffic;
 import com.ds.avare.connections.ConnectionFactory;
@@ -581,6 +582,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
             MetShape.draw(ctx, mService.getInternetWeatherCache().getAirSigMet(), null == mPointProjection);
         }
     }
+
 
     /**
      *

@@ -16,10 +16,10 @@ import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
+import android.location.Location;
 
 /**
  * 
@@ -30,10 +30,13 @@ public class TrafficCache {
     private static final int MAX_ENTRIES = 20;
     private Traffic[] mTraffic;
     private int mOwnAltitude;
+    private Location mOwnLocation;
+    Preferences mPref;
 
     public TrafficCache() {
         mTraffic = new Traffic[MAX_ENTRIES + 1];
         mOwnAltitude = StorageService.MIN_ALTITUDE;
+        mPref = StorageService.getInstance().getPreferences();
     }
 
     private class TrafficComparator implements Comparator<Traffic>
@@ -70,12 +73,32 @@ public class TrafficCache {
         return fac;
     }
 
+    private void handleAudibleAlerts() {
+        if (mPref.isAudibleTrafficAlerts()) {
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(StorageService.getInstance().getApplicationContext());
+            audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
+            audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
+            audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
+            audibleTrafficAlerts.setClosingTimeThreasholdSeconds(mPref.getAudibleClosingInAlertSeconds());
+            audibleTrafficAlerts.setClosestApproachThreasholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
+            audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
+            audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
+            audibleTrafficAlerts.handleAudibleAlerts(StorageService.getInstance().getTrafficCache().getOwnLocation(),
+                    StorageService.getInstance().getTrafficCache().getTraffic(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
+                    StorageService.getInstance().getTrafficCache().getOwnAltitude());
+        } else {
+            AudibleTrafficAlerts.stopAudibleTrafficAlerts();
+        }
+    }
+
     /**
      * 
      * @param
      */
     public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
+
+        handleAudibleAlerts();
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
 
@@ -101,6 +124,7 @@ public class TrafficCache {
                     callsign = mTraffic[i].mCallSign;
                 }
                 mTraffic[i] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+
                 return;
             }
         }
@@ -124,7 +148,12 @@ public class TrafficCache {
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
-    
+
+    public void setOwnLocation(Location loc) {
+        this.mOwnLocation = loc;
+    }
+    public Location getOwnLocation() { return this.mOwnLocation; }
+
     /**
      * 
      * @return
