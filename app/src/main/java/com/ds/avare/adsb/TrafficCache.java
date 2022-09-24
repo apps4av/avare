@@ -16,6 +16,7 @@ import android.location.Location;
 import android.util.SparseArray;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.storage.Preferences;
 
 /**
  * 
@@ -27,20 +28,40 @@ public class TrafficCache {
     private SparseArray<Traffic> mTraffic;
     private int mOwnAltitude;
     private Location mOwnLocation;
+    Preferences mPref;
     
     public TrafficCache() { 
         mTraffic = new SparseArray<Traffic>();
         mOwnAltitude = StorageService.MIN_ALTITUDE;
+        mPref = StorageService.getInstance().getPreferences();
     }
 
+    private void handleAudibleAlerts() {
+        if (mPref.isAudibleTrafficAlerts()) {
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(StorageService.getInstance().getApplicationContext());
+            audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
+            audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
+            audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
+            audibleTrafficAlerts.setClosingTimeThreasholdSeconds(mPref.getAudibleClosingInAlertSeconds());
+            audibleTrafficAlerts.setClosestApproachThreasholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
+            audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
+            audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
+            audibleTrafficAlerts.handleAudibleAlerts(StorageService.getInstance().getTrafficCache().getOwnLocation(),
+                    StorageService.getInstance().getTrafficCache().getTraffic(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
+                    StorageService.getInstance().getTrafficCache().getOwnAltitude());
+        } else {
+            AudibleTrafficAlerts.stopAudibleTrafficAlerts();
+        }
+    }
 
-    
     /**
      * 
      * @param
      */
     public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
+
+        handleAudibleAlerts();
 
         /*
          * For any new entries, check max traffic objects.
