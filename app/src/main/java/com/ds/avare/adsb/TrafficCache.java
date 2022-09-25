@@ -98,8 +98,6 @@ public class TrafficCache {
     public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
             float heading, int speed, long time) {
 
-        handleAudibleAlerts();
-
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
         if(address == mPref.getAircraftICAOCode() || address == StorageService.getInstance().getIcaoAddress()) {
             // do not show own traffic
@@ -129,6 +127,7 @@ public class TrafficCache {
                 }
                 mTraffic[i] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
 
+                handleAudibleAlerts();
                 return;
             }
         }
@@ -143,6 +142,9 @@ public class TrafficCache {
 
         // sort
         Arrays.sort(mTraffic, new TrafficComparator());
+
+        handleAudibleAlerts();
+
     }
 
     public void setOwnAltitude(int altitude) {

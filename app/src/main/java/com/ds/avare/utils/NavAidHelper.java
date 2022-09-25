@@ -78,9 +78,9 @@ public class NavAidHelper {
 
         final String LIGHT_RED = "#ff6666", LIGHT_GREEN = "#99ff66";
         return  String.format(Locale.getDefault(), "%03d", radial)
-                + "<font color='" + (isReceived ? LIGHT_GREEN : LIGHT_RED) + "'>"
-                + String.format(Locale.getDefault(), "%03d", Math.round(distanceToNavAid))
-                + "</font>";
+                + WeatherHelper.addColorWithStroke(
+                        String.format(Locale.getDefault(), "%03d", Math.round(distanceToNavAid)),
+                        (isReceived ? LIGHT_GREEN : LIGHT_RED));
     }
 
     /** format vector of navaids as a string */

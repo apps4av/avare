@@ -1574,7 +1574,7 @@ public class WebAppPlanInterface implements Observer {
                     String vals2[] = vals[1].split(" ");
                     String color = WeatherHelper.metarColorString(vals[0]);
                     Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    Metar += "<font size='5' color='" + color + "'>" + WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()) + "<br></br>";
+                    Metar += "<font size='5'>" + WeatherHelper.addColorWithStroke(WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()), color) + "<br></br>";
                 }
             }
             catch(Exception e) {

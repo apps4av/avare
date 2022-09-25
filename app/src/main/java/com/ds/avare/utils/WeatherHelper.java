@@ -65,6 +65,14 @@ public class WeatherHelper {
         return("white");
     }
 
+    public static String addColorWithStroke(String input, String color) {
+        return "<font style='-webkit-text-stroke:0.1vw white; -webkit-text-fill-color: " + color + "; '>" + input +  "</font>";
+    }
+
+    public static String addColor(String input, String color) {
+        return "<font color='" + color + "'>" + input + "</font>";
+    }
+
     /**
      *
      * @param weather
@@ -113,57 +121,57 @@ public class WeatherHelper {
         /*
          * Qualifiers
          */
-        weather = weather.replaceAll("\\+", "<font color='#ff54f9'>+" + (translate ? "(Heavy)" : "") + "</font>");
-        weather = weather.replaceAll("\\-", "<font color='#ff2a00'>-" + (translate ? "(Light)" : "") + "</font>");
+        weather = weather.replaceAll("\\+", WeatherHelper.addColorWithStroke((translate ? "(Heavy)" : ""), "#ff54f9"));
+        weather = weather.replaceAll("\\+", WeatherHelper.addColorWithStroke((translate ? "(Light)" : ""), "#ff2a00"));
 
         /*
          * Description
          */
-        weather = weather.replaceAll("MI", "<font color='#008aff'>MI" + (translate ? "(Shallow)" : "") + "</font>");
-        weather = weather.replaceAll("BC", "<font color='#008aff'>BC" + (translate ? "(Patches)" : "") + "</font>");
-        weather = weather.replaceAll("DR", "<font color='#008aff'>DR" + (translate ? "(Low Drifting)" : "") + "</font>");
-        weather = weather.replaceAll("BL", "<font color='#008aff'>BL" + (translate ? "(Blowing)" : "") + "</font>");
-        weather = weather.replaceAll("SH", "<font color='#008aff'>SH" + (translate ? "(Showers)" : "") + "</font>");
-        weather = weather.replaceAll("TS", "<font color='#ff2a00'>TS" + (translate ? "(Thunderstorm)" : "") + "</font>");
-        weather = weather.replaceAll("FZ", "<font color='#ff2a00'>FZ" + (translate ? "(Freezing)" : "") + "</font>");
-        weather = weather.replaceAll("PR", "<font color='#008aff'>PR" + (translate ? "(Partial)" : "") + "</font>");
-        weather = weather.replaceAll("AMD", "AMD" + (translate ? "(Amended)" : ""));
-        weather = weather.replaceAll("WSCONDS", "WSCONDS" + (translate ? "(Wind Shear Possible)" : ""));
+        weather = weather.replaceAll("MI", WeatherHelper.addColorWithStroke("MI" + (translate ? "(Shallow)" : ""), "#008aff"));
+        weather = weather.replaceAll("BC", WeatherHelper.addColorWithStroke("BC" + (translate ? "(Patches)" : ""), "#008aff"));
+        weather = weather.replaceAll("DR", WeatherHelper.addColorWithStroke("DR" + (translate ? "(Low Drifting)" : ""), "#008aff"));
+        weather = weather.replaceAll("BL", WeatherHelper.addColorWithStroke("BL" + (translate ? "(Blowing)" : ""), "#008aff"));
+        weather = weather.replaceAll("SH", WeatherHelper.addColorWithStroke("SH" + (translate ? "(Showers)" : ""), "#008aff"));
+        weather = weather.replaceAll("TS", WeatherHelper.addColorWithStroke("TS" + (translate ? "(Thunderstorm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FZ", WeatherHelper.addColorWithStroke("FZ" + (translate ? "(Freezing)" : ""), "#008aff"));
+        weather = weather.replaceAll("PR", WeatherHelper.addColorWithStroke("PR" + (translate ? "(Partial)" : ""), "#008aff"));
+        weather = weather.replaceAll("AMD", WeatherHelper.addColorWithStroke("AMD" + (translate ? "(Amended)" : ""), "#ffffff"));
+        weather = weather.replaceAll("WSCONDS", WeatherHelper.addColorWithStroke("WSCONDS" + (translate ? "(Wind Shear Possible)" : ""), "#ffffff"));
 
         /*
          * Precip
          */
-        weather = weather.replaceAll("DZ", "<font color='#008aff'>DZ" + (translate ? "(Drizzle)" : "") + "</font>");
-        weather = weather.replaceAll("RA", "<font color='#ff2a00'>RA" + (translate ? "(Rain)" : "") + "</font>");
-        weather = weather.replaceAll("SN", "<font color='#ff2a00'>SN" + (translate ? "(Snow)" : "") + "</font>");
-        weather = weather.replaceAll("SG", "<font color='#ff2a00'>SG" + (translate ? "(Snow Grains)" : "") + "</font>");
-        weather = weather.replaceAll("IC", "<font color='#ff2a00'>IC" + (translate ? "(Ice Crystals)" : "") + "</font>");
-        weather = weather.replaceAll("PL", "<font color='#ff2a00'>PL" + (translate ? "(Ice Pellets)" : "") + "</font>");
-        weather = weather.replaceAll("GR", "<font color='#ff2a00'>GR" + (translate ? "(Hail)" : "") + "</font>");
-        weather = weather.replaceAll("GS", "<font color='#008aff'>GS" + (translate ? "(Small Hail)" : "") + "</font>");
-        weather = weather.replaceAll("UP", "<font color='#ff2a00'>UP" + (translate ? "(Unknown Precip.)" : "") + "</font>");
+        weather = weather.replaceAll("DZ", WeatherHelper.addColorWithStroke("DZ" + (translate ? "(Drizzle)" : ""), "#008aff"));
+        weather = weather.replaceAll("RA", WeatherHelper.addColorWithStroke("RA" + (translate ? "(Rain)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SN", WeatherHelper.addColorWithStroke("SN" + (translate ? "(Snow)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SG", WeatherHelper.addColorWithStroke("SG" + (translate ? "(Snow Grains)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("IC", WeatherHelper.addColorWithStroke("IC" + (translate ? "(Ice Crystals)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("PL", WeatherHelper.addColorWithStroke("PL" + (translate ? "(Ice Pellets)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("GR", WeatherHelper.addColorWithStroke("GR" + (translate ? "(Hail)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("GS", WeatherHelper.addColorWithStroke("GS" + (translate ? "(Small Hail)" : ""), "#008aff"));
+        weather = weather.replaceAll("UP", WeatherHelper.addColorWithStroke("UP" + (translate ? "(Unknown Precip.)" : ""), "#ff2a00"));
 
         /*
          * Obstruction
          */
-        weather = weather.replaceAll("BR", "<font color='#ff2a00'>BR" + (translate ? "(Mist)" : "") + "</font>");
-        weather = weather.replaceAll("FG", "<font color='#ff2a00'>FG" + (translate ? "(Fog)" : "") + "</font>");
-        weather = weather.replaceAll("FU", "<font color='#ff2a00'>FU" + (translate ? "(Smoke)" : "") + "</font>");
-        weather = weather.replaceAll("DU", "<font color='#ff2a00'>DU" + (translate ? "(Dust)" : "") + "</font>");
-        weather = weather.replaceAll("SA", "<font color='#ff2a00'>SA" + (translate ? "(Sand)" : "") + "</font>");
-        weather = weather.replaceAll("HZ", "<font color='#ff2a00'>HZ" + (translate ? "(Haze)" : "") + "</font>");
-        weather = weather.replaceAll("PY", "<font color='#ff2a00'>PY" + (translate ? "(Spray)" : "") + "</font>");
-        weather = weather.replaceAll("VA", "<font color='#ff2a00'>VA" + (translate ? "(Volcanic Ash)" : "") + "</font>");
+        weather = weather.replaceAll("BR", WeatherHelper.addColorWithStroke("BR" + (translate ? "(Mist)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FG", WeatherHelper.addColorWithStroke("FG" + (translate ? "(Fog)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FU", WeatherHelper.addColorWithStroke("FU" + (translate ? "(Smoke)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("DU", WeatherHelper.addColorWithStroke("DU" + (translate ? "(Dust)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SA", WeatherHelper.addColorWithStroke("SA" + (translate ? "(Sand)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("HZ", WeatherHelper.addColorWithStroke("HZ" + (translate ? "(Haze)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("PY", WeatherHelper.addColorWithStroke("PY" + (translate ? "(Spray)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("VA", WeatherHelper.addColorWithStroke("VA" + (translate ? "(Volcanic Ash)" : ""), "#ff2a00"));
 
         /*
          * Other
          */
-        weather = weather.replaceAll("P0", "<font color='#ff2a00'>P0" + (translate ? "(Dust Whirls)" : "") + "</font>");
-        weather = weather.replaceAll("SQ", "<font color='#ff2a00'>SQ" + (translate ? "(Squalls)" : "") + "</font>");
-        weather = weather.replaceAll("FC", "<font color='#ff2a00'>FC" + (translate ? "(Funnel Cloud)" : "") + "</font>");
-        weather = weather.replaceAll("SS", "<font color='#ff2a00'>SS" + (translate ? "(Sand Storm)" : "") + "</font>");
-        weather = weather.replaceAll("DS", "<font color='#ff2a00'>DS" + (translate ? "(Dust Storm)" : "") + "</font>");
-        weather = weather.replaceAll(" VC", "<font color='white'> VC" + (translate ? "(In Vicinity)" : "") + "</font>");
+        weather = weather.replaceAll("P0", WeatherHelper.addColorWithStroke("P0" + (translate ? "(Dust Whirls)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SQ", WeatherHelper.addColorWithStroke("SQ" + (translate ? "(Squalls)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FC", WeatherHelper.addColorWithStroke("FC" + (translate ? "(Funnel Cloud)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SS", WeatherHelper.addColorWithStroke("SS" + (translate ? "(Sand Storm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("DS", WeatherHelper.addColorWithStroke("DS" + (translate ? "(Dust Storm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll(" VC", WeatherHelper.addColorWithStroke(" VC" + (translate ? "(In Vicinity)" : ""), "#ffffff"));
 
         weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
         weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear <12,000ft)" : "")); // see http://www.weather.gov/media/grb/misc/TAF_Card.pdf
@@ -171,9 +179,9 @@ public class WeatherHelper {
         weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
         weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
         weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probability%)" : ""));
-        weather = weather.replaceAll("VV", "<font color='#ff2a00'>VV" + (translate ? "(Vertical Visibility)" : "") + "</font>");
-        weather = weather.replaceAll("CB", "<font color='#ff2a00'>CB" + (translate ? "(Cumulonimbus)" : "") + "</font>");
-        weather = weather.replaceAll("WS", "<font color='#ff54f9'>WS" + (translate ? "(Wind Shear)" : "") + "</font>");
+        weather = weather.replaceAll("VV", WeatherHelper.addColorWithStroke("VV" + (translate ? "(Vertical Visibility)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("CB", WeatherHelper.addColorWithStroke("CB" + (translate ? "(Cumulonimbus)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("WS", WeatherHelper.addColorWithStroke("WS" + (translate ? "(Wind Shear)" : ""), "#ff54f9"));
 
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
         weather = weather.replaceAll("QNH", "QNH" + (translate ? "(Minimum Altimeter)" : ""));
@@ -344,16 +352,16 @@ public class WeatherHelper {
                 int winds = Integer.parseInt(windString);
 
                 if(winds < 10) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#78e825'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#78e825") + "KT";
                 }
                 else if(winds < 20) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#008aff'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#008aff") + "KT";
                 }
                 else if(winds < 30) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#ff2a00'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#ff2a00") + "KT";
                 }
                 else {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#ff54f9'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#ff54f9") + "KT";
                 }
                 output += portion;
                 weather = weather.substring(start + 2, weather.length());
@@ -364,7 +372,7 @@ public class WeatherHelper {
             /*
              * Mark magenta as we do not know whats in it
              */
-            output = "<font color='#ff54f9'>" + original + "</font>";
+            output = WeatherHelper.addColorWithStroke(original, "#ff54f9");
         }
         output = output.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
         return output;
@@ -473,19 +481,19 @@ public class WeatherHelper {
                 visString = portion.substring(visstart);
 
                 if(P6) {
-                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + "P6" + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke("P6", "#78e825") + "SM";
                 }
                 else if(vis >= 5) {
-                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#78e825") + "SM";
                 }
                 else if(vis >= 3) {
-                    portion = portion.substring(0, visstart) + "<font color='#008aff'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#008aff") + "SM";
                 }
                 else if(vis >= 1) {
-                    portion = portion.substring(0, visstart) + "<font color='#ff2a00'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#ff2a00") + "SM";
                 }
                 else {
-                    portion = portion.substring(0, visstart) + "<font color='#ff54f9'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#ff54f9") + "SM";
                 }
                 output += portion;
                 weather = weather.substring(start + 2, weather.length());
@@ -496,7 +504,7 @@ public class WeatherHelper {
             /*
              * Mark magenta as we do not know whats in it
              */
-            output = "<font color='#ff54f9'>" + original + "</font>";
+            output = WeatherHelper.addColorWithStroke(original, "#ff54f9");
         }
         return output;
     }
