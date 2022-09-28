@@ -39,23 +39,20 @@ public class Logger {
      */
     public static void setTextView(TextView tv) {
         mTv = tv;
-        Logit("");  // to flush any cached log messages
     }
-
     public static void setContext(Context ctx) {
+
     }
 
     /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
-    private static StringBuilder cachString = new StringBuilder();
     private static Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             String val = (String) msg.obj;
-            if (null != mTv) {  // Only if we have a View
-                String txt = ((null != cachString) ? cachString.toString() : "") + mTv.getText().toString();
-                cachString = null;
+            if(null != msg && null != mTv) {
+                String txt = mTv.getText().toString();
                 /*
                  * Limit buffer size
                  */
@@ -63,9 +60,8 @@ public class Logger {
                     txt = txt.substring(0, 1023);
                 }
                 mTv.setText(val + "\n" + txt);
-            } else {    // View not built yet, cache the log message
-                cachString.append(val).append("\n");
             }
+
         }
     };
 
