@@ -313,6 +313,9 @@ public class AudibleTrafficAlerts implements Runnable {
     public void handleAudibleAlerts(Location ownLocation, LinkedList<Traffic> allTraffic,
                                     float alertDistance, int ownAltitude)
     {
+        if(ownLocation == null) {
+            return; // need own location for alerts
+        }
         // Make traffic handling loop async thread, to not delay view handling loop
         handleTrafficExecutor.execute(() -> {
             for (int i = 0; i < allTraffic.size(); i++) {
