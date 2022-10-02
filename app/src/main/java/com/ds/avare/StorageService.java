@@ -1272,7 +1272,12 @@ public class StorageService  {
                 l.setSpeed((float) object.getDouble("speed"));
                 l.setBearing((float) object.getDouble("bearing"));
                 l.setTime(object.getLong("time"));
-                mIcaoAddress = object.getInt("address");
+                try {
+                    mIcaoAddress = object.getInt("address");
+                }
+                catch (Exception e) {
+                    mIcaoAddress = mPref.getAircraftICAOCode(); // sometimes ownship message will be from external GPS, and will not have ICAO, use the user set one
+                }
                 // Choose most appropriate altitude. This is because people fly all sorts
                 // of equipment with or without altitudes
                 // convert all altitudes in feet
