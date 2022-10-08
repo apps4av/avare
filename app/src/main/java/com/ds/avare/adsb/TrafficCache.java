@@ -30,6 +30,7 @@ public class TrafficCache {
     private static final int MAX_ENTRIES = 20;
     private Traffic[] mTraffic;
     private int mOwnAltitude;
+    private boolean mOwnIsAirborne;
     private Location mOwnLocation;
     Preferences mPref;
 
@@ -95,7 +96,7 @@ public class TrafficCache {
      * 
      * @param
      */
-    public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
+    public void putTraffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
             float heading, int speed, long time) {
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
@@ -125,7 +126,7 @@ public class TrafficCache {
                 if(callsign.equals("")) {
                     callsign = mTraffic[i].mCallSign;
                 }
-                mTraffic[i] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+                mTraffic[i] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, time);
 
                 handleAudibleAlerts();
                 return;
@@ -138,7 +139,7 @@ public class TrafficCache {
             return;
         }
         // put it in the end
-        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, time);
 
         // sort
         Arrays.sort(mTraffic, new TrafficComparator());
@@ -150,10 +151,14 @@ public class TrafficCache {
     public void setOwnAltitude(int altitude) {
         mOwnAltitude = altitude;
     }
+    public void setOwnIsAirborne(boolean isAirborne) {
+        mOwnIsAirborne = isAirborne;
+    }
 
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
+    public boolean getOwnIsAirborne() { return mOwnIsAirborne; }
 
     public void setOwnLocation(Location loc) {
         this.mOwnLocation = loc;

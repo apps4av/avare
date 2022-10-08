@@ -27,6 +27,7 @@ public class Traffic {
     public int mHorizVelocity;
     public float mHeading;
     public String mCallSign;
+    public boolean mIsAirborne;
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
 
@@ -55,11 +56,12 @@ public class Traffic {
      * @param altitude
      * @param heading
      */
-    public Traffic(String callsign, int address, float lat, float lon, int altitude, 
+    public Traffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
             float heading, int speed, long time)
     {
         mIcaoAddress = address;
         mCallSign = callsign;
+        mIsAirborne = isAirborne;
         mLon = lon;
         mLat = lat;
         mAltitude = altitude;
@@ -142,6 +144,10 @@ public class Traffic {
         for(Traffic t : traffic) {
 
             if(null == t) {
+                continue;
+            }
+            // Don't draw ground traffic, unless configuration allows it
+            if (!(t.mIsAirborne || ctx.pref.showAdsbGroundTraffic())) {
                 continue;
             }
 

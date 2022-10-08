@@ -580,6 +580,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
+    public boolean showAdsbGroundTraffic() {
+        return mPref.getBoolean(mContext.getString(R.string.ADSBTrafficIncludeGroundTraffic), false);
+    }
+
+    /**
+     * @return
+     */
     public int getTimerRingSize() {
         try {
             return (Integer.parseInt(mPref.getString(mContext.getString(R.string.prefTimerRingSize), "5")));
