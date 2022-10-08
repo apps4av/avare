@@ -251,6 +251,11 @@ authors: zkhan, jlmcgraw
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="@string/ADSBTrafficIncludeGroundTraffic"
+            android:summary="@string/ADSBTrafficIncludeGroundTrafficSummary"
+            android:title="@string/ADSBTrafficIncludeGroundTrafficLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="@string/drawTrafficCircles"
             android:summary="@string/drawTrafficCirclesSummary"
             android:title="@string/drawTrafficCirclesLabel" />

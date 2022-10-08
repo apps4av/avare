@@ -26,6 +26,9 @@ public class TrafficReportMessage extends Message {
     public float mLon;
     public int mAltitude;
     public int mMiscInd;
+    public boolean mIsAirborne;
+    boolean mIsExtrapolated;
+    int mTrackType;
     public int mNic;
     public int mNacp;
     public int mHorizVelocity;
@@ -132,6 +135,9 @@ public class TrafficReportMessage extends Message {
          *   1       x        x        x    = airborne
          */
         mMiscInd = ((int) msg[11] & 0x0F);
+        mIsAirborne = (msg[11] & 0x08) != 0;
+        mIsExtrapolated = (msg[11] & 0x04) != 0;
+        mTrackType = msg[11] & 0x03;
 
         /*
          * Next nibble is the navigation integrity category (nic). (See GDL-90 spec pg. 21.)

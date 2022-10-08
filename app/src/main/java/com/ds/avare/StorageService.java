@@ -1241,6 +1241,7 @@ public class StorageService  {
                 getTrafficCache().putTraffic(
                         object.getString("callsign"),
                         object.getInt("address"),
+                        object.optBoolean("isairborne", true),
                         (float)object.getDouble("latitude"),
                         (float)object.getDouble("longitude"),
                         object.getInt("altitude"),
@@ -1324,6 +1325,8 @@ public class StorageService  {
                 getTrafficCache().setOwnAltitude((int) alt);
                 // set own location for proximity traffic alerts
                 getTrafficCache().setOwnLocation(l);
+                // set own airborne status
+                getTrafficCache().setOwnIsAirborne(object.optBoolean("isairborne", true));
 
                 // For own height prefer geo altitude, do not use deviceAltitude here because
                 // we could get into rising altitude condition through feedback

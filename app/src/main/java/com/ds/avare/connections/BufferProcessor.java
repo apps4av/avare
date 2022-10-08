@@ -168,6 +168,7 @@ public class BufferProcessor {
                     object.put("type", "traffic");
                     object.put("longitude", (double)tm.mLon);
                     object.put("latitude", (double)tm.mLat);
+                    object.put("isairborne", tm.mIsAirborne);
                     object.put("speed", (double)(tm.mHorizVelocity));
                     object.put("bearing", (double)tm.mHeading);
                     object.put("altitude", (double)((double)tm.mAltitude));
@@ -515,6 +516,7 @@ public class BufferProcessor {
                     object.put("longitude", (double)om.mLon);
                     object.put("latitude", (double)om.mLat);
                     object.put("speed", (double)(om.mHorizontalVelocity));
+                    object.put("isairborne", om.mIsAirborne);
                     object.put("bearing", (double)om.mDirection);
                     object.put("time", (long)om.getTime());
                     object.put("altitude", (double) om.mAltitude);
