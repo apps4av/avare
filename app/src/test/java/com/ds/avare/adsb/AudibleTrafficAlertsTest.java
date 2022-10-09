@@ -6,9 +6,16 @@ import android.location.Location;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import static org.mockito.Mockito.*;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AudibleTrafficAlertsTest {
 
@@ -134,12 +141,11 @@ public class AudibleTrafficAlertsTest {
 
     @Test
     public void buildAlertSoundIdSequence_closingEventBeyondAlertRange_PicksLastMedia() {
-        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
+        AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
-        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
-                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
-                mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(67, 1.0, false), 99.9f
+        AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
+                "abc123", 3, 75,
+                new AudibleTrafficAlerts.Alert.ClosingEvent(67, 1.0, false), 99.9f
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
         Assert.assertTrue("Last media used", media.contains(ata.closingInSecondsSoundIds[ata.closingInSecondsSoundIds.length-1]));
@@ -147,25 +153,52 @@ public class AudibleTrafficAlertsTest {
 
     @Test
     public void buildAlertSoundIdSequence_closingEventLessThanHalfSecond_PicksFirstMedia() {
-        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
+        AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
-        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
-                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
-                mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(.25, 1.0, false), 99.9f
+        AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
+                "abc123", 2, 75,
+                new AudibleTrafficAlerts.Alert.ClosingEvent(.25, 1.0, false), 99.9f
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
         Assert.assertTrue("First media used", media.contains(ata.closingInSecondsSoundIds[0]));
     }
 
-    private AudibleTrafficAlerts getMockedAudibleTrafficAlerts(int secondsCount) {
-        int[] seconds = new int[secondsCount];
+    @Test
+    public void handleAudibleAlerts_handleTrafficRunnableIsGarbageCollected() {
+        AudibleTrafficAlerts spyAta = spy(getTestAudibleTrafficAlerts(10));
+        CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
+        doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
+        spyAta.handleAudibleAlerts(
+                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), 20.0f, 2200, true);
+        WeakReference<Runnable> runnableRef = new WeakReference<>(capEx.runnables.get(0));
+        capEx.runnables.clear();
+        forceGc();
+        Assert.assertNull("Reference to runnable after GC", runnableRef.get());
+    }
+
+    @Test
+    public void handleAudibleAlerts_nullLocationDoesNotCauseRunnableExecutionOrError() {
+        AudibleTrafficAlerts spyAta = spy(getTestAudibleTrafficAlerts(10));
+        CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
+        doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
+        LinkedList<Traffic> someTraffic = new LinkedList<>();
+        Traffic t = new Traffic();
+        t.mIsAirborne = true;
+        someTraffic.add(t);
+        spyAta.handleAudibleAlerts(
+                null, someTraffic, 20.0f, 2200, true);
+        Assert.assertEquals("Executed runnables", 0, capEx.runnables.size());
+    }
+
+    private AudibleTrafficAlerts getTestAudibleTrafficAlerts(int secondsCount) {
+        final int[] seconds = new int[secondsCount];
         for (int i = 0; i < secondsCount; i++)
             seconds[i] = 2000 + i;
         return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class), -1, -2,
                 new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, new int[] { 13, 14 }, -3, -4,
                 -5, -6, seconds, -7, -8);
     }
+
 
     private Location getMockLocation(double latitude, double longitude, float bearing) {
         final Location mockLoc = mock(Location.class);
@@ -175,9 +208,25 @@ public class AudibleTrafficAlertsTest {
         return mockLoc;
     }
 
+    private void forceGc() {
+        //allocate quite some memory to make sure that the GC runs
+        byte[] bigChunkOfMemory = new byte[4000000];
+        System.gc();
+    }
+
     private AudibleTrafficAlerts.SequentialSoundPoolPlayer getMockSoundPlayer() {
         AudibleTrafficAlerts.SequentialSoundPoolPlayer sp = mock(AudibleTrafficAlerts.SequentialSoundPoolPlayer.class);
         when(sp.load(anyInt(), any())).thenAnswer(invocation -> invocation.getArgument(0));
         return sp;
+    }
+
+    public static class CapturingSingleThreadExecutor implements Executor {
+        private ArrayList<Runnable> runnables = new ArrayList<>();
+        private ExecutorService executor = Executors.newSingleThreadExecutor();
+        @Override
+        public void execute(Runnable r) {
+            runnables.add(r);
+            executor.execute(r);
+        }
     }
 }

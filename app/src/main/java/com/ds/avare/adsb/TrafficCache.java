@@ -76,17 +76,19 @@ public class TrafficCache {
 
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
-            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(StorageService.getInstance().getApplicationContext());
+            final StorageService storageService = StorageService.getInstance();
+            final TrafficCache trafficCache = storageService.getTrafficCache();
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(storageService.getApplicationContext());
             audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
-            audibleTrafficAlerts.setClosingTimeThreasholdSeconds(mPref.getAudibleClosingInAlertSeconds());
-            audibleTrafficAlerts.setClosestApproachThreasholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
+            audibleTrafficAlerts.setClosingTimeThresholdSeconds(mPref.getAudibleClosingInAlertSeconds());
+            audibleTrafficAlerts.setClosestApproachThresholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
             audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
-            audibleTrafficAlerts.handleAudibleAlerts(StorageService.getInstance().getTrafficCache().getOwnLocation(),
-                    StorageService.getInstance().getTrafficCache().getTraffic(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
-                    StorageService.getInstance().getTrafficCache().getOwnAltitude());
+            audibleTrafficAlerts.setGroundAlertsEnabled(mPref.isAudibleGroundAlertsEnabled());
+            audibleTrafficAlerts.handleAudibleAlerts(trafficCache.getOwnLocation(), trafficCache.getTraffic(),
+                    mPref.getAudibleTrafficAlertsDistanceMinimum(),trafficCache.getOwnAltitude(), trafficCache.getOwnIsAirborne());
         } else {
             AudibleTrafficAlerts.stopAudibleTrafficAlerts();
         }

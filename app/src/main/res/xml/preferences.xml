@@ -360,6 +360,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsDistanceMinimum"
             android:summary="@string/AudibleTrafficAlertsDistanceMinimumSummary"
             android:title="@string/AudibleTrafficAlertsDistanceMinimumLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsGroundAlert"
+            android:summary="@string/AudibleTrafficAlertsGroundAlertSummary"
+            android:title="@string/AudibleTrafficAlertsGroundAlertLabel" />
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:defaultValue="15"
             android:dependency="@string/AudibleTrafficAlerts"

@@ -930,6 +930,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
     }
 
+    public boolean isAudibleGroundAlertsEnabled() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsGroundAlert), false);
+    }
+
     public boolean isAudibleAlertTrafficId() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
     }
