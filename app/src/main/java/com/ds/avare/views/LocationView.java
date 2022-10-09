@@ -1085,17 +1085,6 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         
         mService.getEdgeTape().setPaint(mPaint);
         
-        
-        // Resize our runway icon based upon the size of the display.
-        // We want the icon no more than 1/3 the size of the screen. Since we show 2 images
-        // of this icon, that means the total size is no more than 2/3 of the available space. 
-        // This leaves room to print the runway numbers with some real estate left over.
-        Bitmap newRunway = Helper.getResizedBitmap(mRunwayBitmap.getBitmap(), getWidth(), getHeight(), (double) 1/3);
-        
-        // If a new bitmap was generated, then load it in.
-        if(newRunway != mRunwayBitmap.getBitmap()) {
-        	mRunwayBitmap = new BitmapHolder(newRunway);
-        }
     }
     
     /**
