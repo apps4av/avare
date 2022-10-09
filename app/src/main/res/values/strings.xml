@@ -184,6 +184,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsGroundAlert">&quot;Audible Traffic Alerts Ground Alerts&quot;</string>
     <string name="AudibleTrafficAlertsGroundAlertSummary">&quot;Enable audible alerts even when the ownship or the traffic are on the ground (unchecked implies no alerts when either or both are on the ground, per the ADSB air/ground flag)&quot;</string>
     <string name="AudibleTrafficAlertsGroundAlertLabel">&quot;Audible Ground Alerts&quot;</string>
+    <string name="AudibleTrafficAlertsMinimumSpeed">&quot;Audible Traffic Alerts Minimum Speed&quot;</string>
+    <string name="AudibleTrafficAlertsMinimumSpeedSummary">&quot;Minimum (horizontal) speed over which audible alerts play, to prevent audible pollution during high workload lower-speed activities (e.g., takeoff and landing).&quot;</string>
+    <string name="AudibleTrafficAlertsMinimumSpeedLabel">&quot;Audible Alerts Min Speed (Vh)&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>
