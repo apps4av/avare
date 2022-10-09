@@ -79,6 +79,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private float closestApproachThresholdNmi = 3.0f;
     private float criticalClosingAlertRatio = .4f;
     private float maxAlertFrequencySeconds = 15f;
+    private float minSpeed = 0.0f;
 
     private static volatile Thread alertQueueProcessingConsumerThread;
     // This object's monitor is used for inter-thread communication and synchronization
@@ -87,7 +88,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected final ExecutorService trafficAlertProducerExecutor = Executors.newSingleThreadExecutor();
 
-    private static final float MPS_TO_KNOTS_CONV = 0.514444f;
+    private static final float MPS_TO_KNOTS_CONV = 1.0f/0.514444f;
 
     protected static class Alert {
         final private String trafficCallsign;
@@ -242,6 +243,7 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setCriticalClosingAlertRatio(float criticalClosingAlertRatio) {  this.criticalClosingAlertRatio = criticalClosingAlertRatio;  }
     public void setAlertMaxFrequencySec(float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
     public void setGroundAlertsEnabled(boolean groundAlertsEnabled) {  this.groundAlertsEnabled = groundAlertsEnabled;  }
+    public void setMinSpeed(float minSpeed) { this.minSpeed = minSpeed; }
 
     /**
      * Process alert queue in a separate thread
@@ -321,6 +323,10 @@ public class AudibleTrafficAlerts implements Runnable {
             return; // need own location for alerts
         // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
         if (!(groundAlertsEnabled || ownIsAirborne)) {
+            return;
+        }
+        // Don't alert if under config min speed, to prevent audible pollution during high-workload low speed activities
+        if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < minSpeed) {
             return;
         }
         // Make traffic handling loop async producer thread, to not delay caller handling loop

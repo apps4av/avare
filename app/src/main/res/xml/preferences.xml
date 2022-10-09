@@ -372,6 +372,12 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsMaxFrequency"
             android:summary="@string/AudibleTrafficAlertsMaxFrequencySummary"
             android:title="@string/AudibleTrafficAlertsMaxFrequencyLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="0"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsMinimumSpeed"
+            android:summary="@string/AudibleTrafficAlertsMinimumSpeedSummary"
+            android:title="@string/AudibleTrafficAlertsMinimumSpeedLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"

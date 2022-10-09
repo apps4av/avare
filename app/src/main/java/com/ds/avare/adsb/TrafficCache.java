@@ -87,6 +87,7 @@ public class TrafficCache {
             audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
             audibleTrafficAlerts.setGroundAlertsEnabled(mPref.isAudibleGroundAlertsEnabled());
+            audibleTrafficAlerts.setMinSpeed(mPref.getAudibleTrafficAlertsMinSpeed());
             audibleTrafficAlerts.handleAudibleAlerts(trafficCache.getOwnLocation(), trafficCache.getTraffic(),
                     mPref.getAudibleTrafficAlertsDistanceMinimum(),trafficCache.getOwnAltitude(), trafficCache.getOwnIsAirborne());
         } else {
