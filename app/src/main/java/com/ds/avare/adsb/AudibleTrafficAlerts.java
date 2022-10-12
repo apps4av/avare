@@ -295,13 +295,20 @@ public class AudibleTrafficAlerts implements Runnable {
             // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
             alertAudio.add(trafficAliasesSoundIds[icaoIndex % trafficAliasesSoundIds.length]);
         }
-        if (alert.closingEvent != null && alert.closingEvent.closingSeconds() > 0) {
-            alertAudio.add(closingInSoundId);
-            if ((int) alert.closingEvent.closingSeconds() > closingInSecondsSoundIds.length)
-                alertAudio.add(overSoundId);
-            alertAudio.add(closingInSecondsSoundIds[
-                    Math.min(closingInSecondsSoundIds.length-1, Math.max(0,
-                            ((int)Math.round(alert.closingEvent.closingSeconds()))-1))]);
+        if (alert.closingEvent != null) {
+            // Subtract speaking time of audio clips prior to # of seconds in this alert
+            long alertPrefixLengthMs = 0;
+            for (int soundId : alertAudio)
+                alertPrefixLengthMs += soundPlayer.soundDurationMap.get(soundId);
+            final double adjustedClosingSeconds = alert.closingEvent.closingSeconds() - alertPrefixLengthMs/1000.00;
+            if (adjustedClosingSeconds > 0) {
+                alertAudio.add(closingInSoundId);
+                if ((int) adjustedClosingSeconds > closingInSecondsSoundIds.length)
+                    alertAudio.add(overSoundId);
+                alertAudio.add(closingInSecondsSoundIds[
+                    Math.min(closingInSecondsSoundIds.length - 1, Math.max(0,
+                        ((int) Math.round(adjustedClosingSeconds)) - 1))]);
+             }
         }
         alertAudio.add(clockHoursSoundIds[alert.clockHour - 1]);
         alertAudio.add(Math.abs(alert.altitudeDiff) < 100 ? levelSoundId
