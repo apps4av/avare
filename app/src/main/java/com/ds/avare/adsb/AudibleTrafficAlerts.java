@@ -297,10 +297,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
         if (alert.closingEvent != null) {
             // Subtract speaking time of audio clips prior to # of seconds in this alert
-            long alertPrefixLengthMs = 0;
-            for (int soundId : alertAudio)
-                alertPrefixLengthMs += soundPlayer.soundDurationMap.get(soundId);
-            final double adjustedClosingSeconds = alert.closingEvent.closingSeconds() - alertPrefixLengthMs/1000.00;
+            final double adjustedClosingSeconds = alert.closingEvent.closingSeconds() - soundPlayer.getSoundSequenceDuration(alertAudio)/1000.00;
             if (adjustedClosingSeconds > 0) {
                 alertAudio.add(closingInSoundId);
                 if ((int) adjustedClosingSeconds > closingInSecondsSoundIds.length)
@@ -519,6 +516,8 @@ public class AudibleTrafficAlerts implements Runnable {
         private int waitingForLoadSoundCount = -1;
         private final MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
 
+        private static final float SOUND_PLAY_RATE = 1f;
+
         private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
             // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
             this.soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
@@ -537,6 +536,13 @@ public class AudibleTrafficAlerts implements Runnable {
             final int soundId = soundPool.load(ctx, resId, 1);
             soundDurationMap.put(soundId, getSoundDuration(ctx, resId));
             return soundId;
+        }
+
+        public long getSoundSequenceDuration(List<Integer> soundIds) {
+            long soundSequenceDurationMs = 0;
+            for (int soundId : soundIds)
+                soundSequenceDurationMs += soundDurationMap.get(soundId);
+            return (long) (soundSequenceDurationMs / SOUND_PLAY_RATE);
         }
 
         @Override
@@ -605,8 +611,6 @@ public class AudibleTrafficAlerts implements Runnable {
             private final SoundPool soundPool;
             private final Map<Integer,Long> soundDurationMap;
             private final SoundSequenceOnCompletionListener listener;
-
-            private static final float SOUND_PLAY_RATE = 1f;
 
             public SequentialSoundPlayRunnable(List<Integer> soundIds, SoundSequenceOnCompletionListener listener,
                                                Handler handler, SoundPool soundPool, Map<Integer,Long> soundDurationMap)
