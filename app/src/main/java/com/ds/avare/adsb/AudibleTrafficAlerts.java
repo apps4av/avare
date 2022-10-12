@@ -91,11 +91,11 @@ public class AudibleTrafficAlerts implements Runnable {
     private static final float MPS_TO_KNOTS_CONV = 1.0f/0.514444f;
 
     protected static class Alert {
-        final private String trafficCallsign;
-        final private double distanceNmi;
-        final private ClosingEvent closingEvent;
-        final private int clockHour;
-        final double altitudeDiff;
+        private final String trafficCallsign;
+        private final double distanceNmi;
+        private final ClosingEvent closingEvent;
+        private final int clockHour;
+        private final double altitudeDiff;
 
         protected Alert(String trafficCallsign, int clockHour, double altitudeDiff, ClosingEvent closingEvent, double distnaceNmi) {
             this.trafficCallsign = trafficCallsign;
@@ -326,8 +326,9 @@ public class AudibleTrafficAlerts implements Runnable {
     public void handleAudibleAlerts(Location ownLocation, LinkedList<Traffic> allTraffic,
                                     float alertDistance, int ownAltitude, boolean ownIsAirborne)
     {
-        if (ownLocation == null)
+        if (ownLocation == null) {
             return; // need own location for alerts
+        }
         // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
         if (!(groundAlertsEnabled || ownIsAirborne)) {
             return;
@@ -357,20 +358,17 @@ public class AudibleTrafficAlerts implements Runnable {
                             ownLocation.getLatitude(), ownLocation.getLongitude(),  traffic.mLat,  traffic.mLon
                     )) < alertDistance
                 ) {
-                    trafficAlertQueueUpsert(generateAlert(ownLocation, ownAltitude, traffic, currentDistance));
+                    trafficAlertQueueUpsert(new Alert(traffic.mCallSign,
+                            nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
+                                    ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
+                            altDiff,
+                            closingTimeEnabled ? determineClosingEvent(ownLocation, traffic, currentDistance) : null,
+                            currentDistance
+                    ));
                 }
                 lastDistanceUpdate.put(traffic.mCallSign, distanceCalcUpdateKey);
             }
         });
-    }
-
-    @NonNull
-    protected Alert generateAlert(final Location ownLocation, final int ownAltitude, final Traffic traffic, final double currentDistance) {
-        final int clockHour =  nearestClockHourFromHeadingAndLocations(
-                ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing());
-        final double altitudeDiff = ownAltitude - traffic.mAltitude;
-        return new Alert(traffic.mCallSign, clockHour, altitudeDiff,
-                closingTimeEnabled ? determineClosingEvent(ownLocation, traffic, currentDistance) : null, currentDistance);
     }
 
     protected Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance) {
