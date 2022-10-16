@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -140,18 +141,6 @@ public class AudibleTrafficAlertsTest {
     }
 
     @Test
-    public void buildAlertSoundIdSequence_closingEventBeyondAlertRange_PicksLastMedia() {
-        AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
-        Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
-        AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
-                "abc123", 3, 75,
-                new AudibleTrafficAlerts.Alert.ClosingEvent(67, 1.0, false), 99.9f, 100
-        );
-        List<Integer> media = ata.buildAlertSoundIdSequence(alert);
-        Assert.assertTrue("Last media used", media.contains(ata.numberSoundIds[ata.numberSoundIds.length-1]));
-    }
-
-    @Test
     public void buildAlertSoundIdSequence_closingEventLessThanHalfSecond_PicksFirstMedia() {
         AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
@@ -189,6 +178,16 @@ public class AudibleTrafficAlertsTest {
         spyAta.handleAudibleAlerts(
                 null, someTraffic, 20.0f, 2200, true);
         Assert.assertEquals("Executed runnables", 0, capEx.runnables.size());
+    }
+
+    @Test
+    public void addNumericalAlertAudioSequence_largeNumberWithDecimal() {
+        final AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
+        final ArrayList<Integer> soundIds = new ArrayList<>();
+        ata.addNumericalAlertAudioSequence(soundIds, 1049.99, true);
+        Assert.assertEquals("SoundIds from number",
+                Arrays.asList(ata.numberSoundIds[1], ata.numberSoundIds[0], ata.numberSoundIds[4], ata.numberSoundIds[9], ata.decimalSoundId, ata.numberSoundIds[9]),
+                soundIds);
     }
 
     private AudibleTrafficAlerts getTestAudibleTrafficAlerts(int secondsCount) {

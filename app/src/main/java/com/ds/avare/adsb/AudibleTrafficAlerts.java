@@ -71,7 +71,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final int descendingSoundId;
     private final int criticallyCloseChirp;
     private final int withinSoundId;
-    private final int decimalSoundId;
+    protected final int decimalSoundId;
 
     // Trackers for traffic callsigns, update freshness, and alert frequenncy
     private final LinkedList<String> phoneticAlphaIcaoSequenceQueue;
@@ -335,14 +335,18 @@ public class AudibleTrafficAlerts implements Runnable {
      * Inject an individual digit audio alert sound sequence (1,032 ==> "one-zero-three-two")
      * @param alertAudio Existing audio list to add numeric value to
      * @param numeric Numeric value to speak into alert audio
+     * @param doDecimal Whether to speak 1st decimal into alert (false ==> rounded to whole #)
      */
-    private void addNumericalAlertAudioSequence(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
-        final double processedNumeric = doDecimal ? numeric : Math.round(numeric);
+    protected final void addNumericalAlertAudioSequence(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
+        double processedNumeric = doDecimal ? numeric : Math.round(numeric);
         for (int i = (int) Math.max(Math.log10(processedNumeric), 0); i >= 0; i--) {
             if (i == 0)
                 alertAudio.add(numberSoundIds[(int) Math.min(processedNumeric % 10, 9)]);
-            else
-                alertAudio.add(numberSoundIds[(int) Math.min(processedNumeric / Math.pow(10,i),9)]);
+            else {
+                final double pow10 = Math.pow(10, i);
+                alertAudio.add(numberSoundIds[(int) Math.min(processedNumeric / pow10, 9)]);
+                processedNumeric = processedNumeric % pow10;
+            }
         }
         if (doDecimal) {
             final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
