@@ -415,7 +415,7 @@ public class AudibleTrafficAlerts implements Runnable {
         });
     }
 
-    protected Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance) {
+    protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance) {
         final int ownSpeedInKts = (int)Math.round(MPS_TO_KNOTS_CONV * ownLocation.getSpeed());
         final double closingEventTimeSec = Math.abs(closestApproachTime(
                 traffic.mLat, traffic.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
