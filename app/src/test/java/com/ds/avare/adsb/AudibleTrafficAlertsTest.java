@@ -145,10 +145,10 @@ public class AudibleTrafficAlertsTest {
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
         AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
                 "abc123", 3, 75,
-                new AudibleTrafficAlerts.Alert.ClosingEvent(67, 1.0, false), 99.9f
+                new AudibleTrafficAlerts.Alert.ClosingEvent(67, 1.0, false), 99.9f, 100
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
-        Assert.assertTrue("Last media used", media.contains(ata.closingInSecondsSoundIds[ata.closingInSecondsSoundIds.length-1]));
+        Assert.assertTrue("Last media used", media.contains(ata.numberSoundIds[ata.numberSoundIds.length-1]));
     }
 
     @Test
@@ -157,10 +157,11 @@ public class AudibleTrafficAlertsTest {
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
         AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
                 "abc123", 2, 75,
-                new AudibleTrafficAlerts.Alert.ClosingEvent(.25, 1.0, false), 99.9f
+                new AudibleTrafficAlerts.Alert.ClosingEvent(.25, 1.0, false), 99.9f, 10
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
-        Assert.assertTrue("First media used", media.contains(ata.closingInSecondsSoundIds[0]));
+        final int firstMedia = ata.numberSoundIds[0];
+        Assert.assertTrue("First media ["+firstMedia+"] used: "+media, media.contains(firstMedia));
     }
 
     @Test
@@ -216,7 +217,13 @@ public class AudibleTrafficAlertsTest {
 
     private AudibleTrafficAlerts.SequentialSoundPoolPlayer getMockSoundPlayer() {
         AudibleTrafficAlerts.SequentialSoundPoolPlayer sp = mock(AudibleTrafficAlerts.SequentialSoundPoolPlayer.class);
-        when(sp.load(anyInt(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(sp.load(any(), any()))
+                .thenAnswer(invocation -> {
+                    int[] regurg = new int[invocation.getArguments().length-1];
+                    for (int i = 1; i < invocation.getArguments().length; i++)
+                        regurg[i-1] = (int) invocation.getArgument(i);
+                    return regurg;
+                });
         return sp;
     }
 

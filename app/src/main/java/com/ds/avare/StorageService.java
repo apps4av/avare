@@ -1247,6 +1247,7 @@ public class StorageService  {
                         object.getInt("altitude"),
                         (float)object.getDouble("bearing"),
                         (int)object.getInt("speed"),
+                        (int)object.getInt("vspeed"),
                         Helper.getMillisGMT()
                             /*XXX:object.getLong("time")*/);
             }

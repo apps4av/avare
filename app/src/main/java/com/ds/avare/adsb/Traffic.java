@@ -25,6 +25,7 @@ public class Traffic {
     public float mLon;
     public int mAltitude;
     public int mHorizVelocity;
+    public int mVertVelocity;
     public float mHeading;
     public String mCallSign;
     public boolean mIsAirborne;
@@ -57,7 +58,7 @@ public class Traffic {
      * @param heading
      */
     public Traffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
-            float heading, int speed, long time)
+            float heading, int speed, int vspeed, long time)
     {
         mIcaoAddress = address;
         mCallSign = callsign;
@@ -67,6 +68,7 @@ public class Traffic {
         mAltitude = altitude;
         mHeading = heading;
         mHorizVelocity = speed;
+        mVertVelocity = vspeed;
         mLastUpdate = time;
 
         /*
