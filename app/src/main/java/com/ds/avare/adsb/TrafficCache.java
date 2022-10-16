@@ -100,7 +100,7 @@ public class TrafficCache {
      * @param
      */
     public void putTraffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
-            float heading, int speed, long time) {
+            float heading, int speed, int vspeed, long time) {
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
         if(address == mPref.getAircraftICAOCode() || address == StorageService.getInstance().getIcaoAddress()) {
@@ -129,7 +129,7 @@ public class TrafficCache {
                 if(callsign.equals("")) {
                     callsign = mTraffic[i].mCallSign;
                 }
-                mTraffic[i] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, time);
+                mTraffic[i] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
 
                 handleAudibleAlerts();
                 return;
@@ -142,7 +142,7 @@ public class TrafficCache {
             return;
         }
         // put it in the end
-        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, time);
+        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
 
         // sort
         Arrays.sort(mTraffic, new TrafficComparator());

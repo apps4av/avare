@@ -170,6 +170,7 @@ public class BufferProcessor {
                     object.put("latitude", (double)tm.mLat);
                     object.put("isairborne", tm.mIsAirborne);
                     object.put("speed", (double)(tm.mHorizVelocity));
+                    object.put("vspeed", tm.mVertVelocity);
                     object.put("bearing", (double)tm.mHeading);
                     object.put("altitude", (double)((double)tm.mAltitude));
                     object.put("callsign", (String)tm.mCallSign);
