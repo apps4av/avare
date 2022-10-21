@@ -77,20 +77,14 @@ public class TrafficCache {
 
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
-            final StorageService storageService = StorageService.getInstance();
-            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(storageService.getApplicationContext());
+            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
+                    StorageService.getInstance().getApplicationContext());
             audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
-            audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
-            audibleTrafficAlerts.setClosingTimeThresholdSeconds(mPref.getAudibleClosingInAlertSeconds());
-            audibleTrafficAlerts.setClosestApproachThresholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
-            audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
-            audibleTrafficAlerts.setGroundAlertsEnabled(mPref.isAudibleGroundAlertsEnabled());
-            audibleTrafficAlerts.setMinSpeed(mPref.getAudibleTrafficAlertsMinSpeed());
-            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(),
-                    mPref.getAudibleTrafficAlertsDistanceMinimum(), mOwnAltitude, mOwnIsAirborne,
-                    mOwnVertVelocity);
+            audibleTrafficAlerts.setUseDecimalPrecision(mPref.isAudibleTrafficAlertsDecimalPrecision());
+            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(), mPref,
+                    mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {
             AudibleTrafficAlerts.stopAudibleTrafficAlerts();
         }

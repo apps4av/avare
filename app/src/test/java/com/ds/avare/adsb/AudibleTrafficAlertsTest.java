@@ -10,6 +10,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 import com.ds.avare.adsb.gdl90.Message;
+import com.ds.avare.storage.Preferences;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class AudibleTrafficAlertsTest {
         CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
         doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
         spyAta.handleAudibleAlerts(
-                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), 20.0f, 2200, true, 20);
+                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), mock(Preferences.class), 2200, true, 20);
         WeakReference<Runnable> runnableRef = new WeakReference<>(capEx.runnables.get(0));
         capEx.runnables.clear();
         forceGc();
@@ -178,7 +179,7 @@ public class AudibleTrafficAlertsTest {
         t.mIsAirborne = true;
         someTraffic.add(t);
         spyAta.handleAudibleAlerts(
-                null, someTraffic, 20.0f, 2200, true, 20);
+                null, someTraffic, mock(Preferences.class), 2200, true, 20);
         Assert.assertEquals("Executed runnables", 0, capEx.runnables.size());
     }
 
