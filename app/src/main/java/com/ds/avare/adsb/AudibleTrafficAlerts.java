@@ -88,7 +88,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private float criticalClosingAlertRatio = .4f;
     private float maxAlertFrequencySeconds = 15f;
     private float minSpeed = 0.0f;
-    private boolean useDecimalPrecision = false;
+    private boolean useDecimalPrecision = true;
 
     // Core alert tracking data structures, threading objects, and feature instances
     private static volatile Thread alertQueueProcessingConsumerThread;
@@ -365,7 +365,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param ownAltitude Ownship altitude
      */
     public void handleAudibleAlerts(Location ownLocation, LinkedList<Traffic> allTraffic,
-                                    float alertDistance, int ownAltitude, boolean ownIsAirborne)
+                                    float alertDistance, int ownAltitude, boolean ownIsAirborne, int ownVspeed)
     {
         if (ownLocation == null) {
             return; // need own location for alerts
@@ -404,7 +404,7 @@ public class AudibleTrafficAlerts implements Runnable {
                                 nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
                                         ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
                                 altDiff,
-                                closingTimeEnabled ? determineClosingEvent(ownLocation, traffic, currentDistance) : null,
+                                closingTimeEnabled ? determineClosingEvent(ownLocation, traffic, currentDistance, ownAltitude, ownVspeed) : null,
                                 currentDistance, traffic.mVertVelocity
                         ));
                         lastDistanceUpdate.put(traffic.mCallSign, distanceCalcUpdateKey);
@@ -415,7 +415,8 @@ public class AudibleTrafficAlerts implements Runnable {
         });
     }
 
-    protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance) {
+    protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
+                                                             final int ownAltitude, final int ownVspeed) {
         final int ownSpeedInKts = (int)Math.round(MPS_TO_KNOTS_CONV * ownLocation.getSpeed());
         final double closingEventTimeSec = Math.abs(closestApproachTime(
                 traffic.mLat, traffic.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
@@ -423,11 +424,14 @@ public class AudibleTrafficAlerts implements Runnable {
         ))*60.00*60.00;
         if (closingEventTimeSec < this.closingTimeThresholdSeconds) {
             final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
-                    ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000);
+                    ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000, ownAltitude, ownVspeed);
             final double[] theirCaLoc = locationAfterTime(traffic.mLat, traffic.mLon, traffic.mHeading,
-                    traffic.mHorizVelocity, closingEventTimeSec/3600.000);
+                    traffic.mHorizVelocity, closingEventTimeSec/3600.000, traffic.mAltitude, traffic.mVertVelocity);
             final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
-            if (caDistance < this.closestApproachThresholdNmi && currentDistance > caDistance) {
+            final double altDiff = myCaLoc[2] - theirCaLoc[2];
+//            System.out.println(String.format("for %s time=%f Curr hdist=%f and altdiff=%d, but eventual hdist=%f and altdiff=%f, their vspeed=%d and my vspeed=%d",
+//                    traffic.mCallSign, closingEventTimeSec, currentDistance, (ownAltitude-traffic.mAltitude), caDistance, altDiff, traffic.mVertVelocity, ownVspeed));
+            if (caDistance < this.closestApproachThresholdNmi && currentDistance > caDistance && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
                 final boolean criticallyClose = this.criticalClosingAlertRatio > 0
                         &&(closingEventTimeSec / this.closingTimeThresholdSeconds) <= criticalClosingAlertRatio
                         && (caDistance / this.closestApproachThresholdNmi) <= criticalClosingAlertRatio;
@@ -544,14 +548,15 @@ public class AudibleTrafficAlerts implements Runnable {
         return - ((a*b + c*d) / (b*b + d*d));
     }
 
-    protected static double[] locationAfterTime(double lat, double lon, float heading, float velocityInKt, double timeInHrs) {
+    protected static double[] locationAfterTime(double lat, double lon, float heading, float velocityInKt, double timeInHrs, float altInFeet, float vspeedInFpm) {
         final double newLat =  lat + Math.cos(Math.toRadians(heading)) * (velocityInKt/60.00000) * timeInHrs;
         return new double[]  {
                 newLat,
                 lon + Math.sin(Math.toRadians(heading))
                         // Again, use cos of average lat to give some weighting based on shorter intra-lon distance changes at higher latitudes
                         * (velocityInKt / (60.00000*Math.cos(Math.toRadians((newLat+lat)/2.0000))))
-                        * timeInHrs
+                        * timeInHrs,
+                altInFeet + (vspeedInFpm * (60.0 * timeInHrs))
         };
     }
 

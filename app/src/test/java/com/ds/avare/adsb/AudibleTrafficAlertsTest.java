@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
+import com.ds.avare.adsb.gdl90.Message;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,7 +107,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 41, lon = -95, time = 1 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 0; /* North */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time,200, 20);
         Assert.assertEquals("new lat", 42, latLonOverTime[0], 0.1);
         Assert.assertEquals("new lon the same", lon, latLonOverTime[1], 0.1);
     }
@@ -115,7 +117,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 10, lon = -95, time = 1 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 200, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94, latLonOverTime[1], 0.1);
     }
@@ -125,7 +127,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 41.184505, lon = -95.948730, time = .008952 /* hour */;
         final float velocity = 37; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 200, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertNotEquals("new lon", lon, latLonOverTime[1], 0.0000001);
     }
@@ -135,7 +137,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 10, lon = -95, time = .5 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 20, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94.5, latLonOverTime[1], 0.1);
     }
@@ -159,7 +161,7 @@ public class AudibleTrafficAlertsTest {
         CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
         doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
         spyAta.handleAudibleAlerts(
-                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), 20.0f, 2200, true);
+                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), 20.0f, 2200, true, 20);
         WeakReference<Runnable> runnableRef = new WeakReference<>(capEx.runnables.get(0));
         capEx.runnables.clear();
         forceGc();
@@ -176,7 +178,7 @@ public class AudibleTrafficAlertsTest {
         t.mIsAirborne = true;
         someTraffic.add(t);
         spyAta.handleAudibleAlerts(
-                null, someTraffic, 20.0f, 2200, true);
+                null, someTraffic, 20.0f, 2200, true, 20);
         Assert.assertEquals("Executed runnables", 0, capEx.runnables.size());
     }
 

@@ -154,14 +154,19 @@ public class TrafficReportMessage extends Message {
          */
         upper = ((int) msg[13] & 0xFF) << 4;
         lower = ((int) msg[14] & 0xF0) >> 4;
+        // 2's comp for negative
         mHorizVelocity = upper | lower;
 
         /*
-         * next 12 bits are vertical velocity in units of 64 fpm. (0xFFF = unknown)
+         * next 12 bits are vertical velocity in units of 64 fpm
          */
-        upper = ((int) msg[14] & 0x0F) << 8;
-        lower = (int) msg[15] & 0xFF;
-        mVertVelocity = (upper | lower) * 64;
+        if (((int) msg[14] & 0x08) == 0) {
+            mVertVelocity = (((int) msg[14] & 0x0F) << 14) + (((int) msg[15] & 0xFF) << 6);
+        } else if (msg[15] == 0) {
+            mVertVelocity = Integer.MAX_VALUE;
+        } else {
+            mVertVelocity = (((int) msg[14] & 0x0F) << 14) + (((int) msg[15] & 0xFF) << 6) - 0x40000;
+        }
 
         /*
          * next nibble is the track heading with resolution = 360/256
