@@ -32,6 +32,7 @@ public class TrafficCache {
     private int mOwnAltitude;
     private boolean mOwnIsAirborne;
     private Location mOwnLocation;
+    private int mOwnVertVelocity;
     Preferences mPref;
 
     public TrafficCache() {
@@ -77,7 +78,6 @@ public class TrafficCache {
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
             final StorageService storageService = StorageService.getInstance();
-            final TrafficCache trafficCache = storageService.getTrafficCache();
             AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(storageService.getApplicationContext());
             audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
@@ -88,8 +88,9 @@ public class TrafficCache {
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
             audibleTrafficAlerts.setGroundAlertsEnabled(mPref.isAudibleGroundAlertsEnabled());
             audibleTrafficAlerts.setMinSpeed(mPref.getAudibleTrafficAlertsMinSpeed());
-            audibleTrafficAlerts.handleAudibleAlerts(trafficCache.getOwnLocation(), trafficCache.getTraffic(),
-                    mPref.getAudibleTrafficAlertsDistanceMinimum(),trafficCache.getOwnAltitude(), trafficCache.getOwnIsAirborne());
+            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(),
+                    mPref.getAudibleTrafficAlertsDistanceMinimum(), mOwnAltitude, mOwnIsAirborne,
+                    mOwnVertVelocity);
         } else {
             AudibleTrafficAlerts.stopAudibleTrafficAlerts();
         }
@@ -157,11 +158,18 @@ public class TrafficCache {
     public void setOwnIsAirborne(boolean isAirborne) {
         mOwnIsAirborne = isAirborne;
     }
+    public void setOwnVertVelocity(int vspeed) {
+        mOwnVertVelocity = vspeed;
+    }
+
 
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
     public boolean getOwnIsAirborne() { return mOwnIsAirborne; }
+    public int getOwnVertVelocity() {
+        return mOwnVertVelocity;
+    }
 
     public void setOwnLocation(Location loc) {
         this.mOwnLocation = loc;
