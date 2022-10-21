@@ -154,7 +154,6 @@ public class TrafficReportMessage extends Message {
          */
         upper = ((int) msg[13] & 0xFF) << 4;
         lower = ((int) msg[14] & 0xF0) >> 4;
-        // 2's comp for negative
         mHorizVelocity = upper | lower;
 
         /*

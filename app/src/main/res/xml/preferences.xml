@@ -378,6 +378,18 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsMinimumSpeed"
             android:summary="@string/AudibleTrafficAlertsMinimumSpeedSummary"
             android:title="@string/AudibleTrafficAlertsMinimumSpeedLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="1000"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsAltitude"
+            android:summary="@string/AudibleTrafficAlertsAltitudeSummary"
+            android:title="@string/AudibleTrafficAlertsAltitudeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsDecimalPrecision"
+            android:summary="@string/AudibleTrafficAlertsDecimalPrecisionSummary"
+            android:title="@string/AudibleTrafficAlertsDecimalPrecisionLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"

@@ -187,6 +187,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsMinimumSpeed">&quot;Audible Traffic Alerts Minimum Speed&quot;</string>
     <string name="AudibleTrafficAlertsMinimumSpeedSummary">&quot;Minimum horizontal speed (knots) over which audible alerts play, to prevent audible pollution during high workload lower-speed activities (e.g., takeoff and landing).&quot;</string>
     <string name="AudibleTrafficAlertsMinimumSpeedLabel">&quot;Audible Alerts Min Speed (Vh)&quot;</string>
+    <string name="AudibleTrafficAlertsAltitude">&quot;Audible Traffic Alerts Altitude&quot;</string>
+    <string name="AudibleTrafficAlertsAltitudeSummary">&quot;Altitude difference between ownship and traffic under which audible alerts will fire, assuming horizontal distance threshold met as well.&quot;</string>
+    <string name="AudibleTrafficAlertsAltitudeLabel">&quot;Audible Alerts Altitude (+/-)&quot;</string>
+    <string name="AudibleTrafficAlertsDecimalPrecision">&quot;Audible Traffic Alerts Decimal Precision&quot;</string>
+    <string name="AudibleTrafficAlertsDecimalPrecisionSummary">&quot;Use decimal precision (tenth-of-mile) for all distance callouts.  (Unselected causes rounding to nearest mile)&quot;</string>
+    <string name="AudibleTrafficAlertsDecimalPrecisionLabel">&quot;Audible Alerts Decimal Precision&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>

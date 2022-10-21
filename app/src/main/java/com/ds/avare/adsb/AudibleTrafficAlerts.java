@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.ds.avare.R;
+import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,21 +82,15 @@ public class AudibleTrafficAlerts implements Runnable {
     // Configuration settings
     private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
-    private boolean closingTimeEnabled = true;
-    private boolean groundAlertsEnabled = false;
-    private int closingTimeThresholdSeconds = 15;
-    private float closestApproachThresholdNmi = 3.0f;
-    private float criticalClosingAlertRatio = .4f;
     private float maxAlertFrequencySeconds = 15f;
-    private float minSpeed = 0.0f;
     private boolean useDecimalPrecision = true;
 
     // Core alert tracking data structures, threading objects, and feature instances
     private static volatile Thread alertQueueProcessingConsumerThread;
     protected final ExecutorService trafficAlertProducerExecutor = Executors.newSingleThreadExecutor();
+    private static AudibleTrafficAlerts singleton;
     // This object's monitor is used for inter-thread communication and synchronization
     private static final LinkedList<Alert> alertQueue = new LinkedList<>();
-    private static AudibleTrafficAlerts singleton;
 
     // Constants
     private static final float MPS_TO_KNOTS_CONV = 1.0f/0.514444f;
@@ -241,13 +236,8 @@ public class AudibleTrafficAlerts implements Runnable {
 
     public void setUseTrafficAliases(boolean useTrafficAliases) { this.useTrafficAliases = useTrafficAliases; }
     public void setTopGunDorkMode(boolean topGunDorkMode) { this.topGunDorkMode = topGunDorkMode; }
-    public void setClosingTimeEnabled(boolean closingTimeEnabled) { this.closingTimeEnabled = closingTimeEnabled;  }
-    public void setClosingTimeThresholdSeconds(int closingTimeThresholdSeconds) {  this.closingTimeThresholdSeconds = closingTimeThresholdSeconds;  }
-    public void setClosestApproachThresholdNmi(float closestApproachThresholdNmi) {  this.closestApproachThresholdNmi = closestApproachThresholdNmi;  }
-    public void setCriticalClosingAlertRatio(float criticalClosingAlertRatio) {  this.criticalClosingAlertRatio = criticalClosingAlertRatio;  }
     public void setAlertMaxFrequencySec(float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
-    public void setGroundAlertsEnabled(boolean groundAlertsEnabled) {  this.groundAlertsEnabled = groundAlertsEnabled;  }
-    public void setMinSpeed(float minSpeed) { this.minSpeed = minSpeed; }
+    public void setUseDecimalPrecision(boolean useDecimalPrecision) { this.useDecimalPrecision = useDecimalPrecision; }
 
     /**
      * Process alert queue in a separate thread
@@ -263,15 +253,25 @@ public class AudibleTrafficAlerts implements Runnable {
             synchronized (alertQueue) {
                 if (alertQueue.size() > 0 && !soundPlayer.isPlaying()) {
                     final Alert alert = alertQueue.getFirst();
+                    final long timeToWait;
                     if (!lastAlertTime.containsKey(alert.trafficCallsign)
-                        || (System.currentTimeMillis()-lastAlertTime.get(alert.trafficCallsign))/1000.0
+                        || (timeToWait = System.currentTimeMillis()-lastAlertTime.get(alert.trafficCallsign))/1000.0
                             > this.maxAlertFrequencySeconds)
                     {
                         lastAlertTime.put(alert.trafficCallsign, System.currentTimeMillis());
                         soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.removeFirst()));
                     } else {
-                        alertQueue.removeFirst();
-                        alertQueue.add(Math.min(1, alertQueue.size()), alert); // Put it to second in line to wait
+                        if (alertQueue.size() > 1) {
+                            alertQueue.removeFirst();
+                            alertQueue.add(Math.min(1, alertQueue.size()), alert); // Put it to second in line to wait
+                        } else if (timeToWait > 0)
+                            // If this is only one in queue, and I just need more time, then wait just enough time
+                            try {
+                                alertQueue.wait(timeToWait);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt(); // Ensure status is persisted
+                                /* Proceed top top and let thread exit */
+                            }
                     }
                 } else {
                     try {
@@ -361,21 +361,22 @@ public class AudibleTrafficAlerts implements Runnable {
      * Process ADSB traffic list and decide which traffic needs to be added to the alert queue
      * @param ownLocation Ownship location
      * @param allTraffic Traffic array
-     * @param alertDistance Horizontal istance in which alert is triggered
+     * @param pref App preferences object
      * @param ownAltitude Ownship altitude
+     * @param ownVspeed Ownship vertical speed (climb/descent fpm)
      */
-    public void handleAudibleAlerts(Location ownLocation, LinkedList<Traffic> allTraffic,
-                                    float alertDistance, int ownAltitude, boolean ownIsAirborne, int ownVspeed)
+    public void handleAudibleAlerts(final Location ownLocation, final LinkedList<Traffic> allTraffic,
+            final Preferences pref, final int ownAltitude, final boolean ownIsAirborne, final int ownVspeed)
     {
         if (ownLocation == null) {
             return; // need own location for alerts
         }
         // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-        if (!(groundAlertsEnabled || ownIsAirborne)) {
+        if (!(ownIsAirborne || pref.showAdsbGroundTraffic())) {
             return;
         }
         // Don't alert if under config min speed, to prevent audible pollution during high-workload low speed activities
-        if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < minSpeed) {
+        if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < pref.getAudibleTrafficAlertsMinSpeed()) {
             return;
         }
         // Make traffic handling loop async producer thread, to not delay caller handling loop
@@ -385,7 +386,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     continue;
                 }
                 // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-                if (!(groundAlertsEnabled || traffic.mIsAirborne)) {
+                if (!(traffic.mIsAirborne || pref.showAdsbGroundTraffic())) {
                     continue;
                 }
                 synchronized(lastDistanceUpdate) {
@@ -394,17 +395,21 @@ public class AudibleTrafficAlerts implements Runnable {
                     final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
                     double currentDistance;
                     if (
-                            (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
-                                    && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
-                                    && (currentDistance = greatCircleDistance(
-                                    ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
-                            )) < alertDistance
+                        (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
+                        && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                        && (currentDistance = greatCircleDistance(
+                            ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
+                        )) < pref.getAudibleTrafficAlertsDistanceMinimum()
                     ) {
                         trafficAlertQueueUpsert(new Alert(traffic.mCallSign,
                                 nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
                                         ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
                                 altDiff,
-                                closingTimeEnabled ? determineClosingEvent(ownLocation, traffic, currentDistance, ownAltitude, ownVspeed) : null,
+                                pref.isAudibleClosingInAlerts()
+                                        ? determineClosingEvent(ownLocation, traffic, currentDistance,
+                                            ownAltitude, ownVspeed, pref.getAudibleClosingInAlertSeconds(),
+                                            pref.getAudibleClosingInAlertDistanceNmi(), pref.getAudibleClosingInCriticalAlertRatio())
+                                        : null,
                                 currentDistance, traffic.mVertVelocity
                         ));
                         lastDistanceUpdate.put(traffic.mCallSign, distanceCalcUpdateKey);
@@ -416,25 +421,28 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
-                                                             final int ownAltitude, final int ownVspeed) {
+        final int ownAltitude, final int ownVspeed, final int closingTimeThresholdSeconds, final float closestApproachThresholdNmi,
+        final float criticalClosingAlertRatio)
+    {
         final int ownSpeedInKts = (int)Math.round(MPS_TO_KNOTS_CONV * ownLocation.getSpeed());
         final double closingEventTimeSec = Math.abs(closestApproachTime(
                 traffic.mLat, traffic.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
                 traffic.mHeading, ownLocation.getBearing(), traffic.mHorizVelocity, ownSpeedInKts
         ))*60.00*60.00;
-        if (closingEventTimeSec < this.closingTimeThresholdSeconds) {
+        if (closingEventTimeSec < closingTimeThresholdSeconds) {
             final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
                     ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000, ownAltitude, ownVspeed);
             final double[] theirCaLoc = locationAfterTime(traffic.mLat, traffic.mLon, traffic.mHeading,
                     traffic.mHorizVelocity, closingEventTimeSec/3600.000, traffic.mAltitude, traffic.mVertVelocity);
-            final double caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1]);
+            final double caDistance;
             final double altDiff = myCaLoc[2] - theirCaLoc[2];
-//            System.out.println(String.format("for %s time=%f Curr hdist=%f and altdiff=%d, but eventual hdist=%f and altdiff=%f, their vspeed=%d and my vspeed=%d",
-//                    traffic.mCallSign, closingEventTimeSec, currentDistance, (ownAltitude-traffic.mAltitude), caDistance, altDiff, traffic.mVertVelocity, ownVspeed));
-            if (caDistance < this.closestApproachThresholdNmi && currentDistance > caDistance && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS) {
-                final boolean criticallyClose = this.criticalClosingAlertRatio > 0
-                        &&(closingEventTimeSec / this.closingTimeThresholdSeconds) <= criticalClosingAlertRatio
-                        && (caDistance / this.closestApproachThresholdNmi) <= criticalClosingAlertRatio;
+            if (Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                    && (caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1])) < closestApproachThresholdNmi
+                    && currentDistance > caDistance )
+            {
+                final boolean criticallyClose = criticalClosingAlertRatio > 0
+                        &&(closingEventTimeSec / closingTimeThresholdSeconds) <= criticalClosingAlertRatio
+                        && (caDistance / closestApproachThresholdNmi) <= criticalClosingAlertRatio;
                 return new Alert.ClosingEvent(closingEventTimeSec, caDistance, criticallyClose);
             }
         }
