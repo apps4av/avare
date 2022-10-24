@@ -83,6 +83,7 @@ public class TrafficCache {
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
             audibleTrafficAlerts.setUseDecimalPrecision(mPref.isAudibleTrafficAlertsDecimalPrecision());
+            audibleTrafficAlerts.setUseColloquialNumericAudio(mPref.isAudibleAlertUsingColloquialNumbers());
             audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(), mPref,
                     mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {

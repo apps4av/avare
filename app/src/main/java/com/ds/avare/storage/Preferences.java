@@ -365,7 +365,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return (float) (Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingCritalAlert), "0")) / 100.00);
     }
 
-    public float getAudibleClosingInAlertAltitude() {
+    public float getAudibleTrafficAlertsAltitude() {
         return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
     }
 
@@ -952,6 +952,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public boolean isAudibleClosingInAlerts() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
+    }
+
+    public boolean isAudibleAlertUsingColloquialNumbers() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsUseColloquialNumbers), false);
     }
 
     public boolean setTrackUp(boolean trackUp) {
