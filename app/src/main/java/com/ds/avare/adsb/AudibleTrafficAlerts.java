@@ -41,6 +41,7 @@ import com.ds.avare.R;
 import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,8 +63,13 @@ public class AudibleTrafficAlerts implements Runnable {
     private final int bogeySoundId;
     private final int closingInSoundId;
     private final int overSoundId;
-    private final int lowSoundId, highSoundId, levelSoundId;
-    private final int[] clockHoursSoundIds;
+    private final int lowSoundId, highSoundId, sameAltitudeSoundId;
+    //private final int[] clockHoursSoundIds;
+    private final int oClockSoundId;
+    private final int[] twentiesToNinetiesSoundIds;
+    private final int hundredSoundId;
+    private final int thousandSoundId;
+    private final int atSoundId;
     private final int[] trafficAliasesSoundIds;
     protected final int[] numberSoundIds;
     private final int secondsSoundId;
@@ -84,6 +90,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private boolean topGunDorkMode = false;
     private float maxAlertFrequencySeconds = 15f;
     private boolean useDecimalPrecision = true;
+    protected boolean useColloquialNumericAudio = true;
 
     // Core alert tracking data structures, threading objects, and feature instances
     private static volatile Thread alertQueueProcessingConsumerThread;
@@ -149,9 +156,6 @@ public class AudibleTrafficAlerts implements Runnable {
         this(
             new SequentialSoundPoolPlayer(alertQueue), ctx,
             R.raw.tr_traffic, R.raw.tr_bogey,
-            new int[] { R.raw.tr_one, R.raw.tr_two, R.raw.tr_three, R.raw.tr_four, R.raw.tr_five,
-                R.raw.tr_six, R.raw.tr_seven, R.raw.tr_eight, R.raw.tr_nine, R.raw.tr_ten,
-                R.raw.tr_eleven, R.raw.tr_twelve },
             new int[] { R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta, R.raw.tr_echo,
                 R.raw.tr_foxtrot, R.raw.tr_golf, R.raw.tr_hotel, R.raw.tr_india, R.raw.tr_juliet,
                 R.raw.tr_kilo, R.raw.tr_lima, R.raw.tr_mike, R.raw.tr_november, R.raw.tr_oscar,
@@ -160,12 +164,14 @@ public class AudibleTrafficAlerts implements Runnable {
                 R.raw.tr_zulu },
             R.raw.tr_high, R.raw.tr_low, R.raw.tr_level, R.raw.tr_cl_closingin,
             new int[] { R.raw.tr_00, R.raw.tr_01, R.raw.tr_02, R.raw.tr_03, R.raw.tr_04, R.raw.tr_05,
-                R.raw.tr_06, R.raw.tr_07, R.raw.tr_08, R.raw.tr_09 },
+                R.raw.tr_06, R.raw.tr_07, R.raw.tr_08, R.raw.tr_09, R.raw.tr_10, R.raw.tr_11,
+                R.raw.tr_12, R.raw.tr_13, R.raw.tr_14, R.raw.tr_15, R.raw.tr_16, R.raw.tr_17, R.raw.tr_18,
+                R.raw.tr_19 },
             R.raw.tr_cl_over, R.raw.tr_cl_chirp
         );
     }
 
-    protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, Context ctx, int trafficResId, int bogeyResId, int[] clockHoursResIds,
+    protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, Context ctx, int trafficResId, int bogeyResId,
                                    int[] trafficAliasesResIds, int highResId, int lowResId,
                                    int levelResId, int closingInResId, int[] closingInSecondsResIds,
                                    int overResId, int criticallyCloseChirp)
@@ -177,11 +183,10 @@ public class AudibleTrafficAlerts implements Runnable {
         this.soundPlayer = sp;
         this.trafficSoundId = sp.load(ctx, trafficResId)[0];
         this.bogeySoundId = sp.load(ctx, bogeyResId)[0];
-        this.clockHoursSoundIds = sp.load(ctx, clockHoursResIds);
         this.trafficAliasesSoundIds = sp.load(ctx, trafficAliasesResIds);
         this.highSoundId = sp.load(ctx, highResId)[0];
         this.lowSoundId = sp.load(ctx, lowResId)[0];
-        this.levelSoundId = sp.load(ctx, levelResId)[0];
+        this.sameAltitudeSoundId = sp.load(ctx, levelResId)[0];
         this.closingInSoundId = sp.load(ctx, closingInResId)[0];
         this.numberSoundIds = sp.load(ctx, closingInSecondsResIds);
         this.overSoundId = sp.load(ctx, overResId)[0];
@@ -192,6 +197,12 @@ public class AudibleTrafficAlerts implements Runnable {
         this.descendingSoundId = sp.load(ctx, R.raw.tr_descending)[0];
         this.withinSoundId = sp.load(ctx, R.raw.tr_within)[0];
         this.decimalSoundId = sp.load(ctx, R.raw.tr_decimal)[0];
+        this.oClockSoundId = sp.load(ctx, R.raw.tr_oclock)[0];
+        this.twentiesToNinetiesSoundIds = sp.load(ctx, R.raw.tr_20, R.raw.tr_30, R.raw.tr_40, R.raw.tr_50,
+            R.raw.tr_60, R.raw.tr_70, R.raw.tr_80, R.raw.tr_90);
+        this.hundredSoundId = sp.load(ctx, R.raw.tr_100)[0];
+        this.thousandSoundId = sp.load(ctx, R.raw.tr_1000)[0];
+        this.atSoundId = sp.load(ctx, R.raw.tr_at)[0];
     }
 
 
@@ -238,6 +249,7 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setTopGunDorkMode(boolean topGunDorkMode) { this.topGunDorkMode = topGunDorkMode; }
     public void setAlertMaxFrequencySec(float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
     public void setUseDecimalPrecision(boolean useDecimalPrecision) { this.useDecimalPrecision = useDecimalPrecision; }
+    public void setUseColloquialNumericAudio(boolean useColloquialNumericAudio) { this.useColloquialNumericAudio = useColloquialNumericAudio; }
 
     /**
      * Process alert queue in a separate thread
@@ -270,7 +282,7 @@ public class AudibleTrafficAlerts implements Runnable {
                                 alertQueue.wait(timeToWait);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt(); // Ensure status is persisted
-                                /* Proceed top top and let thread exit */
+                                // Proceed top top and let thread exit
                             }
                     }
                 } else {
@@ -278,7 +290,7 @@ public class AudibleTrafficAlerts implements Runnable {
                         alertQueue.wait();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt(); // Ensure status is persisted
-                        /* Proceed top top and let thread exit */
+                        // Proceed top top and let thread exit
                     }
                 }
             }
@@ -317,8 +329,10 @@ public class AudibleTrafficAlerts implements Runnable {
             addNumericalAlertAudioSequence(alertAudio, alert.closingEvent.closestApproachDistanceNmi, this.useDecimalPrecision);
             alertAudio.add(milesSoundId);
         }
-        alertAudio.add(clockHoursSoundIds[alert.clockHour - 1]);
-        alertAudio.add(Math.abs(alert.altitudeDiff) < 100 ? levelSoundId
+        alertAudio.add(atSoundId);
+        alertAudio.add(numberSoundIds[alert.clockHour]);
+        alertAudio.add(oClockSoundId);
+        alertAudio.add(Math.abs(alert.altitudeDiff) < 100 ? sameAltitudeSoundId
                 : (alert.altitudeDiff > 0 ? lowSoundId : highSoundId));
         addNumericalAlertAudioSequence(alertAudio, alert.distanceNmi, this.useDecimalPrecision);
         alertAudio.add(milesSoundId);
@@ -327,7 +341,7 @@ public class AudibleTrafficAlerts implements Runnable {
         else if (alert.vspeed < 100)
             alertAudio.add(descendingSoundId);
         else
-            alertAudio.add(levelSoundId);
+            alertAudio.add(sameAltitudeSoundId);
         return alertAudio;
     }
 
@@ -338,22 +352,80 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param doDecimal Whether to speak 1st decimal into alert (false ==> rounded to whole #)
      */
     protected final void addNumericalAlertAudioSequence(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
-        double processedNumeric = doDecimal ? numeric : Math.round(numeric);
-        for (int i = (int) Math.max(Math.log10(processedNumeric), 0); i >= 0; i--) {
+        if (useColloquialNumericAudio)
+            addColloquialNumericalBaseAlertAudioSequence(alertAudio, doDecimal ? numeric : Math.round(numeric));
+        else
+            addNumberSequenceNumericBaseAlertAudioSequence(alertAudio, doDecimal ? numeric : Math.round(numeric));
+        if (doDecimal) {
+            addDecimalAlertAudioSequence(alertAudio, numeric);
+        }
+    }
+
+    /**
+     * Speak a number in digit-by-digit format (1962 ==> "one nine six two")
+     * @param alertAudio List of soundId to append to
+     * @param numeric Numeric value to speak into alertAudio
+     */
+    protected final void addNumberSequenceNumericBaseAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+        double curNumeric = numeric;
+        for (int i = (int) Math.max(Math.log10(numeric), 0); i >= 0; i--) {
             if (i == 0)
-                alertAudio.add(numberSoundIds[(int) Math.min(processedNumeric % 10, 9)]);
+                alertAudio.add(numberSoundIds[(int) Math.min(curNumeric % 10, 9)]);
             else {
                 final double pow10 = Math.pow(10, i);
-                alertAudio.add(numberSoundIds[(int) Math.min(processedNumeric / pow10, 9)]);
-                processedNumeric = processedNumeric % pow10;
+                alertAudio.add(numberSoundIds[(int) Math.min(curNumeric / pow10, 9)]);
+                curNumeric = curNumeric % pow10;
             }
         }
-        if (doDecimal) {
-            final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
-            if (firstDecimal != 0) {
-                alertAudio.add(decimalSoundId);
-                alertAudio.add(numberSoundIds[firstDecimal]);
+    }
+
+    /**
+     * Speak a number in colloquial format (1962 ==> "one thousand nine hundred sixty-two")
+     * @param alertAudio List of soundId to append to
+     * @param numeric Numeric value to speak into alertAudio
+     */
+    protected final void addColloquialNumericalBaseAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+        double curNumeric = numeric;
+        for (int i = (int) Math.max(Math.log10(numeric), 0); i >= 0; i--) {
+            if (i == 0
+                // Only speak "zero" if it is only zero (not part of tens/hundreds/thousands)
+                && (numeric % 10 != 0 || (int) Math.max(Math.log10(numeric), 0) == 0))
+            {
+                alertAudio.add(numberSoundIds[(int) Math.min(curNumeric % 10, 9)]);
+            } else {
+                if (i > 3) {
+                    alertAudio.add(overSoundId);
+                    alertAudio.addAll(Arrays.asList(
+                            numberSoundIds[9], thousandSoundId, numberSoundIds[9], hundredSoundId, twentiesToNinetiesSoundIds[9 - 2], numberSoundIds[9]));
+                    return;
+                } else {
+                    final double pow10 = Math.pow(10, i);
+                    final int digit = (int) Math.min(curNumeric / pow10, 9);
+                    if (i == 1 && digit == 1) {
+                        alertAudio.add(numberSoundIds[10 + (int) curNumeric % 10]);
+                        return;
+                    } else {
+                        if (i == 1 && digit != 0) {
+                            alertAudio.add(twentiesToNinetiesSoundIds[digit-2]);
+                        } else if (i == 2 && digit != 0) {
+                            alertAudio.add(numberSoundIds[digit]);
+                            alertAudio.add(hundredSoundId);
+                        } else if (i == 3 && digit != 0) {
+                            alertAudio.add(numberSoundIds[digit]);
+                            alertAudio.add(thousandSoundId);
+                        }
+                        curNumeric = curNumeric % pow10;
+                    }
+                }
             }
+        }
+    }
+
+    protected final void addDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+        final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
+        if (firstDecimal != 0) {
+            alertAudio.add(decimalSoundId);
+            alertAudio.add(numberSoundIds[firstDecimal]);
         }
     }
 
@@ -372,7 +444,7 @@ public class AudibleTrafficAlerts implements Runnable {
             return; // need own location for alerts
         }
         // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-        if (!(ownIsAirborne || pref.showAdsbGroundTraffic())) {
+        if (!(ownIsAirborne || pref.isAudibleGroundAlertsEnabled())) {
             return;
         }
         // Don't alert if under config min speed, to prevent audible pollution during high-workload low speed activities
@@ -386,7 +458,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     continue;
                 }
                 // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-                if (!(traffic.mIsAirborne || pref.showAdsbGroundTraffic())) {
+                if (!(traffic.mIsAirborne || pref.isAudibleGroundAlertsEnabled())) {
                     continue;
                 }
                 synchronized(lastDistanceUpdate) {
@@ -396,7 +468,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     double currentDistance;
                     if (
                         (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
-                        && Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+                        && Math.abs(altDiff) < pref.getAudibleTrafficAlertsAltitude()
                         && (currentDistance = greatCircleDistance(
                             ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
                         )) < pref.getAudibleTrafficAlertsDistanceMinimum()
@@ -408,7 +480,8 @@ public class AudibleTrafficAlerts implements Runnable {
                                 pref.isAudibleClosingInAlerts()
                                         ? determineClosingEvent(ownLocation, traffic, currentDistance,
                                             ownAltitude, ownVspeed, pref.getAudibleClosingInAlertSeconds(),
-                                            pref.getAudibleClosingInAlertDistanceNmi(), pref.getAudibleClosingInCriticalAlertRatio())
+                                            pref.getAudibleClosingInAlertDistanceNmi(), pref.getAudibleClosingInCriticalAlertRatio(),
+                                            pref.getAudibleTrafficAlertsAltitude()) //TODO: Use separate config altitude (add) for this one--CE/TCPA can have smaller cylinder
                                         : null,
                                 currentDistance, traffic.mVertVelocity
                         ));
@@ -422,9 +495,9 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
         final int ownAltitude, final int ownVspeed, final int closingTimeThresholdSeconds, final float closestApproachThresholdNmi,
-        final float criticalClosingAlertRatio)
+        final float criticalClosingAlertRatio, final float closingAlertAltitude)
     {
-        final int ownSpeedInKts = (int)Math.round(MPS_TO_KNOTS_CONV * ownLocation.getSpeed());
+        final int ownSpeedInKts = Math.round(MPS_TO_KNOTS_CONV * ownLocation.getSpeed());
         final double closingEventTimeSec = Math.abs(closestApproachTime(
                 traffic.mLat, traffic.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
                 traffic.mHeading, ownLocation.getBearing(), traffic.mHorizVelocity, ownSpeedInKts
@@ -436,7 +509,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     traffic.mHorizVelocity, closingEventTimeSec/3600.000, traffic.mAltitude, traffic.mVertVelocity);
             final double caDistance;
             final double altDiff = myCaLoc[2] - theirCaLoc[2];
-            if (Math.abs(altDiff) < Traffic.TRAFFIC_ALTITUDE_DIFF_DANGEROUS
+            if (Math.abs(altDiff) < closingAlertAltitude
                     && (caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1])) < closestApproachThresholdNmi
                     && currentDistance > caDistance )
             {
@@ -458,7 +531,7 @@ public class AudibleTrafficAlerts implements Runnable {
             final int alertIndex = alertQueue.indexOf(alert);
             if (alertIndex == -1) {
                 // If this is a "critically close" alert, put it ahead of the first non-critically close alert
-                if (alert.closingEvent != null && alert.closingEvent.isCriticallyClose) {
+                if (alert.closingEvent != null && alert.closingEvent.isCriticallyClose && alertQueue.size() > 0) {
                     for (int i = 0; i < alertQueue.size(); i++) {
                         final Alert curAlert = alertQueue.get(i);
                         if (curAlert.closingEvent == null || !curAlert.closingEvent.isCriticallyClose) {

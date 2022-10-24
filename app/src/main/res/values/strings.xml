@@ -193,6 +193,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsDecimalPrecision">&quot;Audible Traffic Alerts Decimal Precision&quot;</string>
     <string name="AudibleTrafficAlertsDecimalPrecisionSummary">&quot;Use decimal precision (tenth-of-mile) for all distance callouts.  (Unselected causes rounding to nearest mile)&quot;</string>
     <string name="AudibleTrafficAlertsDecimalPrecisionLabel">&quot;Audible Alerts Decimal Precision&quot;</string>
+    <string name="AudibleTrafficAlertsUseColloquialNumbers">&quot;Audible Traffic Alerts Colloquial Numbers&quot;</string>
+    <string name="AudibleTrafficAlertsUseColloquialNumbersSummary">&quot;Uses colloquial number phrasing (1032 ==> \"one thousand two hundred thirty-two\").  Unchecked is number phrasing (\"one two three two\").&quot;</string>
+    <string name="AudibleTrafficAlertsUseColloquialNumbersLabel">&quot;Use Colloquial Numbers&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>

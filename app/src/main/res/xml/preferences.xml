@@ -393,6 +393,12 @@ authors: zkhan, jlmcgraw
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsUseColloquialNumbers"
+            android:summary="@string/AudibleTrafficAlertsUseColloquialNumbersSummary"
+            android:title="@string/AudibleTrafficAlertsUseColloquialNumbersLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/AudibleTrafficAlerts"
             android:key="@string/AudibleAlertTopGunMode"
             android:summary="@string/AudibleAlertTopGunModeSummary"
             android:title="@string/AudibleAlertTopGunModeLabel" />
