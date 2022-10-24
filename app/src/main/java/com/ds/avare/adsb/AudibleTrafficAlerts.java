@@ -665,7 +665,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
         private SequentialSoundPoolPlayer(Object synchNotificationMonitor) {
             // Setting concurrent streams to 2 to allow some edge overlap for looper post-to-execution delay
-            this.soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC,0);
+            this.soundPool = new SoundPool(2, AudioManager.STREAM_NOTIFICATION,0);
             this.soundPool.setOnLoadCompleteListener(this);
             this.loadedSounds = new ArrayList<>();
             this.soundDurationMap = new HashMap<>();
