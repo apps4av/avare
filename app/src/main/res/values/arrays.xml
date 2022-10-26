@@ -2614,5 +2614,20 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>100</item>
     </string-array>
 
+    <string-array name="AudibleDistanceCallout">
+        <item>NONE (No Distance Callouts)</item>
+        <item>Individual Digit - Rounded</item>
+        <item>Individual Digit - Decimal</item>
+        <item>Colloquial - Rounded</item>
+        <item>Colloquial - Decimal</item>
+    </string-array>
+
+    <string-array name="AudibleDistanceCalloutValues">
+        <item>NONE</item>
+        <item>INDIVIDUAL_ROUNDED</item>
+        <item>INDIVIDUAL_DECIMAL</item>
+        <item>COLLOQUIAL_ROUNDED</item>
+        <item>COLLOQUIAL_DECIMAL</item>
+    </string-array>
 
 </resources>

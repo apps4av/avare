@@ -369,6 +369,14 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
     }
 
+    public float getAudibleClosingAlertsAltitude() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingAltitude), "1000.0"));
+    }
+
+    public String getAudibleDistanceCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "COLLOQUIAL_ROUNDED");
+    }
+
     /**
      * @return
      */
@@ -938,10 +946,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
     }
 
-    public boolean isAudibleTrafficAlertsDecimalPrecision() {
-        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsDecimalPrecision), false);
-    }
-
     public boolean isAudibleGroundAlertsEnabled() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsGroundAlert), false);
     }
@@ -954,8 +958,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
     }
 
-    public boolean isAudibleAlertUsingColloquialNumbers() {
-        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsUseColloquialNumbers), false);
+    public boolean isAudibleVerticalDirectionCallout() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsVerticalDirectionCallout), true);
     }
 
     public boolean setTrackUp(boolean trackUp) {

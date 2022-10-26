@@ -342,66 +342,76 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen
         android:title="@string/AudibleTrafficAlertsPreferenceGroup"
         android:icon="@android:drawable/ic_media_play"
-        >
+    >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/AudibleTrafficAlerts"
             android:summary="@string/AudibleTrafficAlertsSummary"
             android:title="@string/AudibleTrafficAlertsLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleAlertTrafficId"
-            android:summary="@string/AudibleAlertTrafficIdSummary"
-            android:title="@string/AudibleAlertTrafficIdLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:defaultValue="5"
-            android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsDistanceMinimum"
-            android:summary="@string/AudibleTrafficAlertsDistanceMinimumSummary"
-            android:title="@string/AudibleTrafficAlertsDistanceMinimumLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsGroundAlert"
-            android:summary="@string/AudibleTrafficAlertsGroundAlertSummary"
-            android:title="@string/AudibleTrafficAlertsGroundAlertLabel" />
         <com.ds.avare.utils.EditTextPreferenceWithSummary
             android:defaultValue="15"
             android:dependency="@string/AudibleTrafficAlerts"
             android:key="@string/AudibleTrafficAlertsMaxFrequency"
             android:summary="@string/AudibleTrafficAlertsMaxFrequencySummary"
             android:title="@string/AudibleTrafficAlertsMaxFrequencyLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:defaultValue="0"
+        <PreferenceScreen
+            android:title="@string/AudibleTrafficAlertsFiltersScreen"
+            >
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="@string/AudibleTrafficAlerts"
+                android:key="@string/AudibleTrafficAlertsGroundAlert"
+                android:summary="@string/AudibleTrafficAlertsGroundAlertSummary"
+                android:title="@string/AudibleTrafficAlertsGroundAlertLabel" />
+            <com.ds.avare.utils.EditTextPreferenceWithSummary
+                android:defaultValue="0"
+                android:dependency="@string/AudibleTrafficAlerts"
+                android:key="@string/AudibleTrafficAlertsMinimumSpeed"
+                android:summary="@string/AudibleTrafficAlertsMinimumSpeedSummary"
+                android:title="@string/AudibleTrafficAlertsMinimumSpeedLabel" />
+            <PreferenceCategory
+                android:title="@string/AudibleTrafficAlertsIncursionCylinderGroup"
+            >
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="5"
+                    android:dependency="@string/AudibleTrafficAlerts"
+                    android:key="@string/AudibleTrafficAlertsDistanceMinimum"
+                    android:summary="@string/AudibleTrafficAlertsDistanceMinimumSummary"
+                    android:title="@string/AudibleTrafficAlertsDistanceMinimumLabel" />
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="1000"
+                    android:dependency="@string/AudibleTrafficAlerts"
+                    android:key="@string/AudibleTrafficAlertsAltitude"
+                    android:summary="@string/AudibleTrafficAlertsAltitudeSummary"
+                    android:title="@string/AudibleTrafficAlertsAltitudeLabel" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="COLLOQUIAL_ROUNDED"
             android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsMinimumSpeed"
-            android:summary="@string/AudibleTrafficAlertsMinimumSpeedSummary"
-            android:title="@string/AudibleTrafficAlertsMinimumSpeedLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:defaultValue="1000"
-            android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsAltitude"
-            android:summary="@string/AudibleTrafficAlertsAltitudeSummary"
-            android:title="@string/AudibleTrafficAlertsAltitudeLabel" />
+            android:entries="@array/AudibleDistanceCallout"
+            android:entryValues="@array/AudibleDistanceCalloutValues"
+            android:key="@string/AudibleTrafficAlertsDistanceCallout"
+            android:summary="@string/AudibleTrafficAlertsDistanceCalloutSummary"
+            android:title="@string/AudibleTrafficAlertsDistanceCalloutLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsDecimalPrecision"
-            android:summary="@string/AudibleTrafficAlertsDecimalPrecisionSummary"
-            android:title="@string/AudibleTrafficAlertsDecimalPrecisionLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="@string/AudibleTrafficAlerts"
-            android:key="@string/AudibleTrafficAlertsUseColloquialNumbers"
-            android:summary="@string/AudibleTrafficAlertsUseColloquialNumbersSummary"
-            android:title="@string/AudibleTrafficAlertsUseColloquialNumbersLabel" />
+            android:key="@string/AudibleAlertTrafficId"
+            android:summary="@string/AudibleAlertTrafficIdSummary"
+            android:title="@string/AudibleAlertTrafficIdLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"
             android:key="@string/AudibleAlertTopGunMode"
             android:summary="@string/AudibleAlertTopGunModeSummary"
             android:title="@string/AudibleAlertTopGunModeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsVerticalDirectionCallout"
+            android:summary="@string/AudibleTrafficAlertsVerticalDirectionCalloutSummary"
+            android:title="@string/AudibleTrafficAlertsVerticalDirectionCalloutLabel" />
         <PreferenceCategory
             android:title="@string/AudibleTrafficAlertsClosingAlertsPreferenceGroup">
             <CheckBoxPreference
@@ -410,18 +420,32 @@ authors: zkhan, jlmcgraw
                 android:key="@string/AudibleTrafficAlertsClosingDistance"
                 android:summary="@string/AudibleTrafficAlertsClosingDistanceSummary"
                 android:title="@string/AudibleTrafficAlertsClosingDistanceLabel" />
-            <com.ds.avare.utils.EditTextPreferenceWithSummary
-                android:defaultValue="15"
-                android:dependency="@string/AudibleTrafficAlertsClosingDistance"
-                android:key="@string/AudibleTrafficAlertsClosingDistanceSeconds"
-                android:summary="@string/AudibleTrafficAlertsClosingDistanceSecondsSummary"
-                android:title="@string/AudibleTrafficAlertsClosingDistanceSecondsLabel" />
-            <com.ds.avare.utils.EditTextPreferenceWithSummary
-                android:defaultValue="3.0"
-                android:dependency="@string/AudibleTrafficAlertsClosingDistance"
-                android:key="@string/AudibleTrafficAlertsClosingDistanceDistance"
-                android:summary="@string/AudibleTrafficAlertsClosingDistanceDistanceSummary"
-                android:title="@string/AudibleTrafficAlertsClosingDistanceDistanceLabel" />
+            <PreferenceScreen
+                android:title="@string/AudibleTrafficAlertsClosingFiltersScreen"
+            >
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="15"
+                    android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                    android:key="@string/AudibleTrafficAlertsClosingDistanceSeconds"
+                    android:summary="@string/AudibleTrafficAlertsClosingDistanceSecondsSummary"
+                    android:title="@string/AudibleTrafficAlertsClosingDistanceSecondsLabel" />
+                <PreferenceCategory
+                    android:title="@string/AudibleTrafficAlertsClosingIncursionCyclingGroup"
+                >
+                    <com.ds.avare.utils.EditTextPreferenceWithSummary
+                        android:defaultValue="3.0"
+                        android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                        android:key="@string/AudibleTrafficAlertsClosingDistanceDistance"
+                        android:summary="@string/AudibleTrafficAlertsClosingDistanceDistanceSummary"
+                        android:title="@string/AudibleTrafficAlertsClosingDistanceDistanceLabel" />
+                    <com.ds.avare.utils.EditTextPreferenceWithSummary
+                        android:defaultValue="1000"
+                        android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                        android:key="@string/AudibleTrafficAlertsClosingAltitude"
+                        android:summary="@string/AudibleTrafficAlertsClosingAltitudeSummary"
+                        android:title="@string/AudibleTrafficAlertsClosingAltitudeLabel" />
+                </PreferenceCategory>
+            </PreferenceScreen>
             <com.ds.avare.utils.ListPreferenceWithSummary
                 android:defaultValue="51"
                 android:dependency="@string/AudibleTrafficAlertsClosingDistance"
