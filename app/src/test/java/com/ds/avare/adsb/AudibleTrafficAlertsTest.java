@@ -146,7 +146,7 @@ public class AudibleTrafficAlertsTest {
     @Test
     public void buildAlertSoundIdSequence_numericListPrefSet_closingEventLessThanHalfSecond_PicksFirstMedia() {
         AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
-        ata.useColloquialNumericAudio = false;
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.INDIVIDUAL_DECIMAL;
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
         AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
                 "abc123", 2, 75,
@@ -187,7 +187,7 @@ public class AudibleTrafficAlertsTest {
     @Test
     public void addNumericalAlertAudioSequence_numericListPrefSet_largeNumberWithDecimal() {
         final AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
-        ata.useColloquialNumericAudio = false;
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.INDIVIDUAL_DECIMAL;
         final ArrayList<Integer> soundIds = new ArrayList<>();
         ata.addNumericalAlertAudioSequence(soundIds, 1049.99, true);
         Assert.assertEquals("SoundIds from number",
@@ -199,9 +199,7 @@ public class AudibleTrafficAlertsTest {
         final int[] seconds = new int[secondsCount];
         for (int i = 0; i < secondsCount; i++)
             seconds[i] = 2000 + i;
-        return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class), -1, -2,
-                new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, -3, -4,
-                -5, -6, seconds, -7, -8);
+        return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class));
     }
 
 
@@ -231,7 +229,7 @@ public class AudibleTrafficAlertsTest {
         return sp;
     }
 
-    public static class CapturingSingleThreadExecutor implements Executor {
+    private static class CapturingSingleThreadExecutor implements Executor {
         private ArrayList<Runnable> runnables = new ArrayList<>();
         private ExecutorService executor = Executors.newSingleThreadExecutor();
         @Override

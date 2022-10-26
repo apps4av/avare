@@ -82,8 +82,8 @@ public class TrafficCache {
             audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
-            audibleTrafficAlerts.setUseDecimalPrecision(mPref.isAudibleTrafficAlertsDecimalPrecision());
-            audibleTrafficAlerts.setUseColloquialNumericAudio(mPref.isAudibleAlertUsingColloquialNumbers());
+            audibleTrafficAlerts.setDistanceCalloutOption(mPref.getAudibleDistanceCallout());
+            audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
             audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(), mPref,
                     mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {
