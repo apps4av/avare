@@ -248,9 +248,9 @@ public class AudibleTrafficAlerts implements Runnable {
     @Override
     public void run() {
         // Wait for all sounds to load before starting alert queue processing
-        final long start = System.currentTimeMillis();
+        //final long start = System.currentTimeMillis();
         soundPlayer.waitUntilAllSoundsAreLoaded();
-        System.out.println("Time to load sounds (ms): "+(System.currentTimeMillis()-start));
+        //System.out.println("Time to load sounds (ms): "+(System.currentTimeMillis()-start));
         //soundPlayer.runSoundTest();
         // Alert queue processing loop
         while(!Thread.currentThread().isInterrupted()) {
@@ -331,12 +331,12 @@ public class AudibleTrafficAlerts implements Runnable {
             alertAudio.add(milesSoundId);
         }
         if (this.verticalAttitudeCallout) {
-            if (alert.vspeed > 100)
+            if (Math.abs(alert.vspeed) < 100)
+                alertAudio.add(levelSoundId);
+            else if (alert.vspeed > 100)
                 alertAudio.add(climbingSoundId);
             else if (alert.vspeed < 100)
                 alertAudio.add(descendingSoundId);
-            else
-                alertAudio.add(levelSoundId);
         }
         return alertAudio;
     }
@@ -743,6 +743,7 @@ public class AudibleTrafficAlerts implements Runnable {
             final AssetFileDescriptor afd = context.getResources().openRawResourceFd(rawId);
             metaRetriever.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             final String durStr = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            System.out.println("Len of "+context.getResources().getResourceName(rawId)+" is "+durStr);
             return Long.parseLong(durStr);
         }
 
