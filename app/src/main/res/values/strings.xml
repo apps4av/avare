@@ -155,7 +155,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsPreferenceGroup">&quot;Audible Traffic Alerts&quot;</string>
     <string name="AudibleTrafficAlertsFiltersScreen">&quot;Audible Alerts Filter Criteria&quot;</string>
     <string name="AudibleTrafficAlertsClosingFiltersScreen">&quot;Closing Alerts (TCPA) Filter Criteria&quot;</string>
-    <string name="AudibleTrafficAlertsIncursionCylinderGroup">&quot;Audible Alerts 6Cylinder (height &amp; radius)&quot;</string>
+    <string name="AudibleTrafficAlertsIncursionCylinderGroup">&quot;Audible Alerts Cylinder (height &amp; radius)&quot;</string>
     <string name="AudibleTrafficAlertsClosingIncursionCyclingGroup">&quot;Closing Alerts (TCPA) Incursion Cylinder (height &amp; radius)&quot;</string>
     <string name="AudibleTrafficAlertsClosingAlertsPreferenceGroup">&quot;Time Until the Closest Point of Approach (TCPA) Alerts&quot;</string>
     <string name="AudibleTrafficAlerts">&quot;Audible Traffic Alerts&quot;</string>
