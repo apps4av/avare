@@ -444,7 +444,8 @@ public class AudibleTrafficAlerts implements Runnable {
             return; // need own location for alerts
         }
         // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-        if (!(ownIsAirborne || pref.isAudibleGroundAlertsEnabled())) {
+        final boolean isAudibleGroundAlertsEnabled = pref.isAudibleGroundAlertsEnabled();
+        if (!(ownIsAirborne || isAudibleGroundAlertsEnabled)) {
             return;
         }
         // Don't alert if under config min speed, to prevent audible pollution during high-workload low speed activities
@@ -453,12 +454,19 @@ public class AudibleTrafficAlerts implements Runnable {
         }
         // Make traffic handling loop async producer thread, to not delay caller handling loop
         getTrafficAlertProducerExecutor().execute(() -> {
+            final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
+            final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
+            final float closingAlertsDistanceMinimum = pref.getAudibleClosingInAlertDistanceNmi();
+            final float closingAlertsCriticalAlertRatio = pref.getAudibleClosingInCriticalAlertRatio();
+            final float closingAlertsAltitude = pref.getAudibleClosingAlertsAltitude();
+            final int closingAlertsSeconds = pref.getAudibleClosingInAlertSeconds();
+            final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
             for (Traffic traffic : allTraffic) {
                 if(null == traffic) {
                     continue;
                 }
                 // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-                if (!(traffic.mIsAirborne || pref.isAudibleGroundAlertsEnabled())) {
+                if (!(traffic.mIsAirborne || isAudibleGroundAlertsEnabled)) {
                     continue;
                 }
                 synchronized(lastDistanceUpdate) {
@@ -469,20 +477,19 @@ public class AudibleTrafficAlerts implements Runnable {
                     if (
                         (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
                         // traffic is within configured "cylinder" of audible alert (radius & height/alt)
-                        && Math.abs(altDiff) < pref.getAudibleTrafficAlertsAltitude()
+                        && Math.abs(altDiff) < trafficAlertsAltitude
                         && (currentDistance = greatCircleDistance(
                             ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
-                        )) < pref.getAudibleTrafficAlertsDistanceMinimum()
+                        )) < trafficAlertsDistanceMinimum
                     ) {
                         trafficAlertQueueUpsert(new Alert(traffic.mCallSign,
                                 nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
                                         ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
                                 altDiff,
-                                pref.isAudibleClosingInAlerts()
+                                isAudibleClosingAlerts
                                         ? determineClosingEvent(ownLocation, traffic, currentDistance,
-                                            ownAltitude, ownVspeed, pref.getAudibleClosingInAlertSeconds(),
-                                            pref.getAudibleClosingInAlertDistanceNmi(), pref.getAudibleClosingInCriticalAlertRatio(),
-                                            pref.getAudibleClosingAlertsAltitude())
+                                            ownAltitude, ownVspeed, closingAlertsSeconds, closingAlertsDistanceMinimum,
+                                            closingAlertsCriticalAlertRatio, closingAlertsAltitude)
                                         : null,
                                 currentDistance, traffic.mVertVelocity
                         ));
