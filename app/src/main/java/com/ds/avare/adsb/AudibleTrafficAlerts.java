@@ -468,6 +468,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     double currentDistance;
                     if (
                         (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
+                        // traffic is within configured "cylinder" of audible alert (radius & height/alt)
                         && Math.abs(altDiff) < pref.getAudibleTrafficAlertsAltitude()
                         && (currentDistance = greatCircleDistance(
                             ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
@@ -509,9 +510,10 @@ public class AudibleTrafficAlerts implements Runnable {
                     traffic.mHorizVelocity, closingEventTimeSec/3600.000, traffic.mAltitude, traffic.mVertVelocity);
             final double caDistance;
             final double altDiff = myCaLoc[2] - theirCaLoc[2];
+            // If traffic will be within configured "cylinder" of closing/TCPA alerts, create a closing event
             if (Math.abs(altDiff) < closingAlertAltitude
                     && (caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1])) < closestApproachThresholdNmi
-                    && currentDistance > caDistance )
+                    && currentDistance > caDistance)    // catches cases when moving away
             {
                 final boolean criticallyClose = criticalClosingAlertRatio > 0
                         &&(closingEventTimeSec / closingTimeThresholdSeconds) <= criticalClosingAlertRatio
