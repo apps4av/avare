@@ -258,13 +258,11 @@ public class AudibleTrafficAlerts implements Runnable {
                     if (alertQueue.size() > 0 && !soundPlayer.isPlaying()) {
                         final Alert alert = alertQueue.getFirst();
                         long timeToWaitForThisCallsign = 0, timeToWaitForAny = 0;
-                        if ((alert.closingEvent != null && alert.closingEvent.isCriticallyClose)    // critical alert must go NOW
-                            || (
-                                (!lastAlertTime.containsKey(alert.trafficCallsign)
+                        if ((timeToWaitForAny = System.currentTimeMillis() - lastAnyAlertEndTime) > MIN_ALERT_SEPARATION_MS
+                            && ((alert.closingEvent != null && alert.closingEvent.isCriticallyClose)  // critical can repeat...
+                                || (!lastAlertTime.containsKey(alert.trafficCallsign)
                                     || (timeToWaitForThisCallsign = System.currentTimeMillis() - lastAlertTime.get(alert.trafficCallsign)) / 1000.0
-                                        > this.maxAlertFrequencySeconds)    // respect config for delay between same callsign
-                                // don't string alerts together too fast, even for different traffic
-                                && (timeToWaitForAny = System.currentTimeMillis() - lastAnyAlertEndTime) > MIN_ALERT_SEPARATION_MS))
+                                        > this.maxAlertFrequencySeconds)))    // ...otherwise, respect config for delay between same callsign
                         {
                             lastAlertTime.put(alert.trafficCallsign, System.currentTimeMillis());
                             lastAnyAlertEndTime = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.removeFirst())) + System.currentTimeMillis();
@@ -308,7 +306,6 @@ public class AudibleTrafficAlerts implements Runnable {
                 phoneticAlphaIcaoSequenceQueue.add(alert.trafficCallsign);
                 icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
             }
-            // TODO: double/triple/etc. id if you get to end, rather than starting over...worth it?
             alertAudio.add(trafficAliasesSoundIds[icaoIndex % trafficAliasesSoundIds.length]);
         }
         if (alert.closingEvent != null) {
