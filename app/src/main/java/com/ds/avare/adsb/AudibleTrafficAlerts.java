@@ -456,11 +456,20 @@ public class AudibleTrafficAlerts implements Runnable {
         getTrafficAlertProducerExecutor().execute(() -> {
             final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
             final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
-            final float closingAlertsDistanceMinimum = pref.getAudibleClosingInAlertDistanceNmi();
-            final float closingAlertsCriticalAlertRatio = pref.getAudibleClosingInCriticalAlertRatio();
-            final float closingAlertsAltitude = pref.getAudibleClosingAlertsAltitude();
-            final int closingAlertsSeconds = pref.getAudibleClosingInAlertSeconds();
             final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
+            final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
+            final int closingAlertsSeconds;
+            if (isAudibleClosingAlerts) {
+                closingAlertsDistanceMinimum = pref.getAudibleClosingInAlertDistanceNmi();
+                closingAlertsCriticalAlertRatio = pref.getAudibleClosingInCriticalAlertRatio();
+                closingAlertsAltitude = pref.getAudibleClosingAlertsAltitude();
+                closingAlertsSeconds = pref.getAudibleClosingInAlertSeconds();
+            } else {
+                closingAlertsDistanceMinimum = 0;
+                closingAlertsCriticalAlertRatio = 0;
+                closingAlertsAltitude = 0;
+                closingAlertsSeconds = 0;
+            }
             for (Traffic traffic : allTraffic) {
                 if(null == traffic) {
                     continue;
