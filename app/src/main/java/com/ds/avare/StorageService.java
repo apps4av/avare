@@ -1247,7 +1247,7 @@ public class StorageService  {
                         object.getInt("altitude"),
                         (float)object.getDouble("bearing"),
                         (int)object.getInt("speed"),
-                        (int)object.getInt("vspeed"),
+                        object.optInt("vspeed", Integer.MAX_VALUE),
                         Helper.getMillisGMT()
                             /*XXX:object.getLong("time")*/);
             }

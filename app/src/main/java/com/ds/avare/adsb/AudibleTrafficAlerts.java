@@ -334,7 +334,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     this.distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || this.distanceCalloutOption == DistanceCalloutOption.INDIVIDUAL_DECIMAL);
             alertAudio.add(milesSoundId);
         }
-        if (this.verticalAttitudeCallout) {
+        if (this.verticalAttitudeCallout && alert.vspeed != Integer.MAX_VALUE /* Indeterminate value */) {
             if (Math.abs(alert.vspeed) < 100)
                 alertAudio.add(levelSoundId);
             else if (alert.vspeed >= 100)
