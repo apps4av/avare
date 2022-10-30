@@ -482,7 +482,7 @@ public class AudibleTrafficAlerts implements Runnable {
                     final double altDiff = ownAltitude - traffic.mAltitude;
                     final String distanceCalcUpdateKey = traffic.mCallSign.trim()+"_"+traffic.getLastUpdate() + "_" + ownLocation.getTime();
                     final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
-                    double currentDistance;
+                    final double currentDistance;
                     if (
                         (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
                         // traffic is within configured "cylinder" of audible alert (radius & height/alt)
