@@ -470,43 +470,42 @@ public class AudibleTrafficAlerts implements Runnable {
                 closingAlertsAltitude = 0;
                 closingAlertsSeconds = 0;
             }
-            for (Traffic traffic : allTraffic) {
-                if(null == traffic) {
-                    continue;
-                }
-                // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
-                if (!(traffic.mIsAirborne || isAudibleGroundAlertsEnabled)) {
-                    continue;
-                }
-                synchronized(lastDistanceUpdate) {
-                    final double altDiff = ownAltitude - traffic.mAltitude;
-                    final String distanceCalcUpdateKey = traffic.mCallSign.trim()+"_"+traffic.getLastUpdate() + "_" + ownLocation.getTime();
-                    final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
-                    final double currentDistance;
-                    if (
-                        (lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
-                        // traffic is within configured "cylinder" of audible alert (radius & height/alt)
-                        && Math.abs(altDiff) < trafficAlertsAltitude
-                        && (currentDistance = greatCircleDistance(
-                            ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
-                        )) < trafficAlertsDistanceMinimum
-                    ) {
-                        trafficAlertQueueUpsert(new Alert(traffic.mCallSign,
-                                nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
-                                        ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
-                                altDiff,
-                                isAudibleClosingAlerts
-                                        ? determineClosingEvent(ownLocation, traffic, currentDistance,
-                                            ownAltitude, ownVspeed, closingAlertsSeconds, closingAlertsDistanceMinimum,
-                                            closingAlertsCriticalAlertRatio, closingAlertsAltitude)
-                                        : null,
-                                currentDistance, traffic.mVertVelocity
-                        ));
-                        lastDistanceUpdate.put(traffic.mCallSign, distanceCalcUpdateKey);
-                    }
-                }
-
-            }
+			synchronized(lastDistanceUpdate) {	// in case calls get overlaid
+				for (Traffic traffic : allTraffic) {
+					if(null == traffic) {
+						continue;
+					}
+					// Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
+					if (!(traffic.mIsAirborne || isAudibleGroundAlertsEnabled)) {
+						continue;
+					}
+					final double altDiff = ownAltitude - traffic.mAltitude;
+					final String distanceCalcUpdateKey = traffic.mCallSign.trim()+"_"+traffic.getLastUpdate() + "_" + ownLocation.getTime();
+					final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
+					final double currentDistance;
+					if (
+						(lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
+						// traffic is within configured "cylinder" of audible alert (radius & height/alt)
+						&& Math.abs(altDiff) < trafficAlertsAltitude
+						&& (currentDistance = greatCircleDistance(
+							ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
+						)) < trafficAlertsDistanceMinimum
+					) {
+						upsertTrafficAlertQueue(new Alert(traffic.mCallSign,
+								nearestClockHourFromHeadingAndLocations(ownLocation.getLatitude(),
+										ownLocation.getLongitude(), traffic.mLat, traffic.mLon, ownLocation.getBearing()),
+								altDiff,
+								isAudibleClosingAlerts
+										? determineClosingEvent(ownLocation, traffic, currentDistance,
+											ownAltitude, ownVspeed, closingAlertsSeconds, closingAlertsDistanceMinimum,
+											closingAlertsCriticalAlertRatio, closingAlertsAltitude)
+										: null,
+								currentDistance, traffic.mVertVelocity
+						));
+						lastDistanceUpdate.put(traffic.mCallSign, distanceCalcUpdateKey);
+					}
+				}
+			}
         });
     }
 
@@ -544,7 +543,7 @@ public class AudibleTrafficAlerts implements Runnable {
         return trafficAlertProducerExecutor;
     }
 
-    private void trafficAlertQueueUpsert(Alert alert) {
+    private void upsertTrafficAlertQueue(Alert alert) {
         synchronized (alertQueue) {
             final int alertIndex = alertQueue.indexOf(alert);
             if (alertIndex == -1) {
