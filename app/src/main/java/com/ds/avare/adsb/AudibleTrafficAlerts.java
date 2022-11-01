@@ -452,24 +452,24 @@ public class AudibleTrafficAlerts implements Runnable {
         if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < pref.getAudibleTrafficAlertsMinSpeed()) {
             return;
         }
+        final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
+        final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
+        final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
+        final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
+        final int closingAlertsSeconds;
+        if (isAudibleClosingAlerts) {
+            closingAlertsDistanceMinimum = pref.getAudibleClosingInAlertDistanceNmi();
+            closingAlertsCriticalAlertRatio = pref.getAudibleClosingInCriticalAlertRatio();
+            closingAlertsAltitude = pref.getAudibleClosingAlertsAltitude();
+            closingAlertsSeconds = pref.getAudibleClosingInAlertSeconds();
+        } else {
+            closingAlertsDistanceMinimum = 0;
+            closingAlertsCriticalAlertRatio = 0;
+            closingAlertsAltitude = 0;
+            closingAlertsSeconds = 0;
+        }
         // Make traffic handling loop async producer thread, to not delay caller handling loop
         getTrafficAlertProducerExecutor().execute(() -> {
-            final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
-            final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
-            final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
-            final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
-            final int closingAlertsSeconds;
-            if (isAudibleClosingAlerts) {
-                closingAlertsDistanceMinimum = pref.getAudibleClosingInAlertDistanceNmi();
-                closingAlertsCriticalAlertRatio = pref.getAudibleClosingInCriticalAlertRatio();
-                closingAlertsAltitude = pref.getAudibleClosingAlertsAltitude();
-                closingAlertsSeconds = pref.getAudibleClosingInAlertSeconds();
-            } else {
-                closingAlertsDistanceMinimum = 0;
-                closingAlertsCriticalAlertRatio = 0;
-                closingAlertsAltitude = 0;
-                closingAlertsSeconds = 0;
-            }
 			synchronized(lastDistanceUpdate) {	// in case calls get overlaid
 				for (Traffic traffic : allTraffic) {
 					if(null == traffic) {
