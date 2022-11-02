@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
-import com.ds.avare.adsb.gdl90.Message;
 import com.ds.avare.storage.Preferences;
 
 import java.lang.ref.WeakReference;
@@ -189,7 +188,7 @@ public class AudibleTrafficAlertsTest {
         final AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
         ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.INDIVIDUAL_DECIMAL;
         final ArrayList<Integer> soundIds = new ArrayList<>();
-        ata.addNumericalAlertAudioSequence(soundIds, 1049.99, true);
+        ata.addNumericalAlertAudio(soundIds, 1049.99, true);
         Assert.assertEquals("SoundIds from number",
                 Arrays.asList(ata.numberSoundIds[1], ata.numberSoundIds[0], ata.numberSoundIds[4], ata.numberSoundIds[9], ata.decimalSoundId, ata.numberSoundIds[9]),
                 soundIds);

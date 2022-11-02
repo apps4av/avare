@@ -77,12 +77,12 @@ public class TrafficCache {
 
     private void handleAudibleAlerts() {
         if (mPref.isAudibleTrafficAlerts()) {
-            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
+            final AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
                     StorageService.getInstance().getApplicationContext());
-            audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
             audibleTrafficAlerts.setDistanceCalloutOption(mPref.getAudibleDistanceCallout());
+            audibleTrafficAlerts.setTrafficIdCalloutOption(mPref.getAudibleTrafficIdCallout());
             audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
             audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(), mPref,
                     mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);

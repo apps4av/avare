@@ -394,9 +394,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsDistanceCallout"
             android:summary="@string/AudibleTrafficAlertsDistanceCalloutSummary"
             android:title="@string/AudibleTrafficAlertsDistanceCalloutLabel" />
-        <CheckBoxPreference
-            android:defaultValue="false"
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="NONE"
             android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficIdCallout"
+            android:entryValues="@array/AudibleTrafficIdCalloutValues"
             android:key="@string/AudibleAlertTrafficId"
             android:summary="@string/AudibleAlertTrafficIdSummary"
             android:title="@string/AudibleAlertTrafficIdLabel" />
