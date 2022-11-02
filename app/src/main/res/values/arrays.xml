@@ -2630,4 +2630,16 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>COLLOQUIAL_DECIMAL</item>
     </string-array>
 
+    <string-array name="AudibleTrafficIdCallout">
+        <item>NONE (No individual ID)</item>
+        <item>Phonetic Alphabet Letter</item>
+        <item>Full ICAO Callsign</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficIdCalloutValues">
+        <item>NONE</item>
+        <item>PHONETIC_ALPHA_ID</item>
+        <item>FULL_CALLSIGN</item>
+    </string-array>
+
 </resources>

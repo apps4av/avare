@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -68,7 +69,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final int[] twentiesToNinetiesSoundIds;
     private final int hundredSoundId, thousandSoundId;
     private final int atSoundId;
-    private final int[] trafficAliasesSoundIds;
+    private final int[] alphabetSoundIds;
     protected final int[] numberSoundIds;
     private final int secondsSoundId;
     private final int milesSoundId;
@@ -83,10 +84,10 @@ public class AudibleTrafficAlerts implements Runnable {
     private final Map<String,String> lastDistanceUpdate;
 
     // Configuration settings
-    private boolean useTrafficAliases = true;
     private boolean topGunDorkMode = false;
     private float maxAlertFrequencySeconds = 15f;
     protected DistanceCalloutOption distanceCalloutOption = DistanceCalloutOption.NONE;
+    protected TrafficIdCalloutOption trafficIdCalloutOption = TrafficIdCalloutOption.FULL_CALLSIGN;
     private boolean verticalAttitudeCallout = false;
 
     // Core alert tracking data structures, threading objects, and feature instances
@@ -102,6 +103,9 @@ public class AudibleTrafficAlerts implements Runnable {
 
     protected enum DistanceCalloutOption {
         NONE, INDIVIDUAL_ROUNDED, INDIVIDUAL_DECIMAL, COLLOQUIAL_ROUNDED, COLLOQUIAL_DECIMAL;
+    }
+    protected enum TrafficIdCalloutOption {
+        NONE, PHONETIC_ALPHA_ID, FULL_CALLSIGN
     }
 
     protected static class Alert {
@@ -166,7 +170,7 @@ public class AudibleTrafficAlerts implements Runnable {
         this.soundPlayer = sp;
         this.trafficSoundId = sp.load(ctx, R.raw.tr_traffic)[0];
         this.bogeySoundId = sp.load(ctx, R.raw.tr_bogey)[0];
-        this.trafficAliasesSoundIds = sp.load(ctx, R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta, R.raw.tr_echo,
+        this.alphabetSoundIds = sp.load(ctx, R.raw.tr_alpha, R.raw.tr_bravo, R.raw.tr_charlie, R.raw.tr_delta, R.raw.tr_echo,
                 R.raw.tr_foxtrot, R.raw.tr_golf, R.raw.tr_hotel, R.raw.tr_india, R.raw.tr_juliet,
                 R.raw.tr_kilo, R.raw.tr_lima, R.raw.tr_mike, R.raw.tr_november, R.raw.tr_oscar,
                 R.raw.tr_papa, R.raw.tr_quebec, R.raw.tr_romeo, R.raw.tr_sierra, R.raw.tr_tango,
@@ -197,11 +201,11 @@ public class AudibleTrafficAlerts implements Runnable {
         this.atSoundId = sp.load(ctx, R.raw.tr_at)[0];
     }
 
-    public void setUseTrafficAliases(boolean useTrafficAliases) { this.useTrafficAliases = useTrafficAliases; }
-    public void setTopGunDorkMode(boolean topGunDorkMode) { this.topGunDorkMode = topGunDorkMode; }
-    public void setAlertMaxFrequencySec(float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
-    public void setDistanceCalloutOption(String distanceCalloutOption) { this.distanceCalloutOption = DistanceCalloutOption.valueOf(distanceCalloutOption); }
-    public void setVerticalAttitudeCallout (boolean verticalAttitudeCallout) { this.verticalAttitudeCallout = verticalAttitudeCallout; }
+    public void setTopGunDorkMode(final boolean topGunDorkMode) { this.topGunDorkMode = topGunDorkMode; }
+    public void setAlertMaxFrequencySec(final float maxAlertFrequencySeconds) {  this.maxAlertFrequencySeconds = maxAlertFrequencySeconds;  }
+    public void setDistanceCalloutOption(final String distanceCalloutOption) { this.distanceCalloutOption = DistanceCalloutOption.valueOf(distanceCalloutOption); }
+    public void setVerticalAttitudeCallout (final boolean verticalAttitudeCallout) { this.verticalAttitudeCallout = verticalAttitudeCallout; }
+    public void setTrafficIdCalloutOption(final String trafficIdCalloutOption) { this.trafficIdCalloutOption = TrafficIdCalloutOption.valueOf(trafficIdCalloutOption); }
 
 
     /**
@@ -255,7 +259,7 @@ public class AudibleTrafficAlerts implements Runnable {
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
                 try {
-                    if (alertQueue.size() > 0 && !soundPlayer.isPlaying()) {
+                    if (alertQueue.size() > 0 && !soundPlayer.isPlaying) {
                         final Alert alert = alertQueue.getFirst();
                         long timeToWaitForThisCallsign = 0, timeToWaitForAny = 0;
                         if ((timeToWaitForAny = System.currentTimeMillis() - lastAnyAlertEndTime) > MIN_ALERT_SEPARATION_MS
@@ -295,54 +299,84 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param alert Alert item to build soundId sequence for
      * @return Sequence of soundId's for the soundplayer that represents the assembled alert
      */
-    protected List<Integer> buildAlertSoundIdSequence(Alert alert) {
+    protected final List<Integer> buildAlertSoundIdSequence(Alert alert) {
         final List<Integer> alertAudio = new ArrayList<>();
         if (alert.closingEvent != null && alert.closingEvent.isCriticallyClose)
             alertAudio.add(criticallyCloseChirp);
         alertAudio.add(this.topGunDorkMode ? bogeySoundId : trafficSoundId);
-        if (this.useTrafficAliases) {
-            int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(alert.trafficCallsign);
-            if (icaoIndex == -1) {
-                phoneticAlphaIcaoSequenceQueue.add(alert.trafficCallsign);
-                icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
-            }
-            alertAudio.add(trafficAliasesSoundIds[icaoIndex % trafficAliasesSoundIds.length]);
+        if (this.trafficIdCalloutOption == TrafficIdCalloutOption.PHONETIC_ALPHA_ID) {
+            addPhoneticAlphaTrafficIdAudio(alertAudio, alert.trafficCallsign);
+        } else if (this.trafficIdCalloutOption == TrafficIdCalloutOption.FULL_CALLSIGN) {
+            addFullCallsignTrafficIdAudio(alertAudio, alert.trafficCallsign);
         }
         if (alert.closingEvent != null) {
-            // Subtract speaking time of audio clips prior to # of seconds in this alert
-            final double adjustedClosingSeconds = alert.closingEvent.closingSeconds()
-                    - soundPlayer.getSoundSequenceDuration(alertAudio)/1000.00;
-            if (adjustedClosingSeconds > 0) {
-                alertAudio.add(closingInSoundId);
-                addNumericalAlertAudioSequence(alertAudio, adjustedClosingSeconds, false);
-                alertAudio.add(secondsSoundId);
-            }
+            addClosingSecondsAudio(alertAudio, alert.closingEvent.closingSeconds());
             if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
                 alertAudio.add(withinSoundId);
-                addNumericalAlertAudioSequence(alertAudio, alert.closingEvent.closestApproachDistanceNmi,
-                        this.distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || this.distanceCalloutOption == DistanceCalloutOption.INDIVIDUAL_DECIMAL);
-                alertAudio.add(milesSoundId);
+                addDistanceAudio(alertAudio, alert.closingEvent.closestApproachDistanceNmi);
             }
         }
-        alertAudio.add(atSoundId);
-        alertAudio.add(numberSoundIds[alert.clockHour]);
-        alertAudio.add(oClockSoundId);
-        alertAudio.add(Math.abs(alert.altitudeDiff) < 100 ? sameAltitudeSoundId
-                : (alert.altitudeDiff > 0 ? lowSoundId : highSoundId));
+        addPositionAudio(alertAudio, alert.clockHour, alert.altitudeDiff);
         if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
-            addNumericalAlertAudioSequence(alertAudio, alert.distanceNmi,
-                    this.distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || this.distanceCalloutOption == DistanceCalloutOption.INDIVIDUAL_DECIMAL);
-            alertAudio.add(milesSoundId);
+            addDistanceAudio(alertAudio, alert.distanceNmi);
         }
         if (this.verticalAttitudeCallout && alert.vspeed != Integer.MAX_VALUE /* Indeterminate value */) {
-            if (Math.abs(alert.vspeed) < 100)
-                alertAudio.add(levelSoundId);
-            else if (alert.vspeed >= 100)
-                alertAudio.add(climbingSoundId);
-            else if (alert.vspeed <= -100)
-                alertAudio.add(descendingSoundId);
+            addVerticalAttitudeAudio(alertAudio, alert.vspeed);
         }
         return alertAudio;
+    }
+
+    private void addDistanceAudio(final List<Integer> alertAudio, final double distance) {
+        addNumericalAlertAudio(alertAudio, distance,
+                this.distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || this.distanceCalloutOption == DistanceCalloutOption.INDIVIDUAL_DECIMAL);
+        alertAudio.add(milesSoundId);
+    }
+
+    private void addVerticalAttitudeAudio(final List<Integer> alertAudio, final int vspeed) {
+        if (Math.abs(vspeed) < 100)
+            alertAudio.add(levelSoundId);
+        else if (vspeed >= 100)
+            alertAudio.add(climbingSoundId);
+        else if (vspeed <= -100)
+            alertAudio.add(descendingSoundId);
+    }
+
+    private void addPositionAudio(final List<Integer> alertAudio, final int clockHour, final double altitudeDiff) {
+        alertAudio.add(atSoundId);
+        alertAudio.add(numberSoundIds[clockHour]);
+        alertAudio.add(oClockSoundId);
+        alertAudio.add(Math.abs(altitudeDiff) < 100 ? sameAltitudeSoundId
+                : (altitudeDiff > 0 ? lowSoundId : highSoundId));
+    }
+
+    private void addClosingSecondsAudio(final List<Integer> alertAudio, final double closingSeconds) {
+        // Subtract speaking time of audio clips prior to # of seconds in this alert
+        final double adjustedClosingSeconds = closingSeconds - soundPlayer.getSoundSequenceDuration(alertAudio)/1000.00;
+        if (adjustedClosingSeconds > 0) {
+            alertAudio.add(closingInSoundId);
+            addNumericalAlertAudio(alertAudio, adjustedClosingSeconds, false);
+            alertAudio.add(secondsSoundId);
+        }
+    }
+
+    private void addPhoneticAlphaTrafficIdAudio(final List<Integer> alertAudio, final String callsign) {
+        int icaoIndex = phoneticAlphaIcaoSequenceQueue.indexOf(callsign);
+        if (icaoIndex == -1) {
+            phoneticAlphaIcaoSequenceQueue.add(callsign);
+            icaoIndex = phoneticAlphaIcaoSequenceQueue.size()-1;
+        }
+        alertAudio.add(alphabetSoundIds[icaoIndex % alphabetSoundIds.length]);
+    }
+
+    private void addFullCallsignTrafficIdAudio(final List<Integer> alertAudio, final String callsign) {
+        final String normalizedCallsign = callsign.trim().toUpperCase(Locale.ROOT);
+        for (int i = 0; i < normalizedCallsign.length(); i++) {
+            final char c = normalizedCallsign.charAt(i);
+            if (c <= '9' && c >= '0')
+                alertAudio.add(this.numberSoundIds[c-'0']);
+            else if (c >= 'A' && c <= 'Z')
+                alertAudio.add(this.alphabetSoundIds[c-'A']);
+        }
     }
 
     /**
@@ -351,11 +385,11 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param numeric Numeric value to speak into alert audio
      * @param doDecimal Whether to speak 1st decimal into alert (false ==> rounded to whole #)
      */
-    protected final void addNumericalAlertAudioSequence(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
+    protected final void addNumericalAlertAudio(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
         if (distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_ROUNDED)
-            addColloquialNumericBaseAlertAudioSequence(alertAudio, doDecimal ? numeric : Math.round(numeric));
+            addColloquialNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
         else
-            addNumberSequenceNumericBaseAlertAudioSequence(alertAudio, doDecimal ? numeric : Math.round(numeric));
+            addNumberSequenceNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
         if (doDecimal) {
             addFirstDecimalAlertAudioSequence(alertAudio, numeric);
         }
@@ -366,7 +400,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param alertAudio List of soundId to append to
      * @param numeric Numeric value to speak into alertAudio
      */
-    protected final void addNumberSequenceNumericBaseAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+    private final void addNumberSequenceNumericBaseAlertAudio(final List<Integer> alertAudio, final double numeric) {
         double curNumeric = numeric;    // iteration variable for digit processing
         for (int i = (int) Math.max(Math.log10(numeric), 0); i >= 0; i--) {
             if (i == 0)
@@ -384,7 +418,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param alertAudio List of soundId to append to
      * @param numeric Numeric value to speak into alertAudio
      */
-    protected final void addColloquialNumericBaseAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+    private final void addColloquialNumericBaseAlertAudio(final List<Integer> alertAudio, final double numeric) {
         double curNumeric = numeric;    // iteration variable for digit processing
         for (int i = (int) Math.max(Math.log10(numeric), 0); i >= 0; i--) {
             if (i == 0
@@ -401,7 +435,7 @@ public class AudibleTrafficAlerts implements Runnable {
                 } else {
                     final double pow10 = Math.pow(10, i);
                     final int digit = (int) Math.min(curNumeric / pow10, 9);
-                    if (i == 1 && digit == 1) {     // tens/teens
+                    if (i == 1 && digit == 1) {             // tens/teens
                         alertAudio.add(numberSoundIds[10 + (int) curNumeric % 10]);
                         return;
                     } else {
@@ -421,7 +455,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    protected final void addFirstDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+    private final void addFirstDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
         final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
         if (firstDecimal != 0) {
             alertAudio.add(decimalSoundId);
@@ -443,7 +477,7 @@ public class AudibleTrafficAlerts implements Runnable {
         if (ownLocation == null) {
             return; // need own location for alerts
         }
-        // Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
+        // Don't alert for traffic when we are taxiing on the ground, unless desired (e.g., runway incursions?)
         final boolean isAudibleGroundAlertsEnabled = pref.isAudibleGroundAlertsEnabled();
         if (!(ownIsAirborne || isAudibleGroundAlertsEnabled)) {
             return;
@@ -452,6 +486,7 @@ public class AudibleTrafficAlerts implements Runnable {
         if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < pref.getAudibleTrafficAlertsMinSpeed()) {
             return;
         }
+        // Pull all preferences needed by executor lambda into final vars, to allow GC of lambda
         final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
         final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
         final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
@@ -475,7 +510,7 @@ public class AudibleTrafficAlerts implements Runnable {
 					if(null == traffic) {
 						continue;
 					}
-					// Don't alert for traffic taxiing on the ground, unless desired (e.g., runway incursions?)
+					// Don't alert for traffic that is taxiing on the ground, unless desired (e.g., runway incursions?)
 					if (!(traffic.mIsAirborne || isAudibleGroundAlertsEnabled)) {
 						continue;
 					}
@@ -562,7 +597,8 @@ public class AudibleTrafficAlerts implements Runnable {
             } else {    // if already in queue, update with the most recent data prior to speaking
                 alertQueue.set(alertIndex, alert);
             }
-            alertQueue.notifyAll();
+            if (!soundPlayer.isPlaying) // Don't wake up consumer if he can't work now anyway
+                alertQueue.notifyAll();
         }
     }
 
@@ -692,11 +728,7 @@ public class AudibleTrafficAlerts implements Runnable {
             this.handler = new Handler(Looper.getMainLooper());
         }
 
-        public synchronized boolean isPlaying() {
-            return isPlaying;
-        }
-
-        public synchronized int[] load(Context ctx, int... resIds) {
+        public int[] load(Context ctx, int... resIds) {
             final int[] soundIds = new int[resIds.length];
             for (int i = 0; i < resIds.length; i++) {
                 soundIds[i] = soundPool.load(ctx, resIds[i], 1);
@@ -725,7 +757,7 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        public synchronized void  waitUntilAllSoundsAreLoaded() {
+        public final void waitUntilAllSoundsAreLoaded() {
             synchronized (loadedSounds) {
                 this.isWaitingForSoundsToLoad = true;
                 while (!loadedSounds.containsAll(soundIdsToLoad))
@@ -738,7 +770,7 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        private void runSoundTest() {
+        private final void runSoundTest() {
             this.waitUntilAllSoundsAreLoaded();
             this.playSequence(loadedSounds);
         }
@@ -751,7 +783,7 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        public synchronized long playSequence(List<Integer> soundIds) {
+        public final long playSequence(List<Integer> soundIds) {
             synchronized (synchNotificationMonitor) {
                 if (isPlaying) {
                     return 0;
@@ -762,7 +794,7 @@ public class AudibleTrafficAlerts implements Runnable {
             }
         }
 
-        private long getSoundDuration(Context context, int rawId) {
+        private final long getSoundDuration(Context context, int rawId) {
             final AssetFileDescriptor afd = context.getResources().openRawResourceFd(rawId);
             metaRetriever.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             final String durStr = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);

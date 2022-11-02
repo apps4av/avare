@@ -377,6 +377,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "COLLOQUIAL_ROUNDED");
     }
 
+    public String getAudibleTrafficIdCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleAlertTrafficId), "NONE");
+    }
+
     /**
      * @return
      */
@@ -948,10 +952,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public boolean isAudibleGroundAlertsEnabled() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsGroundAlert), false);
-    }
-
-    public boolean isAudibleAlertTrafficId() {
-        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
     }
 
     public boolean isAudibleClosingInAlerts() {
