@@ -700,16 +700,20 @@ public class LocationView extends PanZoomView implements OnTouchListener {
          * Get draw points.
          */
 
-        // Blue inside, black outside
         Paint.Cap oldCaps = mPaint.getStrokeCap();
         mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
-        mPaint.setColor(Color.BLACK);
+	int[] prefColor = mPref.getDrawColor();
+
+	mPaint.setColor(prefColor[1] == 1 ? Color.BLACK : prefColor[0]);
         mPaint.setStrokeWidth(6 * mDipToPix);
         mService.getDraw().drawShape(canvas, mPaint, mOrigin);
 
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(2 * mDipToPix);
-        mService.getDraw().drawShape(canvas, mPaint, mOrigin);
+	if (prefColor[1] == 1)
+	{
+	    mPaint.setColor(prefColor[0]);
+	    mPaint.setStrokeWidth(2 * mDipToPix);
+	    mService.getDraw().drawShape(canvas, mPaint, mOrigin);
+	}
         mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
     }
 

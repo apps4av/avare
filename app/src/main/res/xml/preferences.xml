@@ -318,6 +318,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/DefaultAFD"
             android:summary="@string/DefaultAFDSummary"
             android:title="@string/DefaultAFDLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue=""
+            android:key="@string/DrawColor"
+            android:summary="@string/DrawColorSummary"
+            android:title="@string/DrawColorLabel" />
     </PreferenceScreen>
 
 	<PreferenceScreen 

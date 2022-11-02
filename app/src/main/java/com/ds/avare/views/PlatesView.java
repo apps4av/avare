@@ -195,13 +195,19 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
     private void drawDrawing(Canvas canvas) {
         Paint.Cap oldCaps = mPaint.getStrokeCap();
         mPaint.setStrokeCap(Paint.Cap.ROUND); // We use a wide line. Without ROUND the line looks broken.
-        mPaint.setColor(Color.BLACK);
+	int[] prefColor = mPref.getDrawColor();
+
+	mPaint.setColor(prefColor[1] == 1 ? Color.BLACK : prefColor[0]);
         mPaint.setStrokeWidth(6 * mDipToPix);
         mService.getPixelDraw().drawShape(canvas, mPaint);
 
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStrokeWidth(2 * mDipToPix);
-        mService.getPixelDraw().drawShape(canvas, mPaint);
+	if (prefColor[1] == 1)
+	{
+	    mPaint.setColor(prefColor[0]);
+	    mPaint.setStrokeWidth(2 * mDipToPix);
+	    mService.getPixelDraw().drawShape(canvas, mPaint);
+	}
+
         mPaint.setStrokeCap(oldCaps); // Restore the Cap we had before drawing
 
     }

@@ -1201,4 +1201,17 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putString("LastConnectedWifi", val).commit();
     }
 
+    public int[] getDrawColor() {
+	int color, isDefaultColor = 0;
+
+	try {
+	    color = Color.parseColor(mPref.getString(mContext.getString(R.string.DrawColor), ""));
+	}
+	catch(IllegalArgumentException|StringIndexOutOfBoundsException e) {
+	    color = Color.BLUE;
+	    isDefaultColor = 1;
+	}
+
+	return new int[] { color, isDefaultColor };
+    }
 }
