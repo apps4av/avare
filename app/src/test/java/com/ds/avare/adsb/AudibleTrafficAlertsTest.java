@@ -149,7 +149,7 @@ public class AudibleTrafficAlertsTest {
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
         AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
                 "abc123", 2, 75,
-                new AudibleTrafficAlerts.Alert.ClosingEvent(.25, 1.0, false), 99.9f, 10
+                new AudibleTrafficAlerts.Alert.ClosingEvent(.15, 1.0, false), 99.9f, 10
         );
         List<Integer> media = ata.buildAlertSoundIdSequence(alert);
         final int firstMedia = ata.numberSoundIds[0];
