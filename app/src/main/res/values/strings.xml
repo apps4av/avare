@@ -166,7 +166,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsDistanceMinimumLabel">&quot;Traffic Alert Radius (nmi)&quot;</string>
     <string name="AudibleAlertTrafficId">&quot;Audible Alert Traffic Id Callout&quot;</string>
     <string name="AudibleAlertTrafficIdSummary">&quot;Individual traffic Id callout&quot;</string>
-    <string name="AudibleAlertTrafficIdLabel">&quot;Traffic Id Callout&apos;s&quot;</string>
+    <string name="AudibleAlertTrafficIdLabel">&quot;Traffic Id Callouts&quot;</string>
     <string name="AudibleAlertTopGunMode">&quot;Top Gun Lingo Mode&quot;</string>
     <string name="AudibleAlertTopGunModeSummary">&quot;Use the word "bogey" rather than "traffic"&quot;</string>
     <string name="AudibleAlertTopGunModeLabel">&quot;Top Gun Lingo Mode&quot;</string>

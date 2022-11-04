@@ -80,8 +80,9 @@ public class AudibleTrafficAlerts implements Runnable {
 
     // Trackers for traffic callsigns, update freshness, and alert frequenncy
     private final LinkedList<String> phoneticAlphaIcaoSequenceQueue;
-    private final Map<String,Long> lastAlertTime;
+    private final Map<String,Long> lastCallsignAlertTime;
     private final Map<String,String> lastDistanceUpdate;
+    private long nextAvailableAlertTime = System.currentTimeMillis();
 
     // Configuration settings
     private boolean topGunDorkMode = false;
@@ -99,7 +100,7 @@ public class AudibleTrafficAlerts implements Runnable {
 
     // Constants
     private static final float MPS_TO_KNOTS_CONV = 1.0f/0.514444f;
-    private static final float MIN_ALERT_SEPARATION_MS = 750;
+    private static final long MIN_ALERT_SEPARATION_MS = 1000;
 
     protected enum DistanceCalloutOption {
         NONE, INDIVIDUAL_ROUNDED, INDIVIDUAL_DECIMAL, COLLOQUIAL_ROUNDED, COLLOQUIAL_DECIMAL;
@@ -165,7 +166,7 @@ public class AudibleTrafficAlerts implements Runnable {
     protected AudibleTrafficAlerts(SequentialSoundPoolPlayer sp, Context ctx)
     {
         this.phoneticAlphaIcaoSequenceQueue = new LinkedList<>();
-        this.lastAlertTime = new HashMap<>();
+        this.lastCallsignAlertTime = new HashMap<>();
         this.lastDistanceUpdate = new HashMap<>();
         this.soundPlayer = sp;
         this.trafficSoundId = sp.load(ctx, R.raw.tr_traffic)[0];
@@ -255,31 +256,31 @@ public class AudibleTrafficAlerts implements Runnable {
         // Wait for all sounds to load before starting alert queue processing
         soundPlayer.waitUntilAllSoundsAreLoaded();
         // Alert queue processing loop
-        long lastAnyAlertEndTime = 0;
         while(!Thread.currentThread().isInterrupted()) {
             synchronized (alertQueue) {
                 try {
                     if (alertQueue.size() > 0 && !soundPlayer.isPlaying) {
                         final Alert alert = alertQueue.getFirst();
                         long timeToWaitForThisCallsign = 0, timeToWaitForAny = 0;
-                        if ((timeToWaitForAny = System.currentTimeMillis() - lastAnyAlertEndTime) > MIN_ALERT_SEPARATION_MS
-                            && ((alert.closingEvent != null && alert.closingEvent.isCriticallyClose)  // critical can repeat...
-                                || (!lastAlertTime.containsKey(alert.trafficCallsign)
-                                    || (timeToWaitForThisCallsign = System.currentTimeMillis() - lastAlertTime.get(alert.trafficCallsign)) / 1000.0
-                                        > this.maxAlertFrequencySeconds)))    // ...otherwise, respect config for delay between same callsign
+                        if ((timeToWaitForAny = nextAvailableAlertTime - System.currentTimeMillis()) <= 0 // separate all alerts for clarity
+                                && ((alert.closingEvent != null && alert.closingEvent.isCriticallyClose)  // critical closing events can repeat...
+                                    || (!lastCallsignAlertTime.containsKey(alert.trafficCallsign)
+                                    || (timeToWaitForThisCallsign = (long) (this.maxAlertFrequencySeconds * 1000.0)
+                                            - (System.currentTimeMillis() - lastCallsignAlertTime.get(alert.trafficCallsign))) <= 0)))    // ...otherwise, respect config for delay between same callsign
                         {
-                            lastAlertTime.put(alert.trafficCallsign, System.currentTimeMillis());
-                            lastAnyAlertEndTime = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.removeFirst())) + System.currentTimeMillis();
-                        } else {
-                            if (timeToWaitForAny > 0) {
-                                // Don't rattle off multiple alerts too fast, even if there are multiple--wait just a bit
-                                alertQueue.wait(timeToWaitForAny);
-                            } else if (alertQueue.size() > 1) { // This one can't go, but let next in line try
+                            lastCallsignAlertTime.put(alert.trafficCallsign, System.currentTimeMillis());
+                            final long soundDuration = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.removeFirst()));
+                            nextAvailableAlertTime = System.currentTimeMillis() + soundDuration + MIN_ALERT_SEPARATION_MS;
+                            alertQueue.wait(soundDuration + MIN_ALERT_SEPARATION_MS);
+                        } else {    // need to wait, or let someone else go for now
+                            if (timeToWaitForAny > 0 || (timeToWaitForThisCallsign > 0 && alertQueue.size() == 1)) {
+                                // Don't rattle off multiple alerts too fast, even if there are multiple--wait just a bit, and honor desired separation between alerts from same callsign
+                                final long timeToWait = Math.max(timeToWaitForAny, timeToWaitForThisCallsign);
+                                nextAvailableAlertTime = System.currentTimeMillis() + timeToWait;
+                                alertQueue.wait(timeToWait);
+                            } else if (alertQueue.size() > 1 && timeToWaitForAny <= 0) { // This one can't go, but let next in line try
                                 alertQueue.removeFirst();
                                 alertQueue.add(Math.min(1, alertQueue.size()), alert); // Put it to second in line to wait
-                            } else  if (timeToWaitForThisCallsign > 0) {
-                                // If this is only one in queue, and I just need more time, then wait just enough time for me
-                                alertQueue.wait(timeToWaitForThisCallsign);
                             }
                         }
                     } else {
@@ -455,7 +456,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    private final void addFirstDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
+    private void addFirstDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
         final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
         if (firstDecimal != 0) {
             alertAudio.add(decimalSoundId);
@@ -486,7 +487,7 @@ public class AudibleTrafficAlerts implements Runnable {
         if (ownLocation.getSpeed()*MPS_TO_KNOTS_CONV < pref.getAudibleTrafficAlertsMinSpeed()) {
             return;
         }
-        // Pull all preferences needed by executor lambda into final vars, to allow GC of lambda
+        // Pull all preferences needed by executor lambda into final vars, to allow fast GC of lambda
         final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
         final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
         final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
@@ -597,7 +598,7 @@ public class AudibleTrafficAlerts implements Runnable {
             } else {    // if already in queue, update with the most recent data prior to speaking
                 alertQueue.set(alertIndex, alert);
             }
-            if (!soundPlayer.isPlaying) // Don't wake up consumer if he can't work now anyway
+            if (!soundPlayer.isPlaying && System.currentTimeMillis() > nextAvailableAlertTime) // Don't wake up consumer if he can't work now anyway
                 alertQueue.notifyAll();
         }
     }
@@ -742,7 +743,7 @@ public class AudibleTrafficAlerts implements Runnable {
             long soundSequenceDurationMs = 0;
             for (int soundId : soundIds)
                 soundSequenceDurationMs += soundDurationMap.get(soundId);
-            return (long) (soundSequenceDurationMs / SOUND_PLAY_RATE * OVERLAP_RATIO);
+            return (long) ((soundSequenceDurationMs / SOUND_PLAY_RATE) * OVERLAP_RATIO);
         }
 
         @Override
@@ -768,11 +769,6 @@ public class AudibleTrafficAlerts implements Runnable {
                     }
                 this.isWaitingForSoundsToLoad = false;
             }
-        }
-
-        private final void runSoundTest() {
-            this.waitUntilAllSoundsAreLoaded();
-            this.playSequence(loadedSounds);
         }
 
         @Override
