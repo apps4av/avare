@@ -82,7 +82,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final List<String> phoneticAlphaIcaoSequenceQueue;
     private final Map<String,Long> lastCallsignAlertTime;
     private final Map<String,String> lastDistanceUpdate;
-    private long nextAvailableAlertTime = System.currentTimeMillis();
+    private volatile long nextAvailableAlertTime = System.currentTimeMillis();
 
     // Configuration settings
     private boolean topGunDorkMode = false;
@@ -92,7 +92,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private boolean verticalAttitudeCallout = false;
 
     // Core alert tracking data structures, threading objects, and feature instances
-    private static volatile Thread alertQueueProcessingConsumerThread;
+    private static Thread alertQueueProcessingConsumerThread;
     protected final ExecutorService trafficAlertProducerExecutor = Executors.newSingleThreadExecutor();
     private static AudibleTrafficAlerts singleton;
     // This object's monitor is used for inter-thread communication and synchronization
@@ -284,7 +284,7 @@ public class AudibleTrafficAlerts implements Runnable {
                             alertQueue.wait(soundDuration + MIN_ALERT_SEPARATION_MS);
                         } else {    // need to wait, or let someone else go for now
                             if (timeToWaitForAny > 0 || (timeToWaitForThisCallsign > 0 && alertQueue.size() == 1)) {
-                                // Don't rattle off multiple alerts too fast, even if there are multiple, and honor desired separation between alerts from same callsign
+                                // Don't rattle off multiple alerts too fast, even if there are distinct callsigns, and honor desired separation between alerts from same callsign
                                 final long timeToWait = Math.max(timeToWaitForAny, timeToWaitForThisCallsign);
                                 nextAvailableAlertTime = System.currentTimeMillis() + timeToWait;
                                 alertQueue.wait(timeToWait);
@@ -315,17 +315,15 @@ public class AudibleTrafficAlerts implements Runnable {
         if (alert.closingEvent != null && alert.closingEvent.isCriticallyClose)
             alertAudio.add(criticallyCloseChirp);
         alertAudio.add(this.topGunDorkMode ? bogeySoundId : trafficSoundId);
-        if (this.trafficIdCalloutOption == TrafficIdCalloutOption.PHONETIC_ALPHA_ID) {
-            addPhoneticAlphaTrafficIdAudio(alertAudio, alert.trafficCallsign);
-        } else if (this.trafficIdCalloutOption == TrafficIdCalloutOption.FULL_CALLSIGN) {
-            addFullCallsignTrafficIdAudio(alertAudio, alert.trafficCallsign);
+        switch (this.trafficIdCalloutOption) {
+            case PHONETIC_ALPHA_ID:
+                addPhoneticAlphaTrafficIdAudio(alertAudio, alert.trafficCallsign);
+                break;
+            case FULL_CALLSIGN:
+                addFullCallsignTrafficIdAudio(alertAudio, alert.trafficCallsign);
         }
         if (alert.closingEvent != null) {
-            addClosingSecondsAudio(alertAudio, alert.closingEvent.closingSeconds());
-            if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
-                alertAudio.add(withinSoundId);
-                addDistanceAudio(alertAudio, alert.closingEvent.closestApproachDistanceNmi);
-            }
+            addTimeToClosestPointOfApproachAudio(alertAudio, alert.closingEvent);
         }
         addPositionAudio(alertAudio, alert.clockHour, alert.altitudeDiff);
         if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
@@ -337,9 +335,23 @@ public class AudibleTrafficAlerts implements Runnable {
         return alertAudio;
     }
 
+    private void addTimeToClosestPointOfApproachAudio(final List<Integer> alertAudio, final Alert.ClosingEvent closingEvent) {
+        addClosingSecondsAudio(alertAudio, closingEvent.closingSeconds());
+        if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
+            alertAudio.add(withinSoundId);
+            addDistanceAudio(alertAudio, closingEvent.closestApproachDistanceNmi);
+        }
+    }
+
     private void addDistanceAudio(final List<Integer> alertAudio, final double distance) {
-        addNumericalAlertAudio(alertAudio, distance,
-                this.distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || this.distanceCalloutOption == DistanceCalloutOption.INDIVIDUAL_DECIMAL);
+        switch (this.distanceCalloutOption) {
+            case COLLOQUIAL_DECIMAL:
+            case INDIVIDUAL_DECIMAL:
+                addNumericalAlertAudio(alertAudio, distance, true);
+                break;
+            default:
+                addNumericalAlertAudio(alertAudio, distance, false);
+        }
         alertAudio.add(milesSoundId);
     }
 
@@ -397,10 +409,14 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param doDecimal Whether to speak 1st decimal into alert (false ==> rounded to whole #)
      */
     protected final void addNumericalAlertAudio(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
-        if (distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_DECIMAL || distanceCalloutOption == DistanceCalloutOption.COLLOQUIAL_ROUNDED)
-            addColloquialNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
-        else
-            addNumberSequenceNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
+        switch (this.distanceCalloutOption) {
+            case COLLOQUIAL_DECIMAL:
+            case COLLOQUIAL_ROUNDED:
+                addColloquialNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
+                break;
+            default:
+                addNumberSequenceNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
+        }
         if (doDecimal) {
             addFirstDecimalAlertAudioSequence(alertAudio, numeric);
         }
@@ -719,7 +735,7 @@ public class AudibleTrafficAlerts implements Runnable {
         private final Map<Integer, Long> soundDurationMap;
         private final List<Integer> loadedSounds;
         private final Handler handler;
-        private boolean isPlaying = false;
+        private volatile boolean isPlaying = false;
         private final MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
         private final List<Integer> soundIdsToLoad;
         private SoundSequenceOnCompletionListener listener;
