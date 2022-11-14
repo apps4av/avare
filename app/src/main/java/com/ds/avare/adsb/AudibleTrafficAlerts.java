@@ -82,7 +82,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final List<String> phoneticAlphaIcaoSequenceQueue;
     private final Map<String,Long> lastCallsignAlertTime;
     private final Map<String,String> lastDistanceUpdate;
-    private volatile long nextAvailableAlertTime = System.currentTimeMillis();
+    private volatile long nextAvailableAlertTime = 0;
 
     // Configuration settings
     private boolean topGunDorkMode = false;
@@ -109,7 +109,7 @@ public class AudibleTrafficAlerts implements Runnable {
         NONE, PHONETIC_ALPHA_ID, FULL_CALLSIGN
     }
 
-    protected static class Alert {
+    protected static final class Alert {
         private final String trafficCallsign;
         private final double distanceNmi;
         private final ClosingEvent closingEvent;
@@ -140,7 +140,7 @@ public class AudibleTrafficAlerts implements Runnable {
             return ((Alert)o).trafficCallsign.equals(this.trafficCallsign);
         }
 
-        protected static class ClosingEvent {
+        protected static final class ClosingEvent {
             private final double closingTimeSec;
             private final double closestApproachDistanceNmi;
             private final long eventTimeMillis;
@@ -281,7 +281,7 @@ public class AudibleTrafficAlerts implements Runnable {
                             final long soundDuration = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.get(0)));
                             alertQueue.remove(0);
                             nextAvailableAlertTime = System.currentTimeMillis() + soundDuration + MIN_ALERT_SEPARATION_MS;
-                            alertQueue.wait(soundDuration + MIN_ALERT_SEPARATION_MS);
+                            alertQueue.wait(soundDuration + MIN_ALERT_SEPARATION_MS);   // wait thread until alert finished playing
                         } else {    // need to wait, or let someone else go for now
                             if (timeToWaitForAny > 0 || (timeToWaitForThisCallsign > 0 && alertQueue.size() == 1)) {
                                 // Don't rattle off multiple alerts too fast, even if there are distinct callsigns, and honor desired separation between alerts from same callsign
@@ -392,7 +392,7 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private void addFullCallsignTrafficIdAudio(final List<Integer> alertAudio, final String callsign) {
-        final String normalizedCallsign = callsign.trim().toUpperCase(Locale.ROOT);
+        final String normalizedCallsign = callsign.toUpperCase(Locale.ROOT);
         for (int i = 0; i < normalizedCallsign.length(); i++) {
             final char c = normalizedCallsign.charAt(i);
             if (c <= '9' && c >= '0')
@@ -542,7 +542,7 @@ public class AudibleTrafficAlerts implements Runnable {
 						continue;
 					}
 					final double altDiff = ownAltitude - traffic.mAltitude;
-					final String distanceCalcUpdateKey = traffic.mCallSign.trim()+"_"+traffic.getLastUpdate() + "_" + ownLocation.getTime();
+					final String distanceCalcUpdateKey = traffic.mCallSign + "_" + traffic.getLastUpdate() + "_" + ownLocation.getTime();
 					final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
 					final double currentDistance;
 					if (
@@ -605,7 +605,7 @@ public class AudibleTrafficAlerts implements Runnable {
         return trafficAlertProducerExecutor;
     }
 
-    private void upsertTrafficAlertQueue(Alert alert) {
+    private void upsertTrafficAlertQueue(final Alert alert) {
         synchronized (alertQueue) {
             final int alertIndex = alertQueue.indexOf(alert);
             if (alertIndex == -1) {
@@ -629,7 +629,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    protected static double angleFromCoordinate(double lat1, double long1, double lat2, double long2) {
+    protected static double angleFromCoordinate(final double lat1, final double long1, final double lat2, final double long2) {
         final double lat1Rad = Math.toRadians(lat1);
         final double long1Rad = Math.toRadians(long1);
         final double lat2Rad = Math.toRadians(lat2);
@@ -647,13 +647,14 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     protected static int nearestClockHourFromHeadingAndLocations(
-            double lat1, double long1, double lat2, double long2,  double myBearing)
+            final double lat1, final double long1, final double lat2, final double long2, final double myBearing)
     {
         final int nearestClockHour = (int) Math.round(relativeBearingFromHeadingAndLocations(lat1, long1, lat2, long2, myBearing)/30.0);
         return nearestClockHour != 0 ? nearestClockHour : 12;
     }
 
-    protected static double relativeBearingFromHeadingAndLocations(double lat1, double long1, double lat2, double long2,  double myBearing)
+    protected static double relativeBearingFromHeadingAndLocations(final double lat1, final double long1,
+                               final double lat2, final double long2,  final double myBearing)
     {
         return (angleFromCoordinate(lat1, long1, lat2, long2) - myBearing + 360) % 360;
     }
@@ -666,7 +667,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param lon2 Longitude 2
      * @return Great circle distance between two points
      */
-    private static double greatCircleDistance(double lat1, double lon1, double lat2, double lon2) {
+    private static double greatCircleDistance(final double lat1, final double lon1, final double lat2, final double lon2) {
         final double x1 = Math.toRadians(lat1);
         final double y1 = Math.toRadians(lon1);
         final double x2 = Math.toRadians(lat2);
@@ -679,10 +680,10 @@ public class AudibleTrafficAlerts implements Runnable {
                 + Math.cos(x1) * Math.cos(x2) * Math.pow(Math.sin((y2-y1)/2), 2);
 
         // great circle distance in radians
-        final double angle2 = 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+        final double angle2 = 2.0 * Math.asin(Math.min(1, Math.sqrt(a)));
 
         // convert back to degrees, and each degree on a great circle of Earth is 60 nautical miles
-        return 60 * Math.toDegrees(angle2);
+        return 60.0 * Math.toDegrees(angle2);
     }
 
     /**
@@ -697,8 +698,8 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param velocity2 Velocity 2
      * @return Time (in units of velocity) of closest point of approach
      */
-    protected static double closestApproachTime(double lat1, double lon1, double lat2, double lon2,
-                                           float heading1, float heading2, int velocity1, int velocity2)
+    protected static double closestApproachTime(final double lat1, final double lon1, final double lat2, final double lon2,
+                                           final float heading1, final float heading2, final int velocity1, final int velocity2)
     {
         // Use cosine of average of two latitudes, to give some weighting for lesser intra-lon distance at higher latitudes
         final double a = (lon2 - lon1) * (60.0000 * Math.cos(Math.toRadians((lat1+lat2)/2.0000)));
@@ -709,7 +710,7 @@ public class AudibleTrafficAlerts implements Runnable {
         return - ((a*b + c*d) / (b*b + d*d));
     }
 
-    protected static double[] locationAfterTime(double lat, double lon, float heading, float velocityInKt, double timeInHrs, float altInFeet, float vspeedInFpm) {
+    protected static double[] locationAfterTime(final double lat, final double lon, final float heading, final float velocityInKt, final double timeInHrs, final float altInFeet, final float vspeedInFpm) {
         final double newLat =  lat + Math.cos(Math.toRadians(heading)) * (velocityInKt/60.00000) * timeInHrs;
         return new double[]  {
                 newLat,
