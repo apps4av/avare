@@ -519,6 +519,7 @@ public class AudibleTrafficAlerts implements Runnable {
         final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
         final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
         final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
+        final String ownTailNumber = ifNullElse(pref.getAircraftTailNumber(), "ownship12349").trim();
         final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
         final int closingAlertsSeconds;
         if (isAudibleClosingAlerts) {
@@ -536,13 +537,17 @@ public class AudibleTrafficAlerts implements Runnable {
         getTrafficAlertProducerExecutor().execute(() -> {
 			synchronized(lastDistanceUpdate) {	// in case calls get overlaid
 				for (Traffic traffic : allTraffic) {
-					if(null == traffic) {
+					if (null == traffic) {
 						continue;
 					}
 					// Don't alert for traffic that is taxiing on the ground, unless desired (e.g., runway incursions?)
 					if (!(traffic.mIsAirborne || isAudibleGroundAlertsEnabled)) {
 						continue;
 					}
+                    // Make a good-faith effort to filter ownship "ghost" audible alerts by comparing ownship and traffic callsigns/n-numbers
+                    if (traffic.mCallSign != null && traffic.mCallSign.trim().equalsIgnoreCase(ownTailNumber)) {
+                        continue;
+                    }
 					final double altDiff = ownAltitude - traffic.mAltitude;
 					final String distanceCalcUpdateKey = traffic.mCallSign + "_" + traffic.getLastUpdate() + "_" + ownLocation.getTime();
 					final String lastDistanceUpdateKey = lastDistanceUpdate.get(traffic.mCallSign);
@@ -571,6 +576,10 @@ public class AudibleTrafficAlerts implements Runnable {
 				}
 			}
         });
+    }
+
+    private static <T> T ifNullElse(final T val, final T defaultVal) {
+        return val == null ? defaultVal : val;
     }
 
     protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
