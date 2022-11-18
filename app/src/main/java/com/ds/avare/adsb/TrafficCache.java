@@ -19,6 +19,8 @@ import com.ds.avare.storage.Preferences;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
+
 import android.location.Location;
 
 /**
@@ -76,6 +78,10 @@ public class TrafficCache {
     }
 
     private void handleAudibleAlerts() {
+        handleAudibleAlerts(getTraffic());
+    }
+
+    private void handleAudibleAlerts(final List<Traffic> trafficList) {
         if (mPref.isAudibleTrafficAlerts()) {
             final AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
                     StorageService.getInstance().getApplicationContext());
@@ -84,7 +90,7 @@ public class TrafficCache {
             audibleTrafficAlerts.setDistanceCalloutOption(mPref.getAudibleDistanceCallout());
             audibleTrafficAlerts.setTrafficIdCalloutOption(mPref.getAudibleTrafficIdCallout());
             audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
-            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), getTraffic(), mPref,
+            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), trafficList, mPref,
                     mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {
             AudibleTrafficAlerts.stopAudibleTrafficAlerts();
@@ -125,9 +131,10 @@ public class TrafficCache {
                 if(callsign.equals("")) {
                     callsign = mTraffic[i].mCallSign;
                 }
-                mTraffic[i] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+                final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+                mTraffic[i] = traffic;
 
-                handleAudibleAlerts();
+                handleAudibleAlerts(Arrays.asList(traffic));
                 return;
             }
         }
@@ -138,12 +145,13 @@ public class TrafficCache {
             return;
         }
         // put it in the end
-        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+        final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+        mTraffic[MAX_ENTRIES] = traffic;
 
         // sort
         Arrays.sort(mTraffic, new TrafficComparator());
 
-        handleAudibleAlerts();
+        handleAudibleAlerts(Arrays.asList(traffic));
 
     }
 

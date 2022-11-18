@@ -43,7 +43,6 @@ import com.ds.avare.storage.Preferences;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -503,7 +502,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param ownAltitude Ownship altitude
      * @param ownVspeed Ownship vertical speed (climb/descent fpm)
      */
-    public void handleAudibleAlerts(final Location ownLocation, final LinkedList<Traffic> allTraffic,
+    public void handleAudibleAlerts(final Location ownLocation, final List<Traffic> allTraffic,
             final Preferences pref, final int ownAltitude, final boolean ownIsAirborne, final int ownVspeed)
     {
         if (ownLocation == null) {
