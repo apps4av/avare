@@ -338,10 +338,11 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private void addTimeToClosestPointOfApproachAudio(final List<Integer> alertAudio, final Alert.ClosingEvent closingEvent) {
-        addClosingSecondsAudio(alertAudio, closingEvent.closingSeconds());
-        if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
-            alertAudio.add(withinSoundId);
-            addDistanceAudio(alertAudio, closingEvent.closestApproachDistanceNmi);
+        if (addClosingSecondsAudio(alertAudio, closingEvent.closingSeconds())) {
+            if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
+                alertAudio.add(withinSoundId);
+                addDistanceAudio(alertAudio, closingEvent.closestApproachDistanceNmi);
+            }
         }
     }
 
@@ -374,14 +375,16 @@ public class AudibleTrafficAlerts implements Runnable {
                 : (altitudeDiff > 0 ? lowSoundId : highSoundId));
     }
 
-    private void addClosingSecondsAudio(final List<Integer> alertAudio, final double closingSeconds) {
+    private boolean addClosingSecondsAudio(final List<Integer> alertAudio, final double closingSeconds) {
         // Subtract speaking time of audio clips, and computation thereof, prior to # of seconds in this alert
         final double adjustedClosingSeconds = closingSeconds - (soundPlayer.getPartialSoundSequenceDuration(alertAudio)+100)/1000.00;
         if (adjustedClosingSeconds > 0) {
             alertAudio.add(closingInSoundId);
             addNumericalAlertAudio(alertAudio, adjustedClosingSeconds, false);
             alertAudio.add(secondsSoundId);
+            return true;
         }
+        return false;
     }
 
     private void addPhoneticAlphaTrafficIdAudio(final List<Integer> alertAudio, final String callsign) {
