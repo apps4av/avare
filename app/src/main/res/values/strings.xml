@@ -198,8 +198,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsAltitudeSummary">&quot;Altitude difference between ownship and traffic under which audible alerts will fire, assuming horizontal distance threshold met as well.&quot;</string>
     <string name="AudibleTrafficAlertsAltitudeLabel">&quot;Traffic Alert Height (+/- Ownship Altitude)&quot;</string>
     <string name="AudibleTrafficAlertsDistanceCallout">&quot;Audible Traffic Alerts Distance Callout Option&quot;</string>
-    <string name="AudibleTrafficAlertsDistanceCalloutSummary">&quot;Distance callout (for traffic and TCPA alerts) options, e.g., Individual digit: 952 ==> \"niner fife two\"; Colloquial: 952 ==> \"niner hundred fifty-two\"; decimal (1 place): 5.342 ==> \"fife decimal tree\"&quot;</string>
+    <string name="AudibleTrafficAlertsDistanceCalloutSummary">&quot;Distance callout (for traffic and TCPA alerts) options&quot;</string>
     <string name="AudibleTrafficAlertsDistanceCalloutLabel">&quot;Distance Callouts&quot;</string>
+    <string name="AudibleTrafficAlertsNumberFormat">&quot;Audible Traffic Alerts Number Format&quot;</string>
+    <string name="AudibleTrafficAlertsNumberFormatSummary">&quot;Individual digit: 952 ==> \"niner fife two\"; Colloquial: 952 ==> \"niner hundred fifty-two\"&quot;</string>
+    <string name="AudibleTrafficAlertsNumberFormatLabel">&quot;Number Audio Format&quot;</string>
     <string name="AudibleTrafficAlertsVerticalDirectionCallout">&quot;Audible Traffic Alerts Vertical Direction&quot;</string>
     <string name="AudibleTrafficAlertsVerticalDirectionCalloutSummary">&quot;Vertical speed direction (climbing, descending)&quot;</string>
     <string name="AudibleTrafficAlertsVerticalDirectionCalloutLabel">&quot;Vertical Direction Callout&quot;</string>

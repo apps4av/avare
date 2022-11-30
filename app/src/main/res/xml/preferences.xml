@@ -387,7 +387,7 @@ authors: zkhan, jlmcgraw
             </PreferenceCategory>
         </PreferenceScreen>
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="COLLOQUIAL_ROUNDED"
+            android:defaultValue="NONE"
             android:dependency="@string/AudibleTrafficAlerts"
             android:entries="@array/AudibleDistanceCallout"
             android:entryValues="@array/AudibleDistanceCalloutValues"
@@ -402,6 +402,14 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleAlertTrafficId"
             android:summary="@string/AudibleAlertTrafficIdSummary"
             android:title="@string/AudibleAlertTrafficIdLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="COLLOQUIAL"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficNumberFormat"
+            android:entryValues="@array/AudibleTrafficNumberFormatValues"
+            android:key="@string/AudibleTrafficAlertsNumberFormat"
+            android:summary="@string/AudibleTrafficAlertsNumberFormatSummary"
+            android:title="@string/AudibleTrafficAlertsNumberFormatLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"

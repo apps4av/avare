@@ -2616,30 +2616,36 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="AudibleDistanceCallout">
         <item>NONE (No Distance Callouts)</item>
-        <item>Individual Digit - Rounded</item>
-        <item>Individual Digit - Decimal</item>
-        <item>Colloquial - Rounded</item>
-        <item>Colloquial - Decimal</item>
+        <item>Rounded (to whole mile)</item>
+        <item>Decimal (to 1/10th mile)</item>
     </string-array>
 
     <string-array name="AudibleDistanceCalloutValues">
         <item>NONE</item>
-        <item>INDIVIDUAL_ROUNDED</item>
-        <item>INDIVIDUAL_DECIMAL</item>
-        <item>COLLOQUIAL_ROUNDED</item>
-        <item>COLLOQUIAL_DECIMAL</item>
+        <item>ROUNDED</item>
+        <item>DECIMAL</item>
     </string-array>
 
     <string-array name="AudibleTrafficIdCallout">
         <item>NONE (No individual ID)</item>
         <item>Phonetic Alphabet Letter</item>
-        <item>Full ICAO Callsign</item>
+        <item>Full Callsign/Tail Number</item>
     </string-array>
 
     <string-array name="AudibleTrafficIdCalloutValues">
         <item>NONE</item>
         <item>PHONETIC_ALPHA_ID</item>
         <item>FULL_CALLSIGN</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficNumberFormat">
+        <item>Colloquial</item>
+        <item>Individual Digit</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficNumberFormatValues">
+        <item>COLLOQUIAL</item>
+        <item>INDIVIDUAL_DIGIT</item>
     </string-array>
 
 </resources>

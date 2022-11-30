@@ -145,7 +145,7 @@ public class AudibleTrafficAlertsTest {
     @Test
     public void buildAlertSoundIdSequence_numericListPrefSet_closingEventLessThanHalfSecond_PicksFirstMedia() {
         AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
-        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.INDIVIDUAL_DECIMAL;
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.DECIMAL;
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
         AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
                 "abc123", 2, 75,
@@ -186,7 +186,8 @@ public class AudibleTrafficAlertsTest {
     @Test
     public void addNumericalAlertAudioSequence_numericListPrefSet_largeNumberWithDecimal() {
         final AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
-        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.INDIVIDUAL_DECIMAL;
+        ata.numberFormatOption = AudibleTrafficAlerts.NumberFormatOption.INDIVIDUAL_DIGIT;
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.DECIMAL;
         final ArrayList<Integer> soundIds = new ArrayList<>();
         ata.addNumericalAlertAudio(soundIds, 1049.99, true);
         Assert.assertEquals("SoundIds from number",
