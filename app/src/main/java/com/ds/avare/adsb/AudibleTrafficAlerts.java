@@ -88,6 +88,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private float maxAlertFrequencySeconds = 15f;
     protected DistanceCalloutOption distanceCalloutOption = DistanceCalloutOption.NONE;
     protected TrafficIdCalloutOption trafficIdCalloutOption = TrafficIdCalloutOption.FULL_CALLSIGN;
+    protected NumberFormatOption numberFormatOption = NumberFormatOption.COLLOQUIAL;
     private boolean verticalAttitudeCallout = false;
 
     // Core alert tracking data structures, threading objects, and feature instances
@@ -102,10 +103,13 @@ public class AudibleTrafficAlerts implements Runnable {
     private static final long MIN_ALERT_SEPARATION_MS = 750;
 
     protected enum DistanceCalloutOption {
-        NONE, INDIVIDUAL_ROUNDED, INDIVIDUAL_DECIMAL, COLLOQUIAL_ROUNDED, COLLOQUIAL_DECIMAL;
+        NONE, ROUNDED, DECIMAL;
     }
     protected enum TrafficIdCalloutOption {
         NONE, PHONETIC_ALPHA_ID, FULL_CALLSIGN
+    }
+    protected enum NumberFormatOption {
+        COLLOQUIAL, INDIVIDUAL_DIGIT
     }
 
     protected static final class Alert {
@@ -215,7 +219,7 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setDistanceCalloutOption(final String distanceCalloutOption) { this.distanceCalloutOption = DistanceCalloutOption.valueOf(distanceCalloutOption); }
     public void setVerticalAttitudeCallout (final boolean verticalAttitudeCallout) { this.verticalAttitudeCallout = verticalAttitudeCallout; }
     public void setTrafficIdCalloutOption(final String trafficIdCalloutOption) { this.trafficIdCalloutOption = TrafficIdCalloutOption.valueOf(trafficIdCalloutOption); }
-
+    public void setNumberFormatOption(final String numberFormatOption) { this.numberFormatOption = NumberFormatOption.valueOf(numberFormatOption); }
 
     /**
      * Factory to get feature instance, and start alert queue processing thread
@@ -346,14 +350,10 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private void addDistanceAudio(final List<Integer> alertAudio, final double distance) {
-        switch (this.distanceCalloutOption) {
-            case COLLOQUIAL_DECIMAL:
-            case INDIVIDUAL_DECIMAL:
+        if (this.distanceCalloutOption == DistanceCalloutOption.DECIMAL)
                 addNumericalAlertAudio(alertAudio, distance, true);
-                break;
-            default:
+        else
                 addNumericalAlertAudio(alertAudio, distance, false);
-        }
         alertAudio.add(milesSoundId);
     }
 
@@ -413,14 +413,11 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param doDecimal Whether to speak 1st decimal into alert (false ==> rounded to whole #)
      */
     protected final void addNumericalAlertAudio(final List<Integer> alertAudio, final double numeric, final boolean doDecimal) {
-        switch (this.distanceCalloutOption) {
-            case COLLOQUIAL_DECIMAL:
-            case COLLOQUIAL_ROUNDED:
-                addColloquialNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
-                break;
-            default:
-                addNumberSequenceNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
-        }
+        if (this.numberFormatOption == NumberFormatOption.COLLOQUIAL)
+            addColloquialNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
+        else
+            addNumberSequenceNumericBaseAlertAudio(alertAudio, doDecimal ? numeric : Math.round(numeric));
+
         if (doDecimal) {
             addFirstDecimalAlertAudioSequence(alertAudio, numeric);
         }
