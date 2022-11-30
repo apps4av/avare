@@ -184,7 +184,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsClosingAltitudeLabel">&quot;Closing Alert Height (+/- Ownship Altitude)&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlert">&quot;Closing Critical Alert Pct&quot;</string>
     <string name="AudibleTrafficAlertsClosingCritalAlertSummary">&#xFF05; of closing distance &amp; time within which a chirp will precede the voice alert (e.g., closing alert seconds=60s &amp; range=2nmi, a setting of 25&#xFF05; &#x21D2; chirp when within 15s of a &lt;= ½nmi closest approach).</string>
-    <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alert (TCPA) Chirp &#xFF05;</string>
+    <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alerts (TCPA) Chirp &#xFF05;</string>
     <string name="AudibleTrafficAlertsMaxFrequency">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
     <string name="AudibleTrafficAlertsMaxFrequencySummary">&quot;Max frequency in seconds between which an alert for the same aircraft (by callsign) is alerted again.&quot;</string>
     <string name="AudibleTrafficAlertsMaxFrequencyLabel">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
