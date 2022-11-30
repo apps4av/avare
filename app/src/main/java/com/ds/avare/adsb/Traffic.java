@@ -143,13 +143,14 @@ public class Traffic {
         }
 
         ctx.paint.setColor(Color.WHITE);
+        final boolean showGroundTraffic = ctx.pref.showAdsbGroundTraffic();
         for(Traffic t : traffic) {
 
             if(null == t) {
                 continue;
             }
             // Don't draw ground traffic, unless configuration allows it
-            if (!(t.mIsAirborne || ctx.pref.showAdsbGroundTraffic())) {
+            if (!(t.mIsAirborne || showGroundTraffic)) {
                 continue;
             }
 
