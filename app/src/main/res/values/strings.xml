@@ -153,7 +153,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="NorthUp">&quot;North Up&quot;</string>
     <string name="TrackUp">&quot;Track Up&quot;</string>
     <string name="AudibleTrafficAlertsPreferenceGroup">&quot;Audible Traffic Alerts&quot;</string>
-    <string name="AudibleTrafficAlertsFiltersScreen">&quot;Audible Traffic Alerts Filter Criteria&quot;</string>
+    <string name="AudibleTrafficAlertsFiltersScreen">&quot;Traffic Alerts Filter Criteria&quot;</string>
     <string name="AudibleTrafficAlertsClosingFiltersScreen">&quot;Closing Alerts (TCPA) Filter Criteria&quot;</string>
     <string name="AudibleTrafficAlertsIncursionCylinderGroup">&quot;Audible Traffic Alerts Cylinder (height &amp; radius)&quot;</string>
     <string name="AudibleTrafficAlertsClosingIncursionCyclingGroup">&quot;Closing Alerts (TCPA) Incursion Cylinder (height &amp; radius)&quot;</string>

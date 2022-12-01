@@ -2616,8 +2616,8 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="AudibleDistanceCallout">
         <item>NONE (No Distance Callouts)</item>
-        <item>Rounded (to whole mile)</item>
-        <item>Decimal (to 1/10th mile)</item>
+        <item>Rounded (to nearest mile)</item>
+        <item>Decimal (1/10th mile)</item>
     </string-array>
 
     <string-array name="AudibleDistanceCalloutValues">

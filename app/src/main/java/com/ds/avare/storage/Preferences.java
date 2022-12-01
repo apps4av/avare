@@ -374,7 +374,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public String getAudibleDistanceCallout() {
-        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "COLLOQUIAL_ROUNDED");
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "NONE");
     }
 
     public String getAudibleTrafficIdCallout() {
