@@ -187,7 +187,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsClosingCritalAlertLabel">Closing Alerts (TCPA) Chirp &#xFF05;</string>
     <string name="AudibleTrafficAlertsMaxFrequency">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
     <string name="AudibleTrafficAlertsMaxFrequencySummary">&quot;Max frequency in seconds between which an alert for the same aircraft (by callsign) is alerted again.&quot;</string>
-    <string name="AudibleTrafficAlertsMaxFrequencyLabel">&quot;Audible Traffic Alerts Max Frequency (sec)&quot;</string>
+    <string name="AudibleTrafficAlertsMaxFrequencyLabel">&quot;Traffic Alerts Max Frequency (sec)&quot;</string>
     <string name="AudibleTrafficAlertsGroundAlert">&quot;Audible Traffic Alerts Ground Alerts&quot;</string>
     <string name="AudibleTrafficAlertsGroundAlertSummary">&quot;Enable audible alerts even when the ownship or the traffic are on the ground (unchecked implies no alerts when either or both are on the ground, per the ADSB air/ground flag)&quot;</string>
     <string name="AudibleTrafficAlertsGroundAlertLabel">&quot;Audible Ground Alerts&quot;</string>
