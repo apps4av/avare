@@ -350,10 +350,7 @@ public class AudibleTrafficAlerts implements Runnable {
     }
 
     private void addDistanceAudio(final List<Integer> alertAudio, final double distance) {
-        if (this.distanceCalloutOption == DistanceCalloutOption.DECIMAL)
-                addNumericalAlertAudio(alertAudio, distance, true);
-        else
-                addNumericalAlertAudio(alertAudio, distance, false);
+        addNumericalAlertAudio(alertAudio, distance, this.distanceCalloutOption == DistanceCalloutOption.DECIMAL);
         alertAudio.add(milesSoundId);
     }
 
@@ -516,7 +513,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
         // Pull all preferences needed by executor lambda into final vars, to allow fast GC of lambda
         final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
-        final float trafficAlertsAltitude = pref.getAudibleTrafficAlertsAltitude();
+        final float trafficAlertsHeight = pref.getAudibleTrafficAlertsAltitude();
         final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
         final String ownTailNumber = ifNullElse(pref.getAircraftTailNumber(), "ownship12349").trim();
         final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
@@ -532,7 +529,7 @@ public class AudibleTrafficAlerts implements Runnable {
             closingAlertsAltitude = 0;
             closingAlertsSeconds = 0;
         }
-        // Make traffic handling loop async producer thread, to not delay caller handling loop
+        // Make traffic handling loop use an async producer thread, to not delay caller handling loop
         getTrafficAlertProducerExecutor().execute(() -> {
 			synchronized(lastDistanceUpdate) {	// in case calls get overlaid
 				for (Traffic traffic : allTraffic) {
@@ -544,7 +541,7 @@ public class AudibleTrafficAlerts implements Runnable {
 						continue;
 					}
                     // Make a good-faith effort to filter ownship "ghost" audible alerts by comparing ownship and traffic callsigns/n-numbers
-                    if (traffic.mCallSign != null && traffic.mCallSign.trim().equalsIgnoreCase(ownTailNumber)) {
+                    if (ifNullElse(traffic.mCallSign, "traffic994124").trim().equalsIgnoreCase(ownTailNumber)) {
                         continue;
                     }
 					final double altDiff = ownAltitude - traffic.mAltitude;
@@ -554,7 +551,7 @@ public class AudibleTrafficAlerts implements Runnable {
 					if (
 						(lastDistanceUpdateKey == null || !lastDistanceUpdateKey.equals(distanceCalcUpdateKey))
 						// traffic is within configured "cylinder" of audible alert (radius & height/alt)
-						&& Math.abs(altDiff) < trafficAlertsAltitude
+						&& Math.abs(altDiff) < trafficAlertsHeight
 						&& (currentDistance = greatCircleDistance(
 							ownLocation.getLatitude(), ownLocation.getLongitude(), traffic.mLat, traffic.mLon
 						)) < trafficAlertsDistanceMinimum
@@ -581,7 +578,7 @@ public class AudibleTrafficAlerts implements Runnable {
         return val == null ? defaultVal : val;
     }
 
-    protected final Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
+    private Alert.ClosingEvent determineClosingEvent(final Location ownLocation, final Traffic traffic, final double currentDistance,
         final int ownAltitude, final int ownVspeed, final int closingTimeThresholdSeconds, final float closestApproachThresholdNmi,
         final float criticalClosingAlertRatio, final float closingAlertAltitude)
     {
@@ -590,20 +587,20 @@ public class AudibleTrafficAlerts implements Runnable {
                 traffic.mLat, traffic.mLon, ownLocation.getLatitude(), ownLocation.getLongitude(),
                 traffic.mHeading, ownLocation.getBearing(), traffic.mHorizVelocity, ownSpeedInKts
         ))*60.00*60.00;
-        if (closingEventTimeSec < closingTimeThresholdSeconds) {
+        if (closingEventTimeSec < closingTimeThresholdSeconds) {    // Gate #1: Time threshold met
             final double[] myCaLoc = locationAfterTime(ownLocation.getLatitude(), ownLocation.getLongitude(),
                     ownLocation.getBearing(), ownSpeedInKts, closingEventTimeSec/3600.000, ownAltitude, ownVspeed);
             final double[] theirCaLoc = locationAfterTime(traffic.mLat, traffic.mLon, traffic.mHeading,
                     traffic.mHorizVelocity, closingEventTimeSec/3600.000, traffic.mAltitude, traffic.mVertVelocity);
             final double caDistance;
             final double altDiff = myCaLoc[2] - theirCaLoc[2];
-            // If traffic will be within configured "cylinder" of closing/TCPA alerts, create a closing event
+            // Gate #2: If traffic will be within configured "cylinder" of closing/TCPA alerts, create a closing event
             if (Math.abs(altDiff) < closingAlertAltitude
                     && (caDistance = greatCircleDistance(myCaLoc[0], myCaLoc[1], theirCaLoc[0], theirCaLoc[1])) < closestApproachThresholdNmi
                     && currentDistance > caDistance)    // catches cases when moving away
             {
                 final boolean criticallyClose = criticalClosingAlertRatio > 0
-                        &&(closingEventTimeSec / closingTimeThresholdSeconds) <= criticalClosingAlertRatio
+                        && (closingEventTimeSec / closingTimeThresholdSeconds) <= criticalClosingAlertRatio
                         && (caDistance / closestApproachThresholdNmi) <= criticalClosingAlertRatio;
                 return new Alert.ClosingEvent(closingEventTimeSec, caDistance, criticallyClose);
             }
