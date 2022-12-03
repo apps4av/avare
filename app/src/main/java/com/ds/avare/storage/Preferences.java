@@ -381,6 +381,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getString(mContext.getString(R.string.AudibleAlertTrafficId), "NONE");
     }
 
+    public String getAudibleTrafficNumberFormat() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsNumberFormat), "COLLOQUIAL");
+    }
+
     /**
      * @return
      */
