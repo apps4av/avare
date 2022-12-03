@@ -1329,7 +1329,7 @@ public class StorageService  {
                 // set own airborne status
                 getTrafficCache().setOwnIsAirborne(object.optBoolean("isairborne", true));
                 // set own vertical velocity
-                getTrafficCache().setOwnVertVelocity(object.optInt("vspeed", 0));
+                getTrafficCache().setOwnVertVelocity(object.optInt("vspeed", Integer.MAX_VALUE /* Indeterminate value */));
 
                 // For own height prefer geo altitude, do not use deviceAltitude here because
                 // we could get into rising altitude condition through feedback
