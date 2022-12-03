@@ -170,10 +170,6 @@ public class TrafficCache {
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
-    public boolean getOwnIsAirborne() { return mOwnIsAirborne; }
-    public int getOwnVertVelocity() {
-        return mOwnVertVelocity;
-    }
 
     public void setOwnLocation(Location loc) {
         this.mOwnLocation = loc;
