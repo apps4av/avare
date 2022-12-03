@@ -162,7 +162,7 @@ public class AudibleTrafficAlerts implements Runnable {
         }
     }
 
-    protected AudibleTrafficAlerts(Context ctx) {
+    private AudibleTrafficAlerts(Context ctx) {
         this(new SequentialSoundPoolPlayer(), ctx);
     }
 
