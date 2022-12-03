@@ -516,8 +516,9 @@ public class BufferProcessor {
                     object.put("type", "ownship");
                     object.put("longitude", (double)om.mLon);
                     object.put("latitude", (double)om.mLat);
-                    object.put("speed", (double)(om.mHorizontalVelocity));
                     object.put("isairborne", om.mIsAirborne);
+                    object.put("speed", (double)(om.mHorizontalVelocity));
+                    object.put("vspeed", om.mVerticalVelocity);
                     object.put("bearing", (double)om.mDirection);
                     object.put("time", (long)om.getTime());
                     object.put("altitude", (double) om.mAltitude);
