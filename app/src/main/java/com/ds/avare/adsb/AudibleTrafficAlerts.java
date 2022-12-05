@@ -90,6 +90,7 @@ public class AudibleTrafficAlerts implements Runnable {
     protected TrafficIdCalloutOption trafficIdCalloutOption = TrafficIdCalloutOption.FULL_CALLSIGN;
     protected NumberFormatOption numberFormatOption = NumberFormatOption.COLLOQUIAL;
     private boolean verticalAttitudeCallout = false;
+    private float speakingRate;
 
     // Core alert tracking data structures, threading objects, and feature instances
     private static Thread alertQueueProcessingConsumerThread;
@@ -220,6 +221,7 @@ public class AudibleTrafficAlerts implements Runnable {
     public void setVerticalAttitudeCallout (final boolean verticalAttitudeCallout) { this.verticalAttitudeCallout = verticalAttitudeCallout; }
     public void setTrafficIdCalloutOption(final String trafficIdCalloutOption) { this.trafficIdCalloutOption = TrafficIdCalloutOption.valueOf(trafficIdCalloutOption); }
     public void setNumberFormatOption(final String numberFormatOption) { this.numberFormatOption = NumberFormatOption.valueOf(numberFormatOption); }
+    public void setSpeakingRate(final float speakingRate) { this.speakingRate = speakingRate; }
 
     /**
      * Factory to get feature instance, and start alert queue processing thread
@@ -283,7 +285,7 @@ public class AudibleTrafficAlerts implements Runnable {
                                             - (System.currentTimeMillis() - lastCallsignAlertTime.get(alert.trafficCallsign))) <= 0)))    // ...otherwise, respect config for delay between same callsign
                         {
                             lastCallsignAlertTime.put(alert.trafficCallsign, System.currentTimeMillis());
-                            final long soundDuration = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.get(0)));
+                            final long soundDuration = soundPlayer.playSequence(buildAlertSoundIdSequence(alertQueue.get(0), speakingRate), speakingRate);
                             alertQueue.remove(0);
                             nextAvailableAlertTime = System.currentTimeMillis() + soundDuration + MIN_ALERT_SEPARATION_MS;
                             alertQueue.wait(soundDuration + MIN_ALERT_SEPARATION_MS);   // wait thread until alert finished playing
@@ -315,7 +317,7 @@ public class AudibleTrafficAlerts implements Runnable {
      * @param alert Alert item to build soundId sequence for
      * @return Sequence of soundId's for the soundplayer that represents the assembled alert
      */
-    protected final List<Integer> buildAlertSoundIdSequence(Alert alert) {
+    protected final List<Integer> buildAlertSoundIdSequence(final Alert alert, final float speakingRate) {
         final List<Integer> alertAudio = new ArrayList<>();
         if (alert.closingEvent != null && alert.closingEvent.isCriticallyClose)
             alertAudio.add(criticallyCloseChirpSoundId);
@@ -328,7 +330,7 @@ public class AudibleTrafficAlerts implements Runnable {
                 addFullCallsignTrafficIdAudio(alertAudio, alert.trafficCallsign);
         }
         if (alert.closingEvent != null) {
-            addTimeToClosestPointOfApproachAudio(alertAudio, alert.closingEvent);
+            addTimeToClosestPointOfApproachAudio(alertAudio, alert.closingEvent, speakingRate);
         }
         addPositionAudio(alertAudio, alert.clockHour, alert.altitudeDiff);
         if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
@@ -340,8 +342,8 @@ public class AudibleTrafficAlerts implements Runnable {
         return alertAudio;
     }
 
-    private void addTimeToClosestPointOfApproachAudio(final List<Integer> alertAudio, final Alert.ClosingEvent closingEvent) {
-        if (addClosingSecondsAudio(alertAudio, closingEvent.closingSeconds())) {
+    private void addTimeToClosestPointOfApproachAudio(final List<Integer> alertAudio, final Alert.ClosingEvent closingEvent, final float speakingRate) {
+        if (addClosingSecondsAudio(alertAudio, closingEvent.closingSeconds(), speakingRate)) {
             if (this.distanceCalloutOption != DistanceCalloutOption.NONE) {
                 alertAudio.add(withinSoundId);
                 addDistanceAudio(alertAudio, closingEvent.closestApproachDistanceNmi);
@@ -371,9 +373,9 @@ public class AudibleTrafficAlerts implements Runnable {
                 : (altitudeDiff > 0 ? lowSoundId : highSoundId));
     }
 
-    private boolean addClosingSecondsAudio(final List<Integer> alertAudio, final double closingSeconds) {
+    private boolean addClosingSecondsAudio(final List<Integer> alertAudio, final double closingSeconds, final float speakingRate) {
         // Subtract speaking time of audio clips, and computation thereof, prior to # of seconds in this alert
-        final double adjustedClosingSeconds = closingSeconds - (soundPlayer.getPartialSoundSequenceDuration(alertAudio)+100)/1000.00;
+        final double adjustedClosingSeconds = closingSeconds - (soundPlayer.getPartialSoundSequenceDuration(alertAudio, speakingRate)+100)/1000.00;
         if (adjustedClosingSeconds > 0) {
             alertAudio.add(closingInSoundId);
             addNumericalAlertAudio(alertAudio, adjustedClosingSeconds, false);
@@ -750,10 +752,6 @@ public class AudibleTrafficAlerts implements Runnable {
         private SoundSequenceOnCompletionListener listener;
         private boolean isWaitingForSoundsToLoad = false;
 
-
-        private static final float SOUND_PLAY_RATE = 1f;
-        private static final double OVERLAP_RATIO = 0.94;  // allows more natural flow of phrases
-
         private SequentialSoundPoolPlayer() {
             // Setting concurrent streams to 2 to allow for overlap ratio and looper post-to-execution delay
             this.soundPool = new SoundPool(2, AudioManager.STREAM_NOTIFICATION,0);
@@ -810,21 +808,21 @@ public class AudibleTrafficAlerts implements Runnable {
                 listener.onSoundSequenceCompletion(soundIdSequence);
         }
 
-        public final long playSequence(List<Integer> soundIds) {
+        public final long playSequence(final List<Integer> soundIds, final float speakingRate) {
             if (isPlaying) {
                 return 0;
             }
             isPlaying = true;
-            final SequentialSoundPlayRunnable spRunnable = new SequentialSoundPlayRunnable(soundIds, this, handler, soundPool, soundDurationMap);
+            final SequentialSoundPlayRunnable spRunnable = new SequentialSoundPlayRunnable(soundIds, this, handler, soundPool, soundDurationMap, speakingRate);
             handler.post(spRunnable);
             return spRunnable.totalDuration;
         }
 
-        protected long getPartialSoundSequenceDuration(List<Integer> soundIds) {
+        protected long getPartialSoundSequenceDuration(final List<Integer> soundIds, final float speakingRate) {
             long soundSequenceDurationMs = 0;
             for (int soundId : soundIds)
                 soundSequenceDurationMs += soundDurationMap.get(soundId);
-            return (long) ((soundSequenceDurationMs / SOUND_PLAY_RATE) * OVERLAP_RATIO);
+            return (long) (soundSequenceDurationMs / speakingRate);
         }
 
         private long getSoundDuration(Context context, int rawId) {
@@ -851,9 +849,10 @@ public class AudibleTrafficAlerts implements Runnable {
             private final SoundSequenceOnCompletionListener listener;
             private final long[] delayDurations;
             private long totalDuration;
+            private final float speakingRate;
 
             public SequentialSoundPlayRunnable(List<Integer> soundIds, SoundSequenceOnCompletionListener listener,
-                                               Handler handler, SoundPool soundPool, Map<Integer,Long> soundDurationMap)
+                                               Handler handler, SoundPool soundPool, Map<Integer,Long> soundDurationMap, final float speakingRate)
             {
                 this.soundIds = soundIds;
                 this.handler = handler;
@@ -862,10 +861,9 @@ public class AudibleTrafficAlerts implements Runnable {
                 // Pre-load durations to prevent map-access time and delay math from causing audio delays
                 final int soundCount = soundIds.size();
                 this.delayDurations = new long[soundCount];
+                this.speakingRate = speakingRate;
                 for (int i = 0; i < soundCount; i++) {
-                    this.delayDurations[i] = (long) (i == soundCount-1 // Nothing to overlap for last sound in sequence
-                            ? Math.ceil(soundDurationMap.get(soundIds.get(i)) / SOUND_PLAY_RATE)
-                            : Math.ceil(soundDurationMap.get(soundIds.get(i)) / SOUND_PLAY_RATE * OVERLAP_RATIO));
+                    this.delayDurations[i] = (long) Math.ceil(soundDurationMap.get(soundIds.get(i)) / speakingRate);
                     this.totalDuration += this.delayDurations[i];
                 }
             }
@@ -873,7 +871,7 @@ public class AudibleTrafficAlerts implements Runnable {
             @Override
             public void run() {
                 if (curSoundIndex < soundIds.size()) {
-                    soundPool.play(this.soundIds.get(curSoundIndex), 1, 1, 1, 0, SOUND_PLAY_RATE);
+                    soundPool.play(this.soundIds.get(curSoundIndex), 1, 1, 1, 0, this.speakingRate);
                     handler.postDelayed(this, delayDurations[curSoundIndex++]);
                 } else {
                     if (listener != null)

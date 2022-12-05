@@ -410,6 +410,14 @@ authors: zkhan, jlmcgraw
             android:key="@string/AudibleTrafficAlertsNumberFormat"
             android:summary="@string/AudibleTrafficAlertsNumberFormatSummary"
             android:title="@string/AudibleTrafficAlertsNumberFormatLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="1"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficSpeakingSpeed"
+            android:entryValues="@array/AudibleTrafficSpeakingSpeedValues"
+            android:key="@string/AudibleTrafficAlertsSpeakingSpeed"
+            android:summary="@string/AudibleTrafficAlertsSpeakingSpeedSummary"
+            android:title="@string/AudibleTrafficAlertsSpeakingSpeedLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="@string/AudibleTrafficAlerts"

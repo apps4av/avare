@@ -206,6 +206,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AudibleTrafficAlertsVerticalDirectionCallout">&quot;Audible Traffic Alerts Vertical Direction&quot;</string>
     <string name="AudibleTrafficAlertsVerticalDirectionCalloutSummary">&quot;Vertical speed direction (climbing, descending)&quot;</string>
     <string name="AudibleTrafficAlertsVerticalDirectionCalloutLabel">&quot;Vertical Direction Callout&quot;</string>
+    <string name="AudibleTrafficAlertsSpeakingSpeed">&quot;Audible Traffic Alerts Speaking Speed&quot;</string>
+    <string name="AudibleTrafficAlertsSpeakingSpeedSummary">&quot;Speed/pitch of speech&quot;</string>
+    <string name="AudibleTrafficAlertsSpeakingSpeedLabel">&quot;Alert Speed/Pitch&quot;</string>
     <string name="TrackUpLabel">&quot;Track Up&quot;</string>
     <string name="TrackUpSummary">&quot;Select to show maps track up, unselect to show maps North up&quot;</string>
     <string name="TrackUpPlates">&quot;Track Up - Plates&quot;</string>
