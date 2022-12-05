@@ -250,7 +250,7 @@ authors: zkhan, jlmcgraw
             android:summary="@string/ADSBTrafficFilterSummary"
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/ADSBTrafficIncludeGroundTraffic"
             android:summary="@string/ADSBTrafficIncludeGroundTrafficSummary"
             android:title="@string/ADSBTrafficIncludeGroundTrafficLabel" />
