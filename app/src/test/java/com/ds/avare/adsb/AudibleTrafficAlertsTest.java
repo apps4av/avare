@@ -191,7 +191,7 @@ public class AudibleTrafficAlertsTest {
         final ArrayList<Integer> soundIds = new ArrayList<>();
         ata.addNumericalAlertAudio(soundIds, 1049.99, true);
         Assert.assertEquals("SoundIds from number",
-                Arrays.asList(ata.numberSoundIds[1], ata.numberSoundIds[0], ata.numberSoundIds[4], ata.numberSoundIds[9], ata.decimalSoundId, ata.numberSoundIds[9]),
+                Arrays.asList(ata.numberSoundIds[1], ata.numberSoundIds[0], ata.numberSoundIds[4], ata.numberSoundIds[9], ata.pointSoundId, ata.numberSoundIds[9]),
                 soundIds);
     }
 
