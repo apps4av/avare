@@ -75,7 +75,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private final int climbingSoundId, descendingSoundId, levelSoundId;
     private final int criticallyCloseChirpSoundId;
     private final int withinSoundId;
-    protected final int decimalSoundId;
+    protected final int pointSoundId;
 
     // Trackers for traffic callsigns, update freshness, and alert frequenncy
     private final List<String> phoneticAlphaIcaoSequenceQueue;
@@ -196,7 +196,7 @@ public class AudibleTrafficAlerts implements Runnable {
         this.climbingSoundId = sp.load(ctx, R.raw.tr_climbing)[0];
         this.descendingSoundId = sp.load(ctx, R.raw.tr_descending)[0];
         this.withinSoundId = sp.load(ctx, R.raw.tr_within)[0];
-        this.decimalSoundId = sp.load(ctx, R.raw.tr_decimal)[0];
+        this.pointSoundId = sp.load(ctx, R.raw.tr_point)[0];
         this.oClockSoundId = sp.load(ctx, R.raw.tr_oclock)[0];
         this.twentiesToNinetiesSoundIds = sp.load(ctx, R.raw.tr_20, R.raw.tr_30, R.raw.tr_40, R.raw.tr_50,
             R.raw.tr_60, R.raw.tr_70, R.raw.tr_80, R.raw.tr_90);
@@ -483,7 +483,7 @@ public class AudibleTrafficAlerts implements Runnable {
     private void addFirstDecimalAlertAudioSequence(final List<Integer> alertAudio, final double numeric) {
         final int firstDecimal = (int) Math.min(Math.round((numeric-Math.floor(numeric))*10), 9);
         if (firstDecimal != 0) {
-            alertAudio.add(decimalSoundId);
+            alertAudio.add(pointSoundId);
             alertAudio.add(numberSoundIds[firstDecimal]);
         }
     }
