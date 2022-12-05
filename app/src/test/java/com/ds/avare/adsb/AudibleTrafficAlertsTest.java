@@ -151,7 +151,7 @@ public class AudibleTrafficAlertsTest {
                 "abc123", 2, 75,
                 new AudibleTrafficAlerts.Alert.ClosingEvent(.15, 1.0, false), 99.9f, 10
         );
-        List<Integer> media = ata.buildAlertSoundIdSequence(alert);
+        List<Integer> media = ata.buildAlertSoundIdSequence(alert, 1f);
         final int firstMedia = ata.numberSoundIds[0];
         Assert.assertTrue("First media ["+firstMedia+"] used: "+media, media.contains(firstMedia));
     }
