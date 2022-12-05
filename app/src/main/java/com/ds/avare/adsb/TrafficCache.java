@@ -77,10 +77,6 @@ public class TrafficCache {
         return fac;
     }
 
-    private void handleAudibleAlerts() {
-        handleAudibleAlerts(getTraffic());
-    }
-
     private void handleAudibleAlerts(final List<Traffic> trafficList) {
         if (mPref.isAudibleTrafficAlerts()) {
             final AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
