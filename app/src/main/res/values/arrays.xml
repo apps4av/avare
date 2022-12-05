@@ -2648,4 +2648,18 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>INDIVIDUAL_DIGIT</item>
     </string-array>
 
+    <string-array name="AudibleTrafficSpeakingSpeed">
+        <item>Normal (~115wpm)</item>
+        <item>Fast (1.25x: ~145wpm)</item>
+        <item>Very Fast (1.5x: ~175wpm)</item>
+        <item>Extremely Fast (1.75x: ~200wpm)</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficSpeakingSpeedValues">
+        <item>1</item>
+        <item>1.25</item>
+        <item>1.5</item>
+        <item>1.75</item>
+    </string-array>
+
 </resources>

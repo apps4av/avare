@@ -91,6 +91,7 @@ public class TrafficCache {
             audibleTrafficAlerts.setTrafficIdCalloutOption(mPref.getAudibleTrafficIdCallout());
             audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
             audibleTrafficAlerts.setNumberFormatOption(mPref.getAudibleTrafficNumberFormat());
+            audibleTrafficAlerts.setSpeakingRate(mPref.getSpeakingRate());
             audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), trafficList, mPref,
                     mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {
