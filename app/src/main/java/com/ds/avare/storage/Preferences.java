@@ -342,23 +342,43 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
 
     public float getAudibleTrafficAlertsDistanceMinimum() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+		} catch (Exception e) {
+		}
+		return 5.0f;
     }
 
     public float getAudibleTrafficAlertsMaxFrequency() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+		} catch (Exception e) {
+		}
+		return 15f;
     }
 
     public float getAudibleTrafficAlertsMinSpeed() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMinimumSpeed), "0.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMinimumSpeed), "0.0"));
+		} catch (Exception e) {
+		}
+		return 0f;
     }
 
     public int getAudibleClosingInAlertSeconds() {
-        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+		try {
+			return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+		} catch (Exception e) {
+		}
+		return 15;
     }
 
     public float getAudibleClosingInAlertDistanceNmi() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+		} catch (Exception e) {
+		}
+		return 3.0f;
     }
 
     public float getAudibleClosingInCriticalAlertRatio() {
@@ -366,11 +386,19 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
 
     public float getAudibleTrafficAlertsAltitude() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
     }
 
     public float getAudibleClosingAlertsAltitude() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingAltitude), "1000.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
     }
 
     public String getAudibleDistanceCallout() {
