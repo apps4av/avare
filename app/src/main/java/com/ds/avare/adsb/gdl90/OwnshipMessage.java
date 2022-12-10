@@ -24,7 +24,7 @@ public class OwnshipMessage extends Message {
     public int mVerticalVelocity;
     public int mAltitude;
     public float mDirection;
-    boolean mIsAirborne;
+    public boolean mIsAirborne;
     boolean mIsExtrapolated;
     int mTrackType;
     int mNIC;

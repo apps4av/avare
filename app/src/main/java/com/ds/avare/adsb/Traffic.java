@@ -25,8 +25,10 @@ public class Traffic {
     public float mLon;
     public int mAltitude;
     public int mHorizVelocity;
+    public int mVertVelocity;
     public float mHeading;
     public String mCallSign;
+    public boolean mIsAirborne;
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
 
@@ -55,16 +57,18 @@ public class Traffic {
      * @param altitude
      * @param heading
      */
-    public Traffic(String callsign, int address, float lat, float lon, int altitude, 
-            float heading, int speed, long time)
+    public Traffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
+            float heading, int speed, int vspeed, long time)
     {
         mIcaoAddress = address;
         mCallSign = callsign;
+        mIsAirborne = isAirborne;
         mLon = lon;
         mLat = lat;
         mAltitude = altitude;
         mHeading = heading;
         mHorizVelocity = speed;
+        mVertVelocity = vspeed;
         mLastUpdate = time;
 
         /*
@@ -139,9 +143,14 @@ public class Traffic {
         }
 
         ctx.paint.setColor(Color.WHITE);
+        final boolean showGroundTraffic = ctx.pref.showAdsbGroundTraffic();
         for(Traffic t : traffic) {
 
             if(null == t) {
+                continue;
+            }
+            // Don't draw ground traffic, unless configuration allows it
+            if (!(t.mIsAirborne || showGroundTraffic)) {
                 continue;
             }
 

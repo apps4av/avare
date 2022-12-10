@@ -19,6 +19,8 @@ import com.ds.avare.storage.Preferences;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
+
 import android.location.Location;
 
 /**
@@ -30,7 +32,9 @@ public class TrafficCache {
     private static final int MAX_ENTRIES = 20;
     private Traffic[] mTraffic;
     private int mOwnAltitude;
+    private boolean mOwnIsAirborne;
     private Location mOwnLocation;
+    private int mOwnVertVelocity;
     Preferences mPref;
 
     public TrafficCache() {
@@ -73,19 +77,19 @@ public class TrafficCache {
         return fac;
     }
 
-    private void handleAudibleAlerts() {
+    private void handleAudibleAlerts(final List<Traffic> trafficList) {
         if (mPref.isAudibleTrafficAlerts()) {
-            AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(StorageService.getInstance().getApplicationContext());
-            audibleTrafficAlerts.setUseTrafficAliases(mPref.isAudibleAlertTrafficId());
+            final AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
+                    StorageService.getInstance().getApplicationContext());
             audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
-            audibleTrafficAlerts.setClosingTimeEnabled(mPref.isAudibleClosingInAlerts());
-            audibleTrafficAlerts.setClosingTimeThreasholdSeconds(mPref.getAudibleClosingInAlertSeconds());
-            audibleTrafficAlerts.setClosestApproachThreasholdNmi(mPref.getAudibleClosingInAlertDistanceNmi());
-            audibleTrafficAlerts.setCriticalClosingAlertRatio(mPref.getAudibleClosingInCriticalAlertRatio());
             audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
-            audibleTrafficAlerts.handleAudibleAlerts(StorageService.getInstance().getTrafficCache().getOwnLocation(),
-                    StorageService.getInstance().getTrafficCache().getTraffic(), mPref.getAudibleTrafficAlertsDistanceMinimum() ,
-                    StorageService.getInstance().getTrafficCache().getOwnAltitude());
+            audibleTrafficAlerts.setDistanceCalloutOption(mPref.getAudibleDistanceCallout());
+            audibleTrafficAlerts.setTrafficIdCalloutOption(mPref.getAudibleTrafficIdCallout());
+            audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
+            audibleTrafficAlerts.setNumberFormatOption(mPref.getAudibleTrafficNumberFormat());
+            audibleTrafficAlerts.setSpeakingRate(mPref.getSpeakingRate());
+            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), trafficList, mPref,
+                    mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
         } else {
             AudibleTrafficAlerts.stopAudibleTrafficAlerts();
         }
@@ -95,8 +99,8 @@ public class TrafficCache {
      * 
      * @param
      */
-    public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
-            float heading, int speed, long time) {
+    public void putTraffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
+            float heading, int speed, int vspeed, long time) {
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
         if(address == mPref.getAircraftICAOCode() || address == StorageService.getInstance().getIcaoAddress()) {
@@ -125,9 +129,10 @@ public class TrafficCache {
                 if(callsign.equals("")) {
                     callsign = mTraffic[i].mCallSign;
                 }
-                mTraffic[i] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+                final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+                mTraffic[i] = traffic;
 
-                handleAudibleAlerts();
+                handleAudibleAlerts(Arrays.asList(traffic));
                 return;
             }
         }
@@ -138,18 +143,26 @@ public class TrafficCache {
             return;
         }
         // put it in the end
-        mTraffic[MAX_ENTRIES] = new Traffic(callsign, address, lat, lon, altitude, heading, speed, time);
+        final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+        mTraffic[MAX_ENTRIES] = traffic;
 
         // sort
         Arrays.sort(mTraffic, new TrafficComparator());
 
-        handleAudibleAlerts();
+        handleAudibleAlerts(Arrays.asList(traffic));
 
     }
 
     public void setOwnAltitude(int altitude) {
         mOwnAltitude = altitude;
     }
+    public void setOwnIsAirborne(boolean isAirborne) {
+        mOwnIsAirborne = isAirborne;
+    }
+    public void setOwnVertVelocity(int vspeed) {
+        mOwnVertVelocity = vspeed;
+    }
+
 
     public int getOwnAltitude() {
         return mOwnAltitude;

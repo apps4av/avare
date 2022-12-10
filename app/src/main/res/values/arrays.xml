@@ -2614,5 +2614,54 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>100</item>
     </string-array>
 
+    <string-array name="AudibleDistanceCallout">
+        <item>NONE (No Distance Callouts)</item>
+        <item>Rounded (to nearest mile)</item>
+        <item>Decimal (1/10th mile)</item>
+    </string-array>
+
+    <string-array name="AudibleDistanceCalloutValues">
+        <item>NONE</item>
+        <item>ROUNDED</item>
+        <item>DECIMAL</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficIdCallout">
+        <item>NONE (No individual ID)</item>
+        <item>Phonetic Alphabet Letter</item>
+        <item>Full Callsign/Tail Number</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficIdCalloutValues">
+        <item>NONE</item>
+        <item>PHONETIC_ALPHA_ID</item>
+        <item>FULL_CALLSIGN</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficNumberFormat">
+        <item>Colloquial</item>
+        <item>Individual Digit</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficNumberFormatValues">
+        <item>COLLOQUIAL</item>
+        <item>INDIVIDUAL_DIGIT</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficSpeakingSpeed">
+        <item>Normal (~115wpm)</item>
+        <item>Fast (1.25x: ~145wpm)</item>
+        <item>Very Fast (1.5x: ~175wpm)</item>
+        <item>Extremely Fast (1.75x: ~200wpm)</item>
+        <item>Ludicrous Fast (2.25x: ~250wpm)</item>
+    </string-array>
+
+    <string-array name="AudibleTrafficSpeakingSpeedValues">
+        <item>1</item>
+        <item>1.25</item>
+        <item>1.5</item>
+        <item>1.75</item>
+        <item>2.25</item>
+    </string-array>
 
 </resources>

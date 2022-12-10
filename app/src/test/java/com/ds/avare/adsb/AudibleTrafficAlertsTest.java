@@ -6,9 +6,19 @@ import android.location.Location;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import static org.mockito.Mockito.*;
 
+import com.ds.avare.storage.Preferences;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AudibleTrafficAlertsTest {
 
@@ -97,7 +107,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 41, lon = -95, time = 1 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 0; /* North */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time,200, 20);
         Assert.assertEquals("new lat", 42, latLonOverTime[0], 0.1);
         Assert.assertEquals("new lon the same", lon, latLonOverTime[1], 0.1);
     }
@@ -107,7 +117,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 10, lon = -95, time = 1 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 200, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94, latLonOverTime[1], 0.1);
     }
@@ -117,7 +127,7 @@ public class AudibleTrafficAlertsTest {
         final double lat = 41.184505, lon = -95.948730, time = .008952 /* hour */;
         final float velocity = 37; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 200, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertNotEquals("new lon", lon, latLonOverTime[1], 0.0000001);
     }
@@ -127,45 +137,71 @@ public class AudibleTrafficAlertsTest {
         final double lat = 10, lon = -95, time = .5 /* hour */;
         final float velocity = 60; /* knots */
         final float heading = 90; /* East */
-        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time);
+        double[] latLonOverTime = AudibleTrafficAlerts.locationAfterTime(lat, lon, heading, velocity, time, 20, 20);
         Assert.assertEquals("new lat the same", lat, latLonOverTime[0], 0.0);
         Assert.assertEquals("new lon", -94.5, latLonOverTime[1], 0.1);
     }
 
     @Test
-    public void buildAlertSoundIdSequence_closingEventBeyondAlertRange_PicksLastMedia() {
-        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
+    public void buildAlertSoundIdSequence_numericListPrefSet_closingEventLessThanHalfSecond_PicksFirstMedia() {
+        AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.DECIMAL;
         Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
-        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
-                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
-                mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(67, 1.0, false), 99.9f
+        AudibleTrafficAlerts.Alert alert = new AudibleTrafficAlerts.Alert(
+                "abc123", 2, 75,
+                new AudibleTrafficAlerts.Alert.ClosingEvent(.15, 1.0, false), 99.9f, 10
         );
-        List<Integer> media = ata.buildAlertSoundIdSequence(alert);
-        Assert.assertTrue("Last media used", media.contains(ata.closingInSecondsSoundIds[ata.closingInSecondsSoundIds.length-1]));
+        List<Integer> media = ata.buildAlertSoundIdSequence(alert, 1f);
+        final int firstMedia = ata.numberSoundIds[0];
+        Assert.assertTrue("First media ["+firstMedia+"] used: "+media, media.contains(firstMedia));
     }
 
     @Test
-    public void buildAlertSoundIdSequence_closingEventLessThanHalfSecond_PicksFirstMedia() {
-        AudibleTrafficAlerts ata = getMockedAudibleTrafficAlerts(10);
-        Location mockLoc = getMockLocation(41.3,-95.4, 200.0f);
-        AudibleTrafficAlerts.AlertItem alert = new AudibleTrafficAlerts.AlertItem(
-                new Traffic("abc123", 1234, 41.23f, -95.32f, 2300, 315, 300, System.currentTimeMillis()),
-                mockLoc, 2225,
-                new AudibleTrafficAlerts.ClosingEvent(.25, 1.0, false), 99.9f
-        );
-        List<Integer> media = ata.buildAlertSoundIdSequence(alert);
-        Assert.assertTrue("First media used", media.contains(ata.closingInSecondsSoundIds[0]));
+    public void handleAudibleAlerts_handleTrafficRunnableIsGarbageCollected() {
+        AudibleTrafficAlerts spyAta = spy(getTestAudibleTrafficAlerts(10));
+        CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
+        doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
+        spyAta.handleAudibleAlerts(
+                getMockLocation(45, 46, 270), new LinkedList<Traffic>(), mock(Preferences.class), 2200, true, 20);
+        WeakReference<Runnable> runnableRef = new WeakReference<>(capEx.runnables.get(0));
+        capEx.runnables.clear();
+        forceGc();
+        Assert.assertNull("Reference to runnable after GC", runnableRef.get());
     }
 
-    private AudibleTrafficAlerts getMockedAudibleTrafficAlerts(int secondsCount) {
-        int[] seconds = new int[secondsCount];
+    @Test
+    public void handleAudibleAlerts_nullLocationDoesNotCauseRunnableExecutionOrError() {
+        AudibleTrafficAlerts spyAta = spy(getTestAudibleTrafficAlerts(10));
+        CapturingSingleThreadExecutor capEx = new CapturingSingleThreadExecutor();
+        doReturn(capEx).when(spyAta).getTrafficAlertProducerExecutor();
+        LinkedList<Traffic> someTraffic = new LinkedList<>();
+        Traffic t = new Traffic();
+        t.mIsAirborne = true;
+        someTraffic.add(t);
+        spyAta.handleAudibleAlerts(
+                null, someTraffic, mock(Preferences.class), 2200, true, 20);
+        Assert.assertEquals("Executed runnables", 0, capEx.runnables.size());
+    }
+
+    @Test
+    public void addNumericalAlertAudioSequence_numericListPrefSet_largeNumberWithDecimal() {
+        final AudibleTrafficAlerts ata = getTestAudibleTrafficAlerts(10);
+        ata.numberFormatOption = AudibleTrafficAlerts.NumberFormatOption.INDIVIDUAL_DIGIT;
+        ata.distanceCalloutOption = AudibleTrafficAlerts.DistanceCalloutOption.DECIMAL;
+        final ArrayList<Integer> soundIds = new ArrayList<>();
+        ata.addNumericalAlertAudio(soundIds, 1049.99, true);
+        Assert.assertEquals("SoundIds from number",
+                Arrays.asList(ata.numberSoundIds[1], ata.numberSoundIds[0], ata.numberSoundIds[4], ata.numberSoundIds[9], ata.pointSoundId, ata.numberSoundIds[9]),
+                soundIds);
+    }
+
+    private AudibleTrafficAlerts getTestAudibleTrafficAlerts(int secondsCount) {
+        final int[] seconds = new int[secondsCount];
         for (int i = 0; i < secondsCount; i++)
             seconds[i] = 2000 + i;
-        return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class), -1, -2,
-                new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}, new int[] { 13, 14 }, -3, -4,
-                -5, -6, seconds, -7, -8);
+        return new AudibleTrafficAlerts(getMockSoundPlayer(), mock(Context.class));
     }
+
 
     private Location getMockLocation(double latitude, double longitude, float bearing) {
         final Location mockLoc = mock(Location.class);
@@ -175,9 +211,31 @@ public class AudibleTrafficAlertsTest {
         return mockLoc;
     }
 
+    private void forceGc() {
+        //allocate quite some memory to make sure that the GC runs
+        byte[] bigChunkOfMemory = new byte[4000000];
+        System.gc();
+    }
+
     private AudibleTrafficAlerts.SequentialSoundPoolPlayer getMockSoundPlayer() {
         AudibleTrafficAlerts.SequentialSoundPoolPlayer sp = mock(AudibleTrafficAlerts.SequentialSoundPoolPlayer.class);
-        when(sp.load(anyInt(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(sp.load(any(), any()))
+                .thenAnswer(invocation -> {
+                    int[] regurg = new int[invocation.getArguments().length-1];
+                    for (int i = 1; i < invocation.getArguments().length; i++)
+                        regurg[i-1] = (int) invocation.getArgument(i);
+                    return regurg;
+                });
         return sp;
+    }
+
+    private static class CapturingSingleThreadExecutor implements Executor {
+        private ArrayList<Runnable> runnables = new ArrayList<>();
+        private ExecutorService executor = Executors.newSingleThreadExecutor();
+        @Override
+        public void execute(Runnable r) {
+            runnables.add(r);
+            executor.execute(r);
+        }
     }
 }

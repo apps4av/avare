@@ -342,23 +342,79 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
 
     public float getAudibleTrafficAlertsDistanceMinimum() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+		} catch (Exception e) {
+		}
+		return 5.0f;
     }
 
     public float getAudibleTrafficAlertsMaxFrequency() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+		} catch (Exception e) {
+		}
+		return 15f;
+    }
+
+    public float getAudibleTrafficAlertsMinSpeed() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMinimumSpeed), "0.0"));
+		} catch (Exception e) {
+		}
+		return 0f;
     }
 
     public int getAudibleClosingInAlertSeconds() {
-        return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+		try {
+			return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+		} catch (Exception e) {
+		}
+		return 15;
     }
 
     public float getAudibleClosingInAlertDistanceNmi() {
-        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+		} catch (Exception e) {
+		}
+		return 3.0f;
     }
 
     public float getAudibleClosingInCriticalAlertRatio() {
         return (float) (Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingCritalAlert), "0")) / 100.00);
+    }
+
+    public float getAudibleTrafficAlertsAltitude() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
+    }
+
+    public float getAudibleClosingAlertsAltitude() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
+    }
+
+    public String getAudibleDistanceCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "NONE");
+    }
+
+    public String getAudibleTrafficIdCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleAlertTrafficId), "NONE");
+    }
+
+    public String getAudibleTrafficNumberFormat() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsNumberFormat), "COLLOQUIAL");
+    }
+
+    public float getSpeakingRate() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsSpeakingSpeed), "1.0"));
     }
 
     /**
@@ -575,6 +631,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      */
     public boolean showAdsbCallSign() {
         return mPref.getBoolean(mContext.getString(R.string.prefShowAdsbCallSign), true);
+    }
+
+    /**
+     * @return
+     */
+    public boolean showAdsbGroundTraffic() {
+        return mPref.getBoolean(mContext.getString(R.string.ADSBTrafficIncludeGroundTraffic), false);
     }
 
     /**
@@ -923,12 +986,16 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
     }
 
-    public boolean isAudibleAlertTrafficId() {
-        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTrafficId), false);
+    public boolean isAudibleGroundAlertsEnabled() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsGroundAlert), false);
     }
 
     public boolean isAudibleClosingInAlerts() {
         return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
+    }
+
+    public boolean isAudibleVerticalDirectionCallout() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsVerticalDirectionCallout), true);
     }
 
     public boolean setTrackUp(boolean trackUp) {
