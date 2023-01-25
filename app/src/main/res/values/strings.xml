@@ -673,4 +673,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Notes">Notes</string>
     <string name="Wx">Wx</string>
     <string name="weatherNa">Weather not available</string>
+    <string name="DrawColor">DrawColor</string>
+    <string name="DrawColorLabel">Drawing Color</string>
+    <string name="DrawColorSummary">Color for draw mode on maps and plates</string>
 </resources>
