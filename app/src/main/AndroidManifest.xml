@@ -12,8 +12,8 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ds.avare"
-    android:versionCode="376"
-    android:versionName="10.2.6"
+    android:versionCode="377"
+    android:versionName="10.2.7"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
@@ -22,7 +22,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Request legacy Bluetooth permissions on older devices. -->

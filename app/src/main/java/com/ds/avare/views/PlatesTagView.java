@@ -32,8 +32,6 @@ public class PlatesTagView extends PanZoomView {
 
 	private Paint                        mPaint;
     private BitmapHolder                 mBitmap;
-    private int                          mX;
-    private int                          mY;
     private float                        mAirportX;
     private float                        mAirportY;
     private String                        mAirportName;
@@ -49,7 +47,6 @@ public class PlatesTagView extends PanZoomView {
         mPaint.setTypeface(Helper.getTypeFace(context));
         mPaint.setAntiAlias(true);
         setBackgroundColor(Color.BLACK);
-        mX = mY = 0;
         mAirportName = "";
         mAirportX = mAirportY = -1;
     }
@@ -212,14 +209,14 @@ public class PlatesTagView extends PanZoomView {
      * Current X with scale adjusted
      */
     public int getx() {
-        return mX;
+        return Math.round((-mPan.getMoveX() + mBitmap.getWidth() / 2));
     }
     
     /**
      * Current Y with scale adjusted
      */
     public int gety() {
-        return mY;
+        return Math.round((-mPan.getMoveY() + mBitmap.getHeight() / 2));
     }
 
     /**
