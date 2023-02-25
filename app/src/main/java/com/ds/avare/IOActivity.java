@@ -49,7 +49,7 @@ public class IOActivity extends BaseActivity {
     private Location mCurrentLocation;
     private GpsStatus mCurrentGpsStatus;
 
-    private Fragment[] mFragments = new Fragment[10];
+    private Fragment[] mFragments = new Fragment[11];
 
     private WifiManager.MulticastLock mMulticastLock;
 
@@ -122,6 +122,7 @@ public class IOActivity extends BaseActivity {
         mFragments[pos++] = new FileFragment();
         mFragments[pos++] = new GPSSimulatorFragment();
         mFragments[pos++] = new USBInFragment();
+        mFragments[pos++] = new USBOutFragment();
         mFragments[pos++] = new Dump1090Fragment();
         mFragments[pos++] = new ToolsFragment();
 
@@ -154,6 +155,7 @@ public class IOActivity extends BaseActivity {
                         getString(R.string.Play),
                         getString(R.string.GPSSIM),
                         getString(R.string.USBIN),
+                        getString(R.string.APUSB),
                         "Dump1090",
                         getString(R.string.Tools)
                 });
@@ -225,10 +227,14 @@ public class IOActivity extends BaseActivity {
                     fragmentTransaction.replace(R.id.detailFragment, usbin);
                     break;
                 case 8:
+                    USBOutFragment usbout = (USBOutFragment) mFragments[id];
+                    fragmentTransaction.replace(R.id.detailFragment, usbout);
+                    break;
+                case 9:
                     Dump1090Fragment d1090 = (Dump1090Fragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, d1090);
                     break;
-                case 9:
+                case 10:
                     ToolsFragment tools = (ToolsFragment) mFragments[id];
                     fragmentTransaction.replace(R.id.detailFragment, tools);
                     break;
