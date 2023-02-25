@@ -30,6 +30,7 @@ public class ConnectionFactory {
     public static final String CF_USBConnectionIn        = "USBConnectionIn";
     public static final String CF_XplaneConnection       = "XplaneConnection";
     public static final String CF_Dump1090Connection     = "Dump1090Connection";
+    public static final String CF_USBConnectionOut       = "USBConnectionOut";
 
     public static Connection getConnection(String type, Context ctx) {
         if(type.equals(CF_BlueToothConnectionIn)) {
@@ -59,6 +60,9 @@ public class ConnectionFactory {
         if(type.equals(CF_Dump1090Connection)) {
             return Dump1090Connection.getInstance(ctx);
         }
+        if(type.equals(CF_USBConnectionOut)) {
+            return USBConnectionOut.getInstance(ctx);
+        }
         return null;
     }
 
@@ -76,6 +80,7 @@ public class ConnectionFactory {
         s += getConnection(CF_FileConnectionIn, ctx).isConnected() ? "," + ctx.getString(R.string.Play) : "";
         s += getConnection(CF_GPSSimulatorConnection, ctx).isConnected() ? "," + ctx.getString(R.string.GPSSIM) : "";
         s += getConnection(CF_USBConnectionIn, ctx).isConnected() ? "," + ctx.getString(R.string.USBIN) : "";
+        s += getConnection(CF_USBConnectionOut, ctx).isConnected() ? "," + ctx.getString(R.string.APUSB) : "";
         s += getConnection(CF_Dump1090Connection, ctx).isConnected() ? "," + ctx.getString(R.string.DUMP1090) : "";
         if(s.startsWith(",")) {
             s = s.substring(1);

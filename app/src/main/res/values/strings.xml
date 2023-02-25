@@ -636,6 +636,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="MSFS">MSFS</string>
     <string name="GPSSIM">GPS Sim</string>
     <string name="USBIN">USB In</string>
+    <string name="USBOUT">USB Out</string>
     <string name="DUMP1090">Dump 1090</string>
     <string name="XPlanePort">49002</string>
     <string name="WifiPort">4000</string>
@@ -658,9 +659,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DescFile">Feed NMEA / ADSB data from a binary file</string>
     <string name="DescAP">Connect to autopilots via Bluetooth</string>
     <string name="DescUSBIN">Connect to GPS/ADSB units on USB Serial</string>
+    <string name="DescUSBOUT">Connect to autopilot on USB Serial</string>
     <string name="Status">Status</string>
     <string name="Bluetooth">Bluetooth</string>
     <string name="AP">Auto Pilot via Bluetooth</string>
+    <string name="APUSB">Auto Pilot via USB</string>
     <string name="Play">Play</string>
     <string name="Secure">Secure</string>
     <string name="Preferences">Preferences</string>
