@@ -166,6 +166,11 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
                 return "";
             }
 
+            sua = mService.getDBResource().getSua(lon, lat);
+            if (isCancelled()) {
+                return "";
+            }
+
         }
 
         /*
@@ -178,11 +183,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
 
             wa = mService.getDBResource().getWindsAloft(lon, lat);
-            if (isCancelled()) {
-                return "";
-            }
-
-            sua = mService.getDBResource().getSua(lon, lat);
             if (isCancelled()) {
                 return "";
             }
@@ -230,7 +230,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
                 aireps = mService.getAdsbWeather().getAireps(lon, lat);
                 wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
                 layer = mService.getAdsbWeather().getNexrad().getDate();
-                sua = mService.getAdsbWeather().getSua();
             } else {
                 boolean inWeatherOld = mService.getInternetWeatherCache().isOld(mPref.getExpiryTime());
                 if (inWeatherOld) { // expired weather does not show
@@ -248,6 +247,9 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
             if (null != wa) {
                 wa.updateStationWithLocation(lon, lat, mService.getGpsParams().getDeclinition());
+            }
+            if (null != sua) {
+                sua = sua.replaceAll("Boundaries. Beginning at lat.*to the point of beginning.", "\n");
             }
             tfr = getTfrTextOnTouch(mService.getTFRShapes());
             tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());
