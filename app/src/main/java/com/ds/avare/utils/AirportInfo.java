@@ -249,7 +249,7 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
                 wa.updateStationWithLocation(lon, lat, mService.getGpsParams().getDeclinition());
             }
             if (null != sua) {
-                sua = sua.replaceAll("Boundaries. Beginning at lat.*to the point of beginning.", "\n");
+                sua = sua.replaceAll("Boundaries.*point of beginning", "\n");
             }
             tfr = getTfrTextOnTouch(mService.getTFRShapes());
             tfra = getTfrTextOnTouch(mService.getAdsbTFRShapes());

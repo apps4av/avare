@@ -1120,7 +1120,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
                         String type = Boundaries.getChartType(index);
 
                         mGpsTile = t.gpsTile;
-                        mOnChart = type + "\n" + t.chart;
+                        mOnChart = type + " " + t.chart;
                         mObstacles = t.obstacles;
                         /*
                          * And pan
