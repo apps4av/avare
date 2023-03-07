@@ -15,10 +15,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <stroke
         android:width="1dip"
         android:color="#000000" />
+    
     <gradient android:startColor="#000000" android:centerColor="#000000"
         android:endColor="#000000" android:angle="-90" />
+    
     <size
-        android:width="120dp"
-        android:height="60dp"/>
+        android:width="60dp"
+        android:height="50dp"/>
 
 </shape>
