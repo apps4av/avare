@@ -60,9 +60,12 @@ public class WebAppListInterface {
     private WeightAndBalance mWnb;
 
     private static final int MSG_UPDATE_WNB = 21;
-    private static final int MSG_CALCULATE = 22;
     private static final int MSG_CLEAR_WNB_SAVE = 27;
     private static final int MSG_ADD_WNB_SAVE = 28;
+
+    private static final int MSG_UPDATE_AC = 31;
+    private static final int MSG_CLEAR_AC_SAVE = 37;
+    private static final int MSG_ADD_AC_SAVE = 38;
 
     private static final int MAX_FILE_LINE_SIZE = 256;
     private static final int MAX_FILE_LINES = 100;
@@ -80,13 +83,6 @@ public class WebAppListInterface {
         mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
         mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
 
-    }
-
-    /**
-     *
-     */
-    public void calculate() {
-        mHandler.sendEmptyMessage(MSG_CALCULATE);
     }
 
     /**
@@ -151,6 +147,61 @@ public class WebAppListInterface {
         mService.getDBResource().deleteUserWnb(name);
 
         newSaveWnb();
+
+    }
+
+    /**
+     *
+     */
+    public void clearAcSave() {
+        mHandler.sendEmptyMessage(MSG_CLEAR_WNB_SAVE);
+    }
+
+    /**
+     * Update the passed point on the WNB page
+     * @param
+     */
+    public void updateAc() {
+        mHandler.sendEmptyMessage(MSG_UPDATE_AC);
+    }
+
+    /**
+     * New saved w&b when the save list changes.
+     */
+    public void newSaveAc() {
+
+        clearAcSave();
+    }
+
+    /**
+     *
+     * @param data
+     */
+    @JavascriptInterface
+    public void saveAc(String data) {
+
+
+        newSaveAc();
+    }
+
+    /**
+     *
+     * @param name
+     */
+    @JavascriptInterface
+    public void loadAc(String name) {
+
+        updateAc();
+    }
+
+    /**
+     *
+     * @param name
+     */
+    @JavascriptInterface
+    public void saveDeleteAc(String name) {
+
+        newSaveAc();
 
     }
 
@@ -543,14 +594,23 @@ public class WebAppListInterface {
                 String func = "javascript:wnb_save_add(" + (String)msg.obj + ")";
                 mWebView.loadUrl(func);
             }
-            else if(MSG_CALCULATE == msg.what) {
-                String func = "javascript:wnb_calculate()";
-                mWebView.loadUrl(func);
-            }
             else if(MSG_CLEAR_WNB_SAVE == msg.what) {
                 String func = "javascript:wnb_save_clear()";
                 mWebView.loadUrl(func);
             }
+
+
+            else if(MSG_UPDATE_AC == msg.what) {
+            }
+            else if(MSG_ADD_AC_SAVE == msg.what) {
+                String func = "javascript:ac_save_add(" + (String)msg.obj + ")";
+                mWebView.loadUrl(func);
+            }
+            else if(MSG_CLEAR_AC_SAVE == msg.what) {
+                String func = "javascript:ac_save_clear()";
+                mWebView.loadUrl(func);
+            }
+
         }
     };
 }
