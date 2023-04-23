@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import com.ds.avare.ChecklistActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Checklist;
+import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -55,7 +56,14 @@ public class WebAppListInterface {
     private static final int MSG_ADD_LIST_SAVE = 8;
     private static final int MSG_NOTBUSY = 9;
     private static final int MSG_BUSY = 10;
-    
+
+    private WeightAndBalance mWnb;
+
+    private static final int MSG_UPDATE_WNB = 21;
+    private static final int MSG_CALCULATE = 22;
+    private static final int MSG_CLEAR_WNB_SAVE = 27;
+    private static final int MSG_ADD_WNB_SAVE = 28;
+
     private static final int MAX_FILE_LINE_SIZE = 256;
     private static final int MAX_FILE_LINES = 100;
 
@@ -68,7 +76,84 @@ public class WebAppListInterface {
         mService = StorageService.getInstance();
         mPref = mService.getPreferences();
         mList = new Checklist("");
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_C172R));
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
+        mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
+
     }
+
+    /**
+     *
+     */
+    public void calculate() {
+        mHandler.sendEmptyMessage(MSG_CALCULATE);
+    }
+
+    /**
+     *
+     */
+    public void clearWnbSave() {
+        mHandler.sendEmptyMessage(MSG_CLEAR_WNB_SAVE);
+    }
+
+    /**
+     * Update the passed point on the WNB page
+     * @param
+     */
+    public void updateWnb() {
+        mHandler.sendEmptyMessage(MSG_UPDATE_WNB);
+    }
+
+    /**
+     * New saved w&b when the save list changes.
+     */
+    public void newSaveWnb() {
+
+        clearWnbSave();
+        LinkedList<WeightAndBalance> wnbs = mService.getDBResource().getUserWnbs();
+
+        for (WeightAndBalance wnb : wnbs) {
+            Message m = mHandler.obtainMessage(MSG_ADD_WNB_SAVE, (Object)("'" + Helper.formatJsArgs(wnb.getName()) + "'"));
+            mHandler.sendMessage(m);
+        }
+    }
+
+    /**
+     *
+     * @param data
+     */
+    @JavascriptInterface
+    public void saveWnb(String data) {
+
+        mWnb = new WeightAndBalance(data);
+        mService.getDBResource().setUserWnb(mWnb);
+
+        newSaveWnb();
+    }
+
+    /**
+     *
+     * @param name
+     */
+    @JavascriptInterface
+    public void loadWnb(String name) {
+        mWnb = mService.getDBResource().getUserWnb(name);
+
+        updateWnb();
+    }
+
+    /**
+     *
+     * @param name
+     */
+    @JavascriptInterface
+    public void saveDeleteWnb(String name) {
+        mService.getDBResource().deleteUserWnb(name);
+
+        newSaveWnb();
+
+    }
+
 
     /**
      * 
@@ -135,20 +220,8 @@ public class WebAppListInterface {
     public void updateList() {
         mHandler.sendEmptyMessage(MSG_UPDATE_LIST);
     }
-    
-    /**
-     * Move back and forth in the list. Unlike plans which are short, this is a frequent action
-     * on long list. Hence do from Android widgets 
-     */
-    public void moveBack() {
-    	mList.moveBack();
-		updateList();
-    }
 
-    /**
-     * Move back and forth in the list. Unlike plans which are short, this is a frequent action 
-     * on long list. Hence do from Android widgets 
-     */
+    @JavascriptInterface
     public void moveForward() {
     	mList.moveForward();
 		updateList();
@@ -160,7 +233,7 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void moveUpItem() {
-    	// surround JS each call with busy indication / not busy 
+    	// surround JS each call with busy indication / not busy
     	mHandler.sendEmptyMessage(MSG_BUSY);
 
     	mList.moveItemUp();
@@ -453,6 +526,31 @@ public class WebAppListInterface {
         	else if(MSG_BUSY == msg.what) {
         		mCallback.callback((Object)ChecklistActivity.SHOW_BUSY, null);
         	}
+            else if(MSG_UPDATE_WNB == msg.what) {
+                /*
+                 * Now update HTML with latest wnb stuff, do this every time we start the List screen as
+                 * things might have changed.
+                 */
+                if(null != mWnb) {
+                    String data = mWnb.getJSON().toString();
+
+                    if (null != data) {
+                        mWebView.loadUrl("javascript:wnb_set('" + data + "')");
+                    }
+                }
+            }
+            else if(MSG_ADD_WNB_SAVE == msg.what) {
+                String func = "javascript:wnb_save_add(" + (String)msg.obj + ")";
+                mWebView.loadUrl(func);
+            }
+            else if(MSG_CALCULATE == msg.what) {
+                String func = "javascript:wnb_calculate()";
+                mWebView.loadUrl(func);
+            }
+            else if(MSG_CLEAR_WNB_SAVE == msg.what) {
+                String func = "javascript:wnb_save_clear()";
+                mWebView.loadUrl(func);
+            }
         }
     };
 }

@@ -55,8 +55,6 @@ public class ChecklistActivity extends BaseActivity {
      * This view display location on the map.
      */
     private WebView mWebView;
-    private Button mBackButton;
-    private Button mForwardButton;
     private ProgressBar mProgressBarSearch;
     private WebAppListInterface mInfc;
     private boolean mInited;
@@ -178,24 +176,6 @@ public class ChecklistActivity extends BaseActivity {
         mProgressBarSearch = (ProgressBar)(view.findViewById(R.id.list_load_progress));
         mProgressBarSearch.setVisibility(View.VISIBLE);
         
-        mBackButton = (Button)view.findViewById(R.id.list_button_back);
-        mBackButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mInfc.moveBack();
-            }
-        });
-
-        mForwardButton = (Button)view.findViewById(R.id.list_button_forward);
-        mForwardButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mInfc.moveForward();
-            }
-            
-        });
 
     }
 
@@ -332,8 +312,9 @@ public class ChecklistActivity extends BaseActivity {
     		}
     		else if(msg.what == INIT) {
                 mProgressBarSearch.setVisibility(View.INVISIBLE);
-  				mInfc.newList();
-   				mInfc.newSaveList();
+                mInfc.newList();
+                mInfc.newSaveWnb();
+                mInfc.newSaveList();
     		}
         }
     };
