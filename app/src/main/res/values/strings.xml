@@ -302,7 +302,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Nearest4000">&quot;Nearest\n4000'&quot;</string>
     <string name="Nearest6000">&quot;Nearest\n6000'&quot;</string>
     <string name="Nearest100LL">&quot;Nearest\n100LL&quot;</string>
-    <string name="BestGlideSinkRate">&quot;BestGlideSinkRateAircraft&quot;</string>
     <string name="Fuel">&quot;Fuel&quot;</string>
     <string name="prefLastPlateIndex">LastPlateIndex</string>
     <string name="prefLastPlateAirport">LastPlateAirport</string>
@@ -464,47 +463,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Download">Download</string>
     <string name="Tiles">Tiles</string>
 
-    <string name="userData">Pilot and Aircraft</string>
-
-    <string name="PilotContact">Pilot Contact</string>
-    <string name="PilotContactSummary">Pilot name and phone number used for filing</string>
-
-    <string name="AircraftTailNumber">Aircraft Tail Number</string>
-    <string name="AircraftTailNumberSummary">Aircraft tail number used for filing</string>
-
-    <string name="AircraftType">Aircraft Type</string>
-    <string name="AircraftTypeSummary">Aircraft type for filing</string>
-
-    <string name="AircraftICAOCode">Aircraft ICAO Code</string>
-    <string name="AircraftICAOCodeSummary">Aircraft ICAO code in hexidecimal</string>
-
-    <string name="AircraftColorPrimary">Aircraft Color - First</string>
-    <string name="AircraftColorPrimarySummary">First aircraft color for filing</string>
-
-    <string name="AircraftColorSecondary">Aircraft Color - Second</string>
-    <string name="AircraftColorSecondarySummary">Second aircraft color for filing</string>
-
-    <string name="AircraftEquipment">Aircraft Equipment</string>
-    <string name="AircraftEquipmentSummary">Aircraft equipment code for filing</string>
-
-    <string name="AircraftSurveillance">Aircraft Surveillance</string>
-    <string name="AircraftSurveillanceSummary">Aircraft surveillance equipment code for filing</string>
-
-    <string name="AircraftOtherInfo">Aircraft Other Info</string>
-    <string name="AircraftOtherInfoSummary">Aircraft other info for filing</string>
-
-    <string name="AircraftTAS">Aircraft TAS</string>
-    <string name="AircraftTASSummary">Aircraft true airspeed for filing and planning</string>
-
-    <string name="AircraftHomeBase">Aircraft/Pilot Home Base</string>
-    <string name="AircraftHomeBaseSummary">Aircraft/Pilot home base ICAO code for filing and planning</string>
-
-    <string name="BestGlideSinkRateLabel">&quot;Aircraft Best Glide Sink Rate&quot;</string>
-    <string name="BestGlideSinkRateSummary">&quot;Aircraft best glide sink rate (feet per minute) for calculating glide range&quot;</string>
     <string name="NotGlideRange">&quot;Not in glide range&quot;</string>
-
-    <string name="FuelRateLabel">Aircraft Fuel Burn Rate</string>
-    <string name="FuelRateSummary">Aircraft fuel burn rate per hour</string>
 
     <string name="SelectAirportToShow">&quot;Select an Airport&quot;</string>
     <string name="SelectPlateToShow">&quot;Select a Plate&quot;</string>
@@ -676,4 +635,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Notes">Notes</string>
     <string name="Wx">Wx</string>
     <string name="weatherNa">Weather not available</string>
+    <string name="AircraftTailNumber">AircraftTailNumber</string>
+
 </resources>

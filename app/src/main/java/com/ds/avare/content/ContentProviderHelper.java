@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Obstacle;
@@ -736,4 +737,122 @@ public class ContentProviderHelper {
             setUserTag(ctx, key, tags.get(key));
         }
     }
+
+    /**
+     *
+     */
+    public static LinkedList<Aircraft> getUserAircraft(Context ctx) {
+
+        Cursor c = null;
+        LinkedList<Aircraft> aircraft = new LinkedList<>();
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_AIRCRAFT, null, null, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+
+                    Aircraft a = new Aircraft();
+
+                    a.setId(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_ID)));
+                    a.setType(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_TYPE)));
+                    a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
+                    a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
+                    a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
+                    a.setCruiseTas(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
+                    a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
+                    a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));
+                    a.setPic(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PIC)));
+                    a.setPilotInfo(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PILOT)));
+                    a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
+                    a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
+                    a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                    aircraft.add(a);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return aircraft;
+    }
+
+
+    /**
+     *
+     */
+    public static Aircraft getUserAircraft(Context ctx, String id) {
+
+        Cursor c = null;
+        Aircraft a = null;
+
+        String selection = "(" + UserContract.AIRCRAFT_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{id};
+
+        try {
+
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_AIRCRAFT, null, selection, selectionArg, null);
+            if(c != null) {
+                if(c.moveToNext()) {
+
+                    a = new Aircraft();
+
+                    a.setId(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_ID)));
+                    a.setType(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_TYPE)));
+                    a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
+                    a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
+                    a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
+                    a.setCruiseTas(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
+                    a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
+                    a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));
+                    a.setPic(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PIC)));
+                    a.setPilotInfo(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PILOT)));
+                    a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
+                    a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
+                    a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return a;
+    }
+
+    public static void setUserAircraft(Context ctx, Aircraft a) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.AIRCRAFT_COLUMN_ID, a.getId());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_TYPE, a.getType());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_WAKE, a.getWake());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_EQUIPMENT, a.getEquipment());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_ICAO, a.getICao());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_CRUISE_TAS, a.getCruiseTas());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_SURVEILLANCE, a.getSurveillance());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE, a.getEndurance());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_COLOR, a.getColor());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_PIC, a.getPic());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_PILOT, a.getPilotInfo());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_SINK_RATE, a.getSinkRate());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_FUEL_BURN, a.getFuelBurnRate());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_BASE, a.getHomeBase());
+
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_AIRCRAFT, newValues);
+    }
+
+    public static void setUserAircraft(Context ctx, LinkedList<Aircraft> aircraft) {
+        for (Aircraft a : aircraft) {
+            setUserAircraft(ctx, a);
+        }
+    }
+
+    public static void deleteUserAircraft(Context ctx, String id) {
+        String selection = "(" + UserContract.AIRCRAFT_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{id};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_AIRCRAFT, selection, selectionArg);
+    }
+
 }

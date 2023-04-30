@@ -587,19 +587,44 @@ function ac_set(data) {
 
     var obj = JSON.parse(data);
 
-    document.getElementById("ac_name").textContent = "Aircraft" + "[" + obj.name + "]";
+    document.getElementById("ac_name").textContent = "Aircraft" + "[" + obj.id + "]";
 
-    document.getElementById("").value = obj.t_0;
+    document.getElementById("icaoAircraftIdInput").value = obj.id;
+    document.getElementById("icaoAircraftTypeInput").value = obj.type;
+    document.getElementById("icaoAircraftIcaoInput").value = obj.icao;
+    document.getElementById("icaoWakeTurbulenceSelection").value = obj.wake;
+    document.getElementById("icaoAircraftEquipmentInput").value = obj.equipment;
+    document.getElementById("icaoCruisingSpeedInput").value = obj.cruise_tas;
+    document.getElementById("icaoSurveillanceEquipmentInput").value = obj.surveillance;
+    document.getElementById("icaoFuelEnduranceInput").value = obj.endurance;
+    document.getElementById("icaoAircraftColorInput").value = obj.color;
+    document.getElementById("icaoPilotInCommandInput").value = obj.pic;
+    document.getElementById("icaoPilotInfoInput").value = obj.pilot_info;
+    document.getElementById("bestGlideSinkRateInput").value = obj.sink_rate;
+    document.getElementById("fuelBurnRateCruisingInput").value = obj.fuel_burn_rate;
+    document.getElementById("aircraftHomeBaseInput").value = obj.home_base;
 }
 
 // put data from AC sheet
-function ac_get(name) {
+function ac_get() {
 
     var obj = new Object();
 
-    obj.name = name;
+    obj.id = document.getElementById("icaoAircraftIdInput").value;
+    obj.type = document.getElementById("icaoAircraftTypeInput").value;
+    obj.icao = document.getElementById("icaoAircraftIcaoInput").value;
+    obj.wake = document.getElementById("icaoWakeTurbulenceSelection").value;
+    obj.equipment = document.getElementById("icaoAircraftEquipmentInput").value;
+    obj.cruise_tas = document.getElementById("icaoCruisingSpeedInput").value;
+    obj.surveillance = document.getElementById("icaoSurveillanceEquipmentInput").value;
+    obj.endurance = document.getElementById("icaoFuelEnduranceInput").value;
+    obj.color = document.getElementById("icaoAircraftColorInput").value;
+    obj.pic = document.getElementById("icaoPilotInCommandInput").value;
+    obj.pilot_info = document.getElementById("icaoPilotInfoInput").value;
+    obj.sink_rate = document.getElementById("bestGlideSinkRateInput").value;
+    obj.fuel_burn_rate = document.getElementById("fuelBurnRateCruisingInput").value;
+    obj.home_base = document.getElementById("aircraftHomeBaseInput").value;
 
-    obj.t_0 = document.getElementById("t0").value;
     return JSON.stringify(obj);
 }
 
@@ -627,16 +652,16 @@ function ac_save_load(row) {
 
 // add the current ac to saved ac
 function ac_save_ac_add() {
-	var name = document.getElementById("save_name_ac").value;
 
-	if(name == "") {
-		toastr.error('Please specify a valid name');
+    var id = document.getElementById("icaoAircraftIdInput").value;
+	if(id == "") {
+		toastr.error('Please specify a tail number');
 		return;
 	}
 
-	var data = ac_get(name);
+	var data = ac_get(id);
 	AndroidList.saveAc(data);
-	toastr.success('Aircraft saved to ' + name);
+	toastr.success('Aircraft saved to ' + id);
 }
 
 
@@ -644,15 +669,12 @@ function ac_save_ac_add() {
 function ac_set_buttons_save() {
 	// Set buttons for each entry in ac
 	var ac_save = document.getElementById("save_table_ac");
-	for(var i = 1; i < wnb_save.rows.length; i++) {
+	for(var i = 1; i < ac_save.rows.length; i++) {
 		ac_save.rows[i].cells[AC_CELL_SAVE_LOAD].innerHTML =
 			"<button class='btn btn-block' onclick='ac_save_load(" + i.toString() + ")'>LD</button>";
 		ac_save.rows[i].cells[AC_CELL_SAVE_DELETE].innerHTML =
 			"<button class='btn btn-block' onclick='ac_save_delete(" + i.toString() + ")'>Del</button>";
 	}
-
-		// clear save input
-	document.getElementById("save_name_ac").value = "";
 }
 
 // clear the entire save list
@@ -668,7 +690,7 @@ function ac_save_clear() {
 function ac_save_add(name) {
 	var ac_save = document.getElementById("save_table_ac");
 
-	var row = wnb_save.insertRow(-1);
+	var row = ac_save.insertRow(-1);
 
 	var cell = [];
 
@@ -757,7 +779,6 @@ function setAircraftSurveillance() {
         <ul class="nav nav-tabs" style="display:inline-flex;">
             <li class="active"><a href="#aircraft">Loaded</a></li>
             <li><a href="#loadac">Load</a></li>
-            <li><a href="#saveac">Save</a></li>
         </ul>
 
         <div class="tab-content">
@@ -1229,64 +1250,62 @@ function setAircraftSurveillance() {
             </div>
 
             <div id="aircraft" class="tab-pane fade in active">
-            <table class="table">
-                <tr>
-                    <td><h3 ><span id="ac_name" class="label label-success">Aircraft[]</span></h3></td>
-                </tr>
-            </table>
-
-            <table class="table">
-                <tr>
-                    <td>ID</td><td><input spellcheck="false" placeholder="N172EF"  style="text-transform:uppercase" id="icaoAircraftIdInput"/></td>
-                </tr>
-                <tr>
-                    <td>Type</td><td><input spellcheck="false" placeholder="C172"  style="text-transform:uppercase" id="icaoAircraftTypeInput"/></td>
-                </tr>
-                <tr>
-                    <td>Wake Turbulence</td><td><select class="selectpicker" data-mobile="true"  id="icaoWakeTurbulenceSelection"><option value="LIGHT">Light</option><option value="MEDIUM">Medium</option><option value="HEAVY">Heavy</option></select></td>
-                </tr>
-                <tr>
-                    <td>Aircraft Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
-                </tr>
-                <tr>
-                    <td>Cruising TAS</td><td><input placeholder="110" type="number"  id="icaoCruisingSpeedInput"/></td>
-                </tr>
-                <tr>
-                    <td>Surveillance Equipment</td><td><input spellcheck="false" style="text-transform:uppercase" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
-                </tr>
-                <tr>
-                    <td>Fuel Endurance</td><td><input spellcheck="false" placeholder="5H30M" style="text-transform:uppercase" id="icaoFuelEnduranceInput"/></td>
-                </tr>
-                <tr>
-                    <td>Aircraft Color</td><td><input placeholder="W/B"  spellcheck="false" style="text-transform:uppercase" id="icaoAircraftColorInput"/></td>
-                </tr>
-                <tr>
-                    <td>Pilot In Command</td><td><input placeholder="John Smith" spellcheck="false" id="icaoPilotInCommandInput"/></td>
-                </tr>
-                <tr>
-                    <td>Pilot Info</td><td><input spellcheck="false" placeholder="John Smith +1-800-000-0000" id="icaoPilotInfoInput"/></td>
-                </tr>
-                <tr>
-                    <td>Best Glide Sink Rate (ft/min)</td><td><input placeholder="700" type="number"  id="bestGlideSinkRateInput"/></td>
-                </tr>
-                <tr>
-                    <td>Fuel Burn Rate (Cruising)</td><td><input type="number" type="number" placeholder="10.0" id="fuelBurnRateCruisingInput"/></td>
-                </tr>
-                <tr>
-                    <td>Aircraft Home Base</td><td><input id="aircraftHomeBaseInput"/></td>
-                </tr>
-            </table>
-        </div>
-            <div id="loadac" class="tab-pane fade">
-                <table class="table" id="save_table_ac" ><th>Load an Aircraft</th></table>
-            </div>
-            <div id="saveac" class="tab-pane fade">
-                <table class="table"><th>Save Current Aircraft</th>
+                <table class="table">
                     <tr>
-                        <td><input id="save_name_ac" spellcheck="false" placeholder="Current Aircraft"/></td>
-                        <td><button class="btn btn-block" onclick="ac_save_ac_add()">Save</button></td>
+                        <td><h3 ><span id="ac_name" class="label label-success">Aircraft[]</span></h3></td>
                     </tr>
                 </table>
+
+                <table class="table">
+                    <tr>
+                        <td>ID</td><td><input spellcheck="false" id="icaoAircraftIdInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Type</td><td><input spellcheck="false" id="icaoAircraftTypeInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>ICAO Mode S Hex Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceSelection"/></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Equipment</td><td><input spellcheck="false" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+                    </tr>
+                    <tr>
+                        <td>Cruising TAS</td><td><input type="number" id="icaoCruisingSpeedInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Surveillance Equipment</td><td><input spellcheck="false" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Endurance</td><td><input type="number" id="icaoFuelEnduranceInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Best Glide Sink Rate (ft/min)</td><td><input type="number"  id="bestGlideSinkRateInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Burn Rate (Cruising)</td><td><input type="number" type="number" id="fuelBurnRateCruisingInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Home Base</td><td><input id="aircraftHomeBaseInput"/></td>
+                    </tr>
+                </table>
+
+                <td><button class="btn btn-block" onclick="ac_save_ac_add()">Save</button></td>
+
+            </div>
+            <div id="loadac" class="tab-pane fade">
+                <table class="table" id="save_table_ac" ><th>Load an Aircraft</th></table>
             </div>
         </div>
     </div>

@@ -27,6 +27,8 @@ public class UserProvider extends MainProvider {
     public static final int TAGS_ID = 909;
     public static final int DRAWS = 910;
     public static final int DRAWS_ID = 911;
+    public static final int AIRCRAFTS = 912;
+    public static final int AIRCRAFTS_ID = 913;
 
     public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
             + "/rv-user";
@@ -47,6 +49,8 @@ public class UserProvider extends MainProvider {
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_TAG + "/#", TAGS_ID);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_DRAW, DRAWS);
         mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_DRAW + "/#", DRAWS_ID);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_AIRCRAFT, AIRCRAFTS);
+        mURIMatcher.addURI(UserContract.AUTHORITY, UserContract.BASE_AIRCRAFT + "/#", AIRCRAFTS_ID);
     }
 
     @Override
@@ -64,6 +68,8 @@ public class UserProvider extends MainProvider {
             case TAGS:
                 return CONTENT_TYPE;
             case DRAWS:
+                return CONTENT_TYPE;
+            case AIRCRAFTS:
                 return CONTENT_TYPE;
             default:
                 return null;
@@ -93,6 +99,9 @@ public class UserProvider extends MainProvider {
                 break;
             case DRAWS:
                 table = UserContract.TABLE_DRAW;
+                break;
+            case AIRCRAFTS:
+                table = UserContract.TABLE_AIRCRAFT;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -133,6 +142,9 @@ public class UserProvider extends MainProvider {
                 break;
             case DRAWS:
                 table = UserContract.TABLE_DRAW;
+                break;
+            case AIRCRAFTS:
+                table = UserContract.TABLE_AIRCRAFT;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -176,6 +188,9 @@ public class UserProvider extends MainProvider {
             case DRAWS:
                 queryBuilder.setTables(UserContract.TABLE_DRAW);
                 break;
+            case AIRCRAFTS:
+                queryBuilder.setTables(UserContract.TABLE_AIRCRAFT);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
@@ -217,6 +232,9 @@ public class UserProvider extends MainProvider {
             case DRAWS:
                 table = UserContract.TABLE_DRAW;
                 break;
+            case AIRCRAFTS:
+                table = UserContract.TABLE_AIRCRAFT;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
         }
@@ -238,6 +256,8 @@ public class UserProvider extends MainProvider {
                         return UserContract.buildTagsUri(id);
                     case DRAWS:
                         return UserContract.buildDrawsUri(id);
+                    case AIRCRAFTS:
+                        return UserContract.buildAircraftUri(id);
                     default:
                         throw new IllegalArgumentException("Unknown URI");
                 }

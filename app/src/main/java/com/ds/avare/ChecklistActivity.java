@@ -315,6 +315,7 @@ public class ChecklistActivity extends BaseActivity {
                 mInfc.newList();
                 mInfc.newSaveWnb();
                 mInfc.newSaveList();
+                mInfc.newSaveAc();
     		}
         }
     };

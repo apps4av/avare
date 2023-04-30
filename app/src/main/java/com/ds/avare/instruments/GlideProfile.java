@@ -70,7 +70,7 @@ public class GlideProfile {
         double lon = gpsParams.getLongitude();
         double lat = gpsParams.getLatitude();
         double altitudeGps = gpsParams.getAltitude();
-        double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
+        double sinkRate = mService.getAircraft().getSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         double declination = gpsParams.getDeclinition();
         WindsAloft wa;

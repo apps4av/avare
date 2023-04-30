@@ -1023,65 +1023,20 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                 .commit();
     }
 
-    public int getAircraftTAS() {
-        String speed = mPref.getString(mContext.getString(R.string.AircraftTAS), "");
-        int aircraftTAS = 100;
-        try {
-            aircraftTAS = Integer.parseInt(speed);
-        } catch (Exception e) {
-
-        }
-        return aircraftTAS;
-    }
-
-    public String getAircraftHomeBase() {
-        return mPref.getString(mContext.getString(R.string.AircraftHomeBase), "KSBA");
-    }
-
-    public String getAircraftEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
-    }
-
-    public String getAircraftOtherInfo() {
-        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
-    }
-
-    public String getAircraftSurveillanceEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
-    }
-
-    public String getAircraftColorPrimary() {
-        return mPref.getString(mContext.getString(R.string.AircraftColorPrimary), "W");
-    }
-
-    public String getAircraftColorSecondary() {
-        return mPref.getString(mContext.getString(R.string.AircraftColorSecondary), "B");
-    }
-
-    public String getAircraftType() {
-        return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
-    }
 
     public String getEmergencyChecklist() {
         return mPref.getString(mContext.getString(R.string.EmergencyChecklist), "");
     }
 
-    public int getAircraftICAOCode() {
-        int code = 0;
-        try {
-            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode, 16), ""));
-        } catch (Exception e) {
-
-        }
-        return code;
-    }
-
-    public String getAircraftTailNumber() {
+    public String getAircraftId() {
         return mPref.getString(mContext.getString(R.string.AircraftTailNumber), "N1TEST");
     }
 
-    public String getPilotContact() {
-        return mPref.getString(mContext.getString(R.string.PilotContact), "TEST PILOT 1-800-WX-BRIEF");
+    // Set last location we got
+    public void setAircraftId(String tailNumber) {
+        mPref.edit()
+                .putString(mContext.getString(R.string.AircraftTailNumber), tailNumber)
+                .commit();
     }
 
     public String getShapeFileName() {
@@ -1097,14 +1052,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
         }
         return intervalInt;
-    }
-
-    public float getFuelBurn() {
-        try {
-            return (Float.parseFloat(mPref.getString(mContext.getString(R.string.FuelRateLabel), "10")));
-        } catch (Exception x) {
-            return 10;
-        }
     }
 
     public boolean removeB1Plate() {
@@ -1174,19 +1121,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
 
     }
-
-
-    public int getBestGlideSinkRate() {
-        String in = mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
-        int val = 700;
-        try {
-            val = Integer.parseInt(in);
-        } catch (Exception e) {
-
-        }
-        return val;
-    }
-
 
     public boolean shouldDrawTrafficCircles() {
         return mPref.getBoolean(mContext.getString(R.string.drawTrafficCircles), false);

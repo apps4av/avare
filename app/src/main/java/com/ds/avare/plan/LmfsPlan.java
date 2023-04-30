@@ -30,6 +30,7 @@ package com.ds.avare.plan;
 
 import android.location.Location;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 
 import org.json.JSONObject;
@@ -162,25 +163,28 @@ public class LmfsPlan {
 		init();
 
         flightRule = RULE_VFR;
-        aircraftId = pref.getAircraftTailNumber();
-		aircraftType = pref.getAircraftType();
+        aircraftId = StorageService.getInstance().getAircraft().getId();
+		aircraftType = StorageService.getInstance().getAircraft().getType();
+
+
 		flightType = "G"; // GA
         noOfAircraft = "1";
-        wakeTurbulence = "LIGHT";
+        wakeTurbulence = StorageService.getInstance().getAircraft().getWake();
         route = DIRECT;
-        otherInfo = pref.getAircraftOtherInfo();
-		surveillanceEquipment = pref.getAircraftSurveillanceEquipment();
-        aircraftEquipment = pref.getAircraftEquipment();
-        cruisingSpeed = String.valueOf(pref.getAircraftTAS());
-		pilotInfo = pref.getPilotContact();
-		pilotInCommand = pref.getPilotContact();
+        otherInfo = "";
+		surveillanceEquipment = StorageService.getInstance().getAircraft().getSurveillance();
+        aircraftEquipment = StorageService.getInstance().getAircraft().getEquipment();
+        cruisingSpeed = String.valueOf(StorageService.getInstance().getAircraft().getCruiseTas());
+		pilotInfo = StorageService.getInstance().getAircraft().getPilotInfo();
+		pilotInCommand = StorageService.getInstance().getAircraft().getPic();
         peopleOnBoard = "1";
-        aircraftColor = pref.getAircraftColorPrimary() + "/" + pref.getAircraftColorSecondary();
+        aircraftColor = StorageService.getInstance().getAircraft().getColor();
+		fuelEndurance = String.valueOf(StorageService.getInstance().getAircraft().getEndurance());
 
-        if(surveillanceEquipment.equals("")) {
+        if(surveillanceEquipment == null || surveillanceEquipment.equals("")) {
             surveillanceEquipment = "N";
         }
-        if(aircraftEquipment.equals("")) {
+        if(aircraftEquipment == null || aircraftEquipment.equals("")) {
             aircraftEquipment = "N";
         }
 		mValid = true;

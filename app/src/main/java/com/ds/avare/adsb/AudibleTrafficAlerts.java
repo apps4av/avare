@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 
 import java.util.ArrayList;
@@ -517,7 +518,7 @@ public class AudibleTrafficAlerts implements Runnable {
         final float trafficAlertsDistanceMinimum = pref.getAudibleTrafficAlertsDistanceMinimum();
         final float trafficAlertsHeight = pref.getAudibleTrafficAlertsAltitude();
         final boolean isAudibleClosingAlerts = pref.isAudibleClosingInAlerts();
-        final String ownTailNumber = ifNullElse(pref.getAircraftTailNumber(), "ownship12349").trim();
+        final String ownTailNumber = ifNullElse(StorageService.getInstance().getAircraft().getId(), "ownship12349").trim();
         final float closingAlertsDistanceMinimum, closingAlertsCriticalAlertRatio, closingAlertsAltitude;
         final int closingAlertsSeconds;
         if (isAudibleClosingAlerts) {

@@ -22,6 +22,7 @@ import java.util.LinkedList;
 
 import com.ds.avare.ChecklistActivity;
 import com.ds.avare.StorageService;
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.storage.Preferences;
@@ -63,6 +64,8 @@ public class WebAppListInterface {
     private static final int MSG_CLEAR_WNB_SAVE = 27;
     private static final int MSG_ADD_WNB_SAVE = 28;
 
+    private Aircraft mAircraft;
+
     private static final int MSG_UPDATE_AC = 31;
     private static final int MSG_CLEAR_AC_SAVE = 37;
     private static final int MSG_ADD_AC_SAVE = 38;
@@ -79,10 +82,10 @@ public class WebAppListInterface {
         mService = StorageService.getInstance();
         mPref = mService.getPreferences();
         mList = new Checklist("");
+        mAircraft = mService.getAircraft();
         mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_C172R));
         mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA23_250));
         mService.getDBResource().setUserWnb(new WeightAndBalance(WeightAndBalance.WNB_PA28R_200B));
-
     }
 
     /**
@@ -150,11 +153,12 @@ public class WebAppListInterface {
 
     }
 
+    // Aircraft
     /**
      *
      */
     public void clearAcSave() {
-        mHandler.sendEmptyMessage(MSG_CLEAR_WNB_SAVE);
+        mHandler.sendEmptyMessage(MSG_CLEAR_AC_SAVE);
     }
 
     /**
@@ -166,11 +170,19 @@ public class WebAppListInterface {
     }
 
     /**
-     * New saved w&b when the save list changes.
+     * New saved ac when the save list changes.
      */
     public void newSaveAc() {
 
         clearAcSave();
+        LinkedList<Aircraft> ac = mService.getDBResource().getUserAircraft();
+
+        for (Aircraft a : ac) {
+            Message m = mHandler.obtainMessage(MSG_ADD_AC_SAVE, (Object)("'" + Helper.formatJsArgs(a.getId()) + "'"));
+            mHandler.sendMessage(m);
+        }
+
+        updateAc();
     }
 
     /**
@@ -179,7 +191,11 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void saveAc(String data) {
-
+        mAircraft = new Aircraft(data);
+        mService.getDBResource().setUserAircraft(mAircraft);
+        // update in service as default and save to prefs
+        mService.setAircraft(mAircraft);
+        mPref.setAircraftId(mAircraft.getId());
 
         newSaveAc();
     }
@@ -190,6 +206,10 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void loadAc(String name) {
+        mAircraft = mService.getDBResource().getUserAircraft(name);
+        // update in service as default and save to prefs
+        mService.setAircraft(mAircraft);
+        mPref.setAircraftId(mAircraft.getId());
 
         updateAc();
     }
@@ -200,6 +220,7 @@ public class WebAppListInterface {
      */
     @JavascriptInterface
     public void saveDeleteAc(String name) {
+        mService.getDBResource().deleteUserAircraft(name);
 
         newSaveAc();
 
@@ -601,6 +622,13 @@ public class WebAppListInterface {
 
 
             else if(MSG_UPDATE_AC == msg.what) {
+                if(null != mAircraft) {
+                    String data = mAircraft.getJSON();
+
+                    if (null != data) {
+                        mWebView.loadUrl("javascript:ac_set('" + data + "')");
+                    }
+                }
             }
             else if(MSG_ADD_AC_SAVE == msg.what) {
                 String func = "javascript:ac_save_add(" + (String)msg.obj + ")";
