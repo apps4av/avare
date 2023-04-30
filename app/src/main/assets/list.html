@@ -767,7 +767,7 @@ function setAircraftSurveillance() {
 
 <ul class="nav nav-tabs" style="display:inline-flex;">
     <li class="active"><a href="#aircrafts">Aircraft</a></li>
-    <li><a href="#wnbs">WNB</a></li>
+    <li><a href="#wnbs">W&B</a></li>
     <li><a href="#lists">Lists</a></li>
 </ul>
 
@@ -779,6 +779,7 @@ function setAircraftSurveillance() {
         <ul class="nav nav-tabs" style="display:inline-flex;">
             <li class="active"><a href="#aircraft">Loaded</a></li>
             <li><a href="#loadac">Load</a></li>
+            <li><a href="#helpac">Help</a></li>
         </ul>
 
         <div class="tab-content">
@@ -1264,7 +1265,7 @@ function setAircraftSurveillance() {
                         <td>Type</td><td><input spellcheck="false" id="icaoAircraftTypeInput"/></td>
                     </tr>
                     <tr>
-                        <td>ICAO Mode S Hex Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
+                        <td>ICAO Mode S Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
                     </tr>
                     <tr>
                         <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceSelection"/></td>
@@ -1279,7 +1280,7 @@ function setAircraftSurveillance() {
                         <td>Surveillance Equipment</td><td><input spellcheck="false" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
                     </tr>
                     <tr>
-                        <td>Fuel Endurance</td><td><input type="number" id="icaoFuelEnduranceInput"/></td>
+                        <td>Fuel Endurance (Hours)</td><td><input type="number" id="icaoFuelEnduranceInput"/></td>
                     </tr>
                     <tr>
                         <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput"/></td>
@@ -1307,6 +1308,28 @@ function setAircraftSurveillance() {
             <div id="loadac" class="tab-pane fade">
                 <table class="table" id="save_table_ac" ><th>Load an Aircraft</th></table>
             </div>
+
+            <div id="helpac" class="tab-pane fade">
+                <table class="table"><th>Help</th></table>
+                <div style="overflow: auto;">
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The Aircraft screen allows you to add and load your aircraft.
+                    <br>
+                    <b>To Create a New Aircraft</b>
+                    <ul>
+                        <li>Enter all fields in the "Loaded" view.</li>
+                        <li>Press the "Save" button.</li>
+                        <li>Aircraft will appear in the "Load" tab. This aircraft will be used for filing and flight performance calculations.</li>
+                    </ul>
+
+                    <b>To Load/Delete an Aircraft</b>
+                    <ul>
+                        <li>Press the "Load" tab to show the saved aircraft.</li>
+                        <li>Press the "LD" button to load the aircraft. This aircraft will be used for filing and flight performance calculations.</li>
+                        <li>You can delete a saved aircraft by pressing the "Del" button to the right of its name in the Saved Aircraft list.</li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1379,7 +1402,7 @@ function setAircraftSurveillance() {
             <div id="helpwnb" class="tab-pane fade">
                 <table class="table"><th>Help</th></table>
                 <div style="overflow: auto;">
-                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The WNB screen allows you to calculate weight and balance for your aircraft.
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The W&B screen allows you to calculate weight and balance for your aircraft.
                     <br>
                     <b>To Create a W&B</b>
                     <ul>

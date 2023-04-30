@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.accessibilityservice.GestureDescription;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -105,7 +103,7 @@ public class MainActivity extends TabActivity {
         }
 
         if (0 != (tabItems & (1 << tabChecklist))) {
-            setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+            setupTab(new TextView(this), getString(R.string.Aircraft), new Intent(this, AircraftActivity.class), getIntent());
         }
 
         if (0 != (tabItems & (1 << tabIo))) {

@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
-import com.ds.avare.ChecklistActivity;
+import com.ds.avare.AircraftActivity;
 import com.ds.avare.StorageService;
 import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
@@ -29,7 +29,6 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -42,7 +41,7 @@ import android.webkit.WebView;
  * @author zkhan
  * This class feeds the WebView with data
  */
-public class WebAppListInterface {
+public class WebAppAircraftInterface {
     private StorageService mService;
     private WebView mWebView;
     private ImportTask mImportTask;
@@ -76,7 +75,7 @@ public class WebAppListInterface {
     /** 
      * Instantiate the interface and set the context
      */
-    public WebAppListInterface(WebView ww, GenericCallback cb) {
+    public WebAppAircraftInterface(WebView ww, GenericCallback cb) {
         mWebView = ww;
         mCallback = cb;
         mService = StorageService.getInstance();
@@ -593,10 +592,10 @@ public class WebAppListInterface {
             	mWebView.loadUrl(func);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
-        		mCallback.callback((Object) ChecklistActivity.UNSHOW_BUSY, null);
+        		mCallback.callback((Object) AircraftActivity.UNSHOW_BUSY, null);
         	}
         	else if(MSG_BUSY == msg.what) {
-        		mCallback.callback((Object)ChecklistActivity.SHOW_BUSY, null);
+        		mCallback.callback((Object) AircraftActivity.SHOW_BUSY, null);
         	}
             else if(MSG_UPDATE_WNB == msg.what) {
                 /*

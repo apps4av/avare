@@ -636,5 +636,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Wx">Wx</string>
     <string name="weatherNa">Weather not available</string>
     <string name="AircraftTailNumber">AircraftTailNumber</string>
+    <string name="Aircraft">Acft</string>
 
 </resources>

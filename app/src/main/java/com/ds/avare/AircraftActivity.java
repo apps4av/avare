@@ -11,36 +11,24 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 package com.ds.avare;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.location.GpsStatus;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.GenericCallback;
-import com.ds.avare.utils.Helper;
-import com.ds.avare.webinfc.WebAppListInterface;
+import com.ds.avare.webinfc.WebAppAircraftInterface;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,14 +37,14 @@ import java.util.TimerTask;
  * @author zkhan
  * An activity that deals with lists - loading, creating, deleting and using
  */
-public class ChecklistActivity extends BaseActivity {
+public class AircraftActivity extends BaseActivity {
 
     /**
      * This view display location on the map.
      */
     private WebView mWebView;
     private ProgressBar mProgressBarSearch;
-    private WebAppListInterface mInfc;
+    private WebAppAircraftInterface mInfc;
     private boolean mInited;
 
     // A timer object to handle things when GPS goes away
@@ -93,7 +81,7 @@ public class ChecklistActivity extends BaseActivity {
         mWebView = (WebView)view.findViewById(R.id.list_mainpage);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
-        mInfc = new WebAppListInterface(mWebView, new GenericCallback() {
+        mInfc = new WebAppAircraftInterface(mWebView, new GenericCallback() {
             /*
              * (non-Javadoc)
              * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
@@ -123,7 +111,7 @@ public class ChecklistActivity extends BaseActivity {
 	        public boolean onJsConfirm(WebView view, String url, String message, final android.webkit.JsResult result) {
                 if(!isFinishing()) {
 
-                    new DecoratedAlertDialogBuilder(ChecklistActivity.this)
+                    new DecoratedAlertDialogBuilder(AircraftActivity.this)
                             .setTitle("")
                             .setCancelable(true)
                             .setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -297,7 +285,7 @@ public class ChecklistActivity extends BaseActivity {
     		}
     		else if(msg.what == MESSAGE) {
     			// Show an important message
-    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(ChecklistActivity.this);
+    			DecoratedAlertDialogBuilder builder = new DecoratedAlertDialogBuilder(AircraftActivity.this);
     			builder.setMessage((String)msg.obj)
     			       .setCancelable(false)
     			       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
