@@ -2276,51 +2276,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Plate</item>
     </string-array>
 
-    <string-array name="ACColor">
-        <item>Amber</item>
-        <item>Blue</item>
-        <item>Beige</item>
-        <item>Black</item>
-        <item>Brown</item>
-        <item>Green</item>
-        <item>Gold</item>
-        <item>Gray</item>
-        <item>Maroon</item>
-        <item>Orange</item>
-        <item>Purple</item>
-        <item>Pink</item>
-        <item>Red</item>
-        <item>Silver</item>
-        <item>Turquoise</item>
-        <item>Tan</item>
-        <item>Violet</item>
-        <item>White</item>
-        <item>Yellow</item>
-    </string-array>
-
-
-    <string-array name="ACColorValue">
-        <item>A</item>
-        <item>B</item>
-        <item>BE</item>
-        <item>BK</item>
-        <item>BR</item>
-        <item>G</item>
-        <item>GD</item>
-        <item>GY</item>
-        <item>M</item>
-        <item>O</item>
-        <item>P</item>
-        <item>PK</item>
-        <item>R</item>
-        <item>S</item>
-        <item>TQ</item>
-        <item>T</item>
-        <item>V</item>
-        <item>W</item>
-        <item>Y</item>
-    </string-array>
-
     <string-array name="WindsAloftAltitude">
         <item>3</item>
         <item>6</item>

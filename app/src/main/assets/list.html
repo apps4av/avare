@@ -735,6 +735,34 @@ function setAircraftEquipment() {
     id.value = text;
 }
 
+function setAircraftColor() {
+	var codes = ["A", "B", "BE", "BK", "BR", "G", "GD", "GY", "M", "O", "P", "PK", "R", "S", "TQ", "T", "V", "W", "Y"];
+    var idi = document.getElementById("icaoAircraftColorInput");
+    var arrayLength = codes.length;
+    var text = "";
+    var stext = "";
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoAircraftColorDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        text = id.value;
+	    }
+        var id = document.getElementById("icaoSAircraftColorDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        stext = id.value;
+	    }
+    }
+    if(stext == "") {
+        idi.value = text;
+    }
+    else if (text == "") {
+        idi.value = stext;
+    }
+    else {
+        idi.value = text + "/" + stext;
+    }
+}
+
+
 function setAircraftSurveillance() {
 	var codes = ["N", "A", "C", "E", "H", "I", "L", "P", "S", "X", "B1", "B2", "U1", "U2", "V1", "V2", "D1", "G1"];
 	var text = "";
@@ -757,6 +785,19 @@ function setAircraftSurveillance() {
     id.value = text;
 }
 
+function setAircraftWakeTurbulence() {
+	var codes = ["L", "M", "H"];
+	var text = "";
+    var arrayLength = codes.length;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoWakeTurbulenceDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        text = id.value;
+	    }
+    }
+    var id = document.getElementById("icaoWakeTurbulenceSelection");
+    id.value = text;
+}
 
 
     </script>
@@ -783,6 +824,58 @@ function setAircraftSurveillance() {
         </ul>
 
         <div class="tab-content">
+
+
+            <div class="modal fade" id="icaoWakeTurbulenceModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Wake Turbulence</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonL">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonL"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="LIGHT"
+                                                   checked="checked" />
+                                            L = LIGHT
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonM">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonM"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="MEDIUM"
+                                                   />
+                                            M = MEDIUM
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonH">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonH"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="HEAVY"
+                                            />
+                                            H = HEAVY
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="setAircraftWakeTurbulence()" data-dismiss="modal">OK</button>
+                                <br>
+                                <br>
+                                <br>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade" id="icaoSurveillanceEquipmentModal" role="dialog">
                 <div class="modal-dialog">
 
@@ -942,10 +1035,399 @@ function setAircraftSurveillance() {
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+                                <br>
+                                <br>
+                                <br>
                             </div>
 
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="icaoAircraftColorModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Aircraft Color</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Primary</h3>
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+
+                                    <li class="list-group-item">
+                                        <label for="icaoAircraftColorDialogRadioButtonA">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonA"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="A"  />
+                                            A = Amber
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonB">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonB"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="B" />
+                                            B = Blue
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBE">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBE"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BE" />
+                                            BE = Beige
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBK">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBK"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BK" />
+                                            BK = Black
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBR">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBR"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BR" />
+                                            BR = Brown
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonG">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonG"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="G" />
+                                            G = Green
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonGD">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonGD"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="GD" />
+                                            GD = Gold
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonGY">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonGY"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="GY" />
+                                            GY = Gray
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonM">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonM"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="M" />
+                                            M = Maroon
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonO">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonO"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="O" />
+                                            O = Orange
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonP">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonP"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="P" />
+                                            P = Purple
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonPK">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonPK"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="PK" />
+                                            PK = Pink
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonR">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonR"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="R" />
+                                            R = Red
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonS">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonS"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="S" />
+                                            S = Silver
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonTQ">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonTQ"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="TQ" />
+                                            TQ = Turquoise
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonT">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonT"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="T" />
+                                            T = Tan
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonV">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonV"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="V" />
+                                            V = Violet
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonW">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonW"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   checked = "checked"
+                                                   value="W" />
+                                            W = White
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonY">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonY"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="Y" />
+                                            Y = Yellow
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <h3>Secondary</h3>
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+
+                                    <li class="list-group-item">
+                                        <label for="icaoSAircraftColorDialogRadioButtonA">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonA"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="A" />
+                                            A = Amber
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonB">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonB"
+                                                   checked = "checked"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="B" />
+                                            B = Blue
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBE">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBE"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BE" />
+                                            BE = Beige
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBK">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBK"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BK" />
+                                            BK = Black
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBR">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBR"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BR" />
+                                            BR = Brown
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonG">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonG"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="G" />
+                                            G = Green
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonGD">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonGD"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="GD" />
+                                            GD = Gold
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonGY">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonGY"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="GY" />
+                                            GY = Gray
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonM">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonM"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="M" />
+                                            M = Maroon
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonO">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonO"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="O" />
+                                            O = Orange
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonP">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonP"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="P" />
+                                            P = Purple
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonPK">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonPK"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="PK" />
+                                            PK = Pink
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonR">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonR"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="R" />
+                                            R = Red
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonS">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonS"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="S" />
+                                            S = Silver
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonTQ">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonTQ"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="TQ" />
+                                            TQ = Turquoise
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonT">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonT"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="T" />
+                                            T = Tan
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonV">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonV"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="V" />
+                                            V = Violet
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonW">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonW"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="W" />
+                                            W = White
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonY">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonY"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="Y" />
+                                            Y = Yellow
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="setAircraftColor()" data-dismiss="modal">OK</button>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -1244,6 +1726,9 @@ function setAircraftSurveillance() {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
+                            <br>
+                            <br>
+                            <br>
                         </div>
                     </div>
 
@@ -1268,7 +1753,7 @@ function setAircraftSurveillance() {
                         <td>ICAO Mode S Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
                     </tr>
                     <tr>
-                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceSelection"/></td>
+                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceSelection" readonly onclick='$("#icaoWakeTurbulenceModal").modal()'/></td>
                     </tr>
                     <tr>
                         <td>Aircraft Equipment</td><td><input spellcheck="false" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
@@ -1283,7 +1768,7 @@ function setAircraftSurveillance() {
                         <td>Fuel Endurance (Hours)</td><td><input type="number" id="icaoFuelEnduranceInput"/></td>
                     </tr>
                     <tr>
-                        <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput"/></td>
+                        <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput" readonly onclick='$("#icaoAircraftColorModal").modal()'/></td>
                     </tr>
                     <tr>
                         <td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
