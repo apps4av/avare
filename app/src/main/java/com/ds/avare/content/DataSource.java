@@ -18,6 +18,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 
 import com.ds.avare.StorageService;
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Airport;
@@ -47,12 +48,13 @@ import java.util.Vector;
 public class DataSource {
 
     /**
-     * 
+     *
      */
     private Context mContext;
     private Preferences mPref;
 
     /**
+     *
      */
     public DataSource() {
         mContext = StorageService.getInstance().getApplicationContext();
@@ -102,7 +104,7 @@ public class DataSource {
 
     // location helper
 
-    public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
+    public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
         LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
     }
 
@@ -111,7 +113,7 @@ public class DataSource {
     }
 
     public String findClosestAirportID(double lon, double lat) {
-        return(LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
+        return (LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
     }
 
     public float[] findDiagramMatrix(String name) {
@@ -129,6 +131,7 @@ public class DataSource {
     public StringPreference searchOneNoCache(String name) {
         return LocationContentProviderHelper.searchOne(mContext, name, true);
     }
+
     public String[] findMinimums(String airportId) {
         return LocationContentProviderHelper.findMinimums(mContext, airportId);
     }
@@ -158,15 +161,15 @@ public class DataSource {
     }
 
     public LinkedList<Coordinate> findAirway(String name) {
-        return  LocationContentProviderHelper.findAirway(mContext, name);
+        return LocationContentProviderHelper.findAirway(mContext, name);
     }
 
     public Coordinate findNavaid(String name) {
-        return  LocationContentProviderHelper.findNavaid(mContext, name);
+        return LocationContentProviderHelper.findNavaid(mContext, name);
     }
 
     public Vector<NavAid> findNavaidsNearby(double lat, double lon) {
-        return  LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
+        return LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
     }
 
     public Coordinate findRunwayCoordinates(String name, String airport) {
@@ -279,6 +282,25 @@ public class DataSource {
         return ContentProviderHelper.getUserWnb(mContext, name);
     }
 
+    public LinkedList<Aircraft> getUserAircraft() {
+        return ContentProviderHelper.getUserAircraft(mContext);
+    }
+    public Aircraft getUserAircraft(String id) {
+        return ContentProviderHelper.getUserAircraft(mContext, id);
+    }
+
+    public void setUserAircraft(Aircraft aircraft) {
+        ContentProviderHelper.setUserAircraft(mContext, aircraft);
+    }
+
+    public void setUserAircraft(LinkedList<Aircraft> aircraft) {
+        ContentProviderHelper.setUserAircraft(mContext, aircraft);
+    }
+
+    public void deleteUserAircraft(String id) {
+        ContentProviderHelper.deleteUserAircraft(mContext, id);
+    }
+
     // other helper
 
     public LinkedList<Obstacle> getObstacles(double lon, double lat, double height) {
@@ -312,4 +334,5 @@ public class DataSource {
     public LinkedList<Cifp> findProcedure(String name, String approach) {
         return ContentProviderHelper.findProcedure(mContext, name, approach);
     }
+
 }

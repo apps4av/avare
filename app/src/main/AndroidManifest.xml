@@ -101,11 +101,10 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".IOActivity" />
         <activity android:name=".PlatesTagActivity" />
         <activity android:name=".ChartsDownloadActivity" />
-        <activity android:name=".ChecklistActivity"/>
+        <activity android:name=".AircraftActivity"/>
         <activity android:name=".PfdActivity"/>
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
-        <activity android:name=".WnbActivity"/>
         <activity
             android:name="com.ds.avare.MainActivity"
             android:launchMode="singleTask"

@@ -1,0 +1,2061 @@
+<html>
+<!--
+Copyright (c) 2015, Apps4Av Inc. (apps4av.com)
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    *     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    *
+    *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+authors: zkhan
+-->
+
+<head>
+
+    <!-- Latest compiled and minified CSS -->
+    <script src="file:///android_asset/jquery.min.js"></script>
+    <script src="file:///android_asset/bootstrap.min.js"></script>
+    <script src="file:///android_asset/bootstrap-select.min.js"></script>
+    <script src="file:///android_asset/bootbox.min.js"></script>
+    <script src="file:///android_asset/toastr.min.js"></script>
+    <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
+    <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
+    <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
+    <style type="text/css">
+        button {color: black; height:40px;}
+        input {height:40px; border-radius: 5px;}
+        .toast {opacity: 1 !important;}
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" >
+
+	toastr.options.timeOut = 2000;
+
+var CELL_TEXT = 0;
+var CELL_LAST = 1;
+
+
+// set list name
+function list_setname(name) {
+	var list = document.getElementById("list_name");
+
+	list.textContent = "List" + "[" + name + "]";
+}
+
+
+// This will move to a particular row on click
+function onclick_row(row) {
+	AndroidList.moveTo(row - 1);
+}
+
+
+// Set list line
+function set_list_line(row, next, text) {
+	// rows here are 1 indexed
+	row++;
+	var list_table = document.getElementById("list_table");
+
+	if(next == 1) {
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "green";
+	}
+	else {
+		list_table.rows[row].cells[CELL_TEXT].style.backgroundColor = "black";
+	}
+
+	list_table.rows[row].cells[CELL_TEXT].textContent = text;
+	// set onclick on row
+	list_table.rows[row].onclick = (function() {
+      var currentI = row;
+      return function() {
+          onclick_row(currentI);
+      }
+   })();
+
+}
+
+// add a item to the list
+function list_add(text) {
+	var list_table = document.getElementById("list_table");
+
+	var row = list_table.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_TEXT] = row.insertCell(CELL_TEXT);
+
+	cell[CELL_TEXT].textContent = text;
+}
+
+// clear the entire list
+function list_clear() {
+	// clear the table
+	var list_table = document.getElementById("list_table");
+	for(var row = list_table.rows.length - 1; row >= 1; row--) {
+			list_table.deleteRow(row);
+	}
+}
+
+// delete current item
+function list_delete_item() {
+
+	bootbox.confirm("Delete Selected?", function(result) {
+		if(result == false) {
+			return;
+		}
+        AndroidList.deleteItem();
+	});
+}
+
+// delete the list
+function save_delete(row) {
+
+	bootbox.confirm("Delete Saved?", function(result) {
+		if(result == false) {
+			return;
+		}
+    	var list_save = document.getElementById("save_table");
+	    AndroidList.saveDelete(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	    toastr.success('List deleted');
+	});
+
+}
+
+// remove the entire list
+function list_discard() {
+
+	bootbox.confirm("Clear List?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidList.discardList();
+	});
+
+}
+
+// import the entire list from file
+function list_import() {
+	// call Android
+	var path = document.getElementById("import_input");
+	if(path.value == "") {
+		toastr.error('Please specify a valid path');
+		return;
+	}
+
+	bootbox.confirm("Delete List then Import?", function(result) {
+		if(result == false) {
+			return;
+		}
+		AndroidList.importFromFile(path.value);
+		document.getElementById("list_name").scrollIntoView();
+	    toastr.info('Importing list from ' + path.value);
+		path.value = "";
+		$('[href="#list"]').tab('show');
+	});
+}
+
+// Add a line to list
+function add_list_item() {
+	var item = document.getElementById("item_input");
+	AndroidList.addToList(item.value);
+	// clear when added
+	item.value = "";
+}
+
+// move up current item
+function list_moveup_item() {
+	AndroidList.moveUpItem();
+}
+
+// move down current item
+function list_movedown_item() {
+	AndroidList.moveDownItem();
+}
+
+
+var CELL_SAVE_NAME = 0;
+var CELL_SAVE_LOAD = 1;
+var CELL_SAVE_DELETE = 2;
+var CELL_SAVE_LAST = 3;
+
+// load the list
+function save_load(row) {
+	var list_save = document.getElementById("save_table");
+	AndroidList.loadList(list_save.rows[row].cells[CELL_SAVE_NAME].textContent);
+	document.getElementById("list_name").scrollIntoView();
+	$('[href="#list"]').tab('show');
+}
+
+// add the current list to saved list
+function save_list_add() {
+	var name = document.getElementById("save_name").value;
+
+	if(name == "") {
+		toastr.error('Please specify a valid name');
+		return;
+	}
+	AndroidList.saveList(name);
+	toastr.success('List saved to ' + name);
+}
+
+// clear the entire save list
+function save_clear() {
+	// clear the table
+	var list_save = document.getElementById("save_table");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			list_save.deleteRow(row);
+	}
+}
+
+
+// Sets buttons on each row
+function set_buttons_save() {
+	// Set buttons for each entry in list
+	var list_save = document.getElementById("save_table");
+	for(var i = 1; i < list_save.rows.length; i++) {
+		list_save.rows[i].cells[CELL_SAVE_LOAD].innerHTML =
+			"<button class='btn btn-block' onclick='save_load(" + i.toString() + ")'>LD</button>";
+		list_save.rows[i].cells[CELL_SAVE_DELETE].innerHTML =
+			"<button class='btn btn-block' onclick='save_delete(" + i.toString() + ")'>Del</button>";
+	}
+
+		// clear save input
+	document.getElementById("save_name").value = "";
+}
+
+// add an item to the list
+function save_add(name) {
+	var list_save = document.getElementById("save_table");
+
+	var row = list_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[CELL_SAVE_NAME] = row.insertCell(CELL_SAVE_NAME);
+	cell[CELL_SAVE_LOAD] = row.insertCell(CELL_SAVE_LOAD);
+	cell[CELL_SAVE_DELETE] = row.insertCell(CELL_SAVE_DELETE);
+
+	cell[CELL_SAVE_NAME].textContent = name;
+
+	set_buttons_save();
+
+}
+
+
+var WNB_CELL_SAVE_NAME = 0;
+var WNB_CELL_SAVE_LOAD = 1;
+var WNB_CELL_SAVE_DELETE = 2;
+var WNB_CELL_SAVE_LAST = 3;
+
+function wnb_forward() {
+	AndroidList.moveForward();
+}
+
+
+
+// put data in W&B sheet
+function wnb_set(data) {
+
+    var obj = JSON.parse(data);
+
+    document.getElementById("wnb_name").textContent = "W&B" + "[" + obj.name + "]";
+
+    document.getElementById("t0").value = obj.t_0;
+    document.getElementById("t1").value = obj.t_1;
+    document.getElementById("t2").value = obj.t_2;
+    document.getElementById("t3").value = obj.t_3;
+    document.getElementById("t4").value = obj.t_4;
+    document.getElementById("t5").value = obj.t_5;
+    document.getElementById("t6").value = obj.t_6;
+    document.getElementById("t7").value = obj.t_7;
+    document.getElementById("t8").value = obj.t_8;
+    document.getElementById("t9").value = obj.t_9;
+
+    document.getElementById("w0").value = obj.w_0;
+    document.getElementById("w1").value = obj.w_1;
+    document.getElementById("w2").value = obj.w_2;
+    document.getElementById("w3").value = obj.w_3;
+    document.getElementById("w4").value = obj.w_4;
+    document.getElementById("w5").value = obj.w_5;
+    document.getElementById("w6").value = obj.w_6;
+    document.getElementById("w7").value = obj.w_7;
+    document.getElementById("w8").value = obj.w_8;
+    document.getElementById("w9").value = obj.w_9;
+
+    document.getElementById("a0").value = obj.a_0;
+    document.getElementById("a1").value = obj.a_1;
+    document.getElementById("a2").value = obj.a_2;
+    document.getElementById("a3").value = obj.a_3;
+    document.getElementById("a4").value = obj.a_4;
+    document.getElementById("a5").value = obj.a_5;
+    document.getElementById("a6").value = obj.a_6;
+    document.getElementById("a7").value = obj.a_7;
+    document.getElementById("a8").value = obj.a_8;
+    document.getElementById("a9").value = obj.a_9;
+
+    document.getElementById("m0").textContent = "";
+    document.getElementById("m1").textContent = "";
+    document.getElementById("m2").textContent = "";
+    document.getElementById("m3").textContent = "";
+    document.getElementById("m4").textContent = "";
+    document.getElementById("m5").textContent = "";
+    document.getElementById("m6").textContent = "";
+    document.getElementById("m7").textContent = "";
+    document.getElementById("m8").textContent = "";
+    document.getElementById("m9").textContent = "";
+
+    document.getElementById("w_total").textContent = "";
+    document.getElementById("m_total").textContent = "";
+    document.getElementById("a_total").textContent = "";
+
+    document.getElementById("max_w").value = obj.max_w;
+    document.getElementById("min_w").value = obj.min_w;
+    document.getElementById("max_a").value = obj.max_a;
+    document.getElementById("min_a").value = obj.min_a;
+
+    document.getElementById("points").value = obj.points;
+}
+
+// put data from W&B sheet
+function wnb_get(name) {
+
+    var obj = new Object();
+
+    obj.name = name;
+
+    obj.t_0 = document.getElementById("t0").value;
+    obj.t_1 = document.getElementById("t1").value;
+    obj.t_2 = document.getElementById("t2").value;
+    obj.t_3 = document.getElementById("t3").value;
+    obj.t_4 = document.getElementById("t4").value;
+    obj.t_5 = document.getElementById("t5").value;
+    obj.t_6 = document.getElementById("t6").value;
+    obj.t_7 = document.getElementById("t7").value;
+    obj.t_8 = document.getElementById("t8").value;
+    obj.t_9 = document.getElementById("t9").value;
+
+    obj.w_0 = document.getElementById("w0").value;
+    obj.w_1 = document.getElementById("w1").value;
+    obj.w_2 = document.getElementById("w2").value;
+    obj.w_3 = document.getElementById("w3").value;
+    obj.w_4 = document.getElementById("w4").value;
+    obj.w_5 = document.getElementById("w5").value;
+    obj.w_6 = document.getElementById("w6").value;
+    obj.w_7 = document.getElementById("w7").value;
+    obj.w_8 = document.getElementById("w8").value;
+    obj.w_9 = document.getElementById("w9").value;
+
+    obj.a_0 = document.getElementById("a0").value;
+    obj.a_1 = document.getElementById("a1").value;
+    obj.a_2 = document.getElementById("a2").value;
+    obj.a_3 = document.getElementById("a3").value;
+    obj.a_4 = document.getElementById("a4").value;
+    obj.a_5 = document.getElementById("a5").value;
+    obj.a_6 = document.getElementById("a6").value;
+    obj.a_7 = document.getElementById("a7").value;
+    obj.a_8 = document.getElementById("a8").value;
+    obj.a_9 = document.getElementById("a9").value;
+
+    obj.max_w = document.getElementById("max_w").value;
+    obj.min_w = document.getElementById("min_w").value;
+    obj.max_a = document.getElementById("max_a").value;
+    obj.min_a = document.getElementById("min_a").value;
+
+    obj.points = document.getElementById("points").value;
+
+    return JSON.stringify(obj);
+
+}
+
+
+function wnb_process_input(inp) {
+    var fl = parseFloat(inp);
+    if(inp == '') {
+        return 0;
+    }
+    return fl;
+}
+
+function wnb_round100(num) {
+    return (Math.round(num * 100.0) / 100.0);
+}
+
+function wnb_calculate() {
+
+    var w_0 = wnb_process_input(document.getElementById("w0").value);
+    var w_1 = wnb_process_input(document.getElementById("w1").value);
+    var w_2 = wnb_process_input(document.getElementById("w2").value);
+    var w_3 = wnb_process_input(document.getElementById("w3").value);
+    var w_4 = wnb_process_input(document.getElementById("w4").value);
+    var w_5 = wnb_process_input(document.getElementById("w5").value);
+    var w_6 = wnb_process_input(document.getElementById("w6").value);
+    var w_7 = wnb_process_input(document.getElementById("w7").value);
+    var w_8 = wnb_process_input(document.getElementById("w8").value);
+    var w_9 = wnb_process_input(document.getElementById("w9").value);
+
+    var a_0 = wnb_process_input(document.getElementById("a0").value);
+    var a_1 = wnb_process_input(document.getElementById("a1").value);
+    var a_2 = wnb_process_input(document.getElementById("a2").value);
+    var a_3 = wnb_process_input(document.getElementById("a3").value);
+    var a_4 = wnb_process_input(document.getElementById("a4").value);
+    var a_5 = wnb_process_input(document.getElementById("a5").value);
+    var a_6 = wnb_process_input(document.getElementById("a6").value);
+    var a_7 = wnb_process_input(document.getElementById("a7").value);
+    var a_8 = wnb_process_input(document.getElementById("a8").value);
+    var a_9 = wnb_process_input(document.getElementById("a9").value);
+
+    var m_0 = w_0 * a_0;
+    var m_1 = w_1 * a_1;
+    var m_2 = w_2 * a_2;
+    var m_3 = w_3 * a_3;
+    var m_4 = w_4 * a_4;
+    var m_5 = w_5 * a_5;
+    var m_6 = w_6 * a_6;
+    var m_7 = w_7 * a_7;
+    var m_8 = w_8 * a_8;
+    var m_9 = w_9 * a_9;
+
+    document.getElementById("m0").textContent = wnb_round100(m_0);
+    document.getElementById("m1").textContent = wnb_round100(m_1);
+    document.getElementById("m2").textContent = wnb_round100(m_2);
+    document.getElementById("m3").textContent = wnb_round100(m_3);
+    document.getElementById("m4").textContent = wnb_round100(m_4);
+    document.getElementById("m5").textContent = wnb_round100(m_5);
+    document.getElementById("m6").textContent = wnb_round100(m_6);
+    document.getElementById("m7").textContent = wnb_round100(m_7);
+    document.getElementById("m8").textContent = wnb_round100(m_8);
+    document.getElementById("m9").textContent = wnb_round100(m_9);
+
+    var w_total = w_0 + w_1 + w_2 + w_3 + w_4 + w_5 + w_6 + w_7 + w_8 + w_9;
+    var m_total = m_0 + m_1 + m_2 + m_3 + m_4 + m_5 + m_6 + m_7 + m_8 + m_9;
+    var a_total = m_total / w_total;
+
+    document.getElementById("w_total").textContent = wnb_round100(w_total);
+    document.getElementById("m_total").textContent = wnb_round100(m_total);
+    document.getElementById("a_total").textContent = wnb_round100(a_total); // cg
+
+    // now draw on canvas
+    max_w = wnb_process_input(document.getElementById("max_w").value);
+    min_w = wnb_process_input(document.getElementById("min_w").value);
+    max_a = wnb_process_input(document.getElementById("max_a").value);
+    min_a = wnb_process_input(document.getElementById("min_a").value);
+
+
+    // draw rectangle
+    diff_w = max_w - min_w;
+    diff_a = max_a - min_a;
+
+    var canvas = document.getElementById('wnb_canvas');
+    var width = canvas.width;
+    var height = canvas.height;
+
+    var ratio_x = width / diff_a;
+    var ratio_y = height / diff_w;
+
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle="#000000";
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle="#FFFFFF";
+
+    var x = (a_total - min_a) * ratio_x;
+    var y = (w_total - min_w) * ratio_y;
+
+    // draw envelope from points entered as w0,a0 w1,a1 ...
+    points = document.getElementById("points").value;
+    var pairs = points.split(" ");
+    ctx.fillStyle="#AA0000";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle="#00AA00";
+    ctx.beginPath();
+    for (var i = 0; i < pairs.length; i++) {
+        var xy = pairs[i].split(",");
+        var x_p = (xy[0] - min_a) * ratio_x;
+        var y_p = (xy[1] - min_w) * ratio_y;
+        if(0 == i) {
+            ctx.moveTo(x_p, height - y_p);
+        }
+        else {
+            ctx.lineTo(x_p, height - y_p);
+        }
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle="#FFFFFF";
+    ctx.fillRect(x - 3, height - y - 3, 6, 6);
+
+    ctx.beginPath();
+    ctx.arc(x, height - y, 9, 0, 2*Math.PI);
+    ctx.stroke();
+    ctx.closePath();
+
+}
+
+// delete the wnb
+function wnb_save_delete(row) {
+
+	bootbox.confirm("Delete Saved?", function(result) {
+		if(result == false) {
+			return;
+		}
+    	var wnb_save = document.getElementById("save_table_wnb");
+	    AndroidList.saveDeleteWnb(wnb_save.rows[row].cells[WNB_CELL_SAVE_NAME].textContent);
+	    toastr.success('W&B deleted');
+	});
+
+}
+
+// load the wnb
+function wnb_save_load(row) {
+	var wnb_save = document.getElementById("save_table_wnb");
+	AndroidList.loadWnb(wnb_save.rows[row].cells[WNB_CELL_SAVE_NAME].textContent);
+	document.getElementById("wnb_name").scrollIntoView();
+	$('[href="#wnb"]').tab('show');
+}
+
+// add the current wnb to saved wnb
+function wnb_save_wnb_add() {
+	var name = document.getElementById("save_name_wnb").value;
+
+	if(name == "") {
+		toastr.error('Please specify a valid name');
+		return;
+	}
+
+	var data = wnb_get(name);
+	AndroidList.saveWnb(data);
+	toastr.success('W&B saved to ' + name);
+}
+
+
+// Sets buttons on each row
+function wnb_set_buttons_save() {
+	// Set buttons for each entry in wnb
+	var wnb_save = document.getElementById("save_table_wnb");
+	for(var i = 1; i < wnb_save.rows.length; i++) {
+		wnb_save.rows[i].cells[WNB_CELL_SAVE_LOAD].innerHTML =
+			"<button class='btn btn-block' onclick='wnb_save_load(" + i.toString() + ")'>LD</button>";
+		wnb_save.rows[i].cells[WNB_CELL_SAVE_DELETE].innerHTML =
+			"<button class='btn btn-block' onclick='wnb_save_delete(" + i.toString() + ")'>Del</button>";
+	}
+
+		// clear save input
+	document.getElementById("save_name_wnb").value = "";
+}
+
+// clear the entire save list
+function wnb_save_clear() {
+	// clear the table
+	var list_save = document.getElementById("save_table_wnb");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			list_save.deleteRow(row);
+	}
+}
+
+// add an item to the wnb
+function wnb_save_add(name) {
+	var wnb_save = document.getElementById("save_table_wnb");
+
+	var row = wnb_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[WNB_CELL_SAVE_NAME] = row.insertCell(WNB_CELL_SAVE_NAME);
+	cell[WNB_CELL_SAVE_LOAD] = row.insertCell(WNB_CELL_SAVE_LOAD);
+	cell[WNB_CELL_SAVE_DELETE] = row.insertCell(WNB_CELL_SAVE_DELETE);
+
+	cell[WNB_CELL_SAVE_NAME].textContent = name;
+
+	wnb_set_buttons_save();
+
+}
+
+var AC_CELL_SAVE_NAME = 0;
+var AC_CELL_SAVE_LOAD = 1;
+var AC_CELL_SAVE_DELETE = 2;
+var AC_CELL_SAVE_LAST = 3;
+
+// convert 4.5 to 4H30M
+function numberToIcao(num) {
+    var hr = Math.floor(num);
+    var mn = Math.round((num - hr) * 60);
+    return (hr + "H" + mn + "M");
+}
+
+// convert 4H30M to 4.5
+function icaoToNumber(icao) {
+    var hr = icao.split("H");
+    var mn = hr[1].slice(0, -1);
+    return (parseFloat(hr[0]) + parseFloat(mn) / 60);
+}
+
+
+// put data in AC sheet
+function ac_set(data) {
+
+    var obj = JSON.parse(data);
+
+    document.getElementById("ac_name").textContent = "Aircraft" + "[" + obj.id + "]";
+
+    document.getElementById("icaoAircraftIdInput").value = obj.id;
+    document.getElementById("icaoAircraftTypeInput").value = obj.type;
+    document.getElementById("icaoAircraftIcaoInput").value = obj.icao;
+    document.getElementById("icaoWakeTurbulenceInput").value = obj.wake;
+    document.getElementById("icaoAircraftEquipmentInput").value = obj.equipment;
+    document.getElementById("icaoCruisingSpeedInput").value = obj.cruise_tas;
+    document.getElementById("icaoSurveillanceEquipmentInput").value = obj.surveillance;
+    document.getElementById("icaoFuelEnduranceSelection").value = numberToIcao(obj.endurance);
+    $('#icaoFuelEnduranceSelection').change();
+    document.getElementById("icaoAircraftColorInput").value = obj.color;
+    document.getElementById("icaoPilotInCommandInput").value = obj.pic;
+    document.getElementById("icaoPilotInfoInput").value = obj.pilot_info;
+    document.getElementById("bestGlideSinkRateInput").value = obj.sink_rate;
+    document.getElementById("fuelBurnRateCruisingInput").value = obj.fuel_burn_rate;
+    document.getElementById("aircraftHomeBaseInput").value = obj.home_base;
+}
+
+
+// put data from AC sheet
+function ac_get() {
+
+    var obj = new Object();
+
+    obj.id = document.getElementById("icaoAircraftIdInput").value;
+    obj.type = document.getElementById("icaoAircraftTypeInput").value;
+    obj.icao = document.getElementById("icaoAircraftIcaoInput").value;
+    obj.wake = document.getElementById("icaoWakeTurbulenceInput").value;
+    obj.equipment = document.getElementById("icaoAircraftEquipmentInput").value;
+    obj.cruise_tas = document.getElementById("icaoCruisingSpeedInput").value;
+    obj.surveillance = document.getElementById("icaoSurveillanceEquipmentInput").value;
+    obj.endurance = icaoToNumber(document.getElementById("icaoFuelEnduranceSelection").value);
+    obj.color = document.getElementById("icaoAircraftColorInput").value;
+    obj.pic = document.getElementById("icaoPilotInCommandInput").value;
+    obj.pilot_info = document.getElementById("icaoPilotInfoInput").value;
+    obj.sink_rate = document.getElementById("bestGlideSinkRateInput").value;
+    obj.fuel_burn_rate = document.getElementById("fuelBurnRateCruisingInput").value;
+    obj.home_base = document.getElementById("aircraftHomeBaseInput").value;
+
+    return JSON.stringify(obj);
+}
+
+// delete the ac
+function ac_save_delete(row) {
+
+	bootbox.confirm("Delete Saved?", function(result) {
+		if(result == false) {
+			return;
+		}
+    	var ac_save = document.getElementById("save_table_ac");
+	    AndroidList.saveDeleteAc(ac_save.rows[row].cells[AC_CELL_SAVE_NAME].textContent);
+	    toastr.success('Aircraft deleted');
+	});
+
+}
+
+// load the ac
+function ac_save_load(row) {
+	var ac_save = document.getElementById("save_table_ac");
+	AndroidList.loadAc(ac_save.rows[row].cells[AC_CELL_SAVE_NAME].textContent);
+	document.getElementById("ac_name").scrollIntoView();
+	$('[href="#aircraft"]').tab('show');
+}
+
+// add the current ac to saved ac
+function ac_save_ac_add() {
+
+    var id = document.getElementById("icaoAircraftIdInput").value;
+	if(id == "") {
+		toastr.error('Please specify a tail number');
+		return;
+	}
+
+	var data = ac_get(id);
+	AndroidList.saveAc(data);
+	toastr.success('Aircraft saved to ' + id);
+}
+
+
+// Sets buttons on each row
+function ac_set_buttons_save() {
+	// Set buttons for each entry in ac
+	var ac_save = document.getElementById("save_table_ac");
+	for(var i = 1; i < ac_save.rows.length; i++) {
+		ac_save.rows[i].cells[AC_CELL_SAVE_LOAD].innerHTML =
+			"<button class='btn btn-block' onclick='ac_save_load(" + i.toString() + ")'>LD</button>";
+		ac_save.rows[i].cells[AC_CELL_SAVE_DELETE].innerHTML =
+			"<button class='btn btn-block' onclick='ac_save_delete(" + i.toString() + ")'>Del</button>";
+	}
+}
+
+// clear the entire save list
+function ac_save_clear() {
+	// clear the table
+	var list_save = document.getElementById("save_table_ac");
+	for(var row = list_save.rows.length - 1; row >= 1; row--) {
+			list_save.deleteRow(row);
+	}
+}
+
+// add an item to the ac
+function ac_save_add(name) {
+	var ac_save = document.getElementById("save_table_ac");
+
+	var row = ac_save.insertRow(-1);
+
+	var cell = [];
+
+	// Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+	cell[AC_CELL_SAVE_NAME] = row.insertCell(AC_CELL_SAVE_NAME);
+	cell[AC_CELL_SAVE_LOAD] = row.insertCell(AC_CELL_SAVE_LOAD);
+	cell[AC_CELL_SAVE_DELETE] = row.insertCell(AC_CELL_SAVE_DELETE);
+
+	cell[AC_CELL_SAVE_NAME].textContent = name;
+
+	ac_set_buttons_save();
+
+}
+
+
+$(document).ready(function(){
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    });
+});
+
+
+function setAircraftEquipment() {
+	var codes = ["N", "S", "A", "B", "C", "D", "E1", "E2", "E3", "F", "G", "H", "I", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "K", "L", "M1", "M2", "M3", "O", "R", "T", "U", "V", "W", "X", "Y", "Z"];
+	var text = "";
+	var reset = false;
+    var arrayLength = codes.length;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoAircraftEquipmentDialogCheckbox" + codes[i]);
+	    if(id.checked) {
+	        if(reset) {
+	            id.checked = false;
+	            continue;
+	        }
+	        text += id.value;
+	    	if(codes[i] == "N") {
+	    	    reset = true;
+	    	}
+	    }
+    }
+    var id = document.getElementById("icaoAircraftEquipmentInput");
+    id.value = text;
+}
+
+function setAircraftColor() {
+	var codes = ["A", "B", "BE", "BK", "BR", "G", "GD", "GY", "M", "O", "P", "PK", "R", "S", "TQ", "T", "V", "W", "Y"];
+    var idi = document.getElementById("icaoAircraftColorInput");
+    var arrayLength = codes.length;
+    var text = "";
+    var stext = "";
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoAircraftColorDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        text = id.value;
+	    }
+        var id = document.getElementById("icaoSAircraftColorDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        stext = id.value;
+	    }
+    }
+    if(stext == "") {
+        idi.value = text;
+    }
+    else if (text == "") {
+        idi.value = stext;
+    }
+    else {
+        idi.value = text + "/" + stext;
+    }
+}
+
+
+function setAircraftSurveillance() {
+	var codes = ["N", "A", "C", "E", "H", "I", "L", "P", "S", "X", "B1", "B2", "U1", "U2", "V1", "V2", "D1", "G1"];
+	var text = "";
+    var arrayLength = codes.length;
+	var reset = false;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoSurveillanceEquipmentDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        if(reset) {
+	            id.checked = false;
+	            continue;
+	        }
+	        text += id.value;
+	    	if(codes[i] == "N") {
+	    	    reset = true;
+	    	}
+	    }
+    }
+    var id = document.getElementById("icaoSurveillanceEquipmentInput");
+    id.value = text;
+}
+
+function setAircraftWakeTurbulence() {
+	var codes = ["L", "M", "H"];
+	var text = "";
+    var arrayLength = codes.length;
+    for (var i = 0; i < arrayLength; i++) {
+        var id = document.getElementById("icaoWakeTurbulenceDialogRadioButton" + codes[i]);
+	    if(id.checked) {
+	        text = id.value;
+	    }
+    }
+    var id = document.getElementById("icaoWakeTurbulenceInput");
+    id.value = text;
+}
+
+
+    </script>
+
+</head>
+
+<body>
+
+<ul class="nav nav-tabs" style="display:inline-flex;">
+    <li class="active"><a href="#aircrafts">Aircraft</a></li>
+    <li><a href="#wnbs">W&B</a></li>
+    <li><a href="#lists">Lists</a></li>
+</ul>
+
+<div class="tab-content">
+
+
+    <div id="aircrafts" class="tab-pane fade in active">
+
+        <ul class="nav nav-tabs" style="display:inline-flex;">
+            <li class="active"><a href="#aircraft">Loaded</a></li>
+            <li><a href="#loadac">Load</a></li>
+            <li><a href="#helpac">Help</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+
+            <div class="modal fade" id="icaoWakeTurbulenceModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Wake Turbulence</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonL">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonL"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="LIGHT"
+                                                   checked="checked" />
+                                            L = LIGHT
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonM">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonM"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="MEDIUM"
+                                                   />
+                                            M = MEDIUM
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoWakeTurbulenceDialogRadioButtonH">
+                                            <input type="radio" id="icaoWakeTurbulenceDialogRadioButtonH"
+                                                   name="icaoWakeTurbulenceDialogRadioButtonGroup1" value="HEAVY"
+                                            />
+                                            H = HEAVY
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="setAircraftWakeTurbulence()" data-dismiss="modal">OK</button>
+                                <br>
+                                <br>
+                                <br>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="icaoSurveillanceEquipmentModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Surveillance Equipment</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+                                    <li class="list-group-item">
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonN">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonN"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="N"
+                                                   checked="checked" />
+                                            N = NIL
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonA">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonA"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="A" />
+                                            A = Mode A
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonC">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonC"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="C" />
+                                            C = Modes A and C
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonE">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonE"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="E" />
+                                            E = Mode S, ID, Alt and Squitter
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonH">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonH"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="H" />
+                                            H = Mode S, ID, Alt and Enhanced Surv
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonI">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonI"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="I" />
+                                            I = Mode S, ID no Alt
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonL">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonL"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="L" />
+                                            L = Mode S, ID, Alt, Squitter and Enhanced Surv
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonP">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonP"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="P" />
+                                            P = Mode S, Alt no ID
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonS">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonS"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="S" />
+                                            S = Mode S, ID and Alt
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonX">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonX"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup1" value="X" />
+                                            X = Mode S, no ID no Alt
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonB1">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB1"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B1" />
+                                            B1 = ADS-B, Dedicated 1090 MHz Out
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonB2">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonB2"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup2" value="B2" />
+                                            B2 = ADS-B, Dedicated 1090 MHz Out and In
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonU1">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU1"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U1" />
+                                            U1 = ADS-B, UAT Out
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonU2">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonU2"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup3" value="U2" />
+                                            U2 = ADS-B, UAT Out and In
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonV1">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV1"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V1" />
+                                            V1 = ADS-B, VDL Mode 4 Out
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonV2">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonV2"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup4" value="V2" />
+                                            V2 = ADS-B, VDL Mode 4 Out and In
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonD1">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonD1"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="D1" />
+                                            D1 = ADS-C, FANS
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSurveillanceEquipmentDialogRadioButtonG1">
+                                            <input type="radio" id="icaoSurveillanceEquipmentDialogRadioButtonG1"
+                                                   name="icaoSurveillanceEquipmentDialogRadioButtonGroup5" value="G1" />
+                                            G1 = ADS-C, ATN
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="setAircraftSurveillance()" data-dismiss="modal">OK</button>
+                                <br>
+                                <br>
+                                <br>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="icaoAircraftColorModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Aircraft Color</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Primary</h3>
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+
+                                    <li class="list-group-item">
+                                        <label for="icaoAircraftColorDialogRadioButtonA">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonA"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="A"  />
+                                            A = Amber
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonB">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonB"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="B" />
+                                            B = Blue
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBE">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBE"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BE" />
+                                            BE = Beige
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBK">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBK"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BK" />
+                                            BK = Black
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonBR">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonBR"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="BR" />
+                                            BR = Brown
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonG">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonG"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="G" />
+                                            G = Green
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonGD">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonGD"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="GD" />
+                                            GD = Gold
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonGY">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonGY"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="GY" />
+                                            GY = Gray
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonM">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonM"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="M" />
+                                            M = Maroon
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonO">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonO"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="O" />
+                                            O = Orange
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonP">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonP"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="P" />
+                                            P = Purple
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonPK">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonPK"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="PK" />
+                                            PK = Pink
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonR">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonR"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="R" />
+                                            R = Red
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonS">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonS"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="S" />
+                                            S = Silver
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonTQ">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonTQ"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="TQ" />
+                                            TQ = Turquoise
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonT">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonT"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="T" />
+                                            T = Tan
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonV">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonV"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="V" />
+                                            V = Violet
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonW">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonW"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   checked = "checked"
+                                                   value="W" />
+                                            W = White
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftColorDialogRadioButtonY">
+                                            <input type="radio" id="icaoAircraftColorDialogRadioButtonY"
+                                                   name = "icaoAircraftColorDialogRadioButtonGroup1"
+                                                   value="Y" />
+                                            Y = Yellow
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                            <h3>Secondary</h3>
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+
+                                    <li class="list-group-item">
+                                        <label for="icaoSAircraftColorDialogRadioButtonA">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonA"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="A" />
+                                            A = Amber
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonB">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonB"
+                                                   checked = "checked"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="B" />
+                                            B = Blue
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBE">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBE"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BE" />
+                                            BE = Beige
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBK">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBK"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BK" />
+                                            BK = Black
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonBR">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonBR"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="BR" />
+                                            BR = Brown
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonG">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonG"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="G" />
+                                            G = Green
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonGD">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonGD"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="GD" />
+                                            GD = Gold
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonGY">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonGY"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="GY" />
+                                            GY = Gray
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonM">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonM"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="M" />
+                                            M = Maroon
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonO">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonO"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="O" />
+                                            O = Orange
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonP">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonP"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="P" />
+                                            P = Purple
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonPK">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonPK"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="PK" />
+                                            PK = Pink
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonR">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonR"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="R" />
+                                            R = Red
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonS">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonS"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="S" />
+                                            S = Silver
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonTQ">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonTQ"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="TQ" />
+                                            TQ = Turquoise
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonT">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonT"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="T" />
+                                            T = Tan
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonV">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonV"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="V" />
+                                            V = Violet
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonW">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonW"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="W" />
+                                            W = White
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoSAircraftColorDialogRadioButtonY">
+                                            <input type="radio" id="icaoSAircraftColorDialogRadioButtonY"
+                                                   name="icaoSAircraftColorDialogRadioButtonGroup1"
+                                                   value="Y" />
+                                            Y = Yellow
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="setAircraftColor()" data-dismiss="modal">OK</button>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal fade" id="icaoAircraftEquipmentModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header alert-info">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Aircraft Equipment</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div style="overflow: auto;">
+                                <ul class="list-group checked-list-box">
+
+                                    <li class="list-group-item">
+                                        <label for="icaoAircraftEquipmentDialogCheckboxN">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxN"
+                                                   value="N" />
+                                            N = NIL
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxS">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxS"
+                                                   value="S" />
+                                            S = (VOR, VHF RTF, ILS)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxA">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxA"
+                                                   value="A" />
+                                            A = GBAS Landing System
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxB">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxB"
+                                                   value="B" />
+                                            B = LPV (APV with SBAS)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxC">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxC"
+                                                   value="C" />
+                                            C = LORAN C
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxD">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxD"
+                                                   value="D" />
+                                            D = DME
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxE1">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE1"
+                                                   value="E1" />
+                                            E1 = FMC WPR ACARS
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxE2">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE2"
+                                                   value="E2" />
+                                            E2 = D-FIS ACARS
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxE3">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxE3"
+                                                   value="E3" />
+                                            E3 = PDC ACARS
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxF">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxF"
+                                                   value="F" />
+                                            F = ADF
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxG">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxG"
+                                                   value="G" />
+                                            G = GNSS
+                                        </label>
+
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxH">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxH"
+                                                   value="H" />
+                                            H = HF RTF
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxI">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxI"
+                                                   value="I" />
+                                            I = Inert'l Nav
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ1">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ1"
+                                                   value="J1" />
+                                            J1 = CPDLC ATN VDL Mode 2
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ2">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ2"
+                                                   value="J2" />
+                                            J2 = CPDLC FANS 1/A HFDL
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ3">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ3"
+                                                   value="J3" />
+                                            J3 = CPDLC FANS 1/A VDL Mode A
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ4">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ4"
+                                                   value="J4" />
+                                            J4 = CPDLC FANS 1/A VDL Mode 2
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ5">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ5"
+                                                   value="J5" />
+                                            J5 = CPDLC FANS 1/A SAT COM (INMARSAT)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ6">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ6"
+                                                   value="J6" />
+                                            J6 = CPDLC FANS 1/A SAT COM (MTSAT)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxJ7">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxJ7"
+                                                   value="J7" />
+                                            J7 = CPDLC FANS 1/A SAT COM (Iridium)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxK">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxK"
+                                                   value="K" />
+                                            K = MLS
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxL">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxL"
+                                                   value="L" />
+                                            L = ILS
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxM1">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM1"
+                                                   value="M1" />
+                                            M1 = ATC RTF SATCOM (INMARSAT)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxM2">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM2"
+                                                   value="M2" />
+                                            M2 = ATC RTF (MTSAT)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxM3">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxM3"
+                                                   value="M3" />
+                                            M3 = ATC RTF (Iridium)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxO">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxO"
+                                                   value="O" />
+                                            O = VOR
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxR">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxR"
+                                                   value="R" />
+                                            R = PBN Approved
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxT">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxT"
+                                                   value="T" />
+                                            T = TACAN
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxU">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxU"
+                                                   value="U" />
+                                            U = UHF RTF
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxV">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxV"
+                                                   value="V" />
+                                            V = VHF RTF
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxW">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxW"
+                                                   value="W" />
+                                            W = RVSM
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxX">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxX"
+                                                   value="X" />
+                                            X = MNPS
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxY">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxY"
+                                                   value="Y" />
+                                            Y = VHF with 8.33 kHz channel spacing
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+
+                                        <label for="icaoAircraftEquipmentDialogCheckboxZ">
+                                            <input type="checkbox" id="icaoAircraftEquipmentDialogCheckboxZ"
+                                                   value="Z" />
+                                            Z = Other (COM/, DAT/ or NAV/ in Field 18)
+                                        </label>
+                                    </li>
+                                    <li class="list-group-item">
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="setAircraftEquipment()" data-dismiss="modal">OK</button>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="aircraft" class="tab-pane fade in active">
+                <table class="table">
+                    <tr>
+                        <td><h3 ><span id="ac_name" class="label label-success">Aircraft[]</span></h3></td>
+                    </tr>
+                </table>
+
+                <table class="table">
+                    <tr>
+                        <td>ID</td><td><input spellcheck="false" id="icaoAircraftIdInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Type</td><td><input spellcheck="false" id="icaoAircraftTypeInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>ICAO Mode S Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceInput" readonly onclick='$("#icaoWakeTurbulenceModal").modal()'/></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Equipment</td><td><input spellcheck="false" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
+                    </tr>
+                    <tr>
+                        <td>Cruising TAS</td><td><input type="number" id="icaoCruisingSpeedInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Surveillance Equipment</td><td><input spellcheck="false" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Endurance (Hours)</td><td><select data-mobile="true" class="selectpicker" id="icaoFuelEnduranceSelection"/><option>1H0M</option><option>1H15M</option><option>1H30M</option><option>1H45M</option><option>2H0M</option><option>2H15M</option><option>2H30M</option><option>2H45M</option><option>3H0M</option><option>3H15M</option><option>3H30M</option><option>3H45M</option><option>4H0M</option><option>4H15M</option><option>4H30M</option><option>4H45M</option><option>5H0M</option><option>5H15M</option><option>5H30M</option><option>5H45M</option><option>6H0M</option><option>6H15M</option><option>6H30M</option><option>6H45M</option><option>7H0M</option><option>7H15M</option><option>7H30M</option><option>7H45M</option><option>8H0M</option><option>8H15M</option><option>8H30M</option><option>8H45M</option><option>9H0M</option><option>9H15M</option><option>9H30M</option><option>9H45M</option><option>10H0M</option><option>10H15M</option><option>10H30M</option><option>10H45M</option><option>11H0M</option><option>11H15M</option><option>11H30M</option><option>11H45M</option><option>12H0M</option><option>12H15M</option><option>12H30M</option><option>12H45M</option><option>13H0M</option><option>13H15M</option><option>13H30M</option><option>13H45M</option><option>14H0M</option><option>14H15M</option><option>14H30M</option><option>14H45M</option><option>15H0M</option><option>15H15M</option><option>15H30M</option><option>15H45M</option><option>16H0M</option><option>16H15M</option><option>16H30M</option><option>16H45M</option><option>17H0M</option><option>17H15M</option><option>17H30M</option><option>17H45M</option><option>18H0M</option><option>18H15M</option><option>18H30M</option><option>18H45M</option><option>19H0M</option><option>19H15M</option><option>19H30M</option><option>19H45M</option></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput" readonly onclick='$("#icaoAircraftColorModal").modal()'/></td>
+                    </tr>
+                    <tr>
+                        <td>Pilot In Command</td><td><input spellcheck="false" id="icaoPilotInCommandInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Pilot Info</td><td><input spellcheck="false" id="icaoPilotInfoInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Best Glide Sink Rate (ft/min)</td><td><input type="number"  id="bestGlideSinkRateInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Fuel Burn Rate (Cruising)</td><td><input type="number" type="number" id="fuelBurnRateCruisingInput"/></td>
+                    </tr>
+                    <tr>
+                        <td>Aircraft Home Base</td><td><input id="aircraftHomeBaseInput"/></td>
+                    </tr>
+                </table>
+
+                <td><button class="btn btn-block" onclick="ac_save_ac_add()">Save</button></td>
+
+            </div>
+            <div id="loadac" class="tab-pane fade">
+                <table class="table" id="save_table_ac" ><th>Load an Aircraft</th></table>
+            </div>
+
+            <div id="helpac" class="tab-pane fade">
+                <table class="table"><th>Help</th></table>
+                <div style="overflow: auto;">
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The Aircraft screen allows you to add and load your aircraft.
+                    <br>
+                    <b>To Create a New Aircraft</b>
+                    <ul>
+                        <li>Enter all fields in the "Loaded" view.</li>
+                        <li>Press the "Save" button.</li>
+                        <li>Aircraft will appear in the "Load" tab. This aircraft will be used for filing and flight performance calculations.</li>
+                    </ul>
+
+                    <b>To Load/Delete an Aircraft</b>
+                    <ul>
+                        <li>Press the "Load" tab to show the saved aircraft.</li>
+                        <li>Press the "LD" button to load the aircraft. This aircraft will be used for filing and flight performance calculations.</li>
+                        <li>You can delete a saved aircraft by pressing the "Del" button to the right of its name in the Saved Aircraft list.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="wnbs" class="tab-pane fade">
+
+        <ul class="nav nav-tabs" style="display:inline-flex;">
+            <li class="active"><a href="#wnb">Loaded</a></li>
+            <li><a href="#loadwnb">Load</a></li>
+            <li><a href="#savewnb">Save</a></li>
+            <li><a href="#helpwnb">Help</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div id="wnb" class="tab-pane fade in active">
+                <table class="table">
+                    <tr>
+                        <td><h3 ><span id="wnb_name" class="label label-success">W&B[]</span></h3></td>
+                    </tr>
+                </table>
+                <table class="table" id="wnb_table" ><th>Type</th><th>Weight</th><th>Arm/CG</th><th>Moment</th>
+                    <tr><td><input id="t0"></td><td><input id="w0"></td><td><input id="a0"></td><td><label id="m0"/></td></tr>
+                    <tr><td><input id="t1"></td><td><input id="w1"></td><td><input id="a1"></td><td><label id="m1"/></td></tr>
+                    <tr><td><input id="t2"></td><td><input id="w2"></td><td><input id="a2"></td><td><label id="m2"/></td></tr>
+                    <tr><td><input id="t3"></td><td><input id="w3"></td><td><input id="a3"></td><td><label id="m3"/></td></tr>
+                    <tr><td><input id="t4"></td><td><input id="w4"></td><td><input id="a4"></td><td><label id="m4"/></td></tr>
+                    <tr><td><input id="t5"></td><td><input id="w5"></td><td><input id="a5"></td><td><label id="m5"/></td></tr>
+                    <tr><td><input id="t6"></td><td><input id="w6"></td><td><input id="a6"></td><td><label id="m6"/></td></tr>
+                    <tr><td><input id="t7"></td><td><input id="w7"></td><td><input id="a7"></td><td><label id="m7"/></td></tr>
+                    <tr><td><input id="t8"></td><td><input id="w8"></td><td><input id="a8"></td><td><label id="m8"/></td></tr>
+                    <tr><td><input id="t9"></td><td><input id="w9"></td><td><input id="a9"></td><td><label id="m9"/></td></tr>
+                    <tr><td><label>Total</label></td><td><label id="w_total"/></td><td><label id="a_total"/></td><td><label id="m_total"/></td></tr>
+                </table>
+
+                <table class="table"><th>Graph</th>
+                    <tr>
+                        <td>
+                            <canvas id="wnb_canvas" width="480" height="320" style="border:1px solid #FFFFFF;"/>
+                        </td>
+                        <td>
+                            <input id="max_w" style="margin: 2px;" placeholder="Max Weight"><br>
+                            <input id="min_w" style="margin: 2px;" placeholder="Min Weight"><br>
+                            <input id="max_a" style="margin: 2px;" placeholder="Max Arm"><br>
+                            <input id="min_a" style="margin: 2px;" placeholder="Min Arm"><br>
+                            <input id="points" style="margin: 2px;" placeholder="Envelope Points (See Help)"><br>
+                        </td>
+                    </tr>
+                </table>
+
+                <br>
+                <button class="btn btn-block" onclick="wnb_calculate()">Calculate</button>
+            </div>
+
+
+            <div id="loadwnb" class="tab-pane fade">
+                <table class="table" id="save_table_wnb" ><th>Load a W&B</th></table>
+            </div>
+
+
+            <div id="savewnb" class="tab-pane fade">
+                <table class="table"><th>Save Current W&B</th>
+                    <tr>
+                        <td><input id="save_name_wnb" spellcheck="false" placeholder="Current W&B Name"/></td>
+                        <td><button class="btn btn-block" onclick="wnb_save_wnb_add()">Save</button></td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id="helpwnb" class="tab-pane fade">
+                <table class="table"><th>Help</th></table>
+                <div style="overflow: auto;">
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The W&B screen allows you to calculate weight and balance for your aircraft.
+                    <br>
+                    <b>To Create a W&B</b>
+                    <ul>
+                        <li>Enter Type, Weight, and ARM for as many rows as needed.</li>
+                        <li>Press Calculate button to update the W&B values of total weight, C.G. total moment, and per type moment values.</li>
+                        <li>To show W&B limits graph, enter Max weight, Min weight, Max arm, and Min arm. These will set limits of the graph shown. Use POH to get these values.</li>
+                        <li>Enter graph 2D coordinates for the envelope in clockwise or counter-clockwise direction. Use POH to get these values. Coordinates are separated by white space and in order of arm,weight e.g. 43,1650 43,2450 45,2450 45,1650</li>
+                        <li>Press Calculate button again to show the W&B inside/outside the green envelope.</li>
+                    </ul>
+
+                    <b>To Save a W&B</b>
+                    <ul>
+                        <li>Press the "Save" tab</li>
+                        <li>To save a W&B, enter the name above the "Save" button, and press the "Save" Button.</li>
+                        <li>Press the "Load" tab to confirm that the W&B was saved.</li>
+                    </ul>
+
+                    <b>To Load/Delete a Saved W&B</b>
+                    <ul>
+                        <li>Press the "Load" tab to show the saved W&Bs.</li>
+                        <li>Press the "LD" button to load the W&B.</li>
+                        <li>You can delete a saved W&B by pressing the "Del" button to the right of its name in the Saved W&B.</li>
+                    </ul>
+
+                    <b>To Use a W&B</b>
+                    <ul>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="lists" class="tab-pane fade">
+
+        <ul class="nav nav-tabs" style="display:inline-flex;">
+            <li class="active"><a href="#list">Loaded</a></li>
+            <li><a href="#load">Load</a></li>
+            <li><a href="#save">Save</a></li>
+            <li><a href="#import">Import</a></li>
+            <li><a href="#help">Help</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="list" class="tab-pane fade in active">
+                <table class="table">
+                    <tr>
+                        <td><h3 ><span id="list_name" class="label label-success">List[]</span></h3></td>
+                    </tr>
+                </table>
+                <table class="table" id="list_table" ><th>List Item</th></table>
+                <table class="table">
+                    <tr>
+                        <td><button class="btn btn-block" onclick="list_discard()">Clr</button></td>
+                        <td><button class="btn btn-block" onclick="list_delete_item()">Del</button></td>
+                        <td><button class="btn btn-block" onclick="list_moveup_item()">Up</button></td>
+                        <td><button class="btn btn-block" onclick="list_movedown_item()">Dn</button></td>
+                    </tr>
+                </table>
+                <table class="table"><th>Add Item To List</th>
+                    <tr>
+                        <td><input id="item_input" spellcheck="false" placeholder="Mixture Full Rich."></td>
+                        <td><button class="btn btn-block" onclick="add_list_item()">Add</button></td>
+                    </tr>
+                </table>
+
+                <button class="btn btn-block" onclick="wnb_forward()">Next</button>
+
+            </div>
+
+            <div id="load" class="tab-pane fade">
+                <table class="table" id="save_table" ><th>Load a List</th></table>
+            </div>
+
+
+            <div id="save" class="tab-pane fade">
+                <table class="table"><th>Save Current List</th>
+                    <tr>
+                        <td><input id="save_name" spellcheck="false" placeholder="Current List Name"/></td>
+                        <td><button class="btn btn-block" onclick="save_list_add()">Save</button></td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id="import" class="tab-pane fade">
+                <table class="table"><th>Import a Saved List File</th>
+                    <tr>
+                        <td><input id="import_input" spellcheck="false" placeholder="list.txt"></td>
+                        <td><button class="btn btn-block" onclick="list_import()">Import</button></td>
+                    </tr>
+                </table>
+            </div>
+
+
+            <div id="help" class="tab-pane fade">
+                <table class="table"><th>Help</th></table>
+                <div style="overflow: auto;">
+                    <u>You may need to disable Predictive Typing in Android Settings!</u><br>The List screen allows you to sequence check lists for your aircraft. A list's size is limited to 100 lines, and 250 characters per line. Any text beyond these limits will be chopped-off.
+                    <br>
+                    <b>To Create a List Line by Line</b>
+                    <ul>
+                        <li>Press the "List" tab</li>
+                        <li>This is not a recommended method for long lists.</li>
+                        <li>Clear the current list by pressing "Clr"</li>
+                        <li>Enter a text item in the "Add Item To List" box, then press Add. The entered text will appear in the list at the end.</li>
+                        <li>Touch the added item in the list to move the green bar to it.</li>
+                        <li>Move the item to the desired sequence by pressing the Up or Dn button several times.</li>
+                        <li>If a wrong item is added by mistake, it can be deleted by touching the item to move the green bar to it, then pressing the Del button.</li>
+                    </ul>
+
+                    <b>To Save a List</b>
+                    <ul>
+                        <li>Press the "Save" tab</li>
+                        <li>To save a list, enter the name above the "Save" button, and press the "Save" Button.</li>
+                        <li>Press the "Load" tab to confirm that the list was saved.</li>
+                    </ul>
+
+                    <b>To Load/Delete a Saved List</b>
+                    <ul>
+                        <li>Press the "Load" tab to show the saved lists.</li>
+                        <li>Press the "LD" button to load the list.</li>
+                        <li>You can delete a saved list by pressing the "Del" button to the right of its name in the Saved Lists list.</li>
+                    </ul>
+
+                    <b>To Import a List from a File</b>
+                    <ul>
+                        <li>A long list can be entered in a single action by importing it from disk.</li>
+                        <li>Get the list prepared on the PC in text format.</li>
+                        <li>Put the list on your device in the user data folder, using PC-device USB connection.</li>
+                        <li>Press the "Import" tab.</li>
+                        <li>Enter the name/path of the file in "Import a Saved List File" box, list.txt.</li>
+                        <li>Press the Import button.</li>
+                        <li>Be patient as the import can take up to a minute depending on the file size, and your device's capabilities.</li>
+                        <li>The imported list is shown after it is imported.</li>
+                    </ul>
+
+                    <b>To Use a List</b>
+                    <ul>
+                        <li>Simply press "Next" buttons to move the green bar to the next item under consideration.</li>
+                        <li>Touch an item in the list to move the green bar to it. This is useful for skipping steps.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

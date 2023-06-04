@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 public class UserDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "user.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     public UserDatabaseHelper(Context context, String folder) {
         super(context, folder, DBNAME, DB_VERSION);
@@ -73,6 +73,27 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
                             UserContract.DRAW_COLUMN_POINTS_X + " FLOAT, " +
                             UserContract.DRAW_COLUMN_POINTS_Y + " FLOAT, " +
                             UserContract.DRAW_COLUMN_SEP + " INTEGER);");
+        }
+        catch (Exception e) {
+        }
+
+        try {
+            db.execSQL(
+                    "CREATE TABLE " + UserContract.TABLE_AIRCRAFT + " (" +
+                            UserContract.AIRCRAFT_COLUMN_ID  + " TEXT PRIMARY KEY UNIQUE ON CONFLICT REPLACE, " +
+                            UserContract.AIRCRAFT_COLUMN_TYPE  + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_ICAO + " INTEGER, " +
+                            UserContract.AIRCRAFT_COLUMN_WAKE + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_EQUIPMENT + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_CRUISE_TAS + " FLOAT, " +
+                            UserContract.AIRCRAFT_COLUMN_SURVEILLANCE + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE + " FLOAT, " +
+                            UserContract.AIRCRAFT_COLUMN_COLOR + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_PIC + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_PILOT + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_SINK_RATE + " FLOAT, " +
+                            UserContract.AIRCRAFT_COLUMN_FUEL_BURN + " FLOAT, " +
+                            UserContract.AIRCRAFT_COLUMN_BASE + " TEXT);");
         }
         catch (Exception e) {
         }

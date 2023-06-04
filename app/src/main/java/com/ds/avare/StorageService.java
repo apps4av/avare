@@ -20,6 +20,7 @@ import com.ds.avare.adsb.TfrCache;
 import com.ds.avare.adsb.TrafficCache;
 import com.ds.avare.cap.DrawCapLines;
 import com.ds.avare.externalFlightPlan.ExternalPlanMgr;
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.FlightStatus;
 import com.ds.avare.flightLog.KMLRecorder;
 import com.ds.avare.gps.ExtendedGpsParams;
@@ -267,6 +268,8 @@ public class StorageService  {
 
     LinkedList<LabelCoordinate> mGameTfrLabels;
 
+    private Aircraft mAircraft;
+
     private int mIcaoAddress;
 
     // Last time location was updated
@@ -350,6 +353,7 @@ public class StorageService  {
          */
         mMetarLayer = new MetarLayer();
 
+
         /*
          * Start the odometer now
          */
@@ -379,7 +383,11 @@ public class StorageService  {
 
         // Allocate the nav comments object
         mNavComments = new NavComments();
-        
+
+        mAircraft = getDBResource().getUserAircraft(mPref.getAircraftId());
+        if(null == mAircraft) {
+            mAircraft = new Aircraft();
+        }
         mEdgeDistanceTape = new EdgeDistanceTape();
         
         // Declare a fuel tank switching timer. Default to 30
@@ -677,6 +685,14 @@ public class StorageService  {
 
     public LinkedList<LabelCoordinate> getGameTfrLabels() {
         return mGameTfrLabels;
+    }
+
+    public Aircraft getAircraft() {
+        return mAircraft;
+    }
+
+    public void setAircraft(Aircraft a) {
+        mAircraft = a;
     }
 
     /**
@@ -1278,7 +1294,7 @@ public class StorageService  {
                     mIcaoAddress = object.getInt("address");
                 }
                 catch (Exception e) {
-                    mIcaoAddress = mPref.getAircraftICAOCode(); // sometimes ownship message will be from external GPS, and will not have ICAO, use the user set one
+                    mIcaoAddress = mService.getAircraft().getICao(); // sometimes ownship message will be from external GPS, and will not have ICAO, use the user set one
                 }
                 // Choose most appropriate altitude. This is because people fly all sorts
                 // of equipment with or without altitudes

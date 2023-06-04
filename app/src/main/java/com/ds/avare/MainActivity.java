@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
-import android.accessibilityservice.GestureDescription;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -68,8 +66,7 @@ public class MainActivity extends TabActivity {
     public static final int tabPfd = 6;
     public static final int tabThreeD = 7;
     public static final int tabChecklist = 8;
-    public static final int tabWnb = 9;
-    public static final int tabIo = 10;
+    public static final int tabIo = 9;
 
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
@@ -106,11 +103,7 @@ public class MainActivity extends TabActivity {
         }
 
         if (0 != (tabItems & (1 << tabChecklist))) {
-            setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
-        }
-
-        if (0 != (tabItems & (1 << tabWnb))) {
-            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
+            setupTab(new TextView(this), getString(R.string.Aircraft), new Intent(this, AircraftActivity.class), getIntent());
         }
 
         if (0 != (tabItems & (1 << tabIo))) {

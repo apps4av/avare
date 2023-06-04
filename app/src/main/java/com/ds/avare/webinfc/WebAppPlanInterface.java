@@ -159,7 +159,7 @@ public class WebAppPlanInterface implements Observer {
 		catch (Exception e) {
 		}
 		flightDuration = LmfsPlan.timeToDuration(time);
-		fuelOnBoard = LmfsPlan.timeToDuration(time + 0.75); // 45 min reserve
+		fuelOnBoard = LmfsPlan.timeToDuration(Double.parseDouble(pl.fuelEndurance));
 
 		// fill time to now()
 		departureInstant = System.currentTimeMillis() + "";

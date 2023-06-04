@@ -103,7 +103,7 @@ public class TrafficCache {
             float heading, int speed, int vspeed, long time) {
 
         int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
-        if(address == mPref.getAircraftICAOCode() || address == StorageService.getInstance().getIcaoAddress()) {
+        if(address == StorageService.getInstance().getIcaoAddress() || address == StorageService.getInstance().getIcaoAddress()) {
             // do not show own traffic
             return;
         }

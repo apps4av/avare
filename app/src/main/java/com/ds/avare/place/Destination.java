@@ -268,7 +268,7 @@ public class Destination extends Observable {
         }
         else {
             mEteSec = (long)(mDistance / mGroundSpeed * 3600);
-            mFuelGallons = (float)mEteSec / 3600 * pref.getFuelBurn();
+            mFuelGallons = (float)mEteSec / 3600 * StorageService.getInstance().getAircraft().getFuelBurnRate();
             mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
         }
 
