@@ -582,6 +582,21 @@ var AC_CELL_SAVE_LOAD = 1;
 var AC_CELL_SAVE_DELETE = 2;
 var AC_CELL_SAVE_LAST = 3;
 
+// convert 4.5 to 4H30M
+function numberToIcao(num) {
+    var hr = Math.floor(num);
+    var mn = Math.round((num - hr) * 60);
+    return (hr + "H" + mn + "M");
+}
+
+// convert 4H30M to 4.5
+function icaoToNumber(icao) {
+    var hr = icao.split("H");
+    var mn = hr[1].slice(0, -1);
+    return (parseFloat(hr[0]) + parseFloat(mn) / 60);
+}
+
+
 // put data in AC sheet
 function ac_set(data) {
 
@@ -592,11 +607,12 @@ function ac_set(data) {
     document.getElementById("icaoAircraftIdInput").value = obj.id;
     document.getElementById("icaoAircraftTypeInput").value = obj.type;
     document.getElementById("icaoAircraftIcaoInput").value = obj.icao;
-    document.getElementById("icaoWakeTurbulenceSelection").value = obj.wake;
+    document.getElementById("icaoWakeTurbulenceInput").value = obj.wake;
     document.getElementById("icaoAircraftEquipmentInput").value = obj.equipment;
     document.getElementById("icaoCruisingSpeedInput").value = obj.cruise_tas;
     document.getElementById("icaoSurveillanceEquipmentInput").value = obj.surveillance;
-    document.getElementById("icaoFuelEnduranceInput").value = obj.endurance;
+    document.getElementById("icaoFuelEnduranceSelection").value = numberToIcao(obj.endurance);
+    $('#icaoFuelEnduranceSelection').change();
     document.getElementById("icaoAircraftColorInput").value = obj.color;
     document.getElementById("icaoPilotInCommandInput").value = obj.pic;
     document.getElementById("icaoPilotInfoInput").value = obj.pilot_info;
@@ -604,6 +620,7 @@ function ac_set(data) {
     document.getElementById("fuelBurnRateCruisingInput").value = obj.fuel_burn_rate;
     document.getElementById("aircraftHomeBaseInput").value = obj.home_base;
 }
+
 
 // put data from AC sheet
 function ac_get() {
@@ -613,11 +630,11 @@ function ac_get() {
     obj.id = document.getElementById("icaoAircraftIdInput").value;
     obj.type = document.getElementById("icaoAircraftTypeInput").value;
     obj.icao = document.getElementById("icaoAircraftIcaoInput").value;
-    obj.wake = document.getElementById("icaoWakeTurbulenceSelection").value;
+    obj.wake = document.getElementById("icaoWakeTurbulenceInput").value;
     obj.equipment = document.getElementById("icaoAircraftEquipmentInput").value;
     obj.cruise_tas = document.getElementById("icaoCruisingSpeedInput").value;
     obj.surveillance = document.getElementById("icaoSurveillanceEquipmentInput").value;
-    obj.endurance = document.getElementById("icaoFuelEnduranceInput").value;
+    obj.endurance = icaoToNumber(document.getElementById("icaoFuelEnduranceSelection").value);
     obj.color = document.getElementById("icaoAircraftColorInput").value;
     obj.pic = document.getElementById("icaoPilotInCommandInput").value;
     obj.pilot_info = document.getElementById("icaoPilotInfoInput").value;
@@ -795,7 +812,7 @@ function setAircraftWakeTurbulence() {
 	        text = id.value;
 	    }
     }
-    var id = document.getElementById("icaoWakeTurbulenceSelection");
+    var id = document.getElementById("icaoWakeTurbulenceInput");
     id.value = text;
 }
 
@@ -1753,7 +1770,7 @@ function setAircraftWakeTurbulence() {
                         <td>ICAO Mode S Code</td><td><input spellcheck="false" type="number"  id="icaoAircraftIcaoInput"/></td>
                     </tr>
                     <tr>
-                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceSelection" readonly onclick='$("#icaoWakeTurbulenceModal").modal()'/></td>
+                        <td>Wake Turbulence</td><td><input id="icaoWakeTurbulenceInput" readonly onclick='$("#icaoWakeTurbulenceModal").modal()'/></td>
                     </tr>
                     <tr>
                         <td>Aircraft Equipment</td><td><input spellcheck="false" id="icaoAircraftEquipmentInput" readonly onclick='$("#icaoAircraftEquipmentModal").modal()' ></td>
@@ -1765,7 +1782,7 @@ function setAircraftWakeTurbulence() {
                         <td>Surveillance Equipment</td><td><input spellcheck="false" id="icaoSurveillanceEquipmentInput" readonly onclick='$("#icaoSurveillanceEquipmentModal").modal()'/></td>
                     </tr>
                     <tr>
-                        <td>Fuel Endurance (Hours)</td><td><input type="number" id="icaoFuelEnduranceInput"/></td>
+                        <td>Fuel Endurance (Hours)</td><td><select data-mobile="true" class="selectpicker" id="icaoFuelEnduranceSelection"/><option>1H0M</option><option>1H15M</option><option>1H30M</option><option>1H45M</option><option>2H0M</option><option>2H15M</option><option>2H30M</option><option>2H45M</option><option>3H0M</option><option>3H15M</option><option>3H30M</option><option>3H45M</option><option>4H0M</option><option>4H15M</option><option>4H30M</option><option>4H45M</option><option>5H0M</option><option>5H15M</option><option>5H30M</option><option>5H45M</option><option>6H0M</option><option>6H15M</option><option>6H30M</option><option>6H45M</option><option>7H0M</option><option>7H15M</option><option>7H30M</option><option>7H45M</option><option>8H0M</option><option>8H15M</option><option>8H30M</option><option>8H45M</option><option>9H0M</option><option>9H15M</option><option>9H30M</option><option>9H45M</option><option>10H0M</option><option>10H15M</option><option>10H30M</option><option>10H45M</option><option>11H0M</option><option>11H15M</option><option>11H30M</option><option>11H45M</option><option>12H0M</option><option>12H15M</option><option>12H30M</option><option>12H45M</option><option>13H0M</option><option>13H15M</option><option>13H30M</option><option>13H45M</option><option>14H0M</option><option>14H15M</option><option>14H30M</option><option>14H45M</option><option>15H0M</option><option>15H15M</option><option>15H30M</option><option>15H45M</option><option>16H0M</option><option>16H15M</option><option>16H30M</option><option>16H45M</option><option>17H0M</option><option>17H15M</option><option>17H30M</option><option>17H45M</option><option>18H0M</option><option>18H15M</option><option>18H30M</option><option>18H45M</option><option>19H0M</option><option>19H15M</option><option>19H30M</option><option>19H45M</option></td>
                     </tr>
                     <tr>
                         <td>Aircraft Color</td><td><input spellcheck="false" id="icaoAircraftColorInput" readonly onclick='$("#icaoAircraftColorModal").modal()'/></td>
