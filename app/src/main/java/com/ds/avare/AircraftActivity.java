@@ -157,7 +157,7 @@ public class AircraftActivity extends BaseActivity {
         });
         mWebView.setLongClickable(false);
 
-        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "list"));
+        mWebView.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "aircraft"));
         /*
          * Progress bar
          */
