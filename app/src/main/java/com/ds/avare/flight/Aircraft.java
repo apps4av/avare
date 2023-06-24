@@ -43,7 +43,7 @@ public class Aircraft {
     private int mICao;
     private String mWake;
     private String mEquipment;
-    private float mCruiseTas;
+    private int mCruiseTas;
     private String mSurveillance;
     private float mEndurance;
     private String mColor;
@@ -83,7 +83,7 @@ public class Aircraft {
             mICao = obj.getInt("icao");
             mWake = obj.getString("wake");
             mEquipment = obj.getString("equipment");
-            mCruiseTas = (float)obj.getDouble("cruise_tas");
+            mCruiseTas = (int)obj.getDouble("cruise_tas");
             mSurveillance = obj.getString("surveillance");
             mEndurance = (float)obj.getDouble("endurance");
             mColor = obj.getString("color");
@@ -162,11 +162,11 @@ public class Aircraft {
         this.mEquipment = mEquipment;
     }
 
-    public float getCruiseTas() {
+    public int getCruiseTas() {
         return mCruiseTas;
     }
 
-    public void setCruiseTas(float mCruiseTas) {
+    public void setCruiseTas(int mCruiseTas) {
         this.mCruiseTas = mCruiseTas;
     }
 

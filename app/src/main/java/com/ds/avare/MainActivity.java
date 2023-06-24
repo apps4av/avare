@@ -65,7 +65,7 @@ public class MainActivity extends TabActivity {
     public static final int tabNear = 5;
     public static final int tabPfd = 6;
     public static final int tabThreeD = 7;
-    public static final int tabChecklist = 8;
+    public static final int tabAircraft = 8;
     public static final int tabIo = 9;
 
     public void setup() {
@@ -102,7 +102,7 @@ public class MainActivity extends TabActivity {
             setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
         }
 
-        if (0 != (tabItems & (1 << tabChecklist))) {
+        if (0 != (tabItems & (1 << tabAircraft))) {
             setupTab(new TextView(this), getString(R.string.Aircraft), new Intent(this, AircraftActivity.class), getIntent());
         }
 

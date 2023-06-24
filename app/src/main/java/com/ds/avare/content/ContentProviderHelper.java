@@ -758,7 +758,7 @@ public class ContentProviderHelper {
                     a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
                     a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
                     a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
-                    a.setCruiseTas(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setCruiseTas((int)c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
                     a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
                     a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
                     a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));
@@ -803,7 +803,7 @@ public class ContentProviderHelper {
                     a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
                     a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
                     a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
-                    a.setCruiseTas(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setCruiseTas((int)c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
                     a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
                     a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
                     a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));

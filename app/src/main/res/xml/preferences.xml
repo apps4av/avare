@@ -500,14 +500,9 @@ authors: zkhan, jlmcgraw
                 android:title="@string/ThreeD" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabChecklist"
-                android:summary="@string/ChecklistSummary"
-                android:title="@string/List" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabWnb"
-                android:summary="@string/WnbSummary"
-                android:title="@string/Wnb" />
+                android:key="@string/prefTabAircraft"
+                android:summary="@string/AircraftSummary"
+                android:title="@string/Aircraft" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="@string/prefTabIo"

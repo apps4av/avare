@@ -883,8 +883,8 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             mTabs |= 1 << MainActivity.tabNear;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
-            mTabs |= 1 << MainActivity.tabChecklist;
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabAircraft), true)) {
+            mTabs |= 1 << MainActivity.tabAircraft;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {

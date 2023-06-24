@@ -387,9 +387,8 @@ Redistribution and use in source and binary forms, with or without modification,
 	<string name="prefTabFind">&quot;prefTabFind&quot;</string>
 	<string name="prefTabPlan">&quot;prefTabPlan&quot;</string>
 	<string name="prefTabNear">&quot;prefTabNear&quot;</string>
-	<string name="prefTabChecklist">&quot;prefTabChecklist&quot;</string>
+	<string name="prefTabAircraft">&quot;prefTabAircraft&quot;</string>
     <string name="prefTabPfd">&quot;prefTabPfd&quot;</string>
-    <string name="prefTabWnb">&quot;prefTabWnb&quot;</string>
     <string name="prefTabIo">&quot;prefTabIo&quot;</string>
 
 	<string name="externalGps">GPSExternalOrInternal</string>
@@ -628,7 +627,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Preferences">Preferences</string>
     <string name="filter_hint">Filter messages</string>
     <string name="Io">IO</string>
-    <string name="IoSummary">Input/Output</string>
+    <string name="IoSummary">Input/Output.</string>
     <string name="WIFI">WiFi</string>
     <string name="NoBtDevice">Enable Bluetooth, and pair a device first.</string>
     <string name="Export">Export</string>
@@ -637,5 +636,6 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="weatherNa">Weather not available</string>
     <string name="AircraftTailNumber">AircraftTailNumber</string>
     <string name="Aircraft">Acft</string>
+    <string name="AircraftSummary">User defined aircraft.</string>
 
 </resources>
