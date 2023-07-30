@@ -142,6 +142,10 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
         }
 
+        sua = mService.getDBResource().getSua(lon, lat);
+        if (isCancelled()) {
+            return "";
+        }
 
         if (null == airport) {
             airport = "" + Helper.truncGeo(lat) + "&" + Helper.truncGeo(lon);
@@ -162,11 +166,6 @@ public class AirportInfo extends AsyncTask<Object, String, String> {
             }
 
             elev = mService.getDBResource().findElev(airport);
-            if (isCancelled()) {
-                return "";
-            }
-
-            sua = mService.getDBResource().getSua(lon, lat);
             if (isCancelled()) {
                 return "";
             }
