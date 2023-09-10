@@ -448,6 +448,9 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefTip">&quot;Tip&quot;</string>
     <string name="prefTipLabel">&quot;Show Tips&quot;</string>
     <string name="prefTipSummary">&quot;Select to display tips when the application starts&quot;</string>
+    <string name="prefScreenTiles">Map Dimensions Calculation</string>
+    <string name="prefScreenTilesLabel">Map Dimensions</string>
+    <string name="prefScreenTilesSummary">Select to use screen size for map dimensions, otherwise use map dimensions allowed by memory limit (requires restart)</string>
 
     <string name="useSysFont">&quot;useSysFont&quot;</string>
     <string name="useSysFontLabel">&quot;Use System Font (requires restart)&quot;</string>

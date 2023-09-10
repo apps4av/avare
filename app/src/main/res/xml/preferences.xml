@@ -140,6 +140,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTip"
             android:summary="@string/prefTipSummary"
             android:title="@string/prefTipLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefScreenTiles"
+            android:summary="@string/prefScreenTilesSummary"
+            android:title="@string/prefScreenTilesLabel" />
     </PreferenceScreen>
 
     <PreferenceScreen 

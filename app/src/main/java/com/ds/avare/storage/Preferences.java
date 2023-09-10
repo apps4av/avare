@@ -210,7 +210,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public static int[] getTilesNumber(Context ctx) {
+    public static int[] getTilesNumber(Context ctx, boolean useScreenSize) {
         int[] ret = new int[3];
 
         /*
@@ -266,8 +266,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (tilesy > ret[1]) {
             tilesy = ret[1];
         }
-        ret[0] = tilesx;
-        ret[1] = tilesy;
+
+        if(useScreenSize) {
+            ret[0] = tilesx;
+            ret[1] = tilesy;
+        }
 
         if (ret[0] <= 0) {
             ret[0] = MEM_16_X;
@@ -323,6 +326,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     public boolean isExtendRunways() {
         return (mPref.getBoolean(mContext.getString(R.string.Runways), true));
+    }
+
+    public boolean isScreenSizeCalculationForTiles() {
+        return (mPref.getBoolean(mContext.getString(R.string.prefScreenTiles), true));
     }
 
     public boolean isAutoDisplayAirportDiagram() {

@@ -46,7 +46,9 @@ public class MapBase {
 
 
     protected MapBase(int size) {
-        int tilesdim[] = StorageService.getInstance().getPreferences().getTilesNumber(StorageService.getInstance().getApplicationContext());
+        int tilesdim[] = StorageService.getInstance().getPreferences().getTilesNumber(
+                StorageService.getInstance().getApplicationContext(),
+                StorageService.getInstance().getPreferences().isScreenSizeCalculationForTiles());
         /*
          * Allocate mem for tiles.
          * Keep tiles for the life of activity
