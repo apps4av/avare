@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -26,6 +27,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -258,6 +261,33 @@ public class LocationActivity extends BaseActivity implements Observer {
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // start camera on volume down/up
+        PackageManager packman = getPackageManager();
+        Intent intent;
+        if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
+            intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        }
+        else if (KeyEvent.KEYCODE_VOLUME_UP == event.getKeyCode()) {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+        else {
+            return false;
+        }
+        ComponentName c = intent.resolveActivity(packman);
+        if(null != c) {
+            String pack = c.getPackageName();
+            intent = getPackageManager().getLaunchIntentForPackage(pack);
+
+            // start camera after finding its name
+            if (intent != null) {
+                startActivity(intent);
+            }
+        }
+        return false;
     }
 
     /*
