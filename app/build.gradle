@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.2'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.2'
 
     defaultConfig {
         applicationId "com.ds.avare"
         minSdkVersion 20 // android 5 is minimum
-        targetSdkVersion 32
+        targetSdkVersion 33
     }
 
     compileOptions {
@@ -39,6 +39,7 @@ android {
         }
     }
     useLibrary 'android.test.mock'
+    namespace 'com.ds.avare'
 
     applicationVariants.all { variant ->
         def productFlavor = variant.productFlavors[0] != null ? "${variant.productFlavors[0].name.capitalize()}" : ""
