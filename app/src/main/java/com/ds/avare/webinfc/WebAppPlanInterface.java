@@ -1272,7 +1272,13 @@ public class WebAppPlanInterface implements Observer {
 	            		// Found airway, insert. Airway is always a sequence of GPS points.
 	            		selection.addAll(ret);
 	            	}
+					else {
+						return false;
+					}
 	            }
+				else {
+					return false;
+				}
             }
             return true;
         }
@@ -1288,6 +1294,8 @@ public class WebAppPlanInterface implements Observer {
 
             if(null == selection || false == result) {
             	mHandler.sendEmptyMessage(MSG_NOTBUSY);
+				Message m = mHandler.obtainMessage(MSG_ERROR, (Object)mContext.getString(R.string.InvalidPoint));
+				mHandler.sendMessage(m);
                 return;
             }
             

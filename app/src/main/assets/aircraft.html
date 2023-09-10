@@ -253,11 +253,6 @@ var WNB_CELL_SAVE_LOAD = 1;
 var WNB_CELL_SAVE_DELETE = 2;
 var WNB_CELL_SAVE_LAST = 3;
 
-function wnb_forward() {
-	AndroidList.moveForward();
-}
-
-
 
 // put data in W&B sheet
 function wnb_set(data) {
@@ -1973,8 +1968,6 @@ function setAircraftWakeTurbulence() {
                     </tr>
                 </table>
 
-                <button class="btn btn-block" onclick="wnb_forward()">Next</button>
-
             </div>
 
             <div id="load" class="tab-pane fade">
@@ -2046,7 +2039,6 @@ function setAircraftWakeTurbulence() {
 
                     <b>To Use a List</b>
                     <ul>
-                        <li>Simply press "Next" buttons to move the green bar to the next item under consideration.</li>
                         <li>Touch an item in the list to move the green bar to it. This is useful for skipping steps.</li>
                     </ul>
                 </div>
