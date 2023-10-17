@@ -19,7 +19,7 @@ echo weather.db >> weather
 echo latest_fcat.png >> weather
 echo latest_fcat.txt >> weather
 
-CMD="http://aviationweather.gov/adds/dataserver_current/current/"
+CMD="https://aviationweather.gov/data/cache"
 
 FL=aircraftreports.cache.xml
 wget ${CMD}/${FL}.gz
@@ -41,7 +41,7 @@ wget ${CMD}/${FL}.gz
 gzip -d ${FL}.gz
 perl metars.pl > metars.csv
 
-curl -X GET  "https://aviationweather.gov/windtemp/data?level=low&region=all&layout=off" -o all 
+curl -X GET  "https://aviationweather.gov/api/data/windtemp?level=low&region=all&layout=off" -o all 
 perl wa.pl > wa.csv
 
 sqlite3 weather.db < import.sql
