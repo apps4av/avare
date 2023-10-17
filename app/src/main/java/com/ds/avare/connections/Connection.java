@@ -53,11 +53,14 @@ public abstract class Connection {
 
     private String mName = "";
 
+    protected byte[] buffer = new byte[1024];
+
+
     private int mState;
 
     private boolean mRunning;
 
-    private StorageService mService;
+    protected StorageService mService;
 
     private Thread mThread;
 
@@ -72,6 +75,7 @@ public abstract class Connection {
         mState = DISCONNECTED;
         mRunning = false;
         mName = name;
+        mService = StorageService.getInstance();
     }
 
     protected void setCallback(GenericCallback cb) {
@@ -141,14 +145,6 @@ public abstract class Connection {
 
 
     /**
-     * @param service
-     */
-    public void setHelper(StorageService service) {
-        mService = service;
-    }
-
-
-    /**
      *
      */
     public void stop() {
@@ -168,7 +164,7 @@ public abstract class Connection {
     /**
      *
      */
-    public void start(final Preferences pref) {
+    public void start() {
         Logger.Logit("Starting " + mName);
         if (getState() != Connection.CONNECTED) {
             Logger.Logit(mName + ": Starting failed because already started");
@@ -182,7 +178,7 @@ public abstract class Connection {
             @Override
             public void run() {
                 mRunning = true;
-                mCb.callback((Object) pref, null);
+                mCb.callback((Object) mService.getPreferences(), null);
             }
         };
         mThread.start();
@@ -201,12 +197,9 @@ public abstract class Connection {
      * @param s
      */
     protected void sendDataToHelper(String s) {
-        if (mService != null) {
-            Message m = mHandler.obtainMessage();
-            m.obj = s;
-            mHandler.sendMessage(m);
-        }
-
+        Message m = mHandler.obtainMessage();
+        m.obj = s;
+        mHandler.sendMessage(m);
     }
 
     /**
@@ -214,16 +207,14 @@ public abstract class Connection {
      */
     protected String getDataFromHelper() {
         String data = null;
-        if (mService != null) {
+        try {
+            data = mService.makeDataForIO();
+            Logger.Logit(data);
+        } catch (Exception ignored) {
             try {
-                data = mService.makeDataForIO();
-                Logger.Logit(data);
-            } catch (Exception e) {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e1) {
+                Thread.sleep(1000);
+            } catch (Exception ignored1) {
 
-                }
             }
         }
         return data;
@@ -261,7 +252,7 @@ public abstract class Connection {
 
             String text = (String) msg.obj;
 
-            if (text == null || mService == null) {
+            if (text == null) {
                 return;
             }
 

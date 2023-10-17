@@ -73,7 +73,7 @@ public class ObstaclesProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new ObstaclesDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new ObstaclesDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

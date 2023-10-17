@@ -12,9 +12,16 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.adsb;
 
 
-import android.util.SparseArray;
-
 import com.ds.avare.StorageService;
+import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Projection;
+import com.ds.avare.storage.Preferences;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+import android.location.Location;
 
 /**
  * 
@@ -22,48 +29,163 @@ import com.ds.avare.StorageService;
  *
  */
 public class TrafficCache {
-    private static final int MAX_ENTRIES = 100;
-    private SparseArray<Traffic> mTraffic;
+    private static final int MAX_ENTRIES = 20;
+    private Traffic[] mTraffic;
     private int mOwnAltitude;
-    
-    public TrafficCache() { 
-        mTraffic = new SparseArray<Traffic>();
+    private boolean mOwnIsAirborne;
+    private Location mOwnLocation;
+    private int mOwnVertVelocity;
+    Preferences mPref;
+
+    public TrafficCache() {
+        mTraffic = new Traffic[MAX_ENTRIES + 1];
         mOwnAltitude = StorageService.MIN_ALTITUDE;
+        mPref = StorageService.getInstance().getPreferences();
     }
-    
+
+    private class TrafficComparator implements Comparator<Traffic>
+    {
+        public int compare(Traffic left, Traffic right) {
+            if(null == left && null != right) {
+                return 1;
+            }
+            if(null != left && null == right) {
+                return -1;
+            }
+            if(null == left && null == right) {
+                return 0;
+            }
+            double l = findDistance(left.mLon, left.mLat);
+            double r = findDistance(right.mLon, right.mLat);
+            if(l > r) {
+                return 1;
+            }
+            if(l < r) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+
+    private double findDistance(double lon, double lat) {
+        // find 3d distance between current position and airplane
+        // treat 1 NM of horz separation as 500 feet of altitude (C182 120kts, 1000 fpm)
+        GpsParams p = StorageService.getInstance().getGpsParams();
+        double horDist = Projection.getStaticDistance(p.getLongitude(), p.getLatitude(), lon, lat) * Preferences.feetConversion;
+        double altDist = Math.abs(p.getAltitude() - mOwnAltitude) * Preferences.feetConversion / 500;
+        double fac = horDist + altDist;
+        return fac;
+    }
+
+    private void handleAudibleAlerts(final List<Traffic> trafficList) {
+        if (mPref.isAudibleTrafficAlerts()) {
+            final AudibleTrafficAlerts audibleTrafficAlerts = AudibleTrafficAlerts.getAndStartAudibleTrafficAlerts(
+                    StorageService.getInstance().getApplicationContext());
+            audibleTrafficAlerts.setTopGunDorkMode(mPref.isAudibleTrafficAlertsTopGunMode());
+            audibleTrafficAlerts.setAlertMaxFrequencySec(mPref.getAudibleTrafficAlertsMaxFrequency());
+            audibleTrafficAlerts.setDistanceCalloutOption(mPref.getAudibleDistanceCallout());
+            audibleTrafficAlerts.setTrafficIdCalloutOption(mPref.getAudibleTrafficIdCallout());
+            audibleTrafficAlerts.setVerticalAttitudeCallout(mPref.isAudibleVerticalDirectionCallout());
+            audibleTrafficAlerts.setNumberFormatOption(mPref.getAudibleTrafficNumberFormat());
+            audibleTrafficAlerts.setSpeakingRate(mPref.getSpeakingRate());
+            audibleTrafficAlerts.handleAudibleAlerts(getOwnLocation(), trafficList, mPref,
+                    mOwnAltitude, mOwnIsAirborne, mOwnVertVelocity);
+        } else {
+            AudibleTrafficAlerts.stopAudibleTrafficAlerts();
+        }
+    }
+
     /**
      * 
      * @param
      */
-    public void putTraffic(String callsign, int address, float lat, float lon, int altitude, 
-            float heading, int speed, long time) {
+    public void putTraffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
+            float heading, int speed, int vspeed, long time) {
 
-        /*
-         * For any new entries, check max traffic objects.
-         */
-        if(mTraffic.get(address) == null) {
-            if(mTraffic.size() >= MAX_ENTRIES) {
-                return;
-            }            
+        int filterAltitude = StorageService.getInstance().getPreferences().showAdsbTrafficWithin();
+        if(address == StorageService.getInstance().getIcaoAddress() || address == StorageService.getInstance().getIcaoAddress()) {
+            // do not show own traffic
+            return;
         }
-        
-        mTraffic.put(address, new Traffic(callsign, address, lat, lon, altitude, 
-                heading, speed, time));
+
+        for(int i = 0; i < MAX_ENTRIES; i++) {
+            if(mTraffic[i] == null) {
+                continue;
+            }
+            if(mTraffic[i].isOld()) {
+                // purge old
+                mTraffic[i] = null;
+                continue;
+            }
+            // filter traffic too high
+            int altDiff = Math.abs(mOwnAltitude - mTraffic[i].mAltitude);
+            if(Math.abs(altDiff) > filterAltitude) {
+                mTraffic[i] = null;
+                continue;
+            }
+            // update
+            if(mTraffic[i].mIcaoAddress == address) {
+                // callsign not available. use last one
+                if(callsign.equals("")) {
+                    callsign = mTraffic[i].mCallSign;
+                }
+                final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+                mTraffic[i] = traffic;
+
+                handleAudibleAlerts(Arrays.asList(traffic));
+                return;
+            }
+        }
+
+        // filter traffic too high
+        int altDiff = Math.abs(mOwnAltitude - altitude);
+        if(Math.abs(altDiff) > filterAltitude) {
+            return;
+        }
+        // put it in the end
+        final Traffic traffic = new Traffic(callsign, address, isAirborne, lat, lon, altitude, heading, speed, vspeed, time);
+        mTraffic[MAX_ENTRIES] = traffic;
+
+        // sort
+        Arrays.sort(mTraffic, new TrafficComparator());
+
+        handleAudibleAlerts(Arrays.asList(traffic));
+
     }
 
     public void setOwnAltitude(int altitude) {
         mOwnAltitude = altitude;
     }
+    public void setOwnIsAirborne(boolean isAirborne) {
+        mOwnIsAirborne = isAirborne;
+    }
+    public void setOwnVertVelocity(int vspeed) {
+        mOwnVertVelocity = vspeed;
+    }
+
 
     public int getOwnAltitude() {
         return mOwnAltitude;
     }
-    
+
+    public void setOwnLocation(Location loc) {
+        this.mOwnLocation = loc;
+    }
+    public Location getOwnLocation() { return this.mOwnLocation; }
+
     /**
      * 
      * @return
      */
-    public SparseArray<Traffic> getTraffic() {
-        return mTraffic;
-    }    
+    public LinkedList<Traffic> getTraffic() {
+        LinkedList<Traffic> t = new LinkedList<>();
+
+        for(int i = 0; i < MAX_ENTRIES; i++) {
+            if(null != mTraffic[i]) {
+                t.add(mTraffic[i]);
+            }
+        }
+        return t;
+    }
+
 }

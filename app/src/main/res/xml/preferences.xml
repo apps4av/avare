@@ -18,14 +18,6 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefStorageAndDownloadsCategoryTitle" 
         android:icon="@android:drawable/ic_menu_save" >
-        <com.ds.avare.utils.FolderPreference
-            android:key="@string/Maps"
-            android:summary="@string/MapsSummary"
-            android:title="@string/MapsLabel" />
-        <com.ds.avare.utils.FolderPreference
-            android:key="@string/UDWLocation"
-            android:summary="@string/UDWSummary"
-            android:title="@string/UDWLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="@string/Zero"
             android:entries="@array/Server"
@@ -72,15 +64,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/externalGps"
             android:summary="@string/externalGpsSummary"
             android:title="@string/externalGpsLabel" />
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/WIFIPortLabel"
-            android:summary="@string/WIFIPortSummary"
-            android:defaultValue="4000"
-            android:key="@string/WIFIPort"/>
-        <com.ds.avare.utils.BTListPreferenceWithSummary
-            android:key="@string/AutopilotBTDevice"
-            android:summary="@string/AutopilotBTDeviceSummary"
-            android:title="@string/AutopilotBTDeviceLabel" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/ReverseAhrsRoll"
@@ -157,6 +140,11 @@ authors: zkhan, jlmcgraw
             android:key="@string/prefTip"
             android:summary="@string/prefTipSummary"
             android:title="@string/prefTipLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/prefScreenTiles"
+            android:summary="@string/prefScreenTilesSummary"
+            android:title="@string/prefScreenTilesLabel" />
     </PreferenceScreen>
 
     <PreferenceScreen 
@@ -268,6 +256,16 @@ authors: zkhan, jlmcgraw
             android:title="@string/ADSBTrafficFilterLabel" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="@string/ADSBTrafficIncludeGroundTraffic"
+            android:summary="@string/ADSBTrafficIncludeGroundTrafficSummary"
+            android:title="@string/ADSBTrafficIncludeGroundTrafficLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/drawTrafficCircles"
+            android:summary="@string/drawTrafficCirclesSummary"
+            android:title="@string/drawTrafficCirclesLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="@string/prefShowAdsbCallSign"
             android:summary="@string/ShowAdsbCallSignSummary"
             android:title="@string/ShowAdsbCallSignLabel" />
@@ -339,13 +337,6 @@ authors: zkhan, jlmcgraw
             android:key="@string/TrkUpdShowHistory"
             android:title="@string/TrkUpdShowHistoryLabel"
             android:summary="@string/TrkUpdShowHistorySummary"/>
-        <com.ds.avare.utils.ListPreferenceWithSummary
-            android:defaultValue="@string/Zero"
-            android:entries="@array/AutoPostTracksPrompts"
-            android:entryValues="@array/AutoPostTracksValues"
-            android:key="@string/prefAutoPostTracks"
-            android:summary="@string/AutoPostTracksSummary"
-            android:title="@string/AutoPostTracksLabel" />
         <CheckBoxPreference
             android:defaultValue="true"            
             android:key="@string/rubberBand"
@@ -354,86 +345,139 @@ authors: zkhan, jlmcgraw
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:title="@string/userData"
-        android:icon="@android:drawable/ic_menu_manage" >
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/PilotContact"
-            android:summary="@string/PilotContactSummary"
-            android:key="@string/PilotContact"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftHomeBase"
-            android:summary="@string/AircraftHomeBaseSummary"
-            android:key="@string/AircraftHomeBase"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftTailNumber"
-            android:summary="@string/AircraftTailNumberSummary"
-            android:key="@string/AircraftTailNumber"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftType"
-            android:summary="@string/AircraftTypeSummary"
-            android:key="@string/AircraftType"/>
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:title="@string/AircraftICAOCode"
-            android:summary="@string/AircraftICAOCodeSummary"
-            android:key="@string/AircraftICAOCode"/>
-
+        android:title="@string/AudibleTrafficAlertsPreferenceGroup"
+        android:icon="@android:drawable/ic_media_play"
+    >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/AudibleTrafficAlerts"
+            android:summary="@string/AudibleTrafficAlertsSummary"
+            android:title="@string/AudibleTrafficAlertsLabel" />
+        <com.ds.avare.utils.EditTextPreferenceWithSummary
+            android:defaultValue="15"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsMaxFrequency"
+            android:summary="@string/AudibleTrafficAlertsMaxFrequencySummary"
+            android:title="@string/AudibleTrafficAlertsMaxFrequencyLabel" />
+        <PreferenceScreen
+            android:title="@string/AudibleTrafficAlertsFiltersScreen"
+            >
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="@string/AudibleTrafficAlerts"
+                android:key="@string/AudibleTrafficAlertsGroundAlert"
+                android:summary="@string/AudibleTrafficAlertsGroundAlertSummary"
+                android:title="@string/AudibleTrafficAlertsGroundAlertLabel" />
+            <com.ds.avare.utils.EditTextPreferenceWithSummary
+                android:defaultValue="0"
+                android:dependency="@string/AudibleTrafficAlerts"
+                android:key="@string/AudibleTrafficAlertsMinimumSpeed"
+                android:summary="@string/AudibleTrafficAlertsMinimumSpeedSummary"
+                android:title="@string/AudibleTrafficAlertsMinimumSpeedLabel" />
+            <PreferenceCategory
+                android:title="@string/AudibleTrafficAlertsIncursionCylinderGroup"
+            >
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="5"
+                    android:dependency="@string/AudibleTrafficAlerts"
+                    android:key="@string/AudibleTrafficAlertsDistanceMinimum"
+                    android:summary="@string/AudibleTrafficAlertsDistanceMinimumSummary"
+                    android:title="@string/AudibleTrafficAlertsDistanceMinimumLabel" />
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="1000"
+                    android:dependency="@string/AudibleTrafficAlerts"
+                    android:key="@string/AudibleTrafficAlertsAltitude"
+                    android:summary="@string/AudibleTrafficAlertsAltitudeSummary"
+                    android:title="@string/AudibleTrafficAlertsAltitudeLabel" />
+            </PreferenceCategory>
+        </PreferenceScreen>
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:entries="@array/ACColor"
-            android:entryValues="@array/ACColorValue"
-            android:key="@string/AircraftColorPrimary"
-            android:summary="@string/AircraftColorPrimarySummary"
-            android:title="@string/AircraftColorPrimary" />
-
+            android:defaultValue="NONE"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleDistanceCallout"
+            android:entryValues="@array/AudibleDistanceCalloutValues"
+            android:key="@string/AudibleTrafficAlertsDistanceCallout"
+            android:summary="@string/AudibleTrafficAlertsDistanceCalloutSummary"
+            android:title="@string/AudibleTrafficAlertsDistanceCalloutLabel" />
         <com.ds.avare.utils.ListPreferenceWithSummary
-            android:entries="@array/ACColor"
-            android:entryValues="@array/ACColorValue"
-            android:key="@string/AircraftColorSecondary"
-            android:summary="@string/AircraftColorSecondarySummary"
-            android:title="@string/AircraftColorSecondary" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftEquipment"
-            android:summary="@string/AircraftEquipmentSummary"
-            android:title="@string/AircraftEquipment" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftSurveillance"
-            android:summary="@string/AircraftSurveillanceSummary"
-            android:title="@string/AircraftSurveillance" />
-
-        <com.ds.avare.utils.CapitalizeAndEditTextPreferenceWithSummary
-            android:key="@string/AircraftOtherInfo"
-            android:summary="@string/AircraftOtherInfoSummary"
-            android:title="@string/AircraftOtherInfo" />
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/AircraftTAS"
-            android:summary="@string/AircraftTASSummary"
-            android:key="@string/AircraftTAS"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/BestGlideSinkRateLabel"
-            android:summary="@string/BestGlideSinkRateSummary"
-            android:defaultValue="700"
-            android:key="@string/BestGlideSinkRate"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/FuelRateLabel"
-            android:summary="@string/FuelRateSummary"
-            android:defaultValue="10.0"
-            android:key="@string/FuelRateLabel"/>
-
-        <com.ds.avare.utils.EditTextPreferenceWithSummary
-            android:title="@string/EmergencyChecklist"
-            android:summary="@string/EmergencyChecklistSummary"
-            android:defaultValue=""
-            android:key="@string/EmergencyChecklist"/>
-
+            android:defaultValue="NONE"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficIdCallout"
+            android:entryValues="@array/AudibleTrafficIdCalloutValues"
+            android:key="@string/AudibleAlertTrafficId"
+            android:summary="@string/AudibleAlertTrafficIdSummary"
+            android:title="@string/AudibleAlertTrafficIdLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="COLLOQUIAL"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficNumberFormat"
+            android:entryValues="@array/AudibleTrafficNumberFormatValues"
+            android:key="@string/AudibleTrafficAlertsNumberFormat"
+            android:summary="@string/AudibleTrafficAlertsNumberFormatSummary"
+            android:title="@string/AudibleTrafficAlertsNumberFormatLabel" />
+        <com.ds.avare.utils.ListPreferenceWithSummary
+            android:defaultValue="1"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:entries="@array/AudibleTrafficSpeakingSpeed"
+            android:entryValues="@array/AudibleTrafficSpeakingSpeedValues"
+            android:key="@string/AudibleTrafficAlertsSpeakingSpeed"
+            android:summary="@string/AudibleTrafficAlertsSpeakingSpeedSummary"
+            android:title="@string/AudibleTrafficAlertsSpeakingSpeedLabel" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleAlertTopGunMode"
+            android:summary="@string/AudibleAlertTopGunModeSummary"
+            android:title="@string/AudibleAlertTopGunModeLabel" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/AudibleTrafficAlerts"
+            android:key="@string/AudibleTrafficAlertsVerticalDirectionCallout"
+            android:summary="@string/AudibleTrafficAlertsVerticalDirectionCalloutSummary"
+            android:title="@string/AudibleTrafficAlertsVerticalDirectionCalloutLabel" />
+        <PreferenceCategory
+            android:title="@string/AudibleTrafficAlertsClosingAlertsPreferenceGroup">
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="@string/AudibleTrafficAlerts"
+                android:key="@string/AudibleTrafficAlertsClosingDistance"
+                android:summary="@string/AudibleTrafficAlertsClosingDistanceSummary"
+                android:title="@string/AudibleTrafficAlertsClosingDistanceLabel" />
+            <PreferenceScreen
+                android:title="@string/AudibleTrafficAlertsClosingFiltersScreen"
+            >
+                <com.ds.avare.utils.EditTextPreferenceWithSummary
+                    android:defaultValue="15"
+                    android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                    android:key="@string/AudibleTrafficAlertsClosingDistanceSeconds"
+                    android:summary="@string/AudibleTrafficAlertsClosingDistanceSecondsSummary"
+                    android:title="@string/AudibleTrafficAlertsClosingDistanceSecondsLabel" />
+                <PreferenceCategory
+                    android:title="@string/AudibleTrafficAlertsClosingIncursionCyclingGroup"
+                >
+                    <com.ds.avare.utils.EditTextPreferenceWithSummary
+                        android:defaultValue="3.0"
+                        android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                        android:key="@string/AudibleTrafficAlertsClosingDistanceDistance"
+                        android:summary="@string/AudibleTrafficAlertsClosingDistanceDistanceSummary"
+                        android:title="@string/AudibleTrafficAlertsClosingDistanceDistanceLabel" />
+                    <com.ds.avare.utils.EditTextPreferenceWithSummary
+                        android:defaultValue="1000"
+                        android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                        android:key="@string/AudibleTrafficAlertsClosingAltitude"
+                        android:summary="@string/AudibleTrafficAlertsClosingAltitudeSummary"
+                        android:title="@string/AudibleTrafficAlertsClosingAltitudeLabel" />
+                </PreferenceCategory>
+            </PreferenceScreen>
+            <com.ds.avare.utils.ListPreferenceWithSummary
+                android:defaultValue="51"
+                android:dependency="@string/AudibleTrafficAlertsClosingDistance"
+                android:entries="@array/ClosingCriticalAlertPct"
+                android:entryValues="@array/ClosingCriticalAlertPctValues"
+                android:key="@string/AudibleTrafficAlertsClosingCritalAlert"
+                android:summary="@string/AudibleTrafficAlertsClosingCritalAlertSummary"
+                android:title="@string/AudibleTrafficAlertsClosingCritalAlertLabel" />
+        </PreferenceCategory>
     </PreferenceScreen>
 
     <PreferenceScreen
@@ -461,24 +505,14 @@ authors: zkhan, jlmcgraw
                 android:title="@string/ThreeD" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabChecklist"
-                android:summary="@string/ChecklistSummary"
-                android:title="@string/List" />
+                android:key="@string/prefTabAircraft"
+                android:summary="@string/AircraftSummary"
+                android:title="@string/Aircraft" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="@string/prefTabWX"
-                android:summary="@string/WXSummary"
-                android:title="@string/WXB" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabTools"
-                android:summary="@string/GPSSummary"
-                android:title="@string/Tools" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/prefTabWnb"
-                android:summary="@string/WnbSummary"
-                android:title="@string/Wnb" />
+                android:key="@string/prefTabIo"
+                android:summary="@string/IoSummary"
+                android:title="@string/Io" />
         </PreferenceScreen>
 
         <CheckBoxPreference

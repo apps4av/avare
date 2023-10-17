@@ -39,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
@@ -98,7 +99,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @param context
      */
     public ChartAdapter(Context context) {
-        mPref = new Preferences(context);
+        mPref = StorageService.getInstance().getPreferences();
         mContext = context;
         
         /*
@@ -271,7 +272,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
                     /*
                      * Read version from file and if it exists.
                      */
-                    File file = new File(mPref.mapsFolder() + "/" + mChildrenFiles[group][child]);
+                    File file = new File(mPref.getServerDataFolder() + File.separator + mChildrenFiles[group][child]);
                     vers[group][child] = null;
                     if(file.exists()) {
                         try {
@@ -349,7 +350,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
         for(int group = GROUP_DATABASE; group < GROUP_NUM; group++) {
             for(int child = 0; child < mVers[group].length; child++) {
                 if(mChildrenFiles[group][child].equals(name)) {
-                    return (group == GROUP_ONC || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
+                    return (group == GROUP_ONC || group == GROUP_WAC || group == GROUP_VFRA || group == GROUP_TPC || group == GROUP_TERRAIN || group == GROUP_TOPO || group == GROUP_MISC);
                 }
             }
         }
@@ -463,7 +464,7 @@ public class ChartAdapter extends BaseExpandableListAdapter {
      * @return
      */
     private boolean doesChartExpire(int group) {
-        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
+        return (group != GROUP_ONC) && (group != GROUP_TOPO) && (group != GROUP_WAC) && (group != GROUP_VFRA) && (group != GROUP_TERRAIN) && (group != GROUP_TPC) && (group != GROUP_MISC);
     }
 
     /**

@@ -33,12 +33,14 @@ import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -204,77 +206,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return ("");
     }
 
-    /**
-     * @return
-     * XXX: Legacy
-     * Delete
-     */
-    public LinkedList<StringPreference> getRecents() {
-        String recent = mPref.getString(mContext.getString(R.string.Recent), null);
-        LinkedList<StringPreference> ret = new LinkedList<>();
-        if(recent == null) {
-            return ret;
-        }
-        String[] tokens = recent.split(",");
-        for (String t : tokens) {
-            String[] wpd = t.split(";");
-            if (wpd[0].endsWith("::GPS")) {
-                if (wpd[0].contains("@")) {
-                    String gpsLoc = wpd[0].substring(wpd[0].indexOf('@') + 1, wpd[0].indexOf(':'));
-                    String wpName = wpd[0].substring(0, wpd[0].indexOf('@'));
-                    StringPreference s = new StringPreference(Destination.GPS, Destination.GPS, wpName, gpsLoc);
-                    ret.add(s);
-                }
-            }
-            else {
-                StringPreference s =
-                        new StringPreference(
-                                StringPreference.parseHashedNameDestType(t),
-                                StringPreference.parseHashedNameDbType(t),
-                                StringPreference.parseHashedNameFacilityName(t),
-                                StringPreference.parseHashedNameId(t));
-                ret.add(s);
-            }
-        }
-
-        //ID,destType,dbtype,name
-        //PWM::Base;AIRPORT;PORTLAND INTL JETPORT,PHILA::Fix;YWAYPOINT;PHILA , MORGANTOWN@39.6295&-79.9559::Maps;Maps;Maps,LURAY::Fix;YREP-PT;LURAY ,BVY::Base;AIRPORT;BEVERLY RGNL,BOS::Base;AIRPORT;GENERAL EDWARD LAWRENCE LOGAN INTL,ATL::Base;AIRPORT;HARTSFIELD - JACKSON ATLANTA INTL, JHOLA PAKISTAN@35.6831&75.9661::Maps;Maps;Maps, PAIJU PAKISTAN@35.7158&76.1186::Maps;Maps;Maps, HUSHE PAKISTAN@35.4504&76.3585::Maps;Maps;Maps, ASKOLE PAKISTAN@35.6824&75.8174::Maps;Maps;Maps,K2 PAKISTAN@35.88&76.5151::Maps;Maps;Maps, GONDOGORO LA@35.6481&76.4733::Maps;Maps;Maps,6B6::Base;AIRPORT;MINUTE MAN AIR FLD,42.8244&-71.027::GPS;GPS;GPS,42.7646&-71.2733::GPS;GPS;GPS,1B0::Base;AIRPORT;DEXTER RGNL,ANC::Base;AIRPORT;TED STEVENS ANCHORAGE INTL,BVY::Navaid;FAN MARKER;BEVERLY D,
-        return ret;
-    }
 
     /**
      * @return
      */
-    public LinkedHashMap<String, String> getPlans() {
-        // import legacy plans
-        /**
-         * XXX: remove
-         */
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        String plans = mPref.getString(mContext.getString(R.string.Plan) + "v10", null);
-        if(null == plans) {
-            return map;
-        }
-
-        // parse JSON from storage
-        try {
-            JSONObject json = new JSONObject(plans);
-            Iterator<?> keys = json.keys();
-            while (keys.hasNext()) {
-                String name = (String) keys.next();
-                String destinations = json.getString(name);
-                map.put(name, destinations);
-            }
-        } catch (Exception e) {
-        }
-        return map;
-    }
-
-
-    /**
-     * @return
-     */
-    public static int[] getTilesNumber(Context ctx) {
+    public static int[] getTilesNumber(Context ctx, boolean useScreenSize) {
         int[] ret = new int[3];
 
         /*
@@ -330,8 +266,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         if (tilesy > ret[1]) {
             tilesy = ret[1];
         }
-        ret[0] = tilesx;
-        ret[1] = tilesy;
+
+        if(useScreenSize) {
+            ret[0] = tilesx;
+            ret[1] = tilesy;
+        }
 
         if (ret[0] <= 0) {
             ret[0] = MEM_16_X;
@@ -389,6 +328,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return (mPref.getBoolean(mContext.getString(R.string.Runways), true));
     }
 
+    public boolean isScreenSizeCalculationForTiles() {
+        return (mPref.getBoolean(mContext.getString(R.string.prefScreenTiles), true));
+    }
+
     public boolean isAutoDisplayAirportDiagram() {
         return (mPref.getBoolean(mContext.getString(R.string.AutoShowAirportDiagram), false));
     }
@@ -402,6 +345,83 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      */
     public boolean showObstacles() {
         return (mPref.getBoolean(mContext.getString(R.string.Obstacles), false));
+    }
+
+
+    public float getAudibleTrafficAlertsDistanceMinimum() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceMinimum), "5.0"));
+		} catch (Exception e) {
+		}
+		return 5.0f;
+    }
+
+    public float getAudibleTrafficAlertsMaxFrequency() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMaxFrequency), "15.0"));
+		} catch (Exception e) {
+		}
+		return 15f;
+    }
+
+    public float getAudibleTrafficAlertsMinSpeed() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsMinimumSpeed), "0.0"));
+		} catch (Exception e) {
+		}
+		return 0f;
+    }
+
+    public int getAudibleClosingInAlertSeconds() {
+		try {
+			return Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceSeconds), "15"));
+		} catch (Exception e) {
+		}
+		return 15;
+    }
+
+    public float getAudibleClosingInAlertDistanceNmi() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingDistanceDistance), "3.0"));
+		} catch (Exception e) {
+		}
+		return 3.0f;
+    }
+
+    public float getAudibleClosingInCriticalAlertRatio() {
+        return (float) (Integer.parseInt(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingCritalAlert), "0")) / 100.00);
+    }
+
+    public float getAudibleTrafficAlertsAltitude() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
+    }
+
+    public float getAudibleClosingAlertsAltitude() {
+		try {
+			return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsClosingAltitude), "1000.0"));
+		} catch (Exception e) {
+		}
+		return 1000f;
+    }
+
+    public String getAudibleDistanceCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsDistanceCallout), "NONE");
+    }
+
+    public String getAudibleTrafficIdCallout() {
+        return mPref.getString(mContext.getString(R.string.AudibleAlertTrafficId), "NONE");
+    }
+
+    public String getAudibleTrafficNumberFormat() {
+        return mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsNumberFormat), "COLLOQUIAL");
+    }
+
+    public float getSpeakingRate() {
+        return Float.parseFloat(mPref.getString(mContext.getString(R.string.AudibleTrafficAlertsSpeakingSpeed), "1.0"));
     }
 
     /**
@@ -579,52 +599,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String mapsFolder() {
-        File path = mContext.getFilesDir();
-        if (path == null) {
-            path = new File(getExternalFolder());
-        }
-        /*
-         * If no path, use internal folder.
-         * If cannot get internal folder, return / at least
-         */
-        String loc = mPref.getString(mContext.getString(R.string.Maps), path.getAbsolutePath());
-
-        /*
-         * XXX: Legacy for 5.1.0 and 5.1.1.
-         */
-        if (loc.equals("Internal")) {
-            loc = mContext.getFilesDir().getAbsolutePath() + "/data";
-        } else if (loc.equals("External")) {
-            loc = mContext.getExternalFilesDir(null) + "/data";
-        }
-
-        return (loc);
-    }
-
-    /**
-     * @return
-     */
-    public void setMapsFolder(String folder) {
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.putString(mContext.getString(R.string.Maps), folder);
-        editor.commit();
-    }
-
-    /**
-     * @return
-     */
-    public String loadString(String name) {
-        return (mPref.getString(name, null));
-    }
-
-    public boolean isDrawTracks() {
-        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
-    }
-
-    /**
-     * @return
-     */
     public boolean useAdsbWeather() {
         return (mPref.getBoolean(mContext.getString(R.string.ADSBWeather), false));
     }
@@ -664,6 +638,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
      */
     public boolean showAdsbCallSign() {
         return mPref.getBoolean(mContext.getString(R.string.prefShowAdsbCallSign), true);
+    }
+
+    /**
+     * @return
+     */
+    public boolean showAdsbGroundTraffic() {
+        return mPref.getBoolean(mContext.getString(R.string.ADSBTrafficIncludeGroundTraffic), false);
     }
 
     /**
@@ -721,6 +702,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     /**
      * @return 0-Do not auto post, 1-send in an email, 2-user selects an app to handle KML
+     * This is not used since Android 24 as sending intent with a file is a pain now.
      */
     public int autoPostTracks() {
         try {
@@ -818,40 +800,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public LinkedList<Checklist> getLists() {
-
-        // Legacy lists import
-        /**
-         * XXX: remove
-         */
-        LinkedList<Checklist> cl = new LinkedList<>();
-        String lists = mPref.getString(mContext.getString(R.string.List), null);
-        if(null == lists) {
-            return cl;
-        }
-        JSONArray jsonArr;
-        try {
-            jsonArr = new JSONArray(lists);
-        } catch (JSONException e) {
-            return cl;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                String name = o.getString("name");
-                String steps = o.getString("steps");
-                cl.add(new Checklist(name, steps));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-        return cl;
-    }
-
-    /**
-     * @return
-     */
     public boolean useBearingForETEA() {
         return mPref.getBoolean(mContext.getString(R.string.ETABearing), true);
     }
@@ -884,6 +832,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.ExtendInfoLines), false);
     }
 
+    public boolean isDrawTracks() {
+        return (mPref.getBoolean(mContext.getString(R.string.TrkUpdShowHistory), false));
+    }
+
     /**
      * @return
      */
@@ -894,22 +846,21 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /**
      * @return
      */
-    public String getExternalFolder() {
-        try {
-            return mPref.getString(mContext.getString(R.string.UDWLocation),
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                    File.separator + mContext.getPackageName());
-        } catch (Exception e) {
-            return "";
-        }
+    public String getUserDataFolder() {
+        return Helper.getExternalFolder(mContext);
+    }
+
+    public String getCacheFolder() {
+        return Helper.getCacheFolder(mContext);
     }
 
     /**
-     * @param location
+     * @return
      */
-    public void setExternalFolder(String location) {
-        mPref.edit().putString(mContext.getString(R.string.UDWLocation), location).commit();
+    public String getServerDataFolder() {
+        return Helper.getInternalFolder(mContext);
     }
+
 
     // Read all the tab preference selections and return them in a single bitmapped long value
     public long getTabs() {
@@ -935,28 +886,20 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             mTabs |= 1 << MainActivity.tabPlan;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabWX), true)) {
-            mTabs |= 1 << MainActivity.tabWXB;
-        }
-
         if (mPref.getBoolean(mContext.getString(R.string.prefTabNear), true)) {
             mTabs |= 1 << MainActivity.tabNear;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabChecklist), true)) {
-            mTabs |= 1 << MainActivity.tabChecklist;
-        }
-
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabTools), true)) {
-            mTabs |= 1 << MainActivity.tabTools;
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabAircraft), true)) {
+            mTabs |= 1 << MainActivity.tabAircraft;
         }
 
         if (mPref.getBoolean(mContext.getString(R.string.prefTabPfd), true)) {
             mTabs |= 1 << MainActivity.tabPfd;
         }
 
-        if (mPref.getBoolean(mContext.getString(R.string.prefTabWnb), true)) {
-            mTabs |= 1 << MainActivity.tabWnb;
+        if (mPref.getBoolean(mContext.getString(R.string.prefTabIo), true)) {
+            mTabs |= 1 << MainActivity.tabIo;
         }
 
         return mTabs;
@@ -1038,9 +981,32 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.TrackUp), false);
     }
 
+    public boolean isAudibleTrafficAlerts() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlerts), true);
+    }
+
+    public boolean isAudibleTrafficAlertsTopGunMode() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleAlertTopGunMode), false);
+    }
+
+    public boolean isAudibleGroundAlertsEnabled() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsGroundAlert), false);
+    }
+
+    public boolean isAudibleClosingInAlerts() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsClosingDistance), false);
+    }
+
+    public boolean isAudibleVerticalDirectionCallout() {
+        return mPref.getBoolean(mContext.getString(R.string.AudibleTrafficAlertsVerticalDirectionCallout), true);
+    }
+
     public boolean setTrackUp(boolean trackUp) {
         return mPref.edit().putBoolean(mContext.getString(R.string.TrackUp), trackUp).commit();
     }
+
+
+
 
     public boolean isTrackUpPlates() {
         return mPref.getBoolean(mContext.getString(R.string.TrackUpPlates), false);
@@ -1064,65 +1030,20 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
                 .commit();
     }
 
-    public int getAircraftTAS() {
-        String speed = mPref.getString(mContext.getString(R.string.AircraftTAS), "");
-        int aircraftTAS = 100;
-        try {
-            aircraftTAS = Integer.parseInt(speed);
-        } catch (Exception e) {
-
-        }
-        return aircraftTAS;
-    }
-
-    public String getAircraftHomeBase() {
-        return mPref.getString(mContext.getString(R.string.AircraftHomeBase), "KSBA");
-    }
-
-    public String getAircraftEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftEquipment), "N");
-    }
-
-    public String getAircraftOtherInfo() {
-        return mPref.getString(mContext.getString(R.string.AircraftOtherInfo), " ");
-    }
-
-    public String getAircraftSurveillanceEquipment() {
-        return mPref.getString(mContext.getString(R.string.AircraftSurveillance), "N");
-    }
-
-    public String getAircraftColorPrimary() {
-        return mPref.getString(mContext.getString(R.string.AircraftColorPrimary), "W");
-    }
-
-    public String getAircraftColorSecondary() {
-        return mPref.getString(mContext.getString(R.string.AircraftColorSecondary), "B");
-    }
-
-    public String getAircraftType() {
-        return mPref.getString(mContext.getString(R.string.AircraftType), "TEST");
-    }
 
     public String getEmergencyChecklist() {
         return mPref.getString(mContext.getString(R.string.EmergencyChecklist), "");
     }
 
-    public int getAircraftICAOCode() {
-        int code = 0;
-        try {
-            code = Integer.parseInt(mPref.getString(mContext.getString(R.string.AircraftICAOCode), ""));
-        } catch (Exception e) {
-
-        }
-        return code;
-    }
-
-    public String getAircraftTailNumber() {
+    public String getAircraftId() {
         return mPref.getString(mContext.getString(R.string.AircraftTailNumber), "N1TEST");
     }
 
-    public String getPilotContact() {
-        return mPref.getString(mContext.getString(R.string.PilotContact), "TEST PILOT 1-800-WX-BRIEF");
+    // Set last location we got
+    public void setAircraftId(String tailNumber) {
+        mPref.edit()
+                .putString(mContext.getString(R.string.AircraftTailNumber), tailNumber)
+                .commit();
     }
 
     public String getShapeFileName() {
@@ -1138,14 +1059,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
         }
         return intervalInt;
-    }
-
-    public float getFuelBurn() {
-        try {
-            return (Float.parseFloat(mPref.getString(mContext.getString(R.string.FuelRateLabel), "10")));
-        } catch (Exception x) {
-            return 10;
-        }
     }
 
     public boolean removeB1Plate() {
@@ -1180,22 +1093,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         }
     }
 
-
-    /**
-     * @return
-     */
-    public String getGeotags() {
-        return mPref.getString(mContext.getString(R.string.Geotag), "");
-    }
-
-
-    /**
-     * @param tags
-     */
-    public void setGeotags(String tags) {
-        mPref.edit().putString(mContext.getString(R.string.Geotag), tags).commit();
-    }
-
     /**
      * @return
      */
@@ -1207,46 +1104,13 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putBoolean(mContext.getString(R.string.GameTFR), true).commit();
     }
 
-    /**
-     * @return
-     * XXX: Legacy import. Delete.
-     */
-    public LinkedList<WeightAndBalance> getWnbs() {
-        String w = mPref.getString(mContext.getString(R.string.Wnb), null);
-        JSONArray jsonArr;
-        LinkedList<WeightAndBalance> ret = new LinkedList<WeightAndBalance>();
-        if(w == null) {
-            return  ret;
-        }
-        try {
-            jsonArr = new JSONArray(w);
-        } catch (JSONException e) {
-            return ret;
-        }
-
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                JSONObject o = jsonArr.getJSONObject(i);
-                ret.add(new WeightAndBalance(o));
-            } catch (JSONException e) {
-                continue;
-            }
-        }
-
-        return ret;
-    }
-
     public boolean isDefaultAFDImage() {
         return mPref.getBoolean(mContext.getString(R.string.DefaultAFD), false);
     }
 
-    public String getWiFiPort() {
-        return mPref.getString(mContext.getString(R.string.WIFIPort), "4000");
-    }
-
-    public String getAutopilotBluetoothDevice() {
-        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
-    }
+//    public String getAutopilotBluetoothDevice() {
+//        return mPref.getString(mContext.getString(R.string.AutopilotBTDevice), BTListPreferenceWithSummary.NONE);
+//    }
 
     public boolean useSysFont() {
         return mPref.getBoolean(mContext.getString(R.string.useSysFont), false);
@@ -1265,17 +1129,80 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
 
     }
 
-
-    public int getBestGlideSinkRate() {
-        String in = mPref.getString(mContext.getString(R.string.BestGlideSinkRate), "700");
-        int val = 700;
-        try {
-            val = Integer.parseInt(in);
-        } catch (Exception e) {
-
-        }
-        return val;
+    public boolean shouldDrawTrafficCircles() {
+        return mPref.getBoolean(mContext.getString(R.string.drawTrafficCircles), false);
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getEditTextValue(int id) {
+        return mPref.getString("EditText" + id, null);
+    }
+
+    /**
+     *
+     */
+    public void setEditTextValue(int id, String val) {
+        mPref.edit().putString("EditText" + id, val).commit();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getCheckboxValue(int id) {
+        return mPref.getBoolean("Checkbox" + id, true);
+    }
+
+    /**
+     *
+     */
+    public void setCheckboxValue(int id, boolean val) {
+        mPref.edit().putBoolean("Checkbox" + id, val).commit();
+    }
+
+    /**
+     *
+     */
+    public int getFragmentIndex() {
+        return mPref.getInt("fragmentindex", 0);
+    }
+
+    /**
+     *
+     * @param fragmentIndex
+     */
+    public void setFragmentIndex(int fragmentIndex) {
+        mPref.edit().putInt("fragmentindex", fragmentIndex).commit();
+    }
+
+    public String getLastConnectedBtIn() {
+        return mPref.getString("LastConnectedBtIn", null);
+    }
+    public void setLastConnectedBtIn(String val) {
+        mPref.edit().putString("LastConnectedBtIn", val).commit();
+    }
+
+    public String getLastConnectedBtOut() {
+        return mPref.getString("LastConnectedBtOut", null);
+    }
+    public void setLastConnectedBtOut(String val) {
+        mPref.edit().putString("LastConnectedBtOut", val).commit();
+    }
+
+    public String getLastConnectedUSB() {
+        return mPref.getString("LastConnectedUSB", null);
+    }
+    public void setLastConnectedUSB(String val) {
+        mPref.edit().putString("LastConnectedUSB", val).commit();
+    }
+    public String getLastConnectedWifi() {
+        return mPref.getString("LastConnectedWifi", null);
+    }
+    public void setLastConnectedWifi(String val) {
+        mPref.edit().putString("LastConnectedWifi", val).commit();
+    }
 
 }

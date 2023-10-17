@@ -31,9 +31,12 @@ package com.ds.avare.network;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.ShapeFileShape;
 import com.ds.avare.storage.Preferences;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -45,15 +48,13 @@ public class ShapeFetcher {
 
 
     private ShapeTask mTask;
-    private LinkedList<ShapeFileShape> mShapes;
-    private Context mContext;
+    private ArrayList<ShapeFileShape> mShapes;
 
     /**
      *
      */
-    public ShapeFetcher(Context ctx) {
-        mShapes = new LinkedList<ShapeFileShape>();
-        mContext = ctx;
+    public ShapeFetcher() {
+        mShapes = new ArrayList<ShapeFileShape>();
     }
 
     /**
@@ -80,7 +81,7 @@ public class ShapeFetcher {
      * This will be non null if we have recieved shapes from internet
      * @return
      */
-    public LinkedList<ShapeFileShape> getShapes() {
+    public ArrayList<ShapeFileShape> getShapes() {
         return mShapes;
     }
 
@@ -99,8 +100,8 @@ public class ShapeFetcher {
             Thread.currentThread().setName("Shapes");
 
             try {
-                Preferences pref = new Preferences(mContext);
-                mShapes = ShapeFileShape.readFile(pref.mapsFolder() + "/" + pref.getShapeFileName());
+                Preferences pref = StorageService.getInstance().getPreferences();
+                mShapes = ShapeFileShape.readFile(pref.getUserDataFolder() + File.separator + pref.getShapeFileName());
             }
             catch (Exception e) {
 

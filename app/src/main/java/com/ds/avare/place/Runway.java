@@ -19,6 +19,7 @@ import com.ds.avare.shapes.DrawingContext;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -311,12 +312,14 @@ public class Runway {
      */
     public static void draw(DrawingContext ctx, BitmapHolder runwayBitmap, Destination destination, GpsParams params, boolean shouldShow) {
 
-        if((!shouldShow) || (!ctx.pref.isExtendRunways()) || (null == destination)) {
+        if((!shouldShow) || (!ctx.pref.isExtendRunways()) || (null == destination) || (null == runwayBitmap)) {
             return;
         }
 
-        LinkedList<Runway> runways = destination.getRunways();
-        if (runways != null) {
+        // Concurrent modification exception - use array list
+        LinkedList<Runway> rx = destination.getRunways();
+        if (rx != null) {
+            ArrayList<Runway> runways = new ArrayList<Runway>(rx);
             int xfactor;
             int yfactor;
 

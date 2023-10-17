@@ -16,6 +16,8 @@ import com.ds.avare.threed.data.Vector4d;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.Helper;
 
+import java.util.LinkedList;
+
 public class Traffic {
 
     public int mIcaoAddress;
@@ -23,8 +25,10 @@ public class Traffic {
     public float mLon;
     public int mAltitude;
     public int mHorizVelocity;
+    public int mVertVelocity;
     public float mHeading;
     public String mCallSign;
+    public boolean mIsAirborne;
     private long mLastUpdate;
     private static Matrix mMatrix = new Matrix();
 
@@ -36,6 +40,14 @@ public class Traffic {
     // ms
     private static final long EXPIRES = 1000 * 60 * 1;
 
+    public Traffic() {
+        mIcaoAddress = 0;
+        mCallSign = "";
+        mLat = 0;
+        mLon = 0;
+        mAltitude = 0;
+    }
+
     /**
      * 
      * @param callsign
@@ -45,16 +57,18 @@ public class Traffic {
      * @param altitude
      * @param heading
      */
-    public Traffic(String callsign, int address, float lat, float lon, int altitude, 
-            float heading, int speed, long time)
+    public Traffic(String callsign, int address, boolean isAirborne, float lat, float lon, int altitude,
+            float heading, int speed, int vspeed, long time)
     {
         mIcaoAddress = address;
         mCallSign = callsign;
+        mIsAirborne = isAirborne;
         mLon = lon;
         mLat = lat;
         mAltitude = altitude;
         mHeading = heading;
         mHorizVelocity = speed;
+        mVertVelocity = vspeed;
         mLastUpdate = time;
 
         /*
@@ -75,6 +89,10 @@ public class Traffic {
         diff -= mLastUpdate;
 
         return diff > EXPIRES;
+    }
+
+    public long getLastUpdate() {
+        return mLastUpdate;
     }
     
     /**
@@ -112,10 +130,10 @@ public class Traffic {
         return color;
     }
 
-    public static void draw(DrawingContext ctx, SparseArray<Traffic> traffic, double altitude, GpsParams params, int ownIcao, boolean shouldDraw,
+    public static void draw(DrawingContext ctx, LinkedList<Traffic> traffic, double altitude, GpsParams params, boolean shouldDraw,
                             BitmapHolder bRed, BitmapHolder bGreen, BitmapHolder bBlue, BitmapHolder bMagenta) {
 
-        int filterAltitude = ctx.pref.showAdsbTrafficWithin();
+        boolean circles = ctx.pref.shouldDrawTrafficCircles();
 
         /*
          * Get traffic to draw.
@@ -125,16 +143,14 @@ public class Traffic {
         }
 
         ctx.paint.setColor(Color.WHITE);
-        for(int i = 0; i < traffic.size(); i++) {
-            int key = traffic.keyAt(i);
-            Traffic t = traffic.get(key);
-            if(t.isOld()) {
-                traffic.delete(key);
+        final boolean showGroundTraffic = ctx.pref.showAdsbGroundTraffic();
+        for(Traffic t : traffic) {
+
+            if(null == t) {
                 continue;
             }
-
-            if(t.mIcaoAddress == ownIcao) {
-                // Do not draw shadow of own
+            // Don't draw ground traffic, unless configuration allows it
+            if (!(t.mIsAirborne || showGroundTraffic)) {
                 continue;
             }
 
@@ -155,19 +171,6 @@ public class Traffic {
              * Find color from altitude
              */
             int color = Traffic.getColorFromAltitude(altitude, t.mAltitude);
-            BitmapHolder b = null;
-            if (color == Color.RED) {
-                b = bRed;
-            }
-            else if (color == Color.GREEN) {
-                b = bGreen;
-            }
-            else if (color == Color.BLUE) {
-                b = bBlue;
-            }
-            else {
-                b = bMagenta;
-            }
 
             int diff;
             String text = "";
@@ -177,30 +180,66 @@ public class Traffic {
             }
 
             if(altitude <= StorageService.MIN_ALTITUDE) {
+                // display in hundreds of feet
                 // This is when we do not have our own altitude set with ownship
-                diff = (int)t.mAltitude;
-                text += diff + "PrA'"; // show that this is pressure altitude
+                diff = t.mAltitude;
+                diff = (int)Math.round(diff / 100.0);
+                text += diff + "PrA"; // show that this is pressure altitude
                 // do not filter when own PA is not known
             }
             else {
                 // Own PA is known, show height difference
                 diff = (int)(t.mAltitude - altitude);
-                text += (diff > 0 ? "+" : "") + diff + "'";
-                // filter
-                if(Math.abs(diff) > filterAltitude) {
-                    continue;
+                diff = (int)Math.round(diff / 100.0);
+                
+                if(diff > 0) {
+                    text += "+" + (diff < 10 ? "0" : "") + diff;
+                } else if(diff < 0) {
+                    text += "-" + (diff > -10 ? "0" : "") + Math.abs(diff);
+                } else {
+                    text += "0" + diff;
                 }
             }
 
-            mMatrix.setRotate(t.mHeading, b.getWidth() / 2, b.getHeight() / 2);
-            mMatrix.postTranslate(x - b.getWidth() / 2, y - b.getHeight() / 2);
+            float radius;
+            if(circles) {
+                radius = ctx.dip2pix * 8;
+                /*
+                 * Draw outline to show it clearly
+                 */
+                ctx.paint.setColor((~color) | 0xFF000000);
+                ctx.canvas.drawCircle(x, y, radius + 2, ctx.paint);
 
-            ctx.canvas.drawBitmap(b.getBitmap(), mMatrix, ctx.paint);
+                ctx.paint.setColor(color);
+                ctx.canvas.drawCircle(x, y, radius, ctx.paint);
+            }
+            else {
+                BitmapHolder b = null;
+                if (color == Color.RED) {
+                    b = bRed;
+                }
+                else if (color == Color.GREEN) {
+                    b = bGreen;
+                }
+                else if (color == Color.BLUE) {
+                    b = bBlue;
+                }
+                else {
+                    b = bMagenta;
+                }
+
+                radius =  b.getBitmap().getWidth();
+                mMatrix.setRotate(t.mHeading, b.getWidth() / 2, b.getHeight() / 2);
+                mMatrix.postTranslate(x - b.getWidth() / 2, y - b.getHeight() / 2);
+
+                ctx.canvas.drawBitmap(b.getBitmap(), mMatrix, ctx.paint);
+                ctx.paint.setColor(color);
+            }
+
             /*
              * Show a barb for heading with length based on speed
              * Find distance target will travel in 1 min
              */
-            ctx.paint.setColor(color);
             float distance2 = (float)t.mHorizVelocity / 60.f;
             Coordinate c = Projection.findStaticPoint(t.mLon, t.mLat, t.mHeading, distance2);
             float xr = (float)ctx.origin.getOffsetX(c.getLongitude());
@@ -221,7 +260,7 @@ public class Traffic {
 
 
             ctx.service.getShadowedText().draw(ctx.canvas, ctx.textPaint,
-                    text, Color.BLACK, (float)x, (float)y + b.getBitmap().getWidth() + ctx.textPaint.getTextSize());
+                    text, Color.BLACK, (float)x, (float)y + radius + ctx.textPaint.getTextSize());
 
 
             if (true == bRotated) {
@@ -242,11 +281,12 @@ public class Traffic {
      */
     public static void draw(StorageService service, AreaMapper mapper, TerrainRenderer renderer) {
         if (service != null) {
-            SparseArray<Traffic> t = service.getTrafficCache().getTraffic();
-            Vector4d ships[] = new Vector4d[t.size()];
-            for (int count = 0; count < t.size(); count++) {
-                Traffic tr = t.valueAt(count);
-                ships[count] = mapper.gpsToAxis(tr.mLon, tr.mLat, tr.mAltitude, tr.mHeading);
+            LinkedList<Traffic> traffic = service.getTrafficCache().getTraffic();
+            Vector4d ships[] = new Vector4d[traffic.size()];
+            int i = 0;
+            for (Traffic t : traffic) {
+                ships[i] = mapper.gpsToAxis(t.mLon, t.mLat, t.mAltitude, t.mHeading);
+                i++;
             }
             renderer.setShips(ships);
         }

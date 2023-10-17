@@ -26,6 +26,9 @@ public class TrafficReportMessage extends Message {
     public float mLon;
     public int mAltitude;
     public int mMiscInd;
+    public boolean mIsAirborne;
+    boolean mIsExtrapolated;
+    int mTrackType;
     public int mNic;
     public int mNacp;
     public int mHorizVelocity;
@@ -132,6 +135,9 @@ public class TrafficReportMessage extends Message {
          *   1       x        x        x    = airborne
          */
         mMiscInd = ((int) msg[11] & 0x0F);
+        mIsAirborne = (msg[11] & 0x08) != 0;
+        mIsExtrapolated = (msg[11] & 0x04) != 0;
+        mTrackType = msg[11] & 0x03;
 
         /*
          * Next nibble is the navigation integrity category (nic). (See GDL-90 spec pg. 21.)
@@ -151,11 +157,15 @@ public class TrafficReportMessage extends Message {
         mHorizVelocity = upper | lower;
 
         /*
-         * next 12 bits are vertical velocity in units of 64 fpm. (0xFFF = unknown)
+         * next 12 bits are vertical velocity in units of 64 fpm
          */
-        upper = ((int) msg[14] & 0x0F) << 8;
-        lower = (int) msg[15] & 0xFF;
-        mVertVelocity = (upper | lower) * 64;
+        if (((int) msg[14] & 0x08) == 0) {
+            mVertVelocity = (((int) msg[14] & 0x0F) << 14) + (((int) msg[15] & 0xFF) << 6);
+        } else if (msg[15] == 0) {
+            mVertVelocity = Integer.MAX_VALUE;
+        } else {
+            mVertVelocity = (((int) msg[14] & 0x0F) << 14) + (((int) msg[15] & 0xFF) << 6) - 0x40000;
+        }
 
         /*
          * next nibble is the track heading with resolution = 360/256

@@ -36,12 +36,9 @@ public class GlassView extends View {
      * Satellite view
      */
     private Paint            mPaint;
-    private Context          mContext;
 
     private String           mAgl;
-    private StorageService   mService;
     private String           mErrorStatus;
-    private Preferences      mPref;
 
     private static final int TEXT_COLOR = Color.WHITE;
     private static final int TEXT_COLOR_OPPOSITE = Color.BLACK;
@@ -49,14 +46,12 @@ public class GlassView extends View {
     /**
      *
      */
-    private void setup(Context context) {
-        mContext = context;
-        mPref = new Preferences(context);
+    private void setup() {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTypeface(Helper.getTypeFace(mContext));
+        mPaint.setTypeface(Helper.getTypeFace(StorageService.getInstance().getApplicationContext()));
         mPaint.setShadowLayer(4, 4, 4, Color.BLACK);
-        mPaint.setTextSize(Helper.adjustTextSize(mContext, R.dimen.TextSize));
+        mPaint.setTextSize(Helper.adjustTextSize(StorageService.getInstance().getApplicationContext(), R.dimen.TextSize));
 
     }
 
@@ -67,7 +62,7 @@ public class GlassView extends View {
      */
     public GlassView(Context context) {
         super(context);
-        setup(context);
+        setup();
     }
 
     /**
@@ -77,7 +72,7 @@ public class GlassView extends View {
      */
     public GlassView(Context context, AttributeSet aset) {
         super(context, aset);
-        setup(context);
+        setup();
     }
 
     /**
@@ -86,7 +81,7 @@ public class GlassView extends View {
      */
     public GlassView(Context context, AttributeSet aset, int arg) {
         super(context, aset, arg);
-        setup(context);
+        setup();
     }
 
     /* (non-Javadoc)
@@ -109,8 +104,8 @@ public class GlassView extends View {
 
     // Draw the top status lines
     private void drawStatusLines(Canvas canvas) {
-        if(mService != null && mPref.show3DInfoLines()) {
-            mService.getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
+        if(StorageService.getInstance().getPreferences().show3DInfoLines()) {
+            StorageService.getInstance().getInfoLines().drawCornerTextsDynamic(canvas, mPaint,
                     TEXT_COLOR, TEXT_COLOR_OPPOSITE, 4,
                     getWidth(), getHeight(), mErrorStatus, null);
         }
@@ -120,11 +115,6 @@ public class GlassView extends View {
 
     public void setAgl(String agl) {
         mAgl = agl;
-        invalidate();
-    }
-
-    public void setService(StorageService service) {
-        mService = service;
         invalidate();
     }
 

@@ -19,28 +19,31 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
+
 import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.animation.TwoButton;
 import com.ds.avare.animation.TwoButton.TwoClickListener;
-import com.ds.avare.connections.WifiConnection;
+import com.ds.avare.connections.Connection;
+import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.flight.FlightStatusInterface;
 import com.ds.avare.gps.Gps;
 import com.ds.avare.gps.GpsInterface;
@@ -58,6 +61,7 @@ import com.ds.avare.storage.StringPreference;
 import com.ds.avare.touch.GestureInterface;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.DestinationAlertDialog;
 import com.ds.avare.utils.Emergency;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
@@ -66,7 +70,6 @@ import com.ds.avare.utils.NetworkHelper;
 import com.ds.avare.utils.OptionButton;
 import com.ds.avare.utils.Tips;
 import com.ds.avare.views.LocationView;
-import com.ds.avare.webinfc.WebAppMapInterface;
 
 import java.io.File;
 import java.net.URI;
@@ -77,7 +80,7 @@ import java.util.Observer;
  * @author zkhan, jlmcgraw
  * Main activity
  */
-public class LocationActivity extends Activity implements Observer {
+public class LocationActivity extends BaseActivity implements Observer {
 
     /**
      * This view display location on the map.
@@ -87,20 +90,13 @@ public class LocationActivity extends Activity implements Observer {
      * Current destination info
      */
     private Destination mDestination;
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
 
-    /**
-     * App preferences
-     */
-    private Preferences mPref;
-    
+    static private AsyncTask<Void, Void, Boolean> mConnectionTask = null;
+
     private Toast mToast;
 
     private Location mInitLocation;
-    
+
     /**
      * Shows warning message about Avare
      */
@@ -148,9 +144,7 @@ public class LocationActivity extends Activity implements Observer {
     private AnimateButton mAnimateDownload;
     private AnimateButton mAnimatePref;
     private String mAirportPressed;
-    private AlertDialog mAlertDialogDestination;
-    private WebAppMapInterface mInfc;
-    private WifiConnection mWifi;
+    private DestinationAlertDialog mAlertDialogDestination;
 
     private Button mPlanPrev;
     private ImageButton mPlanPause;
@@ -164,20 +158,18 @@ public class LocationActivity extends Activity implements Observer {
     private FlightStatusInterface mFSInfc = new FlightStatusInterface() {
         @Override
         public void rollout() {
-            if(mPref != null && mService != null) {
-                if(mPref.isAutoDisplayAirportDiagram()) {
-                    int nearestNum = mService.getArea().getAirportsNumber();
-                    if(nearestNum > 0) {
-                        /*
-                         * Find the nearest airport and load its plate on rollout
-                         */
-                        Airport nearest = mService.getArea().getAirport(0);
-                        if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.mapsFolder(),
-                                nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
-                            mService.setLastPlateAirport(nearest.getId());
-                            mService.setLastPlateIndex(0);
-                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
-                        }
+            if(mPref.isAutoDisplayAirportDiagram()) {
+                int nearestNum = mService.getArea().getAirportsNumber();
+                if(nearestNum > 0) {
+                    /*
+                     * Find the nearest airport and load its plate on rollout
+                     */
+                    Airport nearest = mService.getArea().getAirport(0);
+                    if(nearest != null && PlatesActivity.doesAirportHaveAirportDiagram(mPref.getServerDataFolder(),
+                            nearest.getId()) && nearest.getDistance() < Preferences.DISTANCE_TO_AUTO_LOAD_PLATE) {
+                        mService.setLastPlateAirport(nearest.getId());
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
                     }
                 }
             }
@@ -192,7 +184,7 @@ public class LocationActivity extends Activity implements Observer {
 
         @Override
         public void locationCallback(Location location) {
-            if(location != null && mService != null) {
+            if(location != null) {
 
                 /*
                  * Called by GPS. Update everything driven by GPS.
@@ -204,7 +196,7 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 mLocationView.updateParams(params);
 
-                if(mService != null && mService.getPlan().isEarlyPass() && mPref.isBlinkScreen()) {
+                if(mService.getPlan().isEarlyPass() && mPref.isBlinkScreen()) {
                 	/*
                 	 * Check that if we are close to passing a plan passage, blink
                 	 */
@@ -219,13 +211,10 @@ public class LocationActivity extends Activity implements Observer {
              *  No GPS signal
              *  Tell location view to show GPS status
              */
-            if(null == mService) {
-                mLocationView.updateErrorStatus(getString(R.string.Init));
-            }
-            else if(!(new File(mPref.mapsFolder() + "/" + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
+            if(!(new File(mPref.getServerDataFolder() + File.separator + getResources().getStringArray(R.array.resFilesDatabase)[0]).exists())) {
                 mLocationView.updateErrorStatus(getString(R.string.DownloadDBShort));
             }
-            else if(!(new File(mPref.mapsFolder() + "/tiles")).exists()) {
+            else if(!(new File(mPref.getServerDataFolder() + File.separator + "tiles")).exists()) {
                 mLocationView.updateErrorStatus(getString(R.string.MissingMaps));
             }
             else if(mPref.isSimulationMode()) {
@@ -250,47 +239,11 @@ public class LocationActivity extends Activity implements Observer {
 
     /**
      *
-     * @param dest
-     * @return
-     */
-    private boolean isSameDest(String dest) {
-        if(mService != null) {
-            Destination cdest = mService.getDestination();
-            if(cdest != null) {
-                if(dest.contains("&")) {
-                    /*
-                     * GPS dest needs comparison with closeness.
-                     */
-                    String tokens[] = dest.split("&");
-                    double lon;
-                    double lat;
-                    try {
-                        lon = Double.parseDouble(tokens[1]);
-                        lat = Double.parseDouble(tokens[0]);
-                    }
-                    catch(Exception e) {
-                        return false;
-                    }
-                    if(Helper.isSameGPSLocation(cdest.getLocation().getLongitude(),
-                            cdest.getLocation().getLatitude(), lon, lat)) {
-                        return true;
-                    }
-                }
-                else if(dest.equals(cdest.getID())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     *
      * @param dst
      */
     private void goTo(String dst, String type) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -303,11 +256,38 @@ public class LocationActivity extends Activity implements Observer {
      */
     private void planTo(String dst, String type) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(LocationActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
         mDestination.find();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // start camera on volume down/up
+        PackageManager packman = getPackageManager();
+        Intent intent;
+        if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
+            intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        }
+        else if (KeyEvent.KEYCODE_VOLUME_UP == event.getKeyCode()) {
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+        else {
+            return false;
+        }
+        ComponentName c = intent.resolveActivity(packman);
+        if(null != c) {
+            String pack = c.getPackageName();
+            intent = getPackageManager().getLaunchIntentForPackage(pack);
+
+            // start camera after finding its name
+            if (intent != null) {
+                startActivity(intent);
+            }
+        }
+        return false;
     }
 
     /*
@@ -335,10 +315,11 @@ public class LocationActivity extends Activity implements Observer {
              */
             public void onClick(DialogInterface dialog, int which) {
                 /*
-                 * Go to background
+                 * Exit
                  */
                 setTrackState(false);   // ensure tracks are turned off
-                LocationActivity.super.onBackPressed();
+                mService.destroy();
+                LocationActivity.super.onBackPressedExit();
                 dialog.dismiss();
             }
         });
@@ -397,15 +378,7 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
-
-        mWifi = WifiConnection.getInstance(this);
-        mWifi.connect(mPref.getWiFiPort(),false);
-        mWifi.start(mPref);
 
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
@@ -438,17 +411,13 @@ public class LocationActivity extends Activity implements Observer {
                 _InfoLineFieldLoc = infoLineFieldLoc;
 
                 if (GestureInterface.LONG_PRESS == nEvent) {
-                    if (mService != null) {
-                        mService.getInfoLines().longPress(_InfoLineFieldLoc);
-                        return;
-                    }
+                    mService.getInfoLines().longPress(_InfoLineFieldLoc);
+                    return;
                 }
 
                 if (GestureInterface.TOUCH == nEvent) {
-                    if (mService != null) {
-                        mService.getInfoLines().touch(_InfoLineFieldLoc);
-                        return;
-                    }
+                    mService.getInfoLines().touch(_InfoLineFieldLoc);
+                    return;
                 }
 
                 if (GestureInterface.DOUBLE_TAP == nEvent) {
@@ -464,10 +433,8 @@ public class LocationActivity extends Activity implements Observer {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     _nNewSelection = which;
-                                    if (mService != null) {
-                                        mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
-                                        dialog.dismiss();
-                                    }
+                                    mService.getInfoLines().setFieldType(_InfoLineFieldLoc, _nNewSelection);
+                                    dialog.dismiss();
                                 }
                             });
 
@@ -499,9 +466,8 @@ public class LocationActivity extends Activity implements Observer {
 
                 if (GestureInterface.LONG_PRESS == event) {
 
-                    if(mInfc != null) {
-                        mInfc.setData(data);
-                    }
+                    data.setMoreButtons(false); // map type data
+                    mAlertDialogDestination.setData(data);
                     if(!isFinishing()) {
                         mAlertDialogDestination.show();
                     }
@@ -510,7 +476,7 @@ public class LocationActivity extends Activity implements Observer {
                      * Show the popout
                      * Now populate the pop out weather etc.
                      */
-                    mAirportPressed = data.airport;
+                    mAirportPressed = data.getAirport();
 
                 }
             }
@@ -617,10 +583,8 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-                if(mService != null) {
-                    if(mLocationView.getDraw()) {
-                        mService.getDraw().clear();
-                    }
+                if(mLocationView.getDraw()) {
+                    mService.getDraw().clear();
                 }
             }
         });
@@ -666,7 +630,7 @@ public class LocationActivity extends Activity implements Observer {
                      */
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        String ret = Emergency.declare(getApplicationContext(), mPref, mService);
+                        String ret = Emergency.declare();
                         hideMenu();
                         Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
 
@@ -708,14 +672,12 @@ public class LocationActivity extends Activity implements Observer {
                  */
                 if(mSimButton.getText().equals(getString(R.string.SimulationMode))) {
                     mPref.setSimMode(true);
-                    if(null != mService) {
-                        Destination dest = mService.getDestination();
-                        if(null != dest) {
-                            Location l = dest.getLocation();
-                            mLocationView.updateParams(new GpsParams(l));
-                        }
-                        mLocationView.forceReload();
+                    Destination dest = mService.getDestination();
+                    if(null != dest) {
+                        Location l = dest.getLocation();
+                        mLocationView.updateParams(new GpsParams(l));
                     }
+                    mLocationView.forceReload();
                 }
                 else {
                     mPref.setSimMode(false);
@@ -760,18 +722,16 @@ public class LocationActivity extends Activity implements Observer {
 
             @Override
             public void onClick(View v) {
-	            if(null != mService) {
-                    boolean state = mService.getTracks();
-                    setTrackState(!state);
-                    mPref.setTrackingState(!state);
-	            }
+                boolean state = mService.getTracks();
+                setTrackState(!state);
+                mPref.setTrackingState(!state);
             }
         });
 
         /*
          * Throw this in case GPS is disabled.
          */
-        if(Gps.isGpsDisabled(getApplicationContext(), mPref)) {
+        if(Gps.isGpsDisabled()) {
             mGpsWarnDialog = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
             mGpsWarnDialog.setTitle(getString(R.string.GPSEnable));
             mGpsWarnDialog.setCancelable(false);
@@ -836,12 +796,10 @@ public class LocationActivity extends Activity implements Observer {
 
 			@Override
 			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(true == activePlan.isActive()) {
-						activePlan.regress();
-					}
-				}
+                Plan activePlan = mService.getPlan();
+                if(true == activePlan.isActive()) {
+                    activePlan.regress();
+                }
 			}
 
         });
@@ -852,16 +810,14 @@ public class LocationActivity extends Activity implements Observer {
 
 			@Override
 			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(null != activePlan) {
-						if(true == activePlan.suspendResume()) {
-							mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
-						} else {
-							mPlanPause.setImageResource(android.R.drawable.ic_media_play);
-						}
-					}
-				}
+                Plan activePlan = mService.getPlan();
+                if(null != activePlan) {
+                    if(true == activePlan.suspendResume()) {
+                        mPlanPause.setImageResource(android.R.drawable.ic_media_pause);
+                    } else {
+                        mPlanPause.setImageResource(android.R.drawable.ic_media_play);
+                    }
+                }
 			}
 
         });
@@ -872,17 +828,14 @@ public class LocationActivity extends Activity implements Observer {
 
 			@Override
 			public void onClick(View v) {
-				if(null != mService) {
-					Plan activePlan = mService.getPlan();
-					if(true == activePlan.isActive()) {
-						activePlan.advance();
-					}
-				}
+                Plan activePlan = mService.getPlan();
+                if(true == activePlan.isActive()) {
+                    activePlan.advance();
+                }
 			}
 
-              });
+        });
 
-        mService = null;
         mAnimateTracks = new AnimateButton(LocationActivity.this, mTracksButton, AnimateButton.DIRECTION_R_L, mPlanPrev);
         mAnimateWeb = new AnimateButton(LocationActivity.this, mWebButton, AnimateButton.DIRECTION_L_R);
         mAnimateSim = new AnimateButton(LocationActivity.this, mSimButton, AnimateButton.DIRECTION_R_L, mPlanNext);
@@ -897,330 +850,165 @@ public class LocationActivity extends Activity implements Observer {
         mTankObserver = new TankObserver();
         mTimerObserver = new TimerObserver();
 
-
-        mInitLocation = Gps.getLastLocation(getApplicationContext());
+        mInitLocation = Gps.getLastLocation();
         if (null == mInitLocation) {
             mInitLocation = mPref.getLastLocation();
         }
 
-        DecoratedAlertDialogBuilder alert = new DecoratedAlertDialogBuilder(LocationActivity.this);
+        /*
+         * Make a dialog to show destination info, when long pressed on it
+         */
+        mAlertDialogDestination = new DestinationAlertDialog(LocationActivity.this);
 
-        try {
-            /*
-             * Make a dialog to show destination info, when long pressed on it
-             */
-            WebView wv = new WebView(LocationActivity.this);
-            wv.loadUrl("file:///android_asset/map.html");
+        mAlertDialogDestination.setCallback(new GenericCallback() {
+            @Override
+            public Object callback(Object o, Object o1) {
+                String param = (String) o;
 
-            mInfc = new WebAppMapInterface(LocationActivity.this, wv, new GenericCallback() {
-                /*
-                 * (non-Javadoc)
-                 * @see com.ds.avare.utils.GenericCallback#callback(java.lang.Object)
-                 */
-                @Override
-                public Object callback(Object o, Object o1) {
-
-                    String param = (String) o;
-                    String airport = (String) o;
-
-                    try {
-                        mAlertDialogDestination.dismiss();
-                    }
-                    catch (Exception e){}
+                try {
+                    mAlertDialogDestination.dismiss();
+                } catch (Exception e) {
+                }
 
 
-                    if (null == mAirportPressed) {
-                        return null;
-                    }
-                    if (mService == null) {
-                        return null;
-                    }
-
-                    if (param.equals("CSup")) {
-                        /*
-                         * Chart Supplement
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastAfdAirport(mAirportPressed);
-                            ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("Plate")) {
-                        /*
-                         * Plate
-                         */
-                        if (!mAirportPressed.contains("&")) {
-                            mService.setLastPlateAirport(mAirportPressed);
-                            mService.setLastPlateIndex(0);
-                            ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
-                        }
-                        mAirportPressed = null;
-                    } else if (param.equals("+Plan")) {
-                        String type = Destination.BASE;
-                        if (mAirportPressed.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        planTo(mAirportPressed, type);
-                        mAirportPressed = null;
-                    } else if (param.equals("->D")) {
-
-                        /*
-                         * On click, find destination that was pressed on in view
-                         * If button pressed was a destination go there, otherwise if none, then delete current dest
-                         */
-                        String dest = mAirportPressed;
-                        mAirportPressed = null;
-                        String type = Destination.BASE;
-                        if (dest.contains("&")) {
-                            type = Destination.GPS;
-                        }
-                        goTo(dest, type);
-                    }
+                if (null == mAirportPressed) {
                     return null;
                 }
-            });
-            wv.addJavascriptInterface(mInfc, "AndroidMap");
 
-            wv.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
+                if (param.equals("CSup")) {
+                    /*
+                     * Chart Supplement
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastAfdAirport(mAirportPressed);
+                        ((MainActivity) LocationActivity.this.getParent()).showAfdTab();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("Plate")) {
+                    /*
+                     * Plate
+                     */
+                    if (!mAirportPressed.contains("&")) {
+                        mService.setLastPlateAirport(mAirportPressed);
+                        mService.setLastPlateIndex(0);
+                        ((MainActivity) LocationActivity.this.getParent()).showPlatesTab();
+                    }
+                    mAirportPressed = null;
+                } else if (param.equals("+Plan")) {
+                    String type = Destination.BASE;
+                    if (mAirportPressed.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    planTo(mAirportPressed, type);
+                    mAirportPressed = null;
+                } else if (param.equals("->D")) {
 
-                    return true;
+                    /*
+                     * On click, find destination that was pressed on in view
+                     * If button pressed was a destination go there, otherwise if none, then delete current dest
+                     */
+                    String dest = mAirportPressed;
+                    mAirportPressed = null;
+                    String type = Destination.BASE;
+                    if (dest.contains("&")) {
+                        type = Destination.GPS;
+                    }
+                    goTo(dest, type);
                 }
-            });
+                return null;
+            }
+        });
 
-            wv.getSettings().setJavaScriptEnabled(true);
-            wv.getSettings().setBuiltInZoomControls(false);
-            // This is need on some old phones to get focus back to webview.
-            wv.setFocusable(true);
-            wv.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View arg0, MotionEvent arg1) {
-                    arg0.performClick();
-                    arg0.requestFocus();
-                    return false;
+        // start connecting with a delay
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // connect to external devices
+                if(mConnectionTask != null) {
+                    if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
+                        mConnectionTask.cancel(true);
+                    }
                 }
-            });
-            // Do not let selecting text
-            wv.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    return true;
-                }
-            });
-            wv.setLongClickable(false);
 
+                mConnectionTask = new AsyncTask<Void, Void, Boolean>() {
 
-            alert.setView(wv);
-        }
-        catch (RuntimeException e) {
-            // This is when webkit is updating, we get an exception that webview is not defined.
-        }
-        mAlertDialogDestination = alert.create();
-        mAlertDialogDestination.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    @Override
+                    protected Boolean doInBackground(Void... vals) {
+                        // connect external wifi, BT instruments automatically
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()),
+                                false,
+                                mPref.getLastConnectedWifi());
 
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()),
+                                mPref.getCheckboxValue(R.id.main_cb_btin),
+                                mPref.getLastConnectedBtIn());
+
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()),
+                                mPref.getCheckboxValue(R.id.main_cb_btout),
+                                mPref.getLastConnectedBtOut());
+
+                        connect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()),
+                                false,
+                                mPref.getLastConnectedUSB());
+                        return(true);
+                    }
+                };
+
+                mConnectionTask.execute();
+            }
+        }, 1000);
     }
+
+    private void disconnect(Connection c) {
+        if (c.isConnected()) {
+            c.stop();
+            c.disconnect();
+        }
+    }
+
+    // Connect to a device, called on start to connect to previously connected external devices
+    private void connect(Connection c, boolean secure, String to) {
+        if (c.isConnected()) {
+            c.stop();
+            c.disconnect();
+        }
+        if (null != to && (!c.isConnected())) {
+            c.connect(to, secure);
+            if (c.isConnected()) {
+                c.start();
+            }
+        }
+    }
+
 
     private void setTrackState(boolean bState)
     {
-        if(mService == null) {
-            return;
-        }
         URI fileURI = mService.setTracks(bState);
         /* The fileURI is returned when the tracks are closed off.
          */
-        if(bState) {
-            Toast.makeText(LocationActivity.this,
-                    getString(R.string.TracksOn),
-                    Toast.LENGTH_LONG).show();
-
-        }
         if(fileURI != null) {
             String fileName = fileURI.getPath().substring((fileURI.getPath().lastIndexOf('/') + 1));
-            switch(mPref.autoPostTracks()) {
-                case 0:
-		    	    			/* Just display a toast message to the user that the file was saved
-		    	    			 */
-                    Toast.makeText(LocationActivity.this,
-                            String.format(getString(R.string.AutoPostTracksDialogText), fileName),
-                            Toast.LENGTH_LONG).show();
-                    break;
 
-                case 1:
-		    	    			/* Send this file out as an email attachment
-		    	    			 */
-                    try {
-                        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                        emailIntent.setType("application/kml");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                                getString(R.string.AutoPostTracksSubject) + " " + fileName);
-                        emailIntent.putExtra(Intent.EXTRA_STREAM,
-                                Uri.fromFile(new File(fileURI.getPath())));
-                        startActivity(emailIntent);
-                    } catch (Exception e) {
-                    }
-                    break;
+            try {
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {mPref.getRegisteredEmail()});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT,getString(R.string.AutoPostTracksSubject) + " " + fileName);
 
-                case 2:
-		    	    			/* Send it somewhere as KML. Let the user choose where.
-		    	    			 */
-                    try {
-                        Intent viewIntent = new Intent(android.content.Intent.ACTION_VIEW);
-                        viewIntent.setDataAndType(Uri.fromFile(new File(fileURI.getPath())),
-                                "application/vnd.google-earth.kml+xml");
-                        startActivity(Intent.createChooser(viewIntent,
-                                getString(R.string.AutoPostTracksTitle)));
-                    } catch (Exception e) {
 
-                    }
-                    break;
+                File f = new File(fileURI.getPath());
+                if(f.exists() && f.canRead()) {
+                    emailIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    emailIntent.putExtra(Intent.EXTRA_STREAM,
+                            FileProvider.getUriForFile(getApplicationContext(),
+                                    getApplicationContext().getPackageName() + ".provider.file",
+                                    f));
+                }
+                startActivity(emailIntent);
+            } catch (Exception ignore) {
             }
         }
     }
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-
-            if(!mPref.isRegistered()) {
-                Intent i = new Intent(LocationActivity.this, RegisterActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-            }
-
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mService.getFlightStatus().registerListener(mFSInfc);
-
-            mService.getTiles().setOrientation();
-
-            /*
-             * Check if database needs upgrade
-             */
-            if(!mService.getDBResource().isPresent()) {
-
-                mAlertDialogDatabase = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
-                mAlertDialogDatabase.setTitle(getString(R.string.download));
-                mAlertDialogDatabase.setCancelable(false);
-                mAlertDialogDatabase.setCanceledOnTouchOutside(false);
-                mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
-                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        mLocationView.zoomOut();
-                        startActivity(i);
-                    }
-                });
-                mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                if(!isFinishing()) {
-                    mAlertDialogDatabase.show();
-                }
-                return;
-            }
-
-            /*
-             * Now set location if not obtained from service
-             */
-            mDestination = mService.getDestination();
-            if(mPref.isSimulationMode()) {
-                // In sim mode, set location to destination or last known location
-                if(mDestination != null && mDestination.getLocation() != null) {
-                    mService.setGpsParams(new GpsParams(mDestination.getLocation()));
-                }
-                else if (mInitLocation != null) {
-                    mService.setGpsParams(new GpsParams(mInitLocation));
-                }
-            }
-            else {
-                // In navigate mode, leave location to GPS location, or last known location
-                if(mService.getGpsParams() == null && mInitLocation != null) {
-                    mService.setGpsParams(new GpsParams(mInitLocation));
-                }
-            }
-
-            mLocationView.initParams(mService.getGpsParams(), mService);
-            mLocationView.updateParams(mService.getGpsParams());
-
-            /*
-             * See if we got an intent to search for address as dest
-             */
-            if(null != mExtras) {
-                String addr = mExtras.getString(Intent.EXTRA_TEXT);
-                if(addr != null) {
-
-                    /*
-                     * , cannot be saved in prefs
-                     */
-                    addr = StringPreference.formatAddressName(addr);
-
-                    mDestination = DestinationFactory.build(mService, addr, Destination.MAPS);
-                    mDestination.addObserver(LocationActivity.this);
-                    mToast.setText(getString(R.string.Searching) + " " + addr);
-                    mToast.show();
-                    mDestination.find();
-                }
-                mExtras = null;
-            }
-
-            // mService is now valid, set the plan button vis
-            setPlanButtonVis();
-
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
-
-            mLayerOption.setSelectedValue(mPref.getLayerType());
-            mLocationView.setLayerType(mPref.getLayerType());
-
-
-            boolean enabled = mPref.isTrackingEnabled();
-            boolean on = mService.getTracks();
-            mTracksButton.setChecked(enabled);
-            // tracks start stop state machine
-            if((!on) && enabled) {
-                // not tracking and enabled
-                setTrackState(true);
-            }
-            else if(on && (!enabled)) {
-                // tracking and disabled
-                setTrackState(false);
-            }
-
-            mWifi.setHelper(mService);
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /**
      * We are interested in events from the fuel tank timer
@@ -1281,14 +1069,12 @@ public class LocationActivity extends Activity implements Observer {
     private void setPlanButtonVis() {
 	    int planButtons = View.INVISIBLE;
 		if (true == mPref.getPlanControl()) {
-	        if (null != mService) {
-		        Plan activePlan = mService.getPlan();
-		        if (null != activePlan) {
-		        	if (true == activePlan.isActive()) {
-	        			planButtons = View.VISIBLE;
-	        		}
-	        	}
-	        }
+            Plan activePlan = mService.getPlan();
+            if (null != activePlan) {
+                if (true == activePlan.isActive()) {
+                    planButtons = View.VISIBLE;
+                }
+            }
 	    }
 
 	    // Set the flight plan button visibility
@@ -1311,23 +1097,13 @@ public class LocationActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
 
         // Set visibility of the plan buttons
         setPlanButtonVis();
 
-        if(null != mService) {
-            // Tell the fuel tank timer we need to know when it runs out
-            mService.getFuelTimer().addObserver(mTankObserver);
-            mService.getUpTimer().addObserver(mTimerObserver);
-        }
+        // Tell the fuel tank timer we need to know when it runs out
+        mService.getFuelTimer().addObserver(mTankObserver);
+        mService.getUpTimer().addObserver(mTimerObserver);
 
         // Button colors to be synced across activities
         if(mPref.isTrackUp()) {
@@ -1339,6 +1115,125 @@ public class LocationActivity extends Activity implements Observer {
 
         mAnimationLayerHandler.post(mAnimationRunnableCode);
 
+        if(!mPref.isRegistered()) {
+            Intent i = new Intent(LocationActivity.this, RegisterActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(i);
+        }
+        // connect to all external receivers
+        ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext());
+        ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext());
+
+        mService.registerGpsListener(mGpsInfc);
+        mService.getFlightStatus().registerListener(mFSInfc);
+
+        mService.getTiles().setOrientation();
+
+        /*
+         * Check if database needs upgrade
+         */
+        if(!mService.getDBResource().isPresent()) {
+
+            mAlertDialogDatabase = new DecoratedAlertDialogBuilder(LocationActivity.this).create();
+            mAlertDialogDatabase.setTitle(getString(R.string.download));
+            mAlertDialogDatabase.setCancelable(false);
+            mAlertDialogDatabase.setCanceledOnTouchOutside(false);
+            mAlertDialogDatabase.setMessage(getString(R.string.DownloadDB));
+            mAlertDialogDatabase.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.download), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent i = new Intent(LocationActivity.this, ChartsDownloadActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    mLocationView.zoomOut();
+                    startActivity(i);
+                }
+            });
+            mAlertDialogDatabase.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            if(!isFinishing()) {
+                mAlertDialogDatabase.show();
+            }
+            return;
+        }
+
+        /*
+         * Now set location if not obtained from service
+         */
+        mDestination = mService.getDestination();
+        if(mPref.isSimulationMode()) {
+            // In sim mode, set location to destination or last known location
+            if(mDestination != null && mDestination.getLocation() != null) {
+                mService.setGpsParams(new GpsParams(mDestination.getLocation()));
+            }
+            else if (mInitLocation != null) {
+                mService.setGpsParams(new GpsParams(mInitLocation));
+            }
+        }
+        else {
+            // In navigate mode, leave location to GPS location, or last known location
+            if((mService.getGpsParams() == null) || (mService.getGpsParams().getLatitude() == 0) && mInitLocation != null) {
+                mService.setGpsParams(new GpsParams(mInitLocation));
+            }
+        }
+
+        mLocationView.initParams(mService.getGpsParams());
+        mLocationView.updateParams(mService.getGpsParams());
+
+        /*
+         * See if we got an intent to search for address as dest
+         */
+        if(null != mExtras) {
+            String addr = mExtras.getString(Intent.EXTRA_TEXT);
+            if(addr != null) {
+
+                /*
+                 * , cannot be saved in prefs
+                 */
+                addr = StringPreference.formatAddressName(addr);
+
+                mDestination = DestinationFactory.build(addr, Destination.MAPS);
+                mDestination.addObserver(LocationActivity.this);
+                mToast.setText(getString(R.string.Searching) + " " + addr);
+                mToast.show();
+                mDestination.find();
+            }
+            mExtras = null;
+        }
+
+        // mService is now valid, set the plan button vis
+        setPlanButtonVis();
+
+        // Tell the fuel tank timer we need to know when it runs out
+        mService.getFuelTimer().addObserver(mTankObserver);
+        mService.getUpTimer().addObserver(mTimerObserver);
+
+        mLayerOption.setSelectedValue(mPref.getLayerType());
+        mLocationView.setLayerType(mPref.getLayerType());
+
+
+        boolean enabled = mPref.isTrackingEnabled();
+        boolean on = mService.getTracks();
+        mTracksButton.setChecked(enabled);
+        // tracks start stop state machine
+        if((!on) && enabled) {
+            // not tracking and enabled
+            setTrackState(true);
+        }
+        else if(on && (!enabled)) {
+            // tracking and disabled
+            setTrackState(false);
+        }
+
     }
 
     /* (non-Javadoc)
@@ -1348,18 +1243,11 @@ public class LocationActivity extends Activity implements Observer {
     protected void onPause() {
         super.onPause();
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            mService.getFlightStatus().unregisterListener(mFSInfc);
-            mService.getFuelTimer().removeObserver(mTankObserver);
-            mService.getUpTimer().removeObserver(mTimerObserver);
-        }
+        mService.unregisterGpsListener(mGpsInfc);
+        mService.getFlightStatus().unregisterListener(mFSInfc);
+        mService.getFuelTimer().removeObserver(mTankObserver);
+        mService.getUpTimer().removeObserver(mTimerObserver);
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
-        
         /*
          * Kill dialogs
          */
@@ -1410,7 +1298,6 @@ public class LocationActivity extends Activity implements Observer {
             catch (Exception e) {
             }
         }
-
         /*
          * Do this as switching from screen needs to hide its menu
          */
@@ -1419,7 +1306,7 @@ public class LocationActivity extends Activity implements Observer {
         mAnimationLayerHandler.removeCallbacks(mAnimationRunnableCode);
 
     }
-    
+
     /* (non-Javadoc)
      * @see android.app.Activity#onRestart()
      */
@@ -1441,14 +1328,22 @@ public class LocationActivity extends Activity implements Observer {
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        // disconnect all external connections
+        if(mConnectionTask != null) {
+            if(mConnectionTask.getStatus() != AsyncTask.Status.FINISHED) {
+                mConnectionTask.cancel(true);
+            }
+        }
 
-        mWifi.stop();
-        mWifi.disconnect();
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_WifiConnection, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionIn, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_BlueToothConnectionOut, getApplicationContext()));
+        disconnect(ConnectionFactory.getConnection(ConnectionFactory.CF_USBConnectionIn, getApplicationContext()));
+        super.onDestroy();
     }
 
     /**
-     * 
+     *
      */
     @Override
     public void update(Observable arg0, Object arg1) {
@@ -1458,7 +1353,7 @@ public class LocationActivity extends Activity implements Observer {
         if(arg0 instanceof Destination) {
             Boolean result = (Boolean)arg1;
             if(result) {
-            
+
                 /*
                  * Temporarily move to destination by giving false GPS signal.
                  */
@@ -1471,31 +1366,30 @@ public class LocationActivity extends Activity implements Observer {
                     /*
                      * If user presses a selection repeatedly, reject previous
                      */
-                    return;                    
+                    return;
                 }
                 StringPreference s = new StringPreference(mDestination.getType(), mDestination.getDbType(), mDestination.getFacilityName(), mDestination.getID());
                 mService.getDBResource().setUserRecent(s);
                 if(!mIsWaypoint) {
                     mLocationView.updateDestination();
-                    if(mService != null) {
-                        mService.setDestination((Destination)arg0);
-                    }
+                    mService.setDestination((Destination)arg0);
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
-                }
-                else {
-                    if(mService != null) {
-                        if(mService.getPlan().insertDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
-                        }
-                        else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
-                        }
-                        mToast.show();                            
+                    MainActivity m = (MainActivity)this.getParent();
+                    if(m != null) {
+                        m.showMapTab();
                     }
                 }
-                
+                else {
+                    if(mService.getPlan().insertDestination((Destination)arg0)) {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
+                    }
+                    else {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                    }
+                    mToast.show();
+                }
+
                 /*
                  * Move to new dest temporarily if sim mode.
                  */
@@ -1512,7 +1406,7 @@ public class LocationActivity extends Activity implements Observer {
             }
         }
     }
-    
+
     /**
      * Blink screen for an alert
      */
@@ -1526,11 +1420,11 @@ public class LocationActivity extends Activity implements Observer {
                 	mLocationView.setVisibility(View.INVISIBLE);
                 }
                 else {
-                	mLocationView.setVisibility(View.VISIBLE);                        	
+                	mLocationView.setVisibility(View.VISIBLE);
                 }
             }
         };
-        
+
         /*
          * Schedule 10 times
          */

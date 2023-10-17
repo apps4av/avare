@@ -18,34 +18,34 @@ import java.util.Locale;
 
 
 public class WeatherHelper {
-        
+
     /**
-     * 
+     *
      * @param type
      * @return
      */
     public static int metarColor(String type) {
         if(type.equals("VFR")) {
-        	//green
+            //green
             return(0xff78e825);
         }
         else if(type.equals("IFR")) {
-        	// red
-            return(0xffff2a00);                        
+            // red
+            return(0xffff2a00);
         }
         else if(type.equals("MVFR")) {
-        	// blue
-            return(0xff4884ff);                        
+            // blue
+            return(0xff4884ff);
         }
         else if(type.equals("LIFR")) {
-        	// magenta
-            return(0xffff54f9);                       
+            // magenta
+            return(0xffff54f9);
         }
         return(0xff333333);
     }
-    
+
     /**
-     * 
+     *
      * @param type
      * @return
      */
@@ -54,19 +54,27 @@ public class WeatherHelper {
             return("#78e825");
         }
         else if(type.equals("IFR")) {
-            return("#ff2a00");                        
+            return("#ff2a00");
         }
         else if(type.equals("MVFR")) {
-            return("#008aff");                        
+            return("#008aff");
         }
         else if(type.equals("LIFR")) {
-            return("#ff54f9");                       
+            return("#ff54f9");
         }
         return("white");
     }
-    
+
+    public static String addColorWithStroke(String input, String color) {
+        return "<font style='-webkit-text-stroke:0.1vw white; -webkit-text-fill-color: " + color + "; '>" + input +  "</font>";
+    }
+
+    public static String addColor(String input, String color) {
+        return "<font color='" + color + "'>" + input + "</font>";
+    }
+
     /**
-     * 
+     *
      * @param weather
      * @return
      */
@@ -75,12 +83,12 @@ public class WeatherHelper {
         weather = weather.replace("AMD ", "");
         weather = weather.replace("\n\n", "\n");
         weather = weather.replace(" FM", "\nFM");
-        weather = weather.replace("BECMG", "\nBECMG"); 
+        weather = weather.replace("BECMG", "\nBECMG");
         return weather;
     }
-    
+
     /**
-     * 
+     *
      * @param weather
      * @return
      */
@@ -100,7 +108,7 @@ public class WeatherHelper {
     }
 
     /**
-     * Color code weather type 
+     * Color code weather type
      * @param weatherAll
      * @param translate
      * @return
@@ -113,57 +121,57 @@ public class WeatherHelper {
         /*
          * Qualifiers
          */
-        weather = weather.replaceAll("\\+", "<font color='#ff54f9'>+" + (translate ? "(Heavy)" : "") + "</font>");
-        weather = weather.replaceAll("\\-", "<font color='#ff2a00'>-" + (translate ? "(Light)" : "") + "</font>");
-        
+        weather = weather.replaceAll("\\+", WeatherHelper.addColorWithStroke((translate ? "(Heavy)" : ""), "#ff54f9"));
+        weather = weather.replaceAll("\\+", WeatherHelper.addColorWithStroke((translate ? "(Light)" : ""), "#ff2a00"));
+
         /*
          * Description
          */
-        weather = weather.replaceAll("MI", "<font color='#008aff'>MI" + (translate ? "(Shallow)" : "") + "</font>");
-        weather = weather.replaceAll("BC", "<font color='#008aff'>BC" + (translate ? "(Patches)" : "") + "</font>");
-        weather = weather.replaceAll("DR", "<font color='#008aff'>DR" + (translate ? "(Low Drifting)" : "") + "</font>");
-        weather = weather.replaceAll("BL", "<font color='#008aff'>BL" + (translate ? "(Blowing)" : "") + "</font>");
-        weather = weather.replaceAll("SH", "<font color='#008aff'>SH" + (translate ? "(Showers)" : "") + "</font>");
-        weather = weather.replaceAll("TS", "<font color='#ff2a00'>TS" + (translate ? "(Thunderstorm)" : "") + "</font>");
-        weather = weather.replaceAll("FZ", "<font color='#ff2a00'>FZ" + (translate ? "(Freezing)" : "") + "</font>");
-        weather = weather.replaceAll("PR", "<font color='#008aff'>PR" + (translate ? "(Partial)" : "") + "</font>");
-        weather = weather.replaceAll("AMD", "AMD" + (translate ? "(Amended)" : ""));
-        weather = weather.replaceAll("WSCONDS", "WSCONDS" + (translate ? "(Wind Shear Possible)" : ""));
-        
+        weather = weather.replaceAll("MI", WeatherHelper.addColorWithStroke("MI" + (translate ? "(Shallow)" : ""), "#008aff"));
+        weather = weather.replaceAll("BC", WeatherHelper.addColorWithStroke("BC" + (translate ? "(Patches)" : ""), "#008aff"));
+        weather = weather.replaceAll("DR", WeatherHelper.addColorWithStroke("DR" + (translate ? "(Low Drifting)" : ""), "#008aff"));
+        weather = weather.replaceAll("BL", WeatherHelper.addColorWithStroke("BL" + (translate ? "(Blowing)" : ""), "#008aff"));
+        weather = weather.replaceAll("SH", WeatherHelper.addColorWithStroke("SH" + (translate ? "(Showers)" : ""), "#008aff"));
+        weather = weather.replaceAll("TS", WeatherHelper.addColorWithStroke("TS" + (translate ? "(Thunderstorm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FZ", WeatherHelper.addColorWithStroke("FZ" + (translate ? "(Freezing)" : ""), "#008aff"));
+        weather = weather.replaceAll("PR", WeatherHelper.addColorWithStroke("PR" + (translate ? "(Partial)" : ""), "#008aff"));
+        weather = weather.replaceAll("AMD", WeatherHelper.addColorWithStroke("AMD" + (translate ? "(Amended)" : ""), "#ffffff"));
+        weather = weather.replaceAll("WSCONDS", WeatherHelper.addColorWithStroke("WSCONDS" + (translate ? "(Wind Shear Possible)" : ""), "#ffffff"));
+
         /*
          * Precip
          */
-        weather = weather.replaceAll("DZ", "<font color='#008aff'>DZ" + (translate ? "(Drizzle)" : "") + "</font>");
-        weather = weather.replaceAll("RA", "<font color='#ff2a00'>RA" + (translate ? "(Rain)" : "") + "</font>");
-        weather = weather.replaceAll("SN", "<font color='#ff2a00'>SN" + (translate ? "(Snow)" : "") + "</font>");
-        weather = weather.replaceAll("SG", "<font color='#ff2a00'>SG" + (translate ? "(Snow Grains)" : "") + "</font>");
-        weather = weather.replaceAll("IC", "<font color='#ff2a00'>IC" + (translate ? "(Ice Crystals)" : "") + "</font>");
-        weather = weather.replaceAll("PL", "<font color='#ff2a00'>PL" + (translate ? "(Ice Pellets)" : "") + "</font>");
-        weather = weather.replaceAll("GR", "<font color='#ff2a00'>GR" + (translate ? "(Hail)" : "") + "</font>");
-        weather = weather.replaceAll("GS", "<font color='#008aff'>GS" + (translate ? "(Small Hail)" : "") + "</font>");
-        weather = weather.replaceAll("UP", "<font color='#ff2a00'>UP" + (translate ? "(Unknown Precip.)" : "") + "</font>");
+        weather = weather.replaceAll("DZ", WeatherHelper.addColorWithStroke("DZ" + (translate ? "(Drizzle)" : ""), "#008aff"));
+        weather = weather.replaceAll("RA", WeatherHelper.addColorWithStroke("RA" + (translate ? "(Rain)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SN", WeatherHelper.addColorWithStroke("SN" + (translate ? "(Snow)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SG", WeatherHelper.addColorWithStroke("SG" + (translate ? "(Snow Grains)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("IC", WeatherHelper.addColorWithStroke("IC" + (translate ? "(Ice Crystals)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("PL", WeatherHelper.addColorWithStroke("PL" + (translate ? "(Ice Pellets)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("GR", WeatherHelper.addColorWithStroke("GR" + (translate ? "(Hail)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("GS", WeatherHelper.addColorWithStroke("GS" + (translate ? "(Small Hail)" : ""), "#008aff"));
+        weather = weather.replaceAll("UP", WeatherHelper.addColorWithStroke("UP" + (translate ? "(Unknown Precip.)" : ""), "#ff2a00"));
 
         /*
          * Obstruction
          */
-        weather = weather.replaceAll("BR", "<font color='#ff2a00'>BR" + (translate ? "(Mist)" : "") + "</font>");
-        weather = weather.replaceAll("FG", "<font color='#ff2a00'>FG" + (translate ? "(Fog)" : "") + "</font>");
-        weather = weather.replaceAll("FU", "<font color='#ff2a00'>FU" + (translate ? "(Smoke)" : "") + "</font>");
-        weather = weather.replaceAll("DU", "<font color='#ff2a00'>DU" + (translate ? "(Dust)" : "") + "</font>");
-        weather = weather.replaceAll("SA", "<font color='#ff2a00'>SA" + (translate ? "(Sand)" : "") + "</font>");
-        weather = weather.replaceAll("HZ", "<font color='#ff2a00'>HZ" + (translate ? "(Haze)" : "") + "</font>");
-        weather = weather.replaceAll("PY", "<font color='#ff2a00'>PY" + (translate ? "(Spray)" : "") + "</font>");
-        weather = weather.replaceAll("VA", "<font color='#ff2a00'>VA" + (translate ? "(Volcanic Ash)" : "") + "</font>");
+        weather = weather.replaceAll("BR", WeatherHelper.addColorWithStroke("BR" + (translate ? "(Mist)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FG", WeatherHelper.addColorWithStroke("FG" + (translate ? "(Fog)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FU", WeatherHelper.addColorWithStroke("FU" + (translate ? "(Smoke)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("DU", WeatherHelper.addColorWithStroke("DU" + (translate ? "(Dust)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SA", WeatherHelper.addColorWithStroke("SA" + (translate ? "(Sand)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("HZ", WeatherHelper.addColorWithStroke("HZ" + (translate ? "(Haze)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("PY", WeatherHelper.addColorWithStroke("PY" + (translate ? "(Spray)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("VA", WeatherHelper.addColorWithStroke("VA" + (translate ? "(Volcanic Ash)" : ""), "#ff2a00"));
 
         /*
          * Other
          */
-        weather = weather.replaceAll("P0", "<font color='#ff2a00'>P0" + (translate ? "(Dust Whirls)" : "") + "</font>");
-        weather = weather.replaceAll("SQ", "<font color='#ff2a00'>SQ" + (translate ? "(Squalls)" : "") + "</font>");
-        weather = weather.replaceAll("FC", "<font color='#ff2a00'>FC" + (translate ? "(Funnel Cloud)" : "") + "</font>");
-        weather = weather.replaceAll("SS", "<font color='#ff2a00'>SS" + (translate ? "(Sand Storm)" : "") + "</font>");
-        weather = weather.replaceAll("DS", "<font color='#ff2a00'>DS" + (translate ? "(Dust Storm)" : "") + "</font>");
-        weather = weather.replaceAll(" VC", "<font color='white'> VC" + (translate ? "(In Vicinity)" : "") + "</font>");
+        weather = weather.replaceAll("P0", WeatherHelper.addColorWithStroke("P0" + (translate ? "(Dust Whirls)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SQ", WeatherHelper.addColorWithStroke("SQ" + (translate ? "(Squalls)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("FC", WeatherHelper.addColorWithStroke("FC" + (translate ? "(Funnel Cloud)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("SS", WeatherHelper.addColorWithStroke("SS" + (translate ? "(Sand Storm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("DS", WeatherHelper.addColorWithStroke("DS" + (translate ? "(Dust Storm)" : ""), "#ff2a00"));
+        weather = weather.replaceAll(" VC", WeatherHelper.addColorWithStroke(" VC" + (translate ? "(In Vicinity)" : ""), "#ffffff"));
 
         weather = weather.replaceAll("SKC", "SKC" + (translate ? "(Sky Clear)" : ""));
         weather = weather.replaceAll("CLR", "CLR" + (translate ? "(Clear <12,000ft)" : "")); // see http://www.weather.gov/media/grb/misc/TAF_Card.pdf
@@ -171,18 +179,18 @@ public class WeatherHelper {
         weather = weather.replaceAll("SCT", "SCT" + (translate ? "(Scattered)" : ""));
         weather = weather.replaceAll("OVC", "OVC" + (translate ? "(Overcast)" : ""));
         weather = weather.replaceAll("PROB", "PROB" + (translate ? "(Probability%)" : ""));
-        weather = weather.replaceAll("VV", "<font color='#ff2a00'>VV" + (translate ? "(Vertical Visibility)" : "") + "</font>");
-        weather = weather.replaceAll("CB", "<font color='#ff2a00'>CB" + (translate ? "(Cumulonimbus)" : "") + "</font>");
-        weather = weather.replaceAll("WS", "<font color='#ff54f9'>WS" + (translate ? "(Wind Shear)" : "") + "</font>");
-        
+        weather = weather.replaceAll("VV", WeatherHelper.addColorWithStroke("VV" + (translate ? "(Vertical Visibility)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("CB", WeatherHelper.addColorWithStroke("CB" + (translate ? "(Cumulonimbus)" : ""), "#ff2a00"));
+        weather = weather.replaceAll("WS", WeatherHelper.addColorWithStroke("WS" + (translate ? "(Wind Shear)" : ""), "#ff54f9"));
+
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
         weather = weather.replaceAll("QNH", "QNH" + (translate ? "(Minimum Altimeter)" : ""));
         weather = weather.replaceAll("INS", "INS" + (translate ? "(Inches)" : ""));
 
         for(int i = 1 ; i < strip.length; i++) {
-            
+
             String weather1 = strip[i];
-            
+
             weather += " RMK" + (translate ? "(Remark) " : " ") + weather1;
         }
 
@@ -208,7 +216,7 @@ public class WeatherHelper {
      * @return
      */
     public static String formatMetarHTML(String weatherAll, boolean translate) {
-        
+
         String strip[] = weatherAll.split("RMK");
 
         // a bit of a simplification but typically first 2 items are identifier and time; they need no translation
@@ -233,7 +241,7 @@ public class WeatherHelper {
         weather = weather.replaceAll("LTG", "LTG" + (translate ? "(Lightning)" : ""));
         weather = weather.replaceAll("TCU","TCU" + (translate ? "(Towering Cumulus)" : ""));
         weather = weather.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
-        
+
         weather = weather.replaceAll("AUTO", "AUTO" + (translate ? "(Automated)" : ""));
         weather = weather.replaceAll("COR", "COR" + (translate ? "(Corrected)" : ""));
         weather = weather.replaceAll(" 9999 ", " 9999" + (translate ? "(Visibility > 7SM) " : ""));
@@ -296,11 +304,11 @@ public class WeatherHelper {
         /*
          * These are remarks
          */
-        
+
         for(int i = 1 ; i < strip.length; i++) {
-        
+
             String weather1 = strip[i];
-            
+
             weather1 = weather1.replaceAll("AO", "AO" + (translate ? "(Station Type)" : ""));
             weather1 = weather1.replaceAll("RAB", "RAB" + (translate ? "(Rain Began)" : ""));
             weather1 = weather1.replaceAll("RAE", "RAE" + (translate ? "(Rain Ended)" : ""));
@@ -315,7 +323,7 @@ public class WeatherHelper {
             weather1 = weather1.replaceAll("PRESRR", "PRESFR" + (translate ? "(Pressure Raising Rapidly)" : ""));
             weather1 = weather1.replaceAll("PRESFR", "PRESFR" + (translate ? "(Pressure Falling Rapidly)" : ""));
             weather1 = weather1.replaceAll("\\$", "\\$" + (translate ? "(Station Maintenance Needed)" : ""));
-            
+
             weather += " RMK" + (translate ? "(Remark)" : " ") + weather1;
         }
 
@@ -342,18 +350,18 @@ public class WeatherHelper {
                 String portion = weather.substring(0, start);
                 String windString = portion.substring(portion.length() - 2, portion.length());
                 int winds = Integer.parseInt(windString);
-                 
+
                 if(winds < 10) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#78e825'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#78e825") + "KT";
                 }
                 else if(winds < 20) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#008aff'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#008aff") + "KT";
                 }
                 else if(winds < 30) {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#ff2a00'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#ff2a00") + "KT";
                 }
                 else {
-                    portion = portion.substring(0, portion.length() - 2) + "<font color='#ff54f9'>" + windString + "</font>" + "KT";
+                    portion = portion.substring(0, portion.length() - 2) + WeatherHelper.addColorWithStroke(windString, "#ff54f9") + "KT";
                 }
                 output += portion;
                 weather = weather.substring(start + 2, weather.length());
@@ -364,12 +372,12 @@ public class WeatherHelper {
             /*
              * Mark magenta as we do not know whats in it
              */
-            output = "<font color='#ff54f9'>" + original + "</font>";
+            output = WeatherHelper.addColorWithStroke(original, "#ff54f9");
         }
         output = output.replaceAll("VRB", "VRB" + (translate ? "(Variable)" : ""));
         return output;
     }
-    
+
     /**
      * Color code PIREPs
      * @param weather
@@ -408,7 +416,7 @@ public class WeatherHelper {
 
         return weather;
     }
-    
+
     /**
      * Color code winds
      * @param weather
@@ -438,7 +446,7 @@ public class WeatherHelper {
                  */
                 if(subportion.matches(".* P6")) {
                     visstart = portionlen - 2;
-                    vis = 6;  
+                    vis = 6;
                     P6 = true;
                 }
                 else if(subportion.matches(".* [1-9]{1} [1-3]{1}\\/[2-4]{1}")) {
@@ -446,46 +454,46 @@ public class WeatherHelper {
                      * Like " 1 1/4"
                      */
                     visstart = portionlen - 5;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
                 else if(subportion.matches(".* [1]{1}[1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 11/4"
                      */
                     visstart = portionlen - 4;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
                 else if(subportion.matches(".* [1-3]{1}\\/[2-4]{1}")) {
                     /*
                      * Like " 3/4"
                      */
                     visstart = portionlen - 3;
-                    vis = 0;  
+                    vis = 0;
                 }
                 else {
                     /*
                      * Like " 3"
                      */
                     visstart = portionlen - 1;
-                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));  
+                    vis = Integer.parseInt(portion.substring(visstart, visstart + 1));
                 }
 
                 visString = portion.substring(visstart);
-                
+
                 if(P6) {
-                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + "P6" + "</font>" + "SM";                    
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke("P6", "#78e825") + "SM";
                 }
                 else if(vis >= 5) {
-                    portion = portion.substring(0, visstart) + "<font color='#78e825'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#78e825") + "SM";
                 }
                 else if(vis >= 3) {
-                    portion = portion.substring(0, visstart) + "<font color='#008aff'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#008aff") + "SM";
                 }
                 else if(vis >= 1) {
-                    portion = portion.substring(0, visstart) + "<font color='#ff2a00'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#ff2a00") + "SM";
                 }
                 else {
-                    portion = portion.substring(0, visstart) + "<font color='#ff54f9'>" + visString + "</font>" + "SM";
+                    portion = portion.substring(0, visstart) + WeatherHelper.addColorWithStroke(visString, "#ff54f9") + "SM";
                 }
                 output += portion;
                 weather = weather.substring(start + 2, weather.length());
@@ -496,7 +504,7 @@ public class WeatherHelper {
             /*
              * Mark magenta as we do not know whats in it
              */
-            output = "<font color='#ff54f9'>" + original + "</font>";
+            output = WeatherHelper.addColorWithStroke(original, "#ff54f9");
         }
         return output;
     }
@@ -507,21 +515,21 @@ public class WeatherHelper {
      * @return
      */
     public static String decodeWind(String wind) {
-        
+
         if(wind.length() < 4) {
             return "";
         }
-        
+
         int dir;
         int speed;
         try {
-            dir = Integer.parseInt(wind.substring(0, 2)) * 10; 
+            dir = Integer.parseInt(wind.substring(0, 2)) * 10;
             speed = Integer.parseInt(wind.substring(2, 4));
         }
         catch(Exception e) {
-            return "";            
+            return "";
         }
-        
+
         if(wind.length() == 4) {
 
             if(dir == 990 && speed == 0) {
@@ -555,7 +563,7 @@ public class WeatherHelper {
 
             String out = String.format(Locale.getDefault(), "%03d°%03dkt", dir, speed) + temp + "C";
             return(out);
-            
+
         }
 
         if(wind.length() == 6) {
@@ -616,12 +624,12 @@ public class WeatherHelper {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public static String getNamMosLegend() {
         /*
-         * Legend 
+         * Legend
          */
         return
                 "<a href='http://www.nws.noaa.gov/mdl/synop/namcard.php'>NAM Forecast Legend</a><br>";
@@ -635,12 +643,12 @@ public class WeatherHelper {
      */
     public static String getMetarTime(String metar) {
         String time = "";
-        // parse time, temp, altitude setting 
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
         if(tokens.length > 1) {
             time = tokens[1];
         }
-        
+
         return time;
     }
 
@@ -651,28 +659,28 @@ public class WeatherHelper {
      * @return
      */
     public static String getDensityAltitude(String metar, String elev) {
-        
+
         if(null == elev || null == metar) {
             return "";
         }
-        
+
         double da = 0;
         double temp = 0;
         double as = 0;
-        
+
         double st = 0;
         double at = 0;
-       
+
         double pa = 0;
         double elevation = 0;
-        
+
         boolean tmpset = false;
         boolean aset = false;
         boolean melev = false;
-        
-        // parse time, temp, altitude setting 
+
+        // parse time, temp, altitude setting
         String tokens[] = metar.split(" ");
-        
+
         try {
             for(int i = 0; i < tokens.length; i++) {
                 if(tokens[i].equals("RMK")) {
@@ -702,12 +710,12 @@ public class WeatherHelper {
         }
         catch (Exception e) {
         }
-        
+
         if(tmpset && aset && melev) {
-            
+
             // pressure altitude, correct for non standard
             pa = elevation + (29.92 - as) * 1000.0;
-            
+
             // standard temp Kelvin
             st = 273.15 - (15 - 0.0019812 * pa);
 
@@ -716,10 +724,10 @@ public class WeatherHelper {
 
             // density altitude, aviation formulary
             da = pa + 118.6 * (st - at);
-            
+
             // round to nearest 100
             da = ((int)(da / 100)) * 100;
-            
+
             return "" + (int)da + " ft";
         }
 
@@ -776,7 +784,7 @@ public class WeatherHelper {
         }
         return null;
     }
-    
+
     /**
      * Returns best wind aligned runway from METAR
      * @param metar
@@ -784,11 +792,11 @@ public class WeatherHelper {
      * @return
      */
     public static String getBestRunway(String metar, LinkedList<String> runways) {
-        
+
         if(null == runways || null == metar) {
             return "";
         }
-        
+
 
 
         double head1 = 0;
@@ -834,14 +842,14 @@ public class WeatherHelper {
                         if(spd1 != 0) {
                             best += "G" + Math.abs((int)cross1);
                         }
-                        
+
                         best += (cross0 < 0 ? "KT Left X" : "KT Right X");
                     }
                 }
                 catch (Exception e) {
                     continue;
                 }
-                
+
             }
             return best;
         }

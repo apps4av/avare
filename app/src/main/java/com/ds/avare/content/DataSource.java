@@ -17,6 +17,8 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 
+import com.ds.avare.StorageService;
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Airport;
@@ -46,21 +48,17 @@ import java.util.Vector;
 public class DataSource {
 
     /**
-     * 
+     *
      */
     private Context mContext;
     private Preferences mPref;
 
     /**
-     * @param context
+     *
      */
-    public DataSource(Context context) {
-        mContext = context;
-        mPref = new Preferences(context);
-    }
-
-    public Preferences getPreferences() {
-        return mPref;
+    public DataSource() {
+        mContext = StorageService.getInstance().getApplicationContext();
+        mPref = StorageService.getInstance().getPreferences();
     }
 
     public boolean isPresent() {
@@ -68,9 +66,9 @@ public class DataSource {
         return null != LocationContentProviderHelper.findNavaid(mContext, "BOS");
     }
 
-    public static void reset(Context context) {
+    public static void reset() {
         ContentProviderClient client;
-        ContentResolver resolver = context.getContentResolver();
+        ContentResolver resolver = StorageService.getInstance().getApplicationContext().getContentResolver();
 
         client = resolver.acquireContentProviderClient(ObstaclesContract.AUTHORITY_URI);
         ObstaclesProvider oprovider = (ObstaclesProvider) client.getLocalContentProvider();
@@ -106,7 +104,7 @@ public class DataSource {
 
     // location helper
 
-    public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq,  LinkedList<Awos> awos) {
+    public void findDestination(String name, String type, String dbType, LinkedHashMap<String, String> params, LinkedList<Runway> runways, LinkedHashMap<String, String> freq, LinkedList<Awos> awos) {
         LocationContentProviderHelper.findDestination(mContext, name, type, dbType, params, runways, freq, awos);
     }
 
@@ -115,7 +113,7 @@ public class DataSource {
     }
 
     public String findClosestAirportID(double lon, double lat) {
-        return(LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
+        return (LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
     }
 
     public float[] findDiagramMatrix(String name) {
@@ -127,7 +125,11 @@ public class DataSource {
     }
 
     public StringPreference searchOne(String name) {
-        return LocationContentProviderHelper.searchOne(mContext, name);
+        return LocationContentProviderHelper.searchOne(mContext, name, false);
+    }
+
+    public StringPreference searchOneNoCache(String name) {
+        return LocationContentProviderHelper.searchOne(mContext, name, true);
     }
 
     public String[] findMinimums(String airportId) {
@@ -159,15 +161,15 @@ public class DataSource {
     }
 
     public LinkedList<Coordinate> findAirway(String name) {
-        return  LocationContentProviderHelper.findAirway(mContext, name);
+        return LocationContentProviderHelper.findAirway(mContext, name);
     }
 
     public Coordinate findNavaid(String name) {
-        return  LocationContentProviderHelper.findNavaid(mContext, name);
+        return LocationContentProviderHelper.findNavaid(mContext, name);
     }
 
     public Vector<NavAid> findNavaidsNearby(double lat, double lon) {
-        return  LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
+        return LocationContentProviderHelper.findNavaidsNearby(mContext, lat, lon);
     }
 
     public Coordinate findRunwayCoordinates(String name, String airport) {
@@ -185,6 +187,11 @@ public class DataSource {
 
     public void setUserPlans(LinkedHashMap<String, String> plans) {
         ContentProviderHelper.setUserPlans(mContext, plans);
+    }
+
+
+    public void deleteUserPlan(String name) {
+        ContentProviderHelper.deleteUserPlan(mContext, name);
     }
 
     public LinkedList<Checklist> getUserLists() {
@@ -215,6 +222,14 @@ public class DataSource {
         ContentProviderHelper.replaceUserRecentName(mContext, id, newName);
     }
 
+    public LinkedList<Coordinate> getUserDraw() {
+        return ContentProviderHelper.getUserDraw(mContext);
+    }
+
+    public void setUserDraw(LinkedList<Coordinate> points) {
+        ContentProviderHelper.setUserDraw(mContext, points);
+    }
+
     public void setUserLists(LinkedList<Checklist> lists) {
         ContentProviderHelper.setUserLists(mContext, lists);
     }
@@ -243,6 +258,22 @@ public class DataSource {
         ContentProviderHelper.setUserWnb(mContext, wnb);
     }
 
+    public void deleteUserTag(String name) {
+        ContentProviderHelper.deleteUserTag(mContext, name);
+    }
+
+    public String getUserTag(String name) {
+        return ContentProviderHelper.getUserTag(mContext, name);
+    }
+
+    public void setUserTag(String name, String tag) {
+        ContentProviderHelper.setUserTag(mContext, name, tag);
+    }
+
+    public void setUserTags(HashMap<String, String> tags) {
+        ContentProviderHelper.setUserTags(mContext, tags);
+    }
+
     public void deleteUserWnb(String name) {
         ContentProviderHelper.deleteUserWnb(mContext, name);
     }
@@ -251,6 +282,24 @@ public class DataSource {
         return ContentProviderHelper.getUserWnb(mContext, name);
     }
 
+    public LinkedList<Aircraft> getUserAircraft() {
+        return ContentProviderHelper.getUserAircraft(mContext);
+    }
+    public Aircraft getUserAircraft(String id) {
+        return ContentProviderHelper.getUserAircraft(mContext, id);
+    }
+
+    public void setUserAircraft(Aircraft aircraft) {
+        ContentProviderHelper.setUserAircraft(mContext, aircraft);
+    }
+
+    public void setUserAircraft(LinkedList<Aircraft> aircraft) {
+        ContentProviderHelper.setUserAircraft(mContext, aircraft);
+    }
+
+    public void deleteUserAircraft(String id) {
+        ContentProviderHelper.deleteUserAircraft(mContext, id);
+    }
 
     // other helper
 
@@ -285,4 +334,5 @@ public class DataSource {
     public LinkedList<Cifp> findProcedure(String name, String approach) {
         return ContentProviderHelper.findProcedure(mContext, name, approach);
     }
+
 }

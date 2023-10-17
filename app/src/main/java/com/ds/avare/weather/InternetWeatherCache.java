@@ -17,6 +17,7 @@ import com.ds.avare.shapes.MetShape;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -43,7 +44,7 @@ public class InternetWeatherCache {
         mWeatherTask = null;
         mWeatherThread = null;
         mAirSig = null;
-        mService = null;
+        mService = StorageService.getInstance();
         mDate = null;
     }
 
@@ -66,14 +67,9 @@ public class InternetWeatherCache {
 
     /**
      * 
-     * @param service
      */
-    public void parse(StorageService service) {
+    public void parse() {
         
-        if(service == null) {
-            return;
-        }
-        mService = service;
         /*
          * Do weather parsing in background. It takes a long time.
          */
@@ -106,7 +102,7 @@ public class InternetWeatherCache {
                  */
                 mAirSig = mService.getDBResource().getAirSigMets();
 
-                String filenameManifest = new Preferences(mService).mapsFolder() + "/weather";
+                String filenameManifest = StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "weather";
                 String dataManifest = Helper.readTimestampFromFile(filenameManifest);
                 if(null != dataManifest) {
                     // Find date of TFRs of format 09_03_2015_15:30_UTC, first line in manifest
@@ -127,36 +123,36 @@ public class InternetWeatherCache {
                     /*
                      * Discard none intensity
                      */
-                    if(asm.severity.equals("NONE")) {
+                    if(asm.getSeverity().equals("NONE")) {
                         continue;
                     }
 
                     StringBuilder b = new StringBuilder();
-                    b.append(asm.reportType);
+                    b.append(asm.getReportType());
                     b.append(" ");
-                    b.append(asm.hazard);
-                    if(!asm.severity.equals("")) {
+                    b.append(asm.getHazard());
+                    if(!asm.getSeverity().equals("")) {
                         b.append(" ");
-                        b.append(asm.severity);
+                        b.append(asm.getSeverity());
                     }
                     b.append("\n");
-                    if(!asm.minFt.equals("")) {
-                        b.append(asm.minFt);
+                    if(!asm.getMinFt().equals("")) {
+                        b.append(asm.getMinFt());
                         b.append(" to ");
                     }
-                    if(!asm.maxFt.equals("")) {
-                        b.append(asm.maxFt);
+                    if(!asm.getMaxFt().equals("")) {
+                        b.append(asm.getMaxFt());
                         b.append(" ft MSL");
                     }
                     b.append("\n");
-                    b.append(asm.timeFrom);
+                    b.append(asm.getTimeFrom());
                     b.append(" to \n");
-                    b.append(asm.timeTo);
+                    b.append(asm.getTimeTo());
                     b.append("\n::\n");
-                    b.append(asm.rawText);
+                    b.append(asm.getRawText());
 
-                    asm.shape = new MetShape(b.toString(), mDate);
-                    String tokens[] = asm.points.split("[;]");
+                    asm.setShape(new MetShape(b.toString(), mDate));
+                    String tokens[] = asm.getPoints().split("[;]");
                     for(int j = 0; j < tokens.length; j++) {
                         String point[] = tokens[j].split("[:]");
                         double lon = Double.parseDouble(point[0]);
@@ -164,9 +160,9 @@ public class InternetWeatherCache {
                         if(0 == lat || 0 == lon) {
                             continue;
                         }
-                        asm.shape.add(lon, lat, false);
+                        asm.getShape().add(lon, lat, false);
                     }
-                    asm.shape.makePolygon();
+                    asm.getShape().makePolygon();
                 }
             }
             catch(Exception e) {

@@ -35,19 +35,7 @@ import com.ds.avare.views.PfdView;
 /**
  * @author zkhan
  */
-public class PfdActivity extends Activity {
-
-    /**
-     * Service that keeps state even when activity is dead
-     */
-    private StorageService mService;
-
-    /**
-     * App preferences
-     */
-    private Preferences mPref;
-
-    private Context mContext;
+public class PfdActivity extends BaseActivity {
 
     private PfdView mPfdView;
 
@@ -68,9 +56,6 @@ public class PfdActivity extends Activity {
         @Override
         public void locationCallback(Location location) {
 
-            if(mService == null) {
-                return;
-            }
             if(mService.getGpsParams() == null || mService.getExtendedGpsParams() == null) {
                 return;
             }
@@ -126,28 +111,13 @@ public class PfdActivity extends Activity {
         }
     };
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity) this.getParent()).showMapTab();
-    }
-
     /* (non-Javadoc)
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mPref = new Preferences(this);
-
-        mContext = this;
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.pfd, null);
@@ -156,56 +126,18 @@ public class PfdActivity extends Activity {
         mPitotStaticRates = new PitotStaticRates();
         mPfdView = (PfdView) view.findViewById(R.id.pfd_view);
 
+
     }
-
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-
-            /*
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder) service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            mService.registerOrientationListener(mOrientationInfc);
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
-
-
     /* (non-Javadoc)
      * @see android.app.Activity#onResume()
      */
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
 
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        mService.registerGpsListener(mGpsInfc);
+        mService.registerOrientationListener(mOrientationInfc);
         mRollReverse = mPref.reverseRollInAhrs();
-
     }
 
     /* (non-Javadoc)
@@ -215,16 +147,8 @@ public class PfdActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        if (null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            mService.unregisterOrientationListener(mOrientationInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
-
+        mService.unregisterGpsListener(mGpsInfc);
+        mService.unregisterOrientationListener(mOrientationInfc);
     }
 
 }

@@ -20,6 +20,7 @@ import android.os.Message;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.touch.LongTouchDestination;
 import com.ds.avare.utils.GenericCallback;
@@ -34,10 +35,9 @@ import com.ds.avare.weather.Airep;
  * This class feeds the WebView with data
  */
 public class WebAppMapInterface {
-    private Context mContext;
     private WebView mWebView;
-    private Preferences mPref;
     private GenericCallback mCallback;
+    private Preferences mPref;
 
     private static final int MSG_SET_DATA = 1;
     private static final int MSG_ACTION = 2;
@@ -45,10 +45,9 @@ public class WebAppMapInterface {
     /**
      * Instantiate the interface and set the context
      */
-    public WebAppMapInterface(Context c, WebView v, GenericCallback cb) {
+    public WebAppMapInterface(WebView v, GenericCallback cb) {
         mWebView = v;
-        mContext = c;
-        mPref = new Preferences(c);
+        mPref = StorageService.getInstance().getPreferences();
         mCallback = cb;
     }
 
@@ -86,86 +85,95 @@ public class WebAppMapInterface {
 
                 LongTouchDestination data = (LongTouchDestination)msg.obj;
                 String taf = "";
-                if(data.taf != null) {
-                    String split[] = data.taf.rawText.split(data.taf.stationId, 2);
+                if(data.getTaf() != null) {
+                    String split[] = data.getTaf().getRawText().split(data.getTaf().getStationId(), 2);
                     // Do not color code airport name
                     if(split.length == 2) {
-                        taf = "<hr><b><font color=\"yellow\">TAF </font></b>" + data.taf.stationId + " " + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+                        taf = "<hr>" + WeatherHelper.addColor("TAF ", "yellow") + data.getTaf().getStationId() + " " + WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(split[1], mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
                     }
                 }
 
                 String metar = "";
-                if(data.metar != null) {
-                    metar = WeatherHelper.formatMetarHTML(data.metar.rawText, mPref.isWeatherTranslated());
-                    metar = "<hr><b><font color=\"yellow\">METAR </font></b>" + "<font color=\"" + WeatherHelper.metarColorString(data.metar.flightCategory) + "\">" + metar +  "</font>";
+                if(data.getMetar() != null) {
+                    metar = WeatherHelper.formatMetarHTML(data.getMetar().getRawText(), mPref.isWeatherTranslated());
+                    metar = "<hr>" + WeatherHelper.addColor("METAR ", "yellow") + WeatherHelper.addColorWithStroke(metar, WeatherHelper.metarColorString(data.getMetar().getFlightCategory()));
                 }
 
                 String airep = "";
-                if(data.airep != null) {
-                    for(Airep a : data.airep) {
-                        String p = WeatherHelper.formatPirepHTML(a.rawText, mPref.isWeatherTranslated());
+                if(data.getAirep() != null) {
+                    for(Airep a : data.getAirep()) {
+                        String p = WeatherHelper.formatPirepHTML(a.getRawText(), mPref.isWeatherTranslated());
                         airep += p + "<br><br>";
                     }
                     if(!airep.equals("")) {
-                        airep = "<hr><b><font color=\"yellow\">PIREP</font></b><br>" + airep;
+                        airep = "<hr><b>" + WeatherHelper.addColor("PIREP", "yellow") + "</b><br>" + airep;
                     }
                 }
 
                 String sua = "";
-                if(data.sua != null) {
-                    sua = "<hr><b><font color=\"yellow\">Special Use Airspace</font></b><br>";
-                    sua += data.sua.replace("\n", "<br>");
+                if(data.getSua() != null) {
+                    sua = "<hr><b>" + WeatherHelper.addColor("Special Use Airspace", "yellow") + "</b><br>";
+                    sua += data.getSua().replace("\n", "<br>");
                 }
 
                 String tfr = "";
-                if(data.tfr != null) {
-                    if(!data.tfr.equals("")) {
-                        tfr = "<hr><b><font color=\"yellow\">TFR</font></b><br>";
-                        tfr += data.tfr.replace("\n", "<br>");
+                if(data.getTfr() != null) {
+                    if(!data.getTfr().equals("")) {
+                        tfr = "<hr><b>" + WeatherHelper.addColor("TFR", "yellow") + "</b><br>";
+                        tfr += data.getTfr().replace("\n", "<br>");
                     }
                 }
 
+
                 String layer = mPref.useAdsbWeather() ?
-                        "<hr><b><font color=\"yellow\">Weather/SUA Source</font></b> ADS-B<br>" :
-                        "<hr><b><font color=\"yellow\">Weather/SUA Source</font></b> Internet<br>";
-                if(data.layer != null) {
-                    if(!data.layer.equals("")) {
-                        layer += "<b><font color=\"yellow\">Weather Layer Time</font></b> ";
-                        layer += data.layer;
+                        "<hr><b>" + WeatherHelper.addColor("Weather/SUA Source", "yellow") + "</b>ADS-B<br>" :
+                        "<hr><b>" + WeatherHelper.addColor("Weather/SUA Source", "yellow") + "</b>Internet<br>";
+                if(data.getLayer() != null) {
+                    if(!data.getLayer().equals("")) {
+                        layer += "<b>" + WeatherHelper.addColor("Weather Layer Time", "yellow") + "</b> ";
+                        layer += data.getLayer();
                     }
                 }
 
                 String mets = "";
-                if(data.mets != null) {
-                    if(!data.mets.equals("")) {
-                        mets = "<hr><b><font color=\"yellow\">SIG/AIRMETs</font></b><br>";
-                        mets += data.mets.replace("\n", "<br>");
+                if(data.getMets() != null) {
+                    if(!data.getMets().equals("")) {
+                        mets = "<hr><b>" + WeatherHelper.addColor("SIG/AIRMETs", "yellow") + "</b><br>";
+                        mets += data.getMets().replace("\n", "<br>");
                     }
                 }
 
                 String performance = "";
-                if(data.performance != null) {
-                    if(!data.performance.equals("")) {
-                        performance = "<hr><b><font color=\"yellow\">Performance</font></b> ";
-                        performance += data.performance.replace("\n", "<br>");
+                if(data.getPerformance() != null) {
+                    if(!data.getPerformance().equals("")) {
+                        performance = "<hr><b>" + WeatherHelper.addColor("Performance", "yellow") + "</b> ";
+                        performance += data.getPerformance().replace("\n", "<br>");
                     }
                 }
 
                 String winds = "";
-                if(data.wa != null) {
-                    winds = "<hr><b><font color=\"yellow\">Winds/Temp. Aloft</font></b> ";
-                    winds += WindsAloftHelper.formatWindsHTML(data.wa, mPref.getWindsAloftCeiling());
+                if(data.getWa() != null) {
+                    winds = "<hr><b>" + WeatherHelper.addColor("Winds/Temp. Aloft", "yellow") + "</b> ";
+                    winds += WindsAloftHelper.formatWindsHTML(data.getWa(), mPref.getWindsAloftCeiling());
                 }
 
-                String navaids = "";
-                if (data.navaids != null) {
-                    data.info += "<br>" + data.navaids;
+                if (data.getNavaids() != null) {
+                    data.setInfo(data.getInfo() + "<br>" + data.getNavaids());
                 }
 
-                mWebView.loadUrl("javascript:plan_clear()");
+                if(data.getInfo() == null) {
+                    data.setInfo("");
+                }
+                else {
+                    data.setInfo("<b>" + WeatherHelper.addColor("Position", "yellow") + "</b>" + data.getInfo());
+                }
+
+                // type from map or from search
+                String type = data.hasMoreButtons() ? "more" : "";
                 String func = "javascript:setData('" +
-                        Helper.formatJsArgs(data.airport) + "','" +
-                        "<b><font color=\"yellow\">Position </font></b>" + Helper.formatJsArgs(data.info) + "','" +
+                        type + "','" +
+                        Helper.formatJsArgs(data.getAirport()) + "','" +
+                        Helper.formatJsArgs(data.getInfo()) + "','" +
                         Helper.formatJsArgs(metar) + "','" +
                         Helper.formatJsArgs(taf) + "','" +
                         Helper.formatJsArgs(airep) + "','" +

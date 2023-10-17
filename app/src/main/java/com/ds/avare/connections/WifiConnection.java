@@ -59,7 +59,6 @@ public class WifiConnection extends Connection {
      */
     private WifiConnection() {
         super("WIFI Input");
-        final byte[] buffer = new byte[8192];
         setCallback(new GenericCallback() {
             @Override
             public Object callback(Object o, Object o1) {

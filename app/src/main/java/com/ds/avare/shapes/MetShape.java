@@ -54,7 +54,7 @@ public class MetShape extends Shape {
             String typeArray[] = ctx.getResources().getStringArray(R.array.AirSig);
             int colorArray[] = ctx.getResources().getIntArray(R.array.AirSigColor);
             int color = 0;
-            String type = met.hazard + " " + met.reportType;
+            String type = met.getHazard() + " " + met.getReportType();
             for(int j = 0; j < typeArray.length; j++) {
                 if(typeArray[j].equals(type)) {
                     color = colorArray[j];
@@ -98,7 +98,7 @@ public class MetShape extends Shape {
             AirSigMet met = mets.get(i);
             int color = 0;
 
-            String type = met.hazard + " " + met.reportType;
+            String type = met.getHazard() + " " + met.getReportType();
             if(storeType.equals("ALL")) {
                 /*
                  * All draw all shapes
@@ -121,13 +121,13 @@ public class MetShape extends Shape {
             /*
              * Now draw shape only if belong to the screen
              */
-            if(met.shape != null && color != 0) {
+            if(met.getShape() != null && color != 0) {
                 ctx.paint.setColor(color);
-                if (met.shape.isOld(expiry)) {
+                if (met.getShape().isOld(expiry)) {
                     continue;
                 }
-                if( met.shape.isOnScreen(ctx.origin) ) {
-                    met.shape.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                if( met.getShape().isOnScreen(ctx.origin) ) {
+                    met.getShape().drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }
         }

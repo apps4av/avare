@@ -58,14 +58,14 @@ public class AdsbWeatherCache {
     /**
      * 
      */
-    public AdsbWeatherCache(Context context, StorageService service) {
-        mPref = new Preferences(context);
+    public AdsbWeatherCache() {
+        mPref = StorageService.getInstance().getPreferences();
         mTaf = new HashMap<String, Taf>();
         mMetar = new HashMap<String, Metar>();
         mAirep = new HashMap<String, Airep>();
         mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
-        mMetarQueue = new RateLimitedBackgroundQueue(service);
+        mMetarQueue = new RateLimitedBackgroundQueue(StorageService.getInstance());
         mNexradConus = new NexradImageConus();
         mSua = new HashMap<String, Sua>();
         mAirSig = new HashMap<String, AirSigMet>();
@@ -99,14 +99,14 @@ public class AdsbWeatherCache {
         }
 
         Metar m = new Metar();
-        m.rawText = location + " " + data;
-        m.stationId = location;
+        m.setRawText(location + " " + data);
+        m.setStationId(location);
         Date dt = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        m.time = sdf.format(dt) + "Z";
-        m.flightCategory = flightCategory;
-        m.timestamp = System.currentTimeMillis();
+        m.setTime(sdf.format(dt) + "Z");
+        m.setFlightCategory(flightCategory);
+        m.setTimestamp(System.currentTimeMillis());
         mMetar.put(location, m);
         mMetarQueue.insertMetarInQueue(m); // This will slowly make a metar map
     }
@@ -143,27 +143,27 @@ public class AdsbWeatherCache {
         Set<String> keys = map.keySet();
         for(String key : keys) {
             Metar m = map.get(key);
-            if(!isOnScreen(ctx.origin, m.lat, m.lon)) {
+            if(!isOnScreen(ctx.origin, m.getLat(), m.getLon())) {
                 continue;
             }
-            float x = (float)ctx.origin.getOffsetX(m.lon);
-            float y = (float)ctx.origin.getOffsetY(m.lat);
-            String text = m.flightCategory;
+            float x = (float)ctx.origin.getOffsetX(m.getLon());
+            float y = (float)ctx.origin.getOffsetY(m.getLat());
+            String text = m.getFlightCategory();
             if (ctx.pref.isShowLabelMETARS()) {
-                if(WeatherHelper.metarColorString(m.flightCategory).equals("white")) {
+                if(WeatherHelper.metarColorString(m.getFlightCategory()).equals("white")) {
                     ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
-                            "NA", WeatherHelper.metarColor(m.flightCategory), x, y, ctx.pref.showLayer());
+                            "NA", WeatherHelper.metarColor(m.getFlightCategory()), x, y, ctx.pref.showLayer());
                 }
                 else {
                     ctx.service.getShadowedText().drawAlpha(ctx.canvas, ctx.textPaint,
-                            text, WeatherHelper.metarColor(m.flightCategory), x, y, ctx.pref.showLayer());
+                            text, WeatherHelper.metarColor(m.getFlightCategory()), x, y, ctx.pref.showLayer());
                 }
             }
             else {
                 ctx.paint.setColor(0);
                 ctx.paint.setAlpha(ctx.pref.showLayer());
                 ctx.canvas.drawCircle(x, y, ctx.dip2pix * 9, ctx.paint);
-                ctx.paint.setColor(WeatherHelper.metarColor(m.flightCategory));
+                ctx.paint.setColor(WeatherHelper.metarColor(m.getFlightCategory()));
                 ctx.paint.setAlpha(ctx.pref.showLayer());
                 ctx.canvas.drawCircle(x, y, ctx.dip2pix * 8, ctx.paint);
             }
@@ -192,13 +192,13 @@ public class AdsbWeatherCache {
             return;
         }    
         Taf f = new Taf();
-        f.rawText = location + " " + data;
-        f.stationId = location;
+        f.setRawText(location + " " + data);
+        f.setStationId(location);
         Date dt = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        f.time = sdf.format(dt) + "Z";
-        f.timestamp = System.currentTimeMillis();
+        f.setTime(sdf.format(dt) + "Z");
+        f.setTimestamp(System.currentTimeMillis());
         mTaf.put(location, f);        
     }
 
@@ -251,10 +251,10 @@ public class AdsbWeatherCache {
         Date dt = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        s.time = sdf.format(dt) + "Z";
-        s.timestamp = System.currentTimeMillis();
+        s.setTime(sdf.format(dt) + "Z");
+        s.setTimestamp(System.currentTimeMillis());
 
-        s.text = name + "(" + type + ") " + start + "Z" + " till " + end + "Z";
+        s.setText(name + "(" + type + ") " + start + "Z" + " till " + end + "Z");
         mSua.put(name, s);
     }
 
@@ -278,62 +278,62 @@ public class AdsbWeatherCache {
         if(null == s) {
             s = new AirSigMet();
         }
-        s.timestamp = System.currentTimeMillis();
+        s.setTimestamp(System.currentTimeMillis());
 
         if(text != null && (!text.equals(""))) {
 
-            s.hazard = "ALL"; // for unknown types
-            s.maxFt = "";
-            s.minFt = "";
-            s.reportType = "ADS-B";
-            s.severity = "";
+            s.setHazard("ALL"); // for unknown types
+            s.setMaxFt("");
+            s.setMinFt("");
+            s.setReportType("ADS-B");
+            s.setSeverity("");
 
             if(text.contains("AIRMET TANGO")) {
-                s.reportType = "AIRMET";
-                s.hazard = "TURB";
+                s.setReportType("AIRMET");
+                s.setHazard("TURB");
             }
             else if(text.contains("AIRMET MTN OBSCN")) {
-                s.reportType = "AIRMET";
-                s.hazard = "MTN OBSCN";
+                s.setReportType("AIRMET");
+                s.setHazard("MTN OBSCN");
             }
             else if(text.contains("AIRMET SIERRA")) {
-                s.reportType = "AIRMET";
-                s.hazard = "IFR";
+                s.setReportType("AIRMET");
+                s.setHazard("IFR");
             }
             else if(text.contains("AIRMET ZULU")) {
-                s.reportType = "AIRMET";
-                s.hazard = "ICE";
+                s.setReportType("AIRMET");
+                s.setHazard("ICE");
             }
             else if(text.contains("CONVECTIVE SIGMET")) {
-                s.reportType = "SIGMET";
-                s.hazard = "CONVECTIVE";
+                s.setReportType("SIGMET");
+                s.setHazard("CONVECTIVE");
             }
             else if(text.contains("CONVECTIVE OUTLOOK")) {
-                s.reportType = "OUTLOOK";
-                s.hazard = "CONVECTIVE";
+                s.setReportType("OUTLOOK");
+                s.setHazard("CONVECTIVE");
             }
 
-            s.rawText = text;
-            if(s.shape != null) {
-                s.shape.updateText(text); //update text as it may arrive after shape is made
+            s.setRawText(text);
+            if(s.getShape() != null) {
+                s.getShape().updateText(text); //update text as it may arrive after shape is made
             }
         }
 
         if(from != null && (!from.equals(""))) {
-            s.timeFrom = from;
+            s.setTimeFrom(from);
         }
 
         if(to != null && (!to.equals(""))) {
-            s.timeTo = to;
+            s.setTimeTo(to);
         }
 
 
         // Make shapes
         if(shape.equals("polygon") && points != null && (!points.equals(""))) {
-            s.points = points;
+            s.setPoints(points);
             // Only draw polygons
-            s.shape = new MetShape(s.rawText == null ? "" : s.rawText, new Date(time));
-            String tokens[] = s.points.split("[;]");
+            s.setShape(new MetShape(s.getRawText() == null ? "" : s.getRawText(), new Date(time)));
+            String tokens[] = s.getPoints().split("[;]");
             for(int j = 0; j < tokens.length; j++) {
                 String point[] = tokens[j].split("[:]");
                 try {
@@ -342,12 +342,12 @@ public class AdsbWeatherCache {
                     if(0 == lat || 0 == lon) {
                         continue;
                     }
-                    s.shape.add(lon, lat, false);
+                    s.getShape().add(lon, lat, false);
                 }
                 catch (Exception e) {
                 }
             }
-            s.shape.makePolygon();
+            s.getShape().makePolygon();
         }
 
 
@@ -375,15 +375,15 @@ public class AdsbWeatherCache {
         }
         
         Airep a = new Airep();
-        a.lon = Float.parseFloat(tokens[0]);
-        a.lat = Float.parseFloat(tokens[1]);
-        a.rawText = data;
-        a.reportType = "PIREP";
+        a.setLon(Float.parseFloat(tokens[0]));
+        a.setLat(Float.parseFloat(tokens[1]));
+        a.setRawText(data);
+        a.setReportType("PIREP");
         Date dt = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        a.time = sdf.format(dt) + "Z";
-        a.timestamp = System.currentTimeMillis();
+        a.setTime(sdf.format(dt) + "Z");
+        a.setTimestamp(System.currentTimeMillis());
         
         mAirep.put(location, a);
     }
@@ -399,7 +399,7 @@ public class AdsbWeatherCache {
             return;
         }    
         WindsAloft w = new WindsAloft();
-        w.station = location;
+        w.setStation(location);
         
         /*
          * Clear garbage spaces etc. Convert to Avare format
@@ -408,19 +408,19 @@ public class AdsbWeatherCache {
         if(winds.length < 9) {
             return;
         }
-        w.w3k = winds[0];
-        w.w6k = winds[1];
-        w.w9k = winds[2];
-        w.w12k = winds[3];
-        w.w18k = winds[4];
-        w.w24k = winds[5];
-        w.w30k = winds[6];
-        w.w34k = winds[7];
-        w.w39k = winds[8];
+        w.setW3k(winds[0]);
+        w.setW6k(winds[1]);
+        w.setW9k(winds[2]);
+        w.setW12k(winds[3]);
+        w.setW18k(winds[4]);
+        w.setW24k(winds[5]);
+        w.setW30k(winds[6]);
+        w.setW34k(winds[7]);
+        w.setW39k(winds[8]);
         Date dt = new Date(time);
         SimpleDateFormat sdf = new SimpleDateFormat("ddHHmm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
-        w.time = sdf.format(dt) + "Z";
+        w.setTime(sdf.format(dt) + "Z");
         
         /*
          * Find lon/lat of station
@@ -430,8 +430,8 @@ public class AdsbWeatherCache {
             return;
         }
         
-        w.lon = coords[0];
-        w.lat = coords[1];
+        w.setLon(coords[0]);
+        w.setLat(coords[1]);
         w.timestamp = System.currentTimeMillis();
         mWinds.put(location, w);
     }
@@ -496,8 +496,8 @@ public class AdsbWeatherCache {
              * Same formula as in database helper
              */
             if(
-                    (a.lat > (lat - Airep.RADIUS)) && (a.lat < (lat + Airep.RADIUS)) &&
-                    (a.lon > (lon - Airep.RADIUS)) && (a.lon < (lon + Airep.RADIUS))) {
+                    (a.getLat() > (lat - Airep.RADIUS)) && (a.getLat() < (lat + Airep.RADIUS)) &&
+                    (a.getLon() > (lon - Airep.RADIUS)) && (a.getLon() < (lon + Airep.RADIUS))) {
                 Airep n = new Airep(a);
                 ret.add(n);
             }
@@ -516,7 +516,7 @@ public class AdsbWeatherCache {
          * Concatenate all sua
          */
         for(Sua s : mSua.values()) {
-            ret += s.text + "\n";
+            ret += s.getText() + "\n";
         }
 
         return ret;
@@ -547,8 +547,8 @@ public class AdsbWeatherCache {
          * Find closest wind
          */
         for(WindsAloft w : mWinds.values()) {
-            float mlon = w.lon;
-            float mlat = w.lat;
+            float mlon = w.getLon();
+            float mlat = w.getLat();
             /*
              * Distance less? use this one
              */
@@ -604,7 +604,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mTaf.keySet()) {
             Taf f = mTaf.get(key);
-            long diff = (now - f.timestamp) - expiry;
+            long diff = (now - f.getTimestamp()) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -619,7 +619,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mMetar.keySet()) {
             Metar m = mMetar.get(key);
-            long diff = (now - m.timestamp) - expiry;
+            long diff = (now - m.getTimestamp()) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -634,7 +634,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mAirep.keySet()) {
             Airep a = mAirep.get(key);
-            long diff = (now - a.timestamp) - expiry;
+            long diff = (now - a.getTimestamp()) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -649,7 +649,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mSua.keySet()) {
             Sua s = mSua.get(key);
-            long diff = (now - s.timestamp) - expiry;
+            long diff = (now - s.getTimestamp()) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }
@@ -664,7 +664,7 @@ public class AdsbWeatherCache {
         keys = new LinkedList<String>();
         for (String key : mAirSig.keySet()) {
             AirSigMet s = mAirSig.get(key);
-            long diff = (now - s.timestamp) - expiry;
+            long diff = (now - s.getTimestamp()) - expiry;
             if(diff > 0) {
                 keys.add(key);
             }

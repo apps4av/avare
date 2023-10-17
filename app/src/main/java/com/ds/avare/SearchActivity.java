@@ -29,24 +29,25 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ds.avare.adapters.SearchAdapter;
-import com.ds.avare.animation.AnimateButton;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
+import com.ds.avare.touch.LongTouchDestination;
+import com.ds.avare.utils.AirportInfo;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
+import com.ds.avare.utils.DestinationAlertDialog;
+import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
 
 import java.util.LinkedHashMap;
@@ -58,28 +59,18 @@ import java.util.Observer;
  * @author zkhan
  *
  */
-public class SearchActivity extends Activity implements Observer {
+public class SearchActivity extends BaseActivity implements Observer {
 
-    private StorageService mService;
-    
     private ListView mSearchListView;
     private EditText mSearchText;
-    private Preferences mPref;
     private Toast mToast;
     private SearchAdapter mAdapter;
     private SearchTask mSearchTask;
     private ProgressBar mProgressBar;
     private String mSelected;
-    private Button mSelectedButton;
-    private Button mEditButton;
-    private Button mPlanButton;
-    private Button mPlatesButton;
+    private DestinationAlertDialog mDestinationAlertDialog;
+    private AirportInfo mClosestTask;
     private boolean mIsWaypoint;
-    
-    private AnimateButton mAnimatePlates;
-    private AnimateButton mAnimatePlan;
-    private AnimateButton mAnimateSelect;
-    private AnimateButton mAnimateEdit;
 
     /**
      * Shows edit dialog
@@ -92,44 +83,13 @@ public class SearchActivity extends Activity implements Observer {
      */
     private Destination mDestination;
 
-    
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
-
-    /*
-     * For being on tab this activity discards back to main activity
-     * (non-Javadoc)
-     * @see android.app.Activity#onBackPressed()
-     */
-    @Override
-    public void onBackPressed() {
-        ((MainActivity)this.getParent()).showMapTab();
-    }
-
-    
     /**
      * 
      * @param dst
      */
     private void goTo(String dst, String type, String dbType) {
         mIsWaypoint = false;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -143,7 +103,7 @@ public class SearchActivity extends Activity implements Observer {
      */
     private void planTo(String dst, String type, String dbType) {
         mIsWaypoint = true;
-        mDestination = DestinationFactory.build(mService, dst, type);
+        mDestination = DestinationFactory.build(dst, type);
         mDestination.addObserver(SearchActivity.this);
         mToast.setText(getString(R.string.Searching) + " " + dst);
         mToast.show();
@@ -158,6 +118,7 @@ public class SearchActivity extends Activity implements Observer {
         String [] vals = mService.getDBResource().getUserRecents();
         mAdapter = new SearchAdapter(SearchActivity.this, vals);
         mSearchListView.setAdapter(mAdapter);
+        mService.getFavorites().update(mService);
     }
     
     @Override
@@ -165,25 +126,19 @@ public class SearchActivity extends Activity implements Observer {
      * 
      */
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-        
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
- 
-                
-        mService = null;
+
         mIsWaypoint = false;
-        mPref = new Preferences(getApplicationContext());
-        
-        LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.search, null);        
+
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = layoutInflater.inflate(R.layout.search, null);
         setContentView(view);
-        
+
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        
+
         /*
          * Lose info
          */
@@ -192,128 +147,12 @@ public class SearchActivity extends Activity implements Observer {
         /*
          * For a search query
          */
-        mSearchListView = (ListView)view.findViewById(R.id.search_list_view);
-        
+        mSearchListView = (ListView) view.findViewById(R.id.search_list_view);
+
         /*
          * Progress bar
          */
-        mProgressBar = (ProgressBar)(view.findViewById(R.id.search_progress_bar));
-                
-        mSelectedButton = (Button)view.findViewById(R.id.search_button_delete);
-        mSelectedButton.getBackground().setAlpha(255);
-        mSelectedButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(null != mSelected) {
-                    mService.getDBResource().deleteUserRecent(StringPreference.parseHashedNameId(mSelected));
-                    initList();
-                    mSearchText.setText("");
-                }
-                mSelected = null;
-                hideMenu();
-            }
-            
-        });
-
-        mEditButton = (Button)view.findViewById(R.id.search_button_note);
-        mEditButton.getBackground().setAlpha(255);
-        mEditButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(null != mSelected) {
-                    final EditText edit = new EditText(SearchActivity.this);
-                    String type = StringPreference.parseHashedNameDbType(mSelected);
-                    if(type == null) {
-                        mToast.setText(R.string.GpsOnly);
-                        mToast.show();
-                        return;                        
-                    }
-                    if(!type.equals(Destination.GPS)) {
-                        mToast.setText(R.string.GpsOnly);
-                        mToast.show();
-                        return;                        
-                    }
-                    
-                    edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
-
-                    mAlertDialogEdit = new DecoratedAlertDialogBuilder(SearchActivity.this).create();
-                    mAlertDialogEdit.setTitle(getString(R.string.Label));
-                    mAlertDialogEdit.setCanceledOnTouchOutside(true);
-                    mAlertDialogEdit.setCancelable(true);
-                    mAlertDialogEdit.setView(edit);
-                    mAlertDialogEdit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            /*
-                             * Edit and save description field
-                             */
-                            String nameid = StringPreference.parseHashedNameId(mSelected);
-                            String name = StringPreference.parseHashedNameIdBefore(nameid);
-                            String id = StringPreference.parseHashedNameIdAfter(nameid);
-                            String newName = edit.getText().toString().toUpperCase() + "@" + id;
-                            mService.getDBResource().replaceUserRecentName(nameid, newName);
-
-                            initList();
-                            mSelected = null;
-                            dialog.dismiss();
-
-                        }
-                    });
-                    mAlertDialogEdit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            mSelected = null;
-                            dialog.dismiss();
-                        }            
-                    });
-                    if(!isFinishing()) {
-                        mAlertDialogEdit.show();
-                    }
-                }
-            }
-            
-        });
-
-        mPlanButton = (Button)view.findViewById(R.id.search_button_plan);
-        mPlanButton.getBackground().setAlpha(255);
-        mPlanButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(null != mSelected) {
-                    String id = StringPreference.parseHashedNameId(mSelected); 
-                    String destType = StringPreference.parseHashedNameDestType(mSelected); 
-                    String dbType = StringPreference.parseHashedNameDbType(mSelected);
-                    if(id == null || destType == null) {
-                        return;
-                    }
-                    // It's ok if dbType is null
-                    planTo(id, destType, dbType);
-                }
-            }
-        });
-        
-        mPlatesButton = (Button)view.findViewById(R.id.search_button_plates);
-        mPlatesButton.getBackground().setAlpha(255);
-        mPlatesButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(null != mSelected) {
-                    String id = StringPreference.parseHashedNameId(mSelected);  
-                    if(id == null) {
-                        return;
-                    }
-                    
-                    if(mService != null) {
-                        mService.setLastPlateAirport(id);
-                        mService.setLastPlateIndex(0);
-                        ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
-                    }
-                }
-            }
-        });        
-
+        mProgressBar = (ProgressBar) (view.findViewById(R.id.search_progress_bar));
 
         /*
          * Set on click
@@ -321,58 +160,203 @@ public class SearchActivity extends Activity implements Observer {
         mSearchListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-                    long arg3) {
+                                    long arg3) {
                 /*
                  * Commas not allowed
                  */
                 String txt = mAdapter.getItem(position).replace(",", " ");
-                String id = StringPreference.parseHashedNameId(txt); 
-                String destType = StringPreference.parseHashedNameDestType(txt); 
+                String id = StringPreference.parseHashedNameId(txt);
+                String destType = StringPreference.parseHashedNameDestType(txt);
                 String dbType = StringPreference.parseHashedNameDbType(txt);
-                if(id == null || destType == null) {
+                if (id == null || destType == null) {
                     return;
                 }
                 // It's ok if dbType is null
                 goTo(id, destType, dbType);
             }
         });
-        
+
         mSearchListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View v,
-                    int index, long arg3) {
-                mSelected = mAdapter.getItem(index); 
-                if(mSelected == null) {
-                    return false;
+                                           int index, long arg3) {
+                mSelected = mAdapter.getItem(index);
+                if (mSelected == null) {
+                    return true;
                 }
-                
+
+                // stop previous lookup
+                if (null != mClosestTask) {
+                    mClosestTask.cancel(true);
+                }
+
                 // Don't display the plates button if there are no plates
                 String id = StringPreference.parseHashedNameId(mSelected);
-                
-                if(PlatesActivity.doesAirportHavePlates(mPref.mapsFolder(), id)) {
-                	mAnimatePlates.animate(true);
-                }
-                else {
-                	mAnimatePlates.stopAndHide();
-                }
+                String base = StringPreference.parseHashedNameDestType(mSelected);
+                if (!base.equals(Destination.BASE)) {
+                    LongTouchDestination ltd = new LongTouchDestination();
+                    ltd.setMoreButtons(true);
+                    ltd.setAirport(id);
 
-                mAnimateSelect.animate(true);
-                mAnimatePlan.animate(true);
-                
-                // Don't display the edit button if we can't edit
-                String type = StringPreference.parseHashedNameDbType(mSelected);
-                if(type == null || !type.equals(Destination.GPS)) {
-                	mAnimateEdit.stopAndHide();
-                }
-                else {
-                	mAnimateEdit.animate(true);
-                }
+                    mDestinationAlertDialog.setData(ltd);
+                    mDestinationAlertDialog.show();
 
-                return true;
+                    return true;
+                } else {
+
+                    //airport
+                    mClosestTask = new AirportInfo();
+
+                    mClosestTask.execute(null, null, id,
+                            SearchActivity.this, mService, mPref, null, false,
+                            new GenericCallback() {
+                                @Override
+                                public Object callback(Object o, Object o1) {
+                                    LongTouchDestination ltd = (LongTouchDestination) o1;
+                                    ltd.setMoreButtons(true);
+                                    mDestinationAlertDialog.show();
+                                    mDestinationAlertDialog.setData(ltd);
+
+                                    // If the long press event has already occurred, we need to do the gesture callback here
+                                    return null;
+                                }
+                            });
+                }
+                return (true);
             }
-        }); 
 
+            ;
+        });
+
+        mDestinationAlertDialog = new DestinationAlertDialog(SearchActivity.this);
+        mDestinationAlertDialog.setCallback(
+                new GenericCallback() {
+                    @Override
+                    public Object callback(Object o, Object o1) {
+                        String param = (String) o;
+                        try {
+                            mDestinationAlertDialog.dismiss();
+                        } catch (Exception e) {
+                        }
+
+                        if (null == mSelected) {
+                            return null;
+                        }
+
+                        if (param.equals("CSup")) {
+                            if (null != mSelected) {
+                                String id = StringPreference.parseHashedNameId(mSelected);
+                                if (id == null) {
+                                    return null;
+                                }
+                                String base = StringPreference.parseHashedNameDestType(mSelected);
+                                if (!base.equals(Destination.BASE)) {
+                                    return null; // no CSup for !airport
+                                }
+
+                                mService.setLastAfdAirport(id);
+                                ((MainActivity) SearchActivity.this.getParent()).showAfdTab();
+                            }
+                        } else if (param.equals("Plate")) {
+                            if (null != mSelected) {
+                                String id = StringPreference.parseHashedNameId(mSelected);
+                                if (id == null) {
+                                    return null;
+                                }
+                                if (PlatesActivity.doesAirportHavePlates(mPref.getServerDataFolder(), id)) {
+                                    mService.setLastPlateAirport(id);
+                                    mService.setLastPlateIndex(0);
+                                    ((MainActivity) SearchActivity.this.getParent()).showPlatesTab();
+                                }
+                            }
+                        } else if (param.equals("+Plan")) {
+                            if (null != mSelected) {
+                                String id = StringPreference.parseHashedNameId(mSelected);
+                                String destType = StringPreference.parseHashedNameDestType(mSelected);
+                                String dbType = StringPreference.parseHashedNameDbType(mSelected);
+                                if (id == null || destType == null) {
+                                    return null;
+                                }
+                                // It's ok if dbType is null
+                                planTo(id, destType, dbType);
+                            }
+                        } else if (param.equals("->D")) {
+                            String id = StringPreference.parseHashedNameId(mSelected);
+                            String destType = StringPreference.parseHashedNameDestType(mSelected);
+                            String dbType = StringPreference.parseHashedNameDbType(mSelected);
+                            if (id == null || destType == null) {
+                                return null;
+                            }
+                            // It's ok if dbType is null
+                            goTo(id, destType, dbType);
+                        } else if (param.equals("Save")) {
+                            if (null != mSelected) {
+                                String id = StringPreference.parseHashedNameId(mSelected);
+                                String destType = StringPreference.parseHashedNameDestType(mSelected);
+                                String dbType = StringPreference.parseHashedNameDbType(mSelected);
+                                String name = StringPreference.parseHashedNameFacilityName(mSelected);
+                                mService.getDBResource().setUserRecent(new StringPreference(destType, dbType, name, id));
+                                mSearchText.setText("");
+                            }
+                        } else if (param.equals("Delete")) {
+                            if (null != mSelected) {
+                                mService.getDBResource().deleteUserRecent(StringPreference.parseHashedNameId(mSelected));
+                                initList();
+                                mSearchText.setText("");
+                            }
+                            mSelected = null;
+                        } else if (param.equals("Label")) {
+                            if (null != mSelected) {
+                                final EditText edit = new EditText(SearchActivity.this);
+                                String type = StringPreference.parseHashedNameDbType(mSelected);
+                                if (type == null) {
+                                    mToast.setText(R.string.GpsOnly);
+                                    mToast.show();
+                                    return null;
+                                }
+                                if (!type.equals(Destination.GPS)) {
+                                    mToast.setText(R.string.GpsOnly);
+                                    mToast.show();
+                                    return null;
+                                }
+
+                                edit.setText(StringPreference.parseHashedNameIdBefore(mSelected));
+
+                                mAlertDialogEdit = new DecoratedAlertDialogBuilder(SearchActivity.this).create();
+                                mAlertDialogEdit.setTitle(getString(R.string.Label));
+                                mAlertDialogEdit.setCanceledOnTouchOutside(true);
+                                mAlertDialogEdit.setCancelable(true);
+                                mAlertDialogEdit.setView(edit);
+                                mAlertDialogEdit.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        /*
+                                         * Edit and save description field
+                                         */
+                                        String nameid = StringPreference.parseHashedNameId(mSelected);
+                                        String id = StringPreference.parseHashedNameIdAfter(nameid);
+                                        String newName = edit.getText().toString().toUpperCase() + "@" + id;
+                                        mService.getDBResource().replaceUserRecentName(nameid, newName);
+                                        initList();
+                                        mSelected = null;
+                                        dialog.dismiss();
+
+                                    }
+                                });
+                                mAlertDialogEdit.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mSelected = null;
+                                        dialog.dismiss();
+                                    }
+                                });
+                                if (!isFinishing()) {
+                                    mAlertDialogEdit.show();
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                });
 
         /*
          * For searching, start search on every new key press
@@ -438,59 +422,9 @@ public class SearchActivity extends Activity implements Observer {
 
             }
         });
-        
-        mAnimatePlates = new AnimateButton(SearchActivity.this, mPlatesButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimatePlan = new AnimateButton(SearchActivity.this, mPlanButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateSelect = new AnimateButton(SearchActivity.this, mSelectedButton, AnimateButton.DIRECTION_L_R, (View[])null);
-        mAnimateEdit = new AnimateButton(SearchActivity.this, mEditButton, AnimateButton.DIRECTION_L_R, (View[])null);
 
     }
 
-
-    /**
-     *
-     */
-    private void hideMenu() {
-        mAnimatePlan.stopAndHide();
-        mAnimatePlates.stopAndHide();
-        mAnimateSelect.stopAndHide();
-        mAnimateEdit.stopAndHide();
-    }
-
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-
-            /*
-             * Now initialize the list to recent in case someone needs to go there, and not search
-             */
-            initList();
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /* (non-Javadoc)
      * @see android.app.Activity#onStart()
@@ -506,14 +440,12 @@ public class SearchActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
 
         /*
-         * Registering our receiver
-         * Bind now.
+         * Now initialize the list to recent in case someone needs to go there, and not search
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        initList();
+        mService.registerGpsListener(mGpsInfc);
     }
     
     /* (non-Javadoc)
@@ -523,10 +455,8 @@ public class SearchActivity extends Activity implements Observer {
     protected void onPause() {
         super.onPause();
         
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-        
+        mService.unregisterGpsListener(mGpsInfc);
+
         if(null != mSearchText) {
             mSearchText.setText("");
         }
@@ -539,37 +469,16 @@ public class SearchActivity extends Activity implements Observer {
             }
         }
 
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
+        if(null != mDestinationAlertDialog) {
+            try {
+                mDestinationAlertDialog.dismiss();
+            }
+            catch (Exception e) {
+            }
+        }
 
     }
     
-    /* (non-Javadoc)
-     * @see android.app.Activity#onRestart()
-     */
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onStop()
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    /* (non-Javadoc)
-     * @see android.app.Activity#onDestroy()
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
- 
     /**
      * 
      */
@@ -600,23 +509,22 @@ public class SearchActivity extends Activity implements Observer {
                 mService.getDBResource().setUserRecent(s);
 
                 if(!mIsWaypoint) {
-                    if(mService != null) {
-                        mService.setDestination((Destination)arg0);
-                    }
+                    mService.setDestination((Destination)arg0);
                     mToast.setText(getString(R.string.DestinationSet) + ((Destination)arg0).getID());
                     mToast.show();
-                    ((MainActivity)this.getParent()).showMapTab();
+                    MainActivity m = (MainActivity)this.getParent();
+                    if(m != null) {
+                        m.showMapTab();
+                    }
                 }
                 else {
-                    if(mService != null) {
-                        if(mService.getPlan().appendDestination((Destination)arg0)) {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
-                        }
-                        else {
-                            mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
-                        }
-                        mToast.show();                            
+                    if(mService.getPlan().appendDestination((Destination)arg0)) {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanSet));
                     }
+                    else {
+                        mToast.setText(((Destination)arg0).getID() + getString(R.string.PlanNoset));
+                    }
+                    mToast.show();
                 }
             }
             else {
@@ -643,9 +551,6 @@ public class SearchActivity extends Activity implements Observer {
             Thread.currentThread().setName("Search");
 
             String srch = (String)vals[0];
-            if(null == mService) {
-                return false;
-            }
 
             LinkedHashMap<String, String> params = new LinkedHashMap<String, String>();
             synchronized (SearchActivity.class) {

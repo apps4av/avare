@@ -70,7 +70,7 @@ public class ProceduresProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new ProceduresDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

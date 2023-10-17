@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.TypedValue;
@@ -37,7 +38,6 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -49,10 +49,8 @@ import com.ds.avare.utils.Helper;
 public class MainActivity extends TabActivity {
 
     TabHost mTabHost;
-    float    mTabHeight;
     HorizontalScrollView mScrollView;
     int      mScrollWidth;
-    Preferences mPref;
     TextView mTextView;
     Button mButton;
 
@@ -67,18 +65,12 @@ public class MainActivity extends TabActivity {
     public static final int tabNear = 5;
     public static final int tabPfd = 6;
     public static final int tabThreeD = 7;
-    public static final int tabChecklist = 8;
-    public static final int tabWXB = 9;
-    public static final int tabTools = 10;
-    public static final int tabWnb = 11;
+    public static final int tabAircraft = 8;
+    public static final int tabIo = 9;
 
     public void setup() {
         mTextView.setVisibility(View.INVISIBLE);
         mButton.setVisibility(View.INVISIBLE);
-
-        // start service
-        final Intent intent = new Intent(MainActivity.this, StorageService.class);
-        startService(intent);
 
         /*
          * Make a tab host
@@ -89,7 +81,7 @@ public class MainActivity extends TabActivity {
          * Add tabs, NOTE: if the order changes or new tabs are added change the constants above (like tabMain = 0 )
          * also add the new tab to the preferences.getTabs() method.
          */
-        long tabItems = mPref.getTabs();
+        long tabItems = StorageService.getInstance().getPreferences().getTabs();
 
         // We will always show the main chart tab
         setupTab(new TextView(this), getString(R.string.Main), new Intent(this, LocationActivity.class), getIntent());
@@ -110,20 +102,12 @@ public class MainActivity extends TabActivity {
             setupTab(new TextView(this), getString(R.string.ThreeD), new Intent(this, ThreeDActivity.class), getIntent());
         }
 
-        if (0 != (tabItems & (1 << tabChecklist))) {
-            setupTab(new TextView(this), getString(R.string.List), new Intent(this, ChecklistActivity.class), getIntent());
+        if (0 != (tabItems & (1 << tabAircraft))) {
+            setupTab(new TextView(this), getString(R.string.Aircraft), new Intent(this, AircraftActivity.class), getIntent());
         }
 
-        if (0 != (tabItems & (1 << tabWXB))) {
-            setupTab(new TextView(this), getString(R.string.WXB), new Intent(this, FaaFileActivity.class), getIntent());
-        }
-
-        if (0 != (tabItems & (1 << tabTools))) {
-            setupTab(new TextView(this), getString(R.string.Tools), new Intent(this, SatelliteActivity.class), getIntent());
-        }
-
-        if (0 != (tabItems & (1 << tabWnb))) {
-            setupTab(new TextView(this), getString(R.string.Wnb), new Intent(this, WnbActivity.class), getIntent());
+        if (0 != (tabItems & (1 << tabIo))) {
+            setupTab(new TextView(this), getString(R.string.Io), new Intent(this, IOActivity.class), getIntent());
         }
 
         // Hide keyboard from another tab
@@ -157,11 +141,10 @@ public class MainActivity extends TabActivity {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        
-        mPref = new Preferences(this);
+
         Helper.setTheme(this);
         super.onCreate(savedInstanceState);
-         
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.main);
@@ -191,11 +174,17 @@ public class MainActivity extends TabActivity {
         // check permissions
         final Activity ctx = MainActivity.this;
         int PERMISSION_ALL = 101;
+
         String[] PERMISSIONS = {
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
         };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PERMISSIONS = new String[] {
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                    android.Manifest.permission.BLUETOOTH_SCAN,
+            };
+        }
         boolean granted = true;
         for (String permission : PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(ctx, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -247,25 +236,6 @@ public class MainActivity extends TabActivity {
         return view;
     }
     
-    /* (non-Javadoc)
-     * @see android.app.Activity#onResume()
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Helper.setOrientationAndOn(this);
-    }
-
-    @Override 
-    public void onDestroy() {
-        /*
-         * Do not kill on orientation change
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        stopService(intent);
-        super.onDestroy();
-    }
-    
     /**
      * For switching tab from any tab activity
      */
@@ -306,4 +276,12 @@ public class MainActivity extends TabActivity {
         switchTab(tabAFD);
     }
 
+    /**
+     *
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        Helper.setOrientationAndOn(this);
+    }
 }

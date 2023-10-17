@@ -22,17 +22,21 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Environment;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.WindowManager;
 
 import com.ds.avare.R;
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
+import com.sromku.polygon.Line;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -72,6 +76,19 @@ public class Helper {
          */
         return (((double)(px & 0x000000FF)) *
                 ALTITUDE_FT_ELEVATION_PER_PIXEL_SLOPE + ALTITUDE_FT_ELEVATION_PER_PIXEL_INTERCEPT);
+    }
+
+    public static String getExternalFolder(Context context) {
+        // Since scoped storage there is no external folder
+        return getInternalFolder(context);
+    }
+
+    public static String getInternalFolder(Context context) {
+        return context.getFilesDir().getAbsolutePath();
+    }
+
+    public static String getCacheFolder(Context context) {
+        return context.getCacheDir().getAbsolutePath();
     }
 
     /**
@@ -445,7 +462,7 @@ public class Helper {
      * @param act
      */
     public static void setTheme(Activity act) {
-        Preferences p = new Preferences(act.getApplicationContext()); 
+        Preferences p = StorageService.getInstance().getPreferences();
         if(p.isNightMode()) {
             act.setTheme(android.R.style.Theme_Black);
         }
@@ -455,7 +472,8 @@ public class Helper {
     }
 
     public static Typeface getTypeFace(Context ctx) {
-        if(new Preferences(ctx).useSysFont()) {
+        Preferences p = StorageService.getInstance().getPreferences();
+        if(p.useSysFont()) {
             return Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
         } else{
             return Typeface.createFromAsset(ctx.getAssets(), "RobotoMono-Bold.ttf");
@@ -463,7 +481,8 @@ public class Helper {
     }
 
     public static float adjustTextSize(Context ctx, int textSizeID) {
-        return ctx.getResources().getDimension(textSizeID) * new Preferences(ctx).adjustFontSize();
+        Preferences p = StorageService.getInstance().getPreferences();
+        return ctx.getResources().getDimension(textSizeID) * p.adjustFontSize();
     }
 
     public static float adjustTextSize(Context ctx, int textSizeID, String mValue) {
@@ -478,8 +497,8 @@ public class Helper {
      * @param act
      */
     public static void setOrientationAndOn(Activity act) {
-        
-        Preferences pref = new Preferences(act.getApplicationContext());
+
+        Preferences pref = StorageService.getInstance().getPreferences();
         if(pref.isKeepScreenOn()) {
             act.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);            
         }
@@ -523,6 +542,42 @@ public class Helper {
         catch (Exception e) {
             
         }
+    }
+
+    /**
+     * Recursively get dir contents
+     * @param dir
+     * @return
+     */
+    public static LinkedList<File> getDirectoryContents(File dir, String filter) throws Exception {
+        LinkedList<File> list = new LinkedList();
+        try {
+            if(dir.isFile()) {
+                list.add(dir); // only 1 file asked
+            }
+            else {
+                FileFilter ff = null;
+                if(null != filter) {
+                    ff = new FileFilter () {
+                        public boolean accept(File f) {
+                            return f.getName().endsWith(filter.substring(filter.lastIndexOf(".")));
+                        }
+                    };
+                }
+                File[] files = (null != ff) ? dir.listFiles(ff) : dir.listFiles();
+
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        list.addAll(getDirectoryContents(file, filter));
+                    } else {
+                        list.add(file);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return list;
     }
 
     /**
@@ -591,9 +646,10 @@ public class Helper {
          * Create a shapes list
          */
         LinkedList<TFRShape> shapeList = new LinkedList<TFRShape>();
+        Preferences p = StorageService.getInstance().getPreferences();
 
-        String filename = new Preferences(ctx).mapsFolder() + "/tfr.txt";
-        String filenameManifest = new Preferences(ctx).mapsFolder() + "/TFRs";
+        String filename = p.getServerDataFolder() + File.separator + "tfr.txt";
+        String filenameManifest = p.getServerDataFolder() + File.separator + "TFRs";
         String data = readFromFile(filename);
         String dataManifest = readTimestampFromFile(filenameManifest);
         if(null != data && null != dataManifest) {

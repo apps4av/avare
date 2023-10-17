@@ -29,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ds.avare.gps.GpsInterface;
@@ -55,31 +56,24 @@ import java.util.Observer;
  * @author zkhan
  * An activity that deals with plates
  */
-public class PlatesTagActivity extends Activity implements Observer {
+public class PlatesTagActivity extends BaseActivity implements Observer {
     private PlatesTagView                mPlatesView;
-    private StorageService               mService;
     private PixelCoordinate              mPoint[];
     private Coordinate                   mPointLL[];
-    private Button                       mGeotagButton;
-    private Button                       mVerifyButton;
-    private Button                       mClearButton;
-    private EditText                     mText;
-    private OptionButton                 mOptions;
     private Toast                        mToast;
-    private Preferences                  mPref;
-    private LinkedList<String>           mTags;
-    private boolean                     mTagged;
     private AlertDialog                  mAlertDialog;
     private Destination                  mDest;
+    private Destination                  mDestVerify;
+    private Destination                  mDestPoint[] = new Destination[POINTS];
     private String                       mName;
     private String                       mAirport;
+    private boolean                      mTagged;
+    private Button                       mSetButton[] = new Button[POINTS];
 
 
     private static final int POINTS = 2;
     private static final double MIN_SEPARATION = 10.0;
     private static final double MIN_SEPARATION_COORD = 0.01;
-    private static final int MAX_DISTANCE_FROM_TOP = 100;
-    private static final int MIN_DISTANCE_FROM_TOP = 5;
 
 
     /*
@@ -89,28 +83,6 @@ public class PlatesTagActivity extends Activity implements Observer {
     private double mDy;
     private double mLonTopLeft;
     private double mLatTopLeft;
-
-    /*
-     * Start GPS
-     */
-    private GpsInterface mGpsInfc = new GpsInterface() {
-
-        @Override
-        public void statusCallback(GpsStatus gpsStatus) {
-        }
-
-        @Override
-        public void locationCallback(Location location) {
-        }
-
-        @Override
-        public void timeoutCallback(boolean timeout) {
-        }
-
-        @Override
-        public void enabledCallback(boolean enabled) {
-        }
-    };
 
     /**
      *
@@ -131,12 +103,6 @@ public class PlatesTagActivity extends Activity implements Observer {
      */
     private void store() {
         
-        
-        /*
-         * Add
-         */
-        mTags.add(mName + "," + mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
-        
         /*
          * Store and show message
          */
@@ -156,13 +122,8 @@ public class PlatesTagActivity extends Activity implements Observer {
             mAlertDialog.show();
         }
 
-        mPref.setGeotags(putTagsToStorageFormat(mTags));
+        mService.getDBResource().setUserTag(mName, mDx + "," + mDy + "," + mLonTopLeft + "," + mLatTopLeft);
         mTagged = true;
-        mPoint[0] = null;
-        mPointLL[0] = null;
-        mPoint[1] = null;
-        mPointLL[1] = null;
-        mText.setText("");
 
         drawAirport();
     }
@@ -171,11 +132,6 @@ public class PlatesTagActivity extends Activity implements Observer {
      *
      */
     private void clearParams() {
-        mPoint[0] = null;
-        mPointLL[0] = null;
-        mPoint[1] = null;
-        mPointLL[1] = null;
-        mTagged = false;
         mDx = 0;
         mDy = 0;
         mLonTopLeft = 0;
@@ -192,35 +148,113 @@ public class PlatesTagActivity extends Activity implements Observer {
         mToast.show();
 
         clearParams();
-        for(String t : mTags) {
-            if(t.contains(mName)) {
-                mTags.remove(t);
-                mPref.setGeotags(putTagsToStorageFormat(mTags));
-                return;
-            }
-        }
+        mService.getDBResource().deleteUserTag(mName);
     }
+
+    private void tagDone() {
+
+        if(mPointLL[0] == null || mPointLL[1] == null || mPoint[0] == null || mPoint[1] == null) {
+            mToast.setText(getString(R.string.InvalidPoint));
+            mToast.show();
+            return;
+        }
+        mDx = (mPoint[0].getX() - mPoint[1].getX()) / (mPointLL[0].getLongitude() - mPointLL[1].getLongitude());
+        mDy = (mPoint[0].getY() - mPoint[1].getY()) / (mPointLL[0].getLatitude() - mPointLL[1].getLatitude());
+
+        if((Math.abs(mPoint[0].getX() - mPoint[1].getX()) < MIN_SEPARATION) ||
+                (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD)) {
+            mToast.setText(getString(R.string.SelectOtherPoint));
+            mToast.show();
+            return;
+        }
+        if((Math.abs(mPoint[0].getY() - mPoint[1].getY()) < MIN_SEPARATION) ||
+                        (Math.abs(mPointLL[0].getLatitude() - mPointLL[1].getLatitude()) < MIN_SEPARATION_COORD)) {
+            mToast.setText(getString(R.string.SelectOtherPoint));
+            mToast.show();
+            return;
+        }
+
+        /*
+         * Now calculate params to store
+         */
+        mLonTopLeft = mPointLL[0].getLongitude() - mPoint[0].getX() / mDx;
+        mLatTopLeft = mPointLL[0].getLatitude() - mPoint[0].getY() / mDy;
+
+        store();
+    }
+
+
+
+    private void tag(int point) {
+
+        mPoint[point] = null;
+        mPointLL[point] = null;
+
+        mPoint[point] = new PixelCoordinate(mPlatesView.getx(), mPlatesView.gety());
+
+        String item = ((OptionButton)findViewById(R.id.platestag_spinner)).getCurrentValue();
+        String toFind = ((EditText)findViewById(R.id.platestag_text_input)).getText().toString().toUpperCase(Locale.getDefault());
+        ((TextView)findViewById(R.id.platestag_text_input)).setText("");
+        ((OptionButton)findViewById(R.id.platestag_spinner)).setCurrentSelectionIndex(0);
+        /*
+         * Find point in database
+         */
+        Destination d;
+        if(item.equals("GPS")) {
+            d = DestinationFactory.build(toFind, Destination.GPS);
+        }
+        else if(item.equals("Maps")) {
+            d = DestinationFactory.build(toFind, Destination.MAPS);
+        }
+        else {
+            d = DestinationFactory.build(toFind, item);
+        }
+        mDestPoint[point] = d;
+        d.addObserver(PlatesTagActivity.this);
+        d.find();
+    }
+
+    private void verify() {
+
+        String item = ((OptionButton)findViewById(R.id.platestag_spinner)).getCurrentValue();
+        String toFind = ((EditText)findViewById(R.id.platestag_text_input)).getText().toString().toUpperCase(Locale.getDefault());
+        ((TextView)findViewById(R.id.platestag_text_input)).setText("");
+        ((OptionButton)findViewById(R.id.platestag_spinner)).setCurrentSelectionIndex(0);
+        /*
+         * Find point in database
+         */
+        Destination d;
+        if(item.equals("GPS")) {
+            d = DestinationFactory.build(toFind, Destination.GPS);
+        }
+        else if(item.equals("Maps")) {
+            d = DestinationFactory.build(toFind, Destination.MAPS);
+        }
+        else {
+            d = DestinationFactory.build(toFind, item);
+        }
+        mDestVerify = d;
+        d.addObserver(PlatesTagActivity.this);
+        d.find();
+    }
+
 
     /**
      *
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Helper.setTheme(this);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
-        mPref = new Preferences(this);
         mPoint = new PixelCoordinate[POINTS];
         mPointLL = new Coordinate[POINTS];
-        mTagged = false;
-        
+
         /*
          * Get stored geotags
          */
-        mTags = getTagsStorageFromat(mPref.getGeotags());
         mName = mAirport = "";
-        
+        mTagged = false;
+
         /*
          * Get views from XML
          */
@@ -233,235 +267,67 @@ public class PlatesTagActivity extends Activity implements Observer {
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
         mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-        
-        /*
-         * Options for type of point
-         */
-        mOptions = (OptionButton)view.findViewById(R.id.platestag_spinner);
-        mOptions.setCurrentSelectionIndex(0);
 
         /*
          * The button that adds a point
          */
-        mGeotagButton = (Button)view.findViewById(R.id.platestag_button_tag);
-        mGeotagButton.getBackground().setAlpha(255);
-        mGeotagButton.setOnClickListener(new OnClickListener() {
+        mSetButton[0] = (Button)view.findViewById(R.id.platestag_button_tag1);
+        mSetButton[0].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                /*
-                 * Already tagged
-                 */
-                if(mTagged) {
-                    mToast.setText(getString(R.string.AlreadyTagged));
-                    mToast.show();
-                    return;
-                }
-                
-                /*
-                 * What to find.
-                 */
-                String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mOptions.getCurrentValue();
-                
-                /*
-                 * Cannot be null
-                 */
-                if(null == item || mService == null) {
-                    mToast.setText(getString(R.string.InvalidPoint));
-                    mToast.show();
-                    return;
-                }
-                
-                /*
-                 * Find point in database
-                 */
-                String dat = null;
-                if(item.equals("GPS")) {
-                    /*
-                     * If direct GPS entry, make it Avare GPS input format like 42&-71
-                     */
-                    String tokens[] = toFind.split("&");
-                    if(tokens.length == 2) {
-                        dat = tokens[1] + "," + tokens[0];
-                    }
-                }
-                else {
-                    dat = mService.getDBResource().findLonLat(toFind, item);
-                }
-                if(null == dat) {
-                    mToast.setText(getString(R.string.PointNotFound));
-                    mToast.show();
-                    return;
-                }
-                
-                /*
-                 * Check if lon/lat are OK
-                 */
-                String tokens[] = dat.split(",");
-                if(tokens.length != 2) {
-                    mToast.setText(getString(R.string.PointNotFound));
-                    mToast.show();
-                    return;
-                }
-                
-                /*
-                 * Add point
-                 */
-                if(mPoint[0] == null) {
-                    mPoint[0] = new PixelCoordinate(mPlatesView.getx(), mPlatesView.gety());
-                    mPointLL[0] = new Coordinate(Double.parseDouble(tokens[0]), Double.parseDouble(tokens[1]));
-                    mToast.setText(getString(R.string.AddedPoint));
-                    mToast.show();
-                    mText.setText("");
-                }
-                else if(mPoint[1] == null) {
-                    mPoint[1] = new PixelCoordinate(mPlatesView.getx(), mPlatesView.gety());
-                    mPointLL[1] = new Coordinate(Double.parseDouble(tokens[0]), Double.parseDouble(tokens[1]));
-                    mDx = (mPoint[0].getX() - mPoint[1].getX()) / (mPointLL[0].getLongitude() - mPointLL[1].getLongitude());
-                    mDy = (mPoint[0].getY() - mPoint[1].getY()) / (mPointLL[0].getLatitude() - mPointLL[1].getLatitude());
-
-                    int numCorrect = 2;
-                    if(
-                            (Math.abs(mPoint[0].getX() - mPoint[1].getX()) < MIN_SEPARATION) ||
-                                    (Math.abs(mPointLL[0].getLongitude() - mPointLL[1].getLongitude()) < MIN_SEPARATION_COORD)) {
-                        /*
-                         * Estimate longitude dimension from latitude dim, using cos(lat)
-                         */
-                        mDx = mDy * Math.cos(mPointLL[0].getLatitude());
-                        numCorrect--;
-                    }
-                    if(
-                            (Math.abs(mPoint[0].getY() - mPoint[1].getY()) < MIN_SEPARATION) ||
-                                    (Math.abs(mPointLL[0].getLatitude() - mPointLL[1].getLatitude()) < MIN_SEPARATION_COORD)
-                            ) {
-                        /*
-                         * Estimate latitude dimension from longitude dim, using cos(lat)
-                         */
-                        mDy = mDx / Math.cos(mPointLL[0].getLatitude());
-                        numCorrect--;
-                    }
-
-                    /*
-                     * Both dims wrong. Exit
-                     */
-                    if(0 == numCorrect) {
-                        mPoint[1] = null;
-                        mPointLL[1] = null;
-                        mToast.setText(getString(R.string.SelectOtherPoint));
-                        mToast.show();
-                        return;
-                    }
-
-                    /*
-                     * Now calculate params to store
-                     */
-                    mLonTopLeft = mPointLL[0].getLongitude() - mPoint[0].getX() / mDx;
-                    mLatTopLeft = mPointLL[0].getLatitude() - mPoint[0].getY() / mDy;  
-                    
-                    /*
-                     * Simple verify
-                     */
-                    Projection p = new Projection(mLonTopLeft, mLatTopLeft,
-                            mDest.getLocation().getLongitude(),
-                            mDest.getLocation().getLatitude());
-                    if(p.getDistance() > MAX_DISTANCE_FROM_TOP || p.getDistance() < MIN_DISTANCE_FROM_TOP || p.getBearing() < 90 || p.getBearing() > 180) {
-                        /*
-                         * 50 miles from top is definitely not near the airport.
-                         * anything less than 90 or more than 180 is out of page.
-                         */
-                        mToast.setText(getString(R.string.InvalidPoint));
-                        mToast.show();
-                        clearParams();
-                        return;
-                    }
-
-                    store();
-                }
+                tag(0);
             }
-        });      
-        
+        });
+
+
         /*
-         * Verify button
+         * The button that adds a point
          */
-        mVerifyButton = (Button)view.findViewById(R.id.platestag_button_verify);
-        mVerifyButton.getBackground().setAlpha(255);
-        mVerifyButton.setOnClickListener(new OnClickListener() {
+        mSetButton[1] = (Button)view.findViewById(R.id.platestag_button_tag2);
+        mSetButton[1].setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mTagged) {
-                    mToast.setText(getString(R.string.NotTagged));
-                    mToast.show();
-                    return;
-                }
-
-                /*
-                 * Draw airport
-                 */
-                drawAirport();
-
-                String toFind = mText.getText().toString().toUpperCase(Locale.getDefault());
-                String item = mOptions.getCurrentValue();
-                if(null == item || mService == null) {
-                    mToast.setText(getString(R.string.InvalidPoint));
-                    mToast.show();
-                    return;
-                }
-                String dat = null;
-                if(item.equals("GPS")) {
-                    /*
-                     * If direct GPS entry, make it Avare GPS input format like 42&-71
-                     */
-                    String tokens[] = toFind.split("&");
-                    if(tokens.length == 2) {
-                        dat = tokens[1] + "," + tokens[0];
-                    }
-                }
-                else {
-                    dat = mService.getDBResource().findLonLat(toFind, item);
-                }
-                if(null == dat) {
-                    mToast.setText(getString(R.string.PointNotFound));
-                    mToast.show();
-                    return;
-                }
-                /*
-                 * Found point. Verify
-                 */
-                String tokens[] = dat.split(",");
-                if(tokens.length != 2) {
-                    mToast.setText(getString(R.string.PointNotFound));
-                    mToast.show();
-                    return;
-                }
-                
-                /*
-                 * Do it
-                 */
-                mText.setText("");
-
-                double lon = Double.parseDouble(tokens[0]);
-                double lat = Double.parseDouble(tokens[1]);
-
-                double x = (lon - mLonTopLeft) * mDx;
-                double y = (lat - mLatTopLeft) * mDy;
-
-                mPlatesView.verify(x, y);
-                mToast.setText(getString(R.string.VerifyMessage));
-                mToast.show();
-
+                tag(1);
             }
-        });      
+        });
+
+
+        /*
+         * The button that adds a point
+         */
+        Button b = (Button)view.findViewById(R.id.platestag_button_process);
+        b.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tagDone();
+            }
+        });
+
+        /*
+         * The button that adds a point
+         */
+        b = (Button)view.findViewById(R.id.platestag_button_verify);
+        b.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verify();
+            }
+        });
 
 
         /*
          * Clear button
          */
-        mClearButton = (Button)view.findViewById(R.id.platestag_button_clear);
-        mClearButton.getBackground().setAlpha(255);
-        mClearButton.setOnClickListener(new OnClickListener() {
+        b = (Button)view.findViewById(R.id.platestag_button_clear);
+        b.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(!mTagged) {
+                    mToast.setText(getString(R.string.NotTagged));
+                    mToast.show();
+                    return;
+                }
 
                 mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
                 mAlertDialog.setCancelable(false);
@@ -491,125 +357,13 @@ public class PlatesTagActivity extends Activity implements Observer {
             }
         });
 
-        mText = (EditText)view.findViewById(R.id.platestag_text_input);
-        mService = null;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressedExit();
+    }
 
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     *
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-
-            mPoint[0] = null;
-            mPointLL[0] = null;
-            mPoint[1] = null;
-            mPointLL[1] = null;
-
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-            
-            /*
-             * Get proc name
-             */
-            if(null == mService.getPlateDiagram()) {
-                mTagged = false;
-                return;
-            }
-            mName = PlatesActivity.getNameFromPath(mService.getPlateDiagram().getName());
-            if(mName != null) {
-                mAirport = mName.split("/")[0];
-            }
-            else {
-                mTagged = false;
-                return;
-            }
-
-            mPlatesView.setBitmap(mService.getPlateDiagram());
-
-            
-            /*
-             * Find who this plate is for, so we can verify its sane.
-             * By the time user is ready to tag, this should be found
-             */
-            mDest = DestinationFactory.build(mService, mAirport, Destination.BASE);
-            mDest.addObserver(PlatesTagActivity.this);
-            mDest.find();
-
-            for(String t : mTags) {
-                if(t.contains(mName)) {
-                    /*
-                     * Already tagged. Get info
-                     */
-                    String tokens[] = t.split(",");
-                    mDx = Double.parseDouble(tokens[1]);
-                    mDy = Double.parseDouble(tokens[2]);
-                    mLonTopLeft = Double.parseDouble(tokens[3]);
-                    mLatTopLeft = Double.parseDouble(tokens[4]);
-                    mTagged = true;
-                }
-            }
-            
-            /*
-             * If the plate not tagged, show help
-             */
-            if(!mTagged) {
-                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.ToTag));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                if(!isFinishing()) {
-                    mAlertDialog.show();
-                }
-            }
-            else {
-                mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setCanceledOnTouchOutside(false);
-                mAlertDialog.setMessage(getString(R.string.AlreadyTagged));
-                mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
-                    /* (non-Javadoc)
-                     * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
-                     */
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                if(!isFinishing()) {
-                    mAlertDialog.show();
-                }
-            }
-
-        }
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /* (non-Javadoc)
      * @see android.app.Activity#onPause()
@@ -626,14 +380,7 @@ public class PlatesTagActivity extends Activity implements Observer {
             }
         }
 
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-        }
-
-        /*
-         * Clean up on pause that was started in on resume
-         */
-        getApplicationContext().unbindService(mConnection);
+        mService.unregisterGpsListener(mGpsInfc);
     }
 
     /**
@@ -642,64 +389,133 @@ public class PlatesTagActivity extends Activity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        Helper.setOrientationAndOn(this);
-        
+
+        mPoint[0] = null;
+        mPointLL[0] = null;
+        mPoint[1] = null;
+        mPointLL[1] = null;
+
         /*
-         * Registering our receiver
-         * Bind now.
+         * Get proc name
          */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
-    }
-
-
-
-    /**
-     * Put a list of tags in JSON array
-     * @param tags
-     * @return
-     */
-    public static String putTagsToStorageFormat(LinkedList<String> tags) {
-
-        JSONArray jsonArr = new JSONArray();
-        for(String t : tags) {
-
-            jsonArr.put(t);
+        if(null == mService.getPlateDiagram()) {
+            mTagged = false;
+            return;
+        }
+        mName = PlatesActivity.getNameFromPath(mService.getPlateDiagram().getName());
+        if(mName != null) {
+            mAirport = mName.split("/")[0];
+        }
+        else {
+            mTagged = false;
+            return;
         }
 
-        return jsonArr.toString();
-    }
+        mPlatesView.setBitmap(mService.getPlateDiagram());
 
-    /**
-     * Gets an array of tags from storage JSON
-     * @return
-     */
-    public static LinkedList<String> getTagsStorageFromat(String json) {
-        JSONArray jsonArr;
-        LinkedList<String> ret = new LinkedList<String>();
-        try {
-            jsonArr = new JSONArray(json);
-        } catch (JSONException e) {
-            return ret;
+
+        /*
+         * Find who this plate is for, so we can verify its sane.
+         * By the time user is ready to tag, this should be found
+         */
+        mDest = DestinationFactory.build(mAirport, Destination.BASE);
+        mDest.addObserver(PlatesTagActivity.this);
+        mDest.find();
+
+        String tag = mService.getDBResource().getUserTag(mName);
+        if(null != tag) {
+            String tokens[] = tag.split(",");
+            mDx = Double.parseDouble(tokens[0]);
+            mDy = Double.parseDouble(tokens[1]);
+            mLonTopLeft = Double.parseDouble(tokens[2]);
+            mLatTopLeft = Double.parseDouble(tokens[3]);
+            mTagged = true;
         }
 
-        for(int i = 0; i < jsonArr.length(); i++) {
-            try {
-                ret.add(jsonArr.getString(i));
-            } catch (JSONException e) {
-                continue;
+        /*
+         * If the plate not tagged, show help
+         */
+        if(!mTagged) {
+            mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
+            mAlertDialog.setCancelable(false);
+            mAlertDialog.setCanceledOnTouchOutside(false);
+            mAlertDialog.setMessage(getString(R.string.ToTag));
+            mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            if(!isFinishing()) {
+                mAlertDialog.show();
             }
         }
-
-        return ret;
+        else {
+            mAlertDialog = new DecoratedAlertDialogBuilder(PlatesTagActivity.this).create();
+            mAlertDialog.setCancelable(false);
+            mAlertDialog.setCanceledOnTouchOutside(false);
+            mAlertDialog.setMessage(getString(R.string.AlreadyTagged));
+            mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.OK), new DialogInterface.OnClickListener() {
+                /* (non-Javadoc)
+                 * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
+                 */
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            if(!isFinishing()) {
+                mAlertDialog.show();
+            }
+        }
     }
 
 
     @Override
     public void update(Observable observable, Object data) {
-        if(mDest.isFound() && mTagged) {
+
+        Destination d = (Destination) observable;
+
+        if (d == mDest && d.isFound() && mTagged) {
             drawAirport();
         }
-    }
+        else if(d == mDestVerify) {
+            if(!mTagged) {
+                mToast.setText(getString(R.string.NotTagged));
+                mToast.show();
+            }
+            else if(d.isFound()) {
+                double lon = d.getLocation().getLongitude();
+                double lat = d.getLocation().getLatitude();
 
+                double x = (lon - mLonTopLeft) * mDx;
+                double y = (lat - mLatTopLeft) * mDy;
+
+                mPlatesView.verify(x, y);
+                mToast.setText(getString(R.string.VerifyMessage));
+                mToast.show();
+            }
+            else {
+                mToast.setText(getString(R.string.VerifyMessageFailed));
+                mToast.show();
+            }
+        }
+
+        for (int i = 0; i < POINTS; i++) {
+            if (d == mDestPoint[i]) {
+                if (d.isFound()) {
+                    mPointLL[i] = new Coordinate(d.getLocation().getLongitude(), d.getLocation().getLatitude());
+                    mToast.setText(getString(R.string.AddedPoint));
+                    mToast.show();
+                    mSetButton[i].setBackgroundColor(0xFF00FF00);
+                } else {
+                    mPointLL[i] = null;
+                    mToast.setText(getString(R.string.InvalidPoint));
+                    mToast.show();
+                    mSetButton[i].setBackgroundColor(0xFFFF0000);
+                }
+            }
+        }
+    }
 }

@@ -14,6 +14,7 @@ package com.ds.avare.adsb;
 
 import android.content.Context;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.shapes.TFRShape;
 import com.ds.avare.storage.Preferences;
 
@@ -30,9 +31,9 @@ public class TfrCache {
     private HashMap<String, AdsbTfr> mTfrs;
     private Preferences mPref;
 
-    public TfrCache(Context ctx) {
+    public TfrCache() {
         mTfrs = new HashMap<String, AdsbTfr>();
-        mPref = new Preferences(ctx);
+        mPref = StorageService.getInstance().getPreferences();
     }
 
     public LinkedList<TFRShape> getShapes() {

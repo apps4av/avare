@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.ds.avare.flight.Aircraft;
 import com.ds.avare.flight.Checklist;
 import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Obstacle;
 import com.ds.avare.plan.Cifp;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.LabelCoordinate;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.weather.AirSigMet;
@@ -34,6 +36,9 @@ import java.util.TreeMap;
 
 public class ContentProviderHelper {
 
+    static int getIndex(Cursor c, String id) {
+        return c.getColumnIndex(id);
+    }
 
     public static LinkedList<Obstacle> getObstacles(final Context ctx, double longitude, double latitude, double height) {
 
@@ -61,9 +66,9 @@ public class ContentProviderHelper {
             if (c != null) {
                 while (c.moveToNext()) {
                     ret.add(new Obstacle(
-                            c.getFloat(c.getColumnIndex(ObstaclesContract.LONGITUDE)),
-                            c.getFloat(c.getColumnIndex(ObstaclesContract.LATITUDE)),
-                            (int) c.getFloat(c.getColumnIndex(ObstaclesContract.HEIGHT))));
+                            c.getFloat(getIndex(c, ObstaclesContract.LONGITUDE)),
+                            c.getFloat(getIndex(c, ObstaclesContract.LATITUDE)),
+                            (int) c.getFloat(getIndex(c, ObstaclesContract.HEIGHT))));
                 }
             }
 
@@ -102,12 +107,12 @@ public class ContentProviderHelper {
                 while (c.moveToNext()) {
                     Cifp cifp = new Cifp(
                             name,
-                            c.getString(c.getColumnIndex(ProceduresContract.INITIAL_COURSE)),
-                            c.getString(c.getColumnIndex(ProceduresContract.INITIAL_ALTITUDE)),
-                            c.getString(c.getColumnIndex(ProceduresContract.FINAL_COURSE)),
-                            c.getString(c.getColumnIndex(ProceduresContract.FINAL_ALTITUDE)),
-                            c.getString(c.getColumnIndex(ProceduresContract.MISSED_COURSE)),
-                            c.getString(c.getColumnIndex(ProceduresContract.MISSED_ALTITUDE))
+                            c.getString(getIndex(c, ProceduresContract.INITIAL_COURSE)),
+                            c.getString(getIndex(c, ProceduresContract.INITIAL_ALTITUDE)),
+                            c.getString(getIndex(c, ProceduresContract.FINAL_COURSE)),
+                            c.getString(getIndex(c, ProceduresContract.FINAL_ALTITUDE)),
+                            c.getString(getIndex(c, ProceduresContract.MISSED_COURSE)),
+                            c.getString(getIndex(c, ProceduresContract.MISSED_ALTITUDE))
                     );
                     map.put(cifp.getInitialCourse(), cifp);
                 }
@@ -143,9 +148,9 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     taf = new Taf();
-                    taf.rawText = c.getString(c.getColumnIndex(WeatherContract.TAF_TEXT));
-                    taf.time = c.getString(c.getColumnIndex(WeatherContract.TAF_TIME));
-                    taf.stationId = c.getString(c.getColumnIndex(WeatherContract.TAF_STATION));
+                    taf.setRawText(c.getString(getIndex(c, WeatherContract.TAF_TEXT)));
+                    taf.setTime(c.getString(getIndex(c, WeatherContract.TAF_TIME)));
+                    taf.setStationId(c.getString(getIndex(c, WeatherContract.TAF_STATION)));
                 }
             }
         }
@@ -176,10 +181,10 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     metar = new Metar();
-                    metar.rawText = c.getString(c.getColumnIndex(WeatherContract.METAR_TEXT));
-                    metar.time = c.getString(c.getColumnIndex(WeatherContract.METAR_TIME));
-                    metar.stationId = c.getString(c.getColumnIndex(WeatherContract.METAR_STATION));
-                    metar.flightCategory = c.getString(c.getColumnIndex(WeatherContract.METAR_FLIGHT_CATEGORY));
+                    metar.setRawText(c.getString(getIndex(c, WeatherContract.METAR_TEXT)));
+                    metar.setTime(c.getString(getIndex(c, WeatherContract.METAR_TIME)));
+                    metar.setStationId(c.getString(getIndex(c, WeatherContract.METAR_STATION)));
+                    metar.setFlightCategory(c.getString(getIndex(c, WeatherContract.METAR_FLIGHT_CATEGORY)));
                 }
             }
         }
@@ -208,17 +213,17 @@ public class ContentProviderHelper {
             if(c != null) {
                 while(c.moveToNext()) {
                     AirSigMet a = new AirSigMet();
-                    a.rawText = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TEXT));
-                    a.timeFrom = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_FROM));
-                    a.timeTo = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TIME_TO));
-                    a.points = c.getString(c.getColumnIndex(WeatherContract.AIRMET_POINTS));
-                    a.minFt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MIN));
-                    a.maxFt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MSL_MAX));
-                    a.movementDeg = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_DIRECTION));
-                    a.movementKt = c.getString(c.getColumnIndex(WeatherContract.AIRMET_MOVEMENT_SPEED));
-                    a.hazard = c.getString(c.getColumnIndex(WeatherContract.AIRMET_HAZARD));
-                    a.severity = c.getString(c.getColumnIndex(WeatherContract.AIRMET_SEVERITY));
-                    a.reportType = c.getString(c.getColumnIndex(WeatherContract.AIRMET_TYPE));
+                    a.setRawText(c.getString(getIndex(c, WeatherContract.AIRMET_TEXT)));
+                    a.setTimeFrom(c.getString(getIndex(c, WeatherContract.AIRMET_TIME_FROM)));
+                    a.setTimeTo(c.getString(getIndex(c, WeatherContract.AIRMET_TIME_TO)));
+                    a.setPoints(c.getString(getIndex(c, WeatherContract.AIRMET_POINTS)));
+                    a.setMinFt(c.getString(getIndex(c, WeatherContract.AIRMET_MSL_MIN)));
+                    a.setMaxFt(c.getString(getIndex(c, WeatherContract.AIRMET_MSL_MAX)));
+                    a.setMovementDeg(c.getString(getIndex(c, WeatherContract.AIRMET_MOVEMENT_DIRECTION)));
+                    a.setMovementKt(c.getString(getIndex(c, WeatherContract.AIRMET_MOVEMENT_SPEED)));
+                    a.setHazard(c.getString(getIndex(c, WeatherContract.AIRMET_HAZARD)));
+                    a.setSeverity(c.getString(getIndex(c, WeatherContract.AIRMET_SEVERITY)));
+                    a.setReportType(c.getString(getIndex(c, WeatherContract.AIRMET_TYPE)));
                     airsig.add(a);
                 }
             }
@@ -261,12 +266,12 @@ public class ContentProviderHelper {
             if(c != null) {
                 while(c.moveToNext()) {
                     Airep a = new Airep();
-                    a.rawText = c.getString(c.getColumnIndex(WeatherContract.PIREP_TEXT));
-                    a.time = c.getString(c.getColumnIndex(WeatherContract.PIREP_TIME));
-                    a.lon = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LONGITUDE));
-                    a.lat = c.getFloat(c.getColumnIndex(WeatherContract.PIREP_LATITUDE));
-                    a.reportType = c.getString(c.getColumnIndex(WeatherContract.PIREP_TYPE));
-                    aireps.put(a.rawText, a);
+                    a.setRawText(c.getString(getIndex(c, WeatherContract.PIREP_TEXT)));
+                    a.setTime(c.getString(getIndex(c, WeatherContract.PIREP_TIME)));
+                    a.setLon(c.getFloat(getIndex(c, WeatherContract.PIREP_LONGITUDE)));
+                    a.setLat(c.getFloat(getIndex(c, WeatherContract.PIREP_LATITUDE)));
+                    a.setReportType(c.getString(getIndex(c, WeatherContract.PIREP_TYPE)));
+                    aireps.put(a.getRawText(), a);
                 }
             }
         }
@@ -280,7 +285,7 @@ public class ContentProviderHelper {
         Collections.sort(list, new Comparator<Airep>() {
             @Override
             public int compare(Airep a1, Airep a2) {
-                return a1.rawText.compareTo(a2.rawText);
+                return a1.getRawText().compareTo(a2.getRawText());
             }
         });
         return list;
@@ -312,19 +317,19 @@ public class ContentProviderHelper {
                 if(c.moveToFirst()) {
 
                     wa = new WindsAloft();
-                    wa.station = c.getString(c.getColumnIndex(WeatherContract.WIND_STATION));
-                    wa.time = c.getString(c.getColumnIndex(WeatherContract.WIND_TIME));
-                    wa.lon = c.getFloat(c.getColumnIndex(WeatherContract.WIND_LONGITUDE));
-                    wa.lat = c.getFloat(c.getColumnIndex(WeatherContract.WIND_LATITUDE));
-                    wa.w3k = c.getString(c.getColumnIndex(WeatherContract.WIND_3K)).replaceAll("[ ]", "");
-                    wa.w6k = c.getString(c.getColumnIndex(WeatherContract.WIND_6K)).replaceAll("[ ]", "");
-                    wa.w9k = c.getString(c.getColumnIndex(WeatherContract.WIND_9K)).replaceAll("[ ]", "");
-                    wa.w12k = c.getString(c.getColumnIndex(WeatherContract.WIND_12K)).replaceAll("[ ]", "");
-                    wa.w18k = c.getString(c.getColumnIndex(WeatherContract.WIND_18K)).replaceAll("[ ]", "");
-                    wa.w24k = c.getString(c.getColumnIndex(WeatherContract.WIND_24K)).replaceAll("[ ]", "");
-                    wa.w30k = c.getString(c.getColumnIndex(WeatherContract.WIND_30K)).replaceAll("[ ]", "");
-                    wa.w34k = c.getString(c.getColumnIndex(WeatherContract.WIND_34K)).replaceAll("[ ]", "");
-                    wa.w39k = c.getString(c.getColumnIndex(WeatherContract.WIND_39K)).replaceAll("[ ]", "");
+                    wa.setStation(c.getString(getIndex(c, WeatherContract.WIND_STATION)));
+                    wa.setTime(c.getString(getIndex(c, WeatherContract.WIND_TIME)));
+                    wa.setLon(c.getFloat(getIndex(c, WeatherContract.WIND_LONGITUDE)));
+                    wa.setLat(c.getFloat(getIndex(c, WeatherContract.WIND_LATITUDE)));
+                    wa.setW3k(c.getString(getIndex(c, WeatherContract.WIND_3K)).replaceAll("[ ]", ""));
+                    wa.setW6k(c.getString(getIndex(c, WeatherContract.WIND_6K)).replaceAll("[ ]", ""));
+                    wa.setW9k(c.getString(getIndex(c, WeatherContract.WIND_9K)).replaceAll("[ ]", ""));
+                    wa.setW12k(c.getString(getIndex(c, WeatherContract.WIND_12K)).replaceAll("[ ]", ""));
+                    wa.setW18k(c.getString(getIndex(c, WeatherContract.WIND_18K)).replaceAll("[ ]", ""));
+                    wa.setW24k(c.getString(getIndex(c, WeatherContract.WIND_24K)).replaceAll("[ ]", ""));
+                    wa.setW30k(c.getString(getIndex(c, WeatherContract.WIND_30K)).replaceAll("[ ]", ""));
+                    wa.setW34k(c.getString(getIndex(c, WeatherContract.WIND_34K)).replaceAll("[ ]", ""));
+                    wa.setW39k(c.getString(getIndex(c, WeatherContract.WIND_39K)).replaceAll("[ ]", ""));
                 }
             }
         }
@@ -365,14 +370,14 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(GameTfrContract.CONTENT_URI, null, qry, arguments, null);
             if(c != null) {
                 while(c.moveToNext()) {
-                    long time = c.getLong(c.getColumnIndex(GameTfrContract.TIME));
+                    long time = c.getLong(getIndex(c, GameTfrContract.TIME));
                     // print in zulu
                     String toprint = formatterZulu.format(new Date(time));
 
                     LabelCoordinate lc = new LabelCoordinate(
-                            c.getFloat(c.getColumnIndex(GameTfrContract.LONGITUDE)),
-                            c.getFloat(c.getColumnIndex(GameTfrContract.LATITUDE)),
-                            toprint + " " + c.getString(c.getColumnIndex(GameTfrContract.STADIUM)));
+                            c.getFloat(getIndex(c, GameTfrContract.LONGITUDE)),
+                            c.getFloat(getIndex(c, GameTfrContract.LATITUDE)),
+                            toprint + " " + c.getString(getIndex(c, GameTfrContract.STADIUM)));
                     ret.add(lc);
                 }
             }
@@ -416,8 +421,8 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, null, selection, selectionArgs, null);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String text = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_TEXT));
-                    String id = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_ID));
+                    String text = c.getString(getIndex(c, UserContract.LIST_COLUMN_TEXT));
+                    String id = c.getString(getIndex(c, UserContract.LIST_COLUMN_ID));
                     ret = new Checklist(id, text);
                     break;
                 }
@@ -440,8 +445,8 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(UserContract.CONTENT_URI_LIST, proj, null, null, order);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String name = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_ID));
-                    String text = c.getString(c.getColumnIndex(UserContract.LIST_COLUMN_TEXT));
+                    String name = c.getString(getIndex(c, UserContract.LIST_COLUMN_ID));
+                    String text = c.getString(getIndex(c, UserContract.LIST_COLUMN_TEXT));
                     ret.add(new Checklist(name, text));
                 }
             }
@@ -484,7 +489,7 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, proj, null, null, order);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
+                    String text = c.getString(getIndex(c, UserContract.WNB_COLUMN_TEXT));
                     ret.add(new WeightAndBalance(text));
                 }
             }
@@ -506,7 +511,7 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(UserContract.CONTENT_URI_WNB, null, selection, selectionArgs, null);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String text = c.getString(c.getColumnIndex(UserContract.WNB_COLUMN_TEXT));
+                    String text = c.getString(getIndex(c, UserContract.WNB_COLUMN_TEXT));
                     ret = new WeightAndBalance(text);
                     break;
                 }
@@ -516,6 +521,12 @@ public class ContentProviderHelper {
 
         CursorManager.close(c);
         return ret;
+    }
+
+    public static void deleteUserPlan(Context ctx, String name) {
+        String selection = "(" + UserContract.PLAN_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_PLAN, selection, selectionArg);
     }
 
     public static void setUserPlans(Context ctx, LinkedHashMap<String, String> plans) {
@@ -540,8 +551,8 @@ public class ContentProviderHelper {
             c = ctx.getContentResolver().query(UserContract.CONTENT_URI_PLAN, proj, null, null, order);
             if (c != null) {
                 while (c.moveToNext()) {
-                    String name = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_ID));
-                    String path = c.getString(c.getColumnIndex(UserContract.PLAN_COLUMN_PATH));
+                    String name = c.getString(getIndex(c, UserContract.PLAN_COLUMN_ID));
+                    String path = c.getString(getIndex(c, UserContract.PLAN_COLUMN_PATH));
                     ret.put(name, path);
                 }
             }
@@ -564,10 +575,10 @@ public class ContentProviderHelper {
             if (c != null) {
                 while (c.moveToNext()) {
                     StringPreference s = new StringPreference(
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DESTTYPE)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DBTYPE)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_NAME)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_WID)));
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_DESTTYPE)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_DBTYPE)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_NAME)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_WID)));
 
                     ret.add(s.getHashedName());
                 }
@@ -601,6 +612,49 @@ public class ContentProviderHelper {
         String[] selectionArg = new String[]{id};
         ctx.getContentResolver().delete(UserContract.CONTENT_URI_RECENT, selection, selectionArg);
     }
+    
+    public static LinkedList<Coordinate> getUserDraw(Context ctx) {
+        Cursor c = null;
+        LinkedList<Coordinate> ret = new LinkedList<>();
+
+        String[] proj = new String[]{UserContract.DRAW_COLUMN_POINTS_X, UserContract.DRAW_COLUMN_POINTS_Y, UserContract.DRAW_COLUMN_SEP};
+        String order = UserContract.DRAW_COLUMN_ID + " asc";
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_DRAW, proj, null, null, order);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    Coordinate p = new Coordinate(c.getFloat(getIndex(c, UserContract.DRAW_COLUMN_POINTS_X)),
+                            c.getFloat(getIndex(c, UserContract.DRAW_COLUMN_POINTS_Y)));
+                    int sep = c.getInt(getIndex(c, UserContract.DRAW_COLUMN_SEP));
+                    if(0 != sep) {
+                        p.makeSeparate();
+                    }
+                    ret.add(p);
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+
+        return ret;
+    }
+
+    public static void setUserDraw(Context ctx, LinkedList<Coordinate> points) {
+
+        // delete all
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_DRAW, null, null);
+
+        for (Coordinate p : points) {
+            ContentValues newValues = new ContentValues();
+
+            newValues.put(UserContract.DRAW_COLUMN_POINTS_X, (float)p.getLatitude());
+            newValues.put(UserContract.DRAW_COLUMN_POINTS_Y, (float)p.getLongitude());
+            newValues.put(UserContract.DRAW_COLUMN_SEP, p.isSeparate() ? 1 : 0);
+            ctx.getContentResolver().insert(UserContract.CONTENT_URI_DRAW, newValues);
+        }
+    }
 
     /**
      * @return
@@ -618,10 +672,10 @@ public class ContentProviderHelper {
             if (c != null) {
                 while (c.moveToNext()) {
                     s = new StringPreference(
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DESTTYPE)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_DBTYPE)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_NAME)),
-                            c.getString(c.getColumnIndex(UserContract.RECENT_COLUMN_WID)));
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_DESTTYPE)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_DBTYPE)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_NAME)),
+                            c.getString(getIndex(c, UserContract.RECENT_COLUMN_WID)));
                     break;
                 }
             }
@@ -641,4 +695,164 @@ public class ContentProviderHelper {
         newValues.put(UserContract.RECENT_COLUMN_WID, newName);
         ctx.getContentResolver().update(UserContract.CONTENT_URI_RECENT, newValues, selection, selectionArg);
     }
+
+    public static void setUserTag(Context ctx, String name, String tag) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.TAG_COLUMN_ID, name);
+        newValues.put(UserContract.TAG_COLUMN_TEXT, tag);
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_TAG, newValues);
+    }
+
+    public static void deleteUserTag(Context ctx, String name) {
+        String selection = "(" + UserContract.TAG_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{name};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_TAG, selection, selectionArg);
+    }
+
+    public static String getUserTag(Context ctx, String name) {
+        Cursor c = null;
+        String ret = null;
+
+        String selection = UserContract.TAG_COLUMN_ID + " = ?";
+        String[] selectionArgs = new String[]{name};
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_TAG, null, selection, selectionArgs, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    ret = c.getString(getIndex(c, UserContract.TAG_COLUMN_TEXT));
+                    break;
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return ret;
+    }
+
+    public static void setUserTags(Context ctx, HashMap<String, String> tags) {
+        for (String key : tags.keySet()) {
+            setUserTag(ctx, key, tags.get(key));
+        }
+    }
+
+    /**
+     *
+     */
+    public static LinkedList<Aircraft> getUserAircraft(Context ctx) {
+
+        Cursor c = null;
+        LinkedList<Aircraft> aircraft = new LinkedList<>();
+
+        try {
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_AIRCRAFT, null, null, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+
+                    Aircraft a = new Aircraft();
+
+                    a.setId(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_ID)));
+                    a.setType(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_TYPE)));
+                    a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
+                    a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
+                    a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
+                    a.setCruiseTas((int)c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
+                    a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
+                    a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));
+                    a.setPic(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PIC)));
+                    a.setPilotInfo(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PILOT)));
+                    a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
+                    a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
+                    a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                    aircraft.add(a);
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return aircraft;
+    }
+
+
+    /**
+     *
+     */
+    public static Aircraft getUserAircraft(Context ctx, String id) {
+
+        Cursor c = null;
+        Aircraft a = null;
+
+        String selection = "(" + UserContract.AIRCRAFT_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{id};
+
+        try {
+
+            c = ctx.getContentResolver().query(UserContract.CONTENT_URI_AIRCRAFT, null, selection, selectionArg, null);
+            if(c != null) {
+                if(c.moveToNext()) {
+
+                    a = new Aircraft();
+
+                    a.setId(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_ID)));
+                    a.setType(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_TYPE)));
+                    a.setWake(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_WAKE)));
+                    a.setEquipment(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_EQUIPMENT)));
+                    a.setICao(c.getInt(getIndex(c, UserContract.AIRCRAFT_COLUMN_ICAO)));
+                    a.setCruiseTas((int)c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_CRUISE_TAS)));
+                    a.setSurveillance(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_SURVEILLANCE)));
+                    a.setEndurance(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE)));
+                    a.setColor(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_COLOR)));
+                    a.setPic(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PIC)));
+                    a.setPilotInfo(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_PILOT)));
+                    a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
+                    a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
+                    a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+
+        CursorManager.close(c);
+        return a;
+    }
+
+    public static void setUserAircraft(Context ctx, Aircraft a) {
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(UserContract.AIRCRAFT_COLUMN_ID, a.getId());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_TYPE, a.getType());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_WAKE, a.getWake());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_EQUIPMENT, a.getEquipment());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_ICAO, a.getICao());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_CRUISE_TAS, a.getCruiseTas());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_SURVEILLANCE, a.getSurveillance());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_FUEL_ENDURANCE, a.getEndurance());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_COLOR, a.getColor());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_PIC, a.getPic());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_PILOT, a.getPilotInfo());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_SINK_RATE, a.getSinkRate());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_FUEL_BURN, a.getFuelBurnRate());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_BASE, a.getHomeBase());
+
+        ctx.getContentResolver().insert(UserContract.CONTENT_URI_AIRCRAFT, newValues);
+    }
+
+    public static void setUserAircraft(Context ctx, LinkedList<Aircraft> aircraft) {
+        for (Aircraft a : aircraft) {
+            setUserAircraft(ctx, a);
+        }
+    }
+
+    public static void deleteUserAircraft(Context ctx, String id) {
+        String selection = "(" + UserContract.AIRCRAFT_COLUMN_ID + " = ?)";
+        String[] selectionArg = new String[]{id};
+        ctx.getContentResolver().delete(UserContract.CONTENT_URI_AIRCRAFT, selection, selectionArg);
+    }
+
 }

@@ -352,7 +352,7 @@ public class LocationContentProviderHelper {
     /**
      * Search with I am feeling lucky. Best guess
      */
-    public static StringPreference searchOne(Context ctx, String name) {
+    public static StringPreference searchOne(Context ctx, String name, boolean noCache) {
 
         if(null == name) {
             return null;
@@ -384,9 +384,11 @@ public class LocationContentProviderHelper {
         }
 
         // Search for this as a named GPS waypoint in our most recent used list
-        StringPreference sp = ContentProviderHelper.getUserRecent(ctx, name);
-        if(null != sp) {
-            return sp;
+        if(false == noCache) {
+            StringPreference sp = ContentProviderHelper.getUserRecent(ctx, name);
+            if (null != sp) {
+                return sp;
+            }
         }
 
         /*
@@ -810,8 +812,8 @@ public class LocationContentProviderHelper {
                     String id = c.getString(c.getColumnIndex(LocationContract.AIRPORTS_LOCATION_ID));
                     Metar m = metars.get(id);
                     if (m != null) {
-                        m.lat = lat;
-                        m.lon = lon;
+                        m.setLat(lat);
+                        m.setLon(lon);
                     }
                 }
             }

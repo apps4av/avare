@@ -1,5 +1,6 @@
 package com.ds.avare.content;
 
+import android.content.ContentUris;
 import android.net.Uri;
 
 /**
@@ -13,22 +14,12 @@ public class WeatherContract {
     public static final Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
 
     public static final String BASE_AIRMET = "airsig";
-    public static final String BASE_PIREP = "apirep";
-    public static final String BASE_TAF = "tafs";
-    public static final String BASE_METAR = "metars";
-    public static final String BASE_WIND = "wa";
-
     public static final Uri CONTENT_URI_AIRMET = Uri.withAppendedPath(AUTHORITY_URI, BASE_AIRMET);
-    public static final Uri CONTENT_URI_PIREP = Uri.withAppendedPath(AUTHORITY_URI, BASE_PIREP);
-    public static final Uri CONTENT_URI_TAF = Uri.withAppendedPath(AUTHORITY_URI, BASE_TAF);
-    public static final Uri CONTENT_URI_METAR = Uri.withAppendedPath(AUTHORITY_URI, BASE_METAR);
-    public static final Uri CONTENT_URI_WIND = Uri.withAppendedPath(AUTHORITY_URI, BASE_WIND);
+    public static Uri buildAirmetUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_AIRMET, id);
+    }
 
     public static final String TABLE_AIRMET = "airsig";
-    public static final String TABLE_PIREP = "apirep";
-    public static final String TABLE_TAF = "tafs";
-    public static final String TABLE_METAR = "metars";
-    public static final String TABLE_WIND = "wa";
 
     public static final String AIRMET_TEXT = "raw_text";
     public static final String AIRMET_TIME_FROM = "valid_time_from";
@@ -42,22 +33,52 @@ public class WeatherContract {
     public static final String AIRMET_SEVERITY = "severity";
     public static final String AIRMET_TYPE = "airsigmet_type";
 
+    public static final String BASE_PIREP = "apirep";
+    public static final Uri CONTENT_URI_PIREP = Uri.withAppendedPath(AUTHORITY_URI, BASE_PIREP);
+    public static Uri buildPirepUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_PIREP, id);
+    }
+
+    public static final String TABLE_PIREP = "apirep";
+
     public static final String PIREP_TEXT = "raw_text";
     public static final String PIREP_TIME = "observation_time";
     public static final String PIREP_LONGITUDE = "longitude";
     public static final String PIREP_LATITUDE = "latitude";
     public static final String PIREP_TYPE = "report_type";
 
+    public static final String BASE_TAF = "tafs";
+    public static final Uri CONTENT_URI_TAF = Uri.withAppendedPath(AUTHORITY_URI, BASE_TAF);
+    public static Uri buildTafUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_TAF, id);
+    }
+
+    public static final String TABLE_TAF = "tafs";
+
     public static final String TAF_TEXT = "raw_text";
     public static final String TAF_TIME = "issue_time";
     public static final String TAF_STATION = "station_id";
+
+    public static final String BASE_METAR = "metars";
+    public static final Uri CONTENT_URI_METAR = Uri.withAppendedPath(AUTHORITY_URI, BASE_METAR);
+    public static Uri buildMetarUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_METAR, id);
+    }
+
+    public static final String TABLE_METAR = "metars";
 
     public static final String METAR_TEXT = "raw_text";
     public static final String METAR_TIME = "issue_time";
     public static final String METAR_STATION = "station_id";
     public static final String METAR_FLIGHT_CATEGORY = "flight_category";
-    public static final String METAR_LONGITUDE = "longitude";
-    public static final String METAR_LATITUDE = "latitude";
+
+    public static final String BASE_WIND = "wa";
+    public static final Uri CONTENT_URI_WIND = Uri.withAppendedPath(AUTHORITY_URI, BASE_WIND);
+    public static Uri buildWindUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_WIND, id);
+    }
+
+    public static final String TABLE_WIND = "wa";
 
     public static final String WIND_STATION = "stationid";
     public static final String WIND_TIME = "valid";

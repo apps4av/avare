@@ -56,4 +56,48 @@ public class UserContract {
         return ContentUris.withAppendedId(CONTENT_URI_RECENT, id);
     }
 
+    public static final String BASE_TAG = "tag";
+    public static final Uri CONTENT_URI_TAG = Uri.withAppendedPath(AUTHORITY_URI, BASE_TAG);
+    public static final String TABLE_TAG = "tags";
+    public static final String TAG_COLUMN_ID = "name";
+    public static final String TAG_COLUMN_TEXT = "text";
+
+    public static Uri buildTagsUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_TAG, id);
+    }
+
+    public static final String BASE_DRAW = "draw";
+    public static final Uri CONTENT_URI_DRAW = Uri.withAppendedPath(AUTHORITY_URI, BASE_DRAW);
+    public static final String TABLE_DRAW = "draws";
+    public static final String DRAW_COLUMN_ID = "id";
+    public static final String DRAW_COLUMN_POINTS_X = "x";
+    public static final String DRAW_COLUMN_POINTS_Y = "y";
+    public static final String DRAW_COLUMN_SEP = "separate";
+
+    public static Uri buildDrawsUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_DRAW, id);
+    }
+
+    public static final String BASE_AIRCRAFT = "ac";
+    public static final Uri CONTENT_URI_AIRCRAFT = Uri.withAppendedPath(AUTHORITY_URI, BASE_AIRCRAFT);
+    public static final String TABLE_AIRCRAFT = "aircraft";
+    public static final String AIRCRAFT_COLUMN_ID = "id";
+    public static final String AIRCRAFT_COLUMN_TYPE = "type";
+    public static final String AIRCRAFT_COLUMN_WAKE = "wake";
+    public static final String AIRCRAFT_COLUMN_EQUIPMENT = "equipment";
+    public static final String AIRCRAFT_COLUMN_ICAO = "icao";
+    public static final String AIRCRAFT_COLUMN_CRUISE_TAS = "cruise_tas";
+    public static final String AIRCRAFT_COLUMN_SURVEILLANCE = "surveillance";
+    public static final String AIRCRAFT_COLUMN_FUEL_ENDURANCE = "endurance";
+    public static final String AIRCRAFT_COLUMN_COLOR = "color";
+    public static final String AIRCRAFT_COLUMN_PIC = "pic";
+    public static final String AIRCRAFT_COLUMN_PILOT = "pilot";
+    public static final String AIRCRAFT_COLUMN_SINK_RATE = "sink_rate";
+    public static final String AIRCRAFT_COLUMN_FUEL_BURN = "fuel_burn";
+    public static final String AIRCRAFT_COLUMN_BASE = "base";
+
+    public static Uri buildAircraftUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_AIRCRAFT, id);
+    }
+
 }

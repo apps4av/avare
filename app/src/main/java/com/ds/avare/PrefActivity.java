@@ -11,7 +11,6 @@ Redistribution and use in source and binary forms, with or without modification,
 */
 
 package com.ds.avare;
-import com.ds.avare.connections.BTOutConnection;
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.Helper;
@@ -24,6 +23,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
+import android.view.Window;
 
 /**
  * 
@@ -57,41 +57,14 @@ public class PrefActivity extends PreferenceActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         Helper.setTheme(this);
-        super.onCreate(savedInstanceState); 
+        super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
-        mService = null;        
+        mService = StorageService.getInstance();
     }
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    /**
-     * 
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder)
-         */
-        @Override
-        public void onServiceConnected(ComponentName className,
-                IBinder service) {
-            /* 
-             * We've bound to LocalService, cast the IBinder and get LocalService instance
-             */
-            StorageService.LocalBinder binder = (StorageService.LocalBinder)service;
-            mService = binder.getService();
-            mService.registerGpsListener(mGpsInfc);
-        }    
-
-        /* (non-Javadoc)
-         * @see android.content.ServiceConnection#onServiceDisconnected(android.content.ComponentName)
-         */
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-        }
-    };
 
     /**
      * 
@@ -101,12 +74,7 @@ public class PrefActivity extends PreferenceActivity {
         super.onResume();
         
         Helper.setOrientationAndOn(this);
-        /*
-         * Registering our receiver
-         * Bind now.
-         */
-        Intent intent = new Intent(this, StorageService.class);
-        getApplicationContext().bindService(intent, mConnection, 0);
+        mService.registerGpsListener(mGpsInfc);
     }
 
     /**
@@ -121,19 +89,11 @@ public class PrefActivity extends PreferenceActivity {
          */
         Preferences pref = new Preferences(this);
 
-        getApplicationContext().unbindService(mConnection);
-        
-        if(null != mService) {
-            mService.unregisterGpsListener(mGpsInfc);
-            
-            /*
-             * This will will sure we update tiles when someone changes storage folder
-             */
-            mService.getTiles().forceReload();
-            mService.getUDWMgr().forceReload();	// Tell the UDWs to reload as well
-            mService.getExternalPlanMgr().forceReload(); // Reload plans too
-            BTOutConnection.getInstance(this).disconnect();
-            BTOutConnection.getInstance(this).connect(pref.getAutopilotBluetoothDevice(), false);
-        }
+        mService.unregisterGpsListener(mGpsInfc);
+
+        /*
+         * This will will sure we update tiles when someone changes storage folder
+         */
+        mService.getTiles().forceReload();
     }
 }

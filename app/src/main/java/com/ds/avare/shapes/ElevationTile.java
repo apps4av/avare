@@ -14,6 +14,7 @@ package com.ds.avare.shapes;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 
@@ -24,18 +25,11 @@ import com.ds.avare.utils.BitmapHolder;
  */
 public class ElevationTile {
     private BitmapHolder mElevBitmap;    
-    private Preferences mPref;
     private Tile mTile;
 
-    private Context mContext;
-
     /**
-     * 
-     * @param context
      */
-    public ElevationTile(Context context) {
-        mContext = context;
-        mPref = new Preferences(context);
+    public ElevationTile() {
         mElevBitmap = new BitmapHolder(Bitmap.Config.ARGB_8888);
     }
     
@@ -91,7 +85,8 @@ public class ElevationTile {
          * New tile
          */
         mTile = t;
-        BitmapHolder b = new BitmapHolder(mContext, mPref, t.getName(), 1, Bitmap.Config.ARGB_8888);
+        BitmapHolder b = new BitmapHolder(StorageService.getInstance().getApplicationContext(),
+                StorageService.getInstance().getPreferences(), t.getName(), 1, Bitmap.Config.ARGB_8888);
         if(b.getName() == null) {
             return;
         }

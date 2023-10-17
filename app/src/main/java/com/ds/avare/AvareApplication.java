@@ -13,27 +13,17 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare;
 
 import android.app.Application;
-import android.content.Context;
-
-import org.acra.ACRA;
-import org.acra.annotation.*;
 
 /**
  * Created by zkhan on 1/25/16.
  */
-@AcraCore(buildConfigClass = BuildConfig.class)
 
-@AcraMailSender(mailTo = "apps4av@gmail.com",
-        reportAsFile = true,
-        reportFileName = "crash.txt",
-        resSubject = R.string.CrashLabel,
-        resBody = R.string.CrashText)
 public class AvareApplication extends Application {
     @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        // The following line triggers the initialization of ACRA
-        ACRA.init(this);
+    public void onCreate() {
+        super.onCreate();
+        // init storage class
+        StorageService s = StorageService.getInstance();
+        s.setContext(getApplicationContext());
     }
 }

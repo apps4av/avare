@@ -23,15 +23,63 @@ import com.ds.avare.storage.Preferences;
 public class Airep {
 
     public static final int RADIUS = 5; // degrees;
-    
-    public String time;
-    public String reportType;
-    public String rawText;
-    public float lon;
-    public float lat;
-    
-    public long timestamp;
-    
+
+    private String time;
+    private String reportType;
+    private String rawText;
+    private float lon;
+    private float lat;
+    private long timestamp;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
+    }
+
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
+
+    public float getLon() {
+        return lon;
+    }
+
+    public void setLon(float lon) {
+        this.lon = lon;
+    }
+
+    public float getLat() {
+        return lat;
+    }
+
+    public void setLat(float lat) {
+        this.lat = lat;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+
     /**
      * 
      */

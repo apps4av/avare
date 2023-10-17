@@ -72,19 +72,17 @@ public class DistanceRings {
      * Instrument to handle displaying of rings of various radius based
      * upon speed and zoom factors
      * 
-     * @param service background storage service
-     * @param context application context
      * @param textSize size of the text to draw
      */
-    public DistanceRings(StorageService service, Context context, float textSize) {
-    	mService = service;
-    	mContext = context;
-        mDipToPix = Helper.getDpiToPix(context);
-        mPref = new Preferences(context);
+    public DistanceRings(float textSize) {
+    	mService = StorageService.getInstance();
+    	mContext = mService.getApplicationContext();
+        mDipToPix = Helper.getDpiToPix(mContext);
+        mPref = mService.getPreferences();
     	mPaint = new Paint();
     	mPaint.setAntiAlias(true);
     	mPaint.setTextSize(textSize);
-    	mPaint.setTypeface(Helper.getTypeFace(context));
+    	mPaint.setTypeface(Helper.getTypeFace(mContext));
     }
     
     /***
@@ -218,10 +216,10 @@ public class DistanceRings {
         if(mPref.getDistanceRingType() == 1) {
             int macro = scale.getMacroFactor();
             /* the larger totalZoom is, the more zoomed in we are  */
-            if(macro <= 1 && scale.getScaleFactorRaw() > 1) {  
+            if(macro <= 1 && scale.getScaleFactor() > 1) {
                 ringScale = RINGS_1_2_5;        
             } 
-            else if(macro <= 1 && scale.getScaleFactorRaw() <= 1) {  
+            else if(macro <= 1 && scale.getScaleFactor() <= 1) {
                 ringScale = RINGS_2_5_10;
             } 
             else if (macro <= 2) {

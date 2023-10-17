@@ -169,7 +169,7 @@ public class LocationProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new LocationDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new LocationDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

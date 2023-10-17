@@ -40,11 +40,13 @@ import android.util.Xml;
 			<cmt>comment to display in bottom left of screen</cmt>
 		
 			<rtept lat="43.98431" lon="-88.56628">
+                <ele>200</ele>
 				<name>Point 1</name>
 				<desc>Description of the waypoint</desc>
 			</rtept>
 
 			<rtept lat="43.98431" lon="-88.56628">
+                 <ele>279</ele>
 				<name>Point 2</name>
 				<desc>Description of the waypoint</desc>
 			</rtept>
@@ -63,6 +65,7 @@ public class GpxPlanParser  extends PlanParser {
     private static final String RTEPT = "rtept";
     private static final String LAT = "lat";
     private static final String LON = "lon";
+    private static final String ELE = "ele";
     private static final String NAME = "name";
     private static final String CMT  = "cmt";
     
@@ -79,7 +82,7 @@ public class GpxPlanParser  extends PlanParser {
             parser.setInput(inputStream, null);
             parser.nextTag();
             return readGPX(parser);
-        } catch (Exception e) { }
+        } catch (Exception ignore) { }
         return null;
 	}
 
@@ -116,21 +119,26 @@ public class GpxPlanParser  extends PlanParser {
 
         String name = gUndef;
     	String cmt  = "";
-    	List<Waypoint> points = new ArrayList<Waypoint>();
+    	List<Waypoint> points = new ArrayList<>();
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String nodeName = parser.getName();
-            if (nodeName.equals(NAME)) {
-                name = readNAME(parser);
-            } else if (nodeName.equals(CMT)) {
-                cmt = readCMT(parser);
-            } else if (nodeName.equals(RTEPT)) {
-            	points.add(readRTEPT(parser));
-            } else {
-                skip(parser);
+
+            switch (parser.getName()) {
+                case NAME:
+                    name = readNAME(parser);
+                    break;
+                case CMT:
+                    cmt = readCMT(parser);
+                    break;
+                case RTEPT:
+                    points.add(readRTEPT(parser));
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         
@@ -144,8 +152,8 @@ public class GpxPlanParser  extends PlanParser {
      * 
      * @param parser The XML parser
      * @return the Waypoint object
-     * @throws XmlPullParserException
-     * @throws IOException
+     * @throws XmlPullParserException XML syntax error
+     * @throws IOException Failed to boil the lobster properly
      */
     private Waypoint readRTEPT(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, RTEPT);
@@ -154,6 +162,7 @@ public class GpxPlanParser  extends PlanParser {
         String cmt  = "";		// Comment about the waypoint
         float lat = 0;	// latitude
         float lon = 0;	// longitude
+        float ele = 0;  // Elevation of the target point
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -163,27 +172,34 @@ public class GpxPlanParser  extends PlanParser {
             	lat = Float.parseFloat(attrValue);
         	} else if (attrName.equals(LON)) {
             	lon = Float.parseFloat(attrValue);
-        	}
+            }
         }
         
-        // The NAME, DESC, and CMT are sub tags under here
+        // The NAME, CMT, and ELE are sub tags under here
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String nodeName = parser.getName();
-            if (nodeName.equals(NAME)) {
-                name = readNAME(parser);
-            } else if (nodeName.equals(CMT)) {
-                cmt = readCMT(parser);
-            } else {
-                skip(parser);
+
+            switch (parser.getName()) {
+                case NAME:
+                    name = readNAME(parser);
+                    break;
+                case CMT:
+                    cmt = readCMT(parser);
+                    break;
+                case ELE:
+                    ele = readELE(parser);
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         
         // Create a new waypoint from this data. Set the comment and make sure it's not
         // visible. It is made visible when the plan is enabled
-        Waypoint wp = new Waypoint(name, Destination.UDW, lon, lat, false, Waypoint.MT_NONE, false);
+        Waypoint wp = new Waypoint(name, Destination.UDW, lon, lat, ele, false, Waypoint.MT_NONE, false);
         wp.setCmt(cmt);
         wp.setVisible(false);
         
@@ -198,7 +214,7 @@ public class GpxPlanParser  extends PlanParser {
         parser.require(XmlPullParser.END_TAG, NS, NAME);
         return name;
     }
-      
+
     // Extract CMT
     //
     private String readCMT(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -206,6 +222,17 @@ public class GpxPlanParser  extends PlanParser {
         String cmt = readText(parser);
         parser.require(XmlPullParser.END_TAG, NS, CMT);
         return cmt;
+    }
+
+    // Extract ELE in meters, return in feet
+    //
+    private float readELE(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, NS, ELE);
+        String ele = readText(parser);
+        parser.require(XmlPullParser.END_TAG, NS, ELE);
+        try { return Float.parseFloat(ele) * (float) 3.2808; // meters to feet
+        } catch (Exception ignore) { return Destination.INVALID_ELEVATION;
+        }
     }
 
     // Read the text from the current tag
@@ -222,9 +249,9 @@ public class GpxPlanParser  extends PlanParser {
     /***
      * Skip this next entire sub-block of XML tags
      * 
-     * @param parser 
-     * @throws XmlPullParserException
-     * @throws IOException
+     * @param parser XML state parser
+     * @throws XmlPullParserException Invalid XML syntax
+     * @throws IOException error reading file
      */
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -233,12 +260,12 @@ public class GpxPlanParser  extends PlanParser {
         int depth = 1;
         while (depth != 0) {
             switch (parser.next()) {
-            case XmlPullParser.END_TAG:
-                depth--;
-                break;
-            case XmlPullParser.START_TAG:
-                depth++;
-                break;
+                case XmlPullParser.END_TAG:
+                    depth--;
+                    break;
+                case XmlPullParser.START_TAG:
+                    depth++;
+                    break;
             }
         }
      }

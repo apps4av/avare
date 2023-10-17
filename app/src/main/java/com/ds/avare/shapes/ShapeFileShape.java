@@ -24,6 +24,7 @@ import org.nocrala.tools.gis.data.esri.shapefile.shape.shapes.PolylineShape;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -35,6 +36,9 @@ import java.util.LinkedList;
  *
  */
 public class ShapeFileShape extends Shape {
+
+    private static final int MAX_SHAPES = 256;
+    private static final int MAX_POINTS_PER_SHAPE = 1024;
 
     /**
      *
@@ -51,10 +55,10 @@ public class ShapeFileShape extends Shape {
      * @throws IOException
      * @throws InvalidShapeFileException
      */
-    public static LinkedList<ShapeFileShape> readFile(String file) throws IOException,
+    public static ArrayList<ShapeFileShape> readFile(String file) throws IOException,
             InvalidShapeFileException {
 
-        LinkedList<ShapeFileShape> ret = new LinkedList<ShapeFileShape>();
+        ArrayList<ShapeFileShape> ret = new ArrayList<ShapeFileShape>();
 
         // for all shape files
         FileInputStream is = new FileInputStream(file);
@@ -80,9 +84,16 @@ public class ShapeFileShape extends Shape {
             if(aShape != null) {
                 for (int i = 0; i < aShape.getNumberOfParts(); i++) {
                     PointData[] points = aShape.getPointsOfPart(i);
+                    if (points.length > MAX_POINTS_PER_SHAPE) {
+                        continue;
+                    }
                     ShapeFileShape shape = new ShapeFileShape(file, new Date());
                     for (PointData po : points) {
                         shape.add(po.getX(), po.getY(), false);
+                    }
+                    if(ret.size() >= MAX_SHAPES) {
+                        is.close();
+                        return ret;
                     }
                     ret.add(shape);
                 }
@@ -99,7 +110,7 @@ public class ShapeFileShape extends Shape {
      * @param shapes
      * @param shouldShow
      */
-    public static void draw(DrawingContext ctx, LinkedList<ShapeFileShape> shapes, boolean shouldShow) {
+    public static void draw(DrawingContext ctx, ArrayList<ShapeFileShape> shapes, boolean shouldShow) {
 
         ctx.paint.setShadowLayer(0, 0, 0, 0);
 
@@ -121,7 +132,7 @@ public class ShapeFileShape extends Shape {
                 }
                 ctx.paint.setColor(Color.BLUE);
                 if (todraw.isOnScreen(ctx.origin)) {
-                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }
         }

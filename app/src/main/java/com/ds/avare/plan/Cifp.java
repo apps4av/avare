@@ -34,7 +34,6 @@ import com.ds.avare.StorageService;
 import com.ds.avare.place.Destination;
 import com.ds.avare.place.DestinationFactory;
 import com.ds.avare.position.Coordinate;
-import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
 import com.ds.avare.utils.Helper;
 
@@ -42,13 +41,18 @@ import java.util.LinkedList;
 
 /**
  * Created by zkhan on 11/8/15.
+ *
+ * Coded Instrument Flight Procedures - CIFP
  */
 public class Cifp {
 
-    private String mInitialCourse;
-    private String mFinalCourse;
-    private String mMissedCourse;
-    private String mAirport;
+    private final String  mInitialCourse;
+    private final String mInitialAlt;
+    private final String mFinalCourse;
+    private final String mFinalAlt;
+    private final String mMissedCourse;
+    private final String mMissedAlt;
+    private final String mAirport;
     private CreateTask mCreateTask;
 
     public Cifp(String airport, String initialCourse, String initialAltitude, String finalCourse, String finalAltitude, String missedCourse, String missedAltitude) {
@@ -56,36 +60,34 @@ public class Cifp {
         mInitialCourse = initialCourse.replaceAll(",$", "").replace(",", " ");
         mFinalCourse = finalCourse.replaceAll(",$", "").replace(","," ");
         mMissedCourse = missedCourse.replaceAll(",$", "").replace(",", " ");
+        mInitialAlt = initialAltitude;
+        mFinalAlt = finalAltitude;
+        mMissedAlt = missedAltitude;
         mAirport = airport;
     }
 
     public String getInitialCourse() {
         return mInitialCourse;
     }
-    public String getFinalCourse() {
-        return mFinalCourse;
-    }
-    public String getMissedCourse() {
-        return mMissedCourse;
-    }
 
-    public void setApproach(StorageService service, Preferences prefs) {
+    public void setApproach(StorageService service) {
         String wp = mInitialCourse + " " + mFinalCourse + " " + mMissedCourse;
+        String alt = mInitialAlt + mFinalAlt  + mMissedAlt;
 
         if(mCreateTask != null && mCreateTask.getStatus() == AsyncTask.Status.RUNNING) {
             mCreateTask.cancel(true);
         }
         mCreateTask = new CreateTask();
-        mCreateTask.execute(wp, service, prefs);
+        mCreateTask.execute(wp, service, alt);
     }
 
     /**
-     * Parse type of approach [0] and runway [1] of procedure
-     * @param procedure
-     * @return
+     * Parse out the runway and approach type from the input string description
+     * @param procedure Waypoints of the procedure
+     * @return array of procedure type and runway #
      */
     public static String[] getParams(String procedure) {
-        String ret[] = new String[2];
+        String[] ret = new String[2];
         // get approach mapped to CIFP database
         if(procedure.startsWith("RNAV-GPS-")) {
             ret[0] = "RNAV";
@@ -128,7 +130,7 @@ public class Cifp {
             procedure = procedure.replace("VOR-", "");
         }
 
-        String tokens[] = procedure.split("-");
+        String[] tokens = procedure.split("-");
         // Find RWY
         int len = tokens.length;
         for (int tkn = 0; tkn < tokens.length; tkn++) {
@@ -138,7 +140,10 @@ public class Cifp {
                     runway = tokens[tkn + 1];
                     if(tkn > 0) {
                         if(tokens[tkn - 1].matches("[A-Z]")) {
-                            runway = runway + "-" + tokens[tkn - 1];
+                            if(2 == runway.length()) { // if no L/C/R then add a dash
+                                runway = runway + "-";
+                            }
+                            runway = runway + tokens[tkn - 1];
                         }
                     }
                 }
@@ -166,45 +171,64 @@ public class Cifp {
 
             Thread.currentThread().setName("CreateApproach");
 
-            StorageService service = (StorageService)vals[1];
-            Preferences pref = (Preferences)vals[2];
+            StorageService service = StorageService.getInstance();
 
             service.newPlan();
 
             // Eliminate duplicates. Could be done with sorted sets
-            LinkedList<String> set = new LinkedList<String>();
+            String[] wps = ((String)vals[0]).split(" ");
+            String[] wpAlts = ((String) vals[2]).split(",");
+
             String last = "";
-            String wps[] = ((String)vals[0]).split(" ");
+            LinkedList<String> set = new LinkedList<>();
+            LinkedList<String> alt = new LinkedList<>();
+
             // start from current position
             set.add(service.getGpsParams().getLatitude() + "&" + service.getGpsParams().getLongitude());
+            alt.add(Float.toString(Destination.INVALID_ELEVATION));
+            int altidx = 0;
+
             for (String wp : wps) {
                 if(last.equals(wp) || wp.equals("")) {
+                    altidx++;
                     continue;
                 }
                 set.add(wp);
                 last = wp;
+
+                alt.add(wpAlts[altidx++]);
             }
 
             /*
              * Here we guess types since we do not have user select
              */
 
+            altidx = 0;
+            float fixEle;
+
             for(String wp : set) {
+
+                try { fixEle = Float.parseFloat(alt.get(altidx++));
+                } catch (Exception ignore) { fixEle = Destination.INVALID_ELEVATION; }
 
                 if(wp.matches("RW\\d{2}.*")) {
                     String rw = wp.replace("RW", "");
                     Coordinate c = service.getDBResource().findRunwayCoordinates(rw, mAirport);
                     if(c != null) {
-                        Destination d = DestinationFactory.build(service, Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
+                        Destination d = DestinationFactory.build(Helper.getGpsAddress(c.getLongitude(), c.getLatitude()), Destination.GPS);
                         d.find();
+                        d.setFacilityName(mAirport + rw);
+                        d.setElevation(fixEle);
+                        d.setLanding(true); // Since this is a runway, our intent is to land here
                         service.getPlan().appendDestination(d);
                     }
                 }
 
 	            /*
-	             * Search from database. Make this a simple one off search
+	             * Search from database. Make this a simple one off search. Do NOT use the "most recent"
+	             * cache - use dbase only.
 	             */
-                StringPreference s = service.getDBResource().searchOne(wp);
+                StringPreference s = service.getDBResource().searchOneNoCache(wp);
                 if(s != null) {
                     String found = s.getHashedName();
                     String id = StringPreference.parseHashedNameId(found);
@@ -214,8 +238,9 @@ public class Cifp {
                     /*
                      * Add each
                      */
-                    Destination d = DestinationFactory.build(service, id, type);
+                    Destination d = DestinationFactory.build(id, type);
                     d.find(dbtype);
+                    d.setElevation(fixEle);
                     service.getPlan().appendDestination(d);
                 }
             }

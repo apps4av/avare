@@ -33,6 +33,7 @@ import com.ds.avare.place.Destination;
  * <?xml version="1.0" encoding="UTF-8" ?>
 	<gpx version="1.1" creator="" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
 		<wpt lat="43.98431" lon="-88.56628">
+            <ele>200</ele>
 			<name>NameOfTheWayPoint</name>
 			<desc>Description of the waypoint</desc>
 		</wpt>
@@ -49,6 +50,7 @@ public class GpxUDWParser extends UDWParser {
     private static final String WPT = "wpt";
     private static final String LAT = "lat";
     private static final String LON = "lon";
+    private static final String ELE = "ele";
     private static final String NAME = "name";
     private static final String CREATOR = "creator";
     private static final String VFRGPSPROCEDURES = "vfrgpsprocedures";
@@ -61,7 +63,7 @@ public class GpxUDWParser extends UDWParser {
             parser.setInput(inputStream, null);
             parser.nextTag();
             return readGPX(parser);
-        } catch (Exception e) { }
+        } catch (Exception ignore) { }
         	
         return null;
 	}
@@ -69,7 +71,7 @@ public class GpxUDWParser extends UDWParser {
     // The root tag should be "<gpx>", search for the opening "<wpt>" tag
     //
     private List<Waypoint> readGPX(XmlPullParser parser) throws XmlPullParserException, IOException {
-        List<Waypoint> entries = new ArrayList<Waypoint>();
+        List<Waypoint> entries = new ArrayList<>();
         String creator = null;
         
         parser.require(XmlPullParser.START_TAG, NS, GPX);	// We must be inside the <gpx> tag now
@@ -106,7 +108,7 @@ public class GpxUDWParser extends UDWParser {
     }
 
     // We are in the WPT tag, Get the LAT/LON attributes then search
-    // for NAME or DESC
+    // for NAME and ELE
     //
     private Waypoint readWPT(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, NS, WPT);
@@ -114,6 +116,7 @@ public class GpxUDWParser extends UDWParser {
         String name = null;
         float lat = 0;
         float lon = 0;
+        float ele = 0;
 
         // LAT and LON are attributes of this container
         for(int idx = 0; idx < parser.getAttributeCount(); idx++) {
@@ -121,12 +124,12 @@ public class GpxUDWParser extends UDWParser {
         	String attrValue = parser.getAttributeValue(idx);
         	if (attrName.equals(LAT)) {
             	lat = Float.parseFloat(attrValue);
-        	} else if (attrName.equals(LON)) {
-            	lon = Float.parseFloat(attrValue);
-        	}
+            } else if (attrName.equals(LON)) {
+                lon = Float.parseFloat(attrValue);
+            }
         }
         
-        // The NAME and DESCRIPTION are sub tags under here
+        // The NAME, ELE are sub tags under here
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -134,13 +137,15 @@ public class GpxUDWParser extends UDWParser {
             String nodeName = parser.getName();
             if (nodeName.equals(NAME)) {
                 name = readNAME(parser);
+            } else if (nodeName.equals(ELE)) {
+                ele = readELE(parser);
             } else {
                 skip(parser);
             }
         }
         
         // We've got all the data we're going to get from this entry
-        return  new Waypoint(name, Destination.UDW, lon, lat, false, Waypoint.MT_CYANDOT, true);
+        return  new Waypoint(name, Destination.UDW, lon, lat, ele, false, Waypoint.MT_CYANDOT, true);
     }
 
     // Extract NAME
@@ -151,7 +156,18 @@ public class GpxUDWParser extends UDWParser {
         parser.require(XmlPullParser.END_TAG, NS, NAME);
         return name;
     }
-      
+
+    // Extract ELE in meters, return in feet
+    //
+    private float readELE(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, NS, ELE);
+        String ele = readText(parser);
+        parser.require(XmlPullParser.END_TAG, NS, ELE);
+        try { return Float.parseFloat(ele) * (float) 3.2808; // meters to feet
+        } catch (Exception ignore) { return Destination.INVALID_ELEVATION;
+        }
+    }
+
     // Read the text from the current tag
     //
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -166,9 +182,9 @@ public class GpxUDWParser extends UDWParser {
     /***
      * Skip this next entire sub-block of XML tags
      * 
-     * @param parser
-     * @throws XmlPullParserException
-     * @throws IOException
+     * @param parser current xml state engine
+     * @throws XmlPullParserException invalid XML
+     * @throws IOException error doing i/o stuff
      */
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {

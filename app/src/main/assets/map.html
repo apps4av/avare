@@ -42,7 +42,14 @@ authors: zkhan
         toastr.options.timeOut = 2000;
 
         // set data
-        function setData(airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+        function setData(type, airport, info, metar, taf, airep, tfr, sua, mets, performance, winds, layer) {
+            if(type === "more") {
+                $("#buttonGroup1").show();
+            }
+            else {
+                $("#buttonGroup1").hide();
+            }
+
             $("#airportName").text(airport);
             $("#airportInfo").html(info);
             $("#airportMetar").html(metar);
@@ -64,7 +71,6 @@ authors: zkhan
 
     </script>
 
-
 </head>
 <body>
 <div class="container-fluid">
@@ -74,6 +80,12 @@ authors: zkhan
         <a href="javascript:doAction('Plate');" class="btn btn-primary">Plate</a>
         <a href="javascript:doAction('CSup');" class="btn btn-primary">CSup</a>
         <a href="javascript:doAction('X');" class="btn btn-danger">X</a>
+    </div>
+    <br>
+    <div class="btn-group btn-group-justified" id="buttonGroup1">
+        <a href="javascript:doAction('Save');" class="btn btn-primary">Save</a>
+        <a href="javascript:doAction('Delete');" class="btn btn-primary">Delete</a>
+        <a href="javascript:doAction('Label');" class="btn btn-primary">Label</a>
     </div>
     <div style="margin-left : 5px">
         <h4><span class="label label-success" id='airportName'></span></h4>

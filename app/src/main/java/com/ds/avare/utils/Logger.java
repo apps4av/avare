@@ -13,6 +13,7 @@ package com.ds.avare.utils;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.widget.TextView;
 
@@ -46,7 +47,7 @@ public class Logger {
     /**
      * This leak warning is not an issue if we do not post delayed messages, which is true here.
      */
-    private static Handler mHandler = new Handler() {
+    private static Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             String val = (String) msg.obj;

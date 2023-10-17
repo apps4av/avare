@@ -15,13 +15,17 @@ package com.ds.avare.shapes;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.place.Boundaries;
+import com.ds.avare.place.Obstacle;
 import com.ds.avare.position.Pan;
 import com.ds.avare.position.Scale;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Helper;
+
+import java.util.LinkedList;
 
 
 /**
@@ -36,10 +40,9 @@ public class TileMap extends MapBase {
     private int mNumShowing;
 
     /**
-     * @param context
      */
-    public TileMap(Context context) {
-        super(context, SIZE, (new Preferences(context)).getTilesNumber(context));
+    public TileMap() {
+        super(SIZE);
         mNumShowing = 0;
         mTileTask = null;
     }
@@ -66,7 +69,7 @@ public class TileMap extends MapBase {
      * Function that loads new tiles in background
      *
      */
-    public void loadTiles(final double lon, final double lat, final Pan panIn, final float macro, final Scale scale, final double bearing, final GenericCallback callbackDone) {
+    public void loadTiles(final double lon, final double lat, final double altitude, final Pan panIn, final Scale scale, final double bearing, final GenericCallback callbackDone) {
 
         if(mTileTask != null && mTileTask.getStatus() == AsyncTask.Status.RUNNING) {
             mTileTask.cancel(true);
@@ -93,14 +96,14 @@ public class TileMap extends MapBase {
                  * Now draw in background, but first find tiles in foreground
                  * Find tile at my GPS location
                  */
-                gpsTile = new Tile(mContext, mPref, lon, lat, (double) scale.downSample());
+                gpsTile = new Tile(lon, lat, (double) scale.downSample());
 
                 offsets[0] = gpsTile.getOffsetX(lon);
                 offsets[1] = gpsTile.getOffsetY(lat);
                 p[0] = gpsTile.getPx();
                 p[1] = gpsTile.getPy();
 
-                factor = macro / (float) scale.getMacroFactor();
+                factor = (float)scale.getMacroFactor() / (float)scale.getNewMacroFactor(); // how much jump in zoom factor
 
                 /*
                  * Make a copy of Pan to find next tile set in case this gets stopped, we do not
@@ -110,7 +113,7 @@ public class TileMap extends MapBase {
                 double n_x = pan.getMoveX();
                 double n_y = pan.getMoveY();
 
-                if (mPref.isTrackUp()) {
+                if (StorageService.getInstance().getPreferences().isTrackUp()) {
                     double p[] = new double[2];
                     p = Helper.rotateCoord(0.0, 0.0, bearing, n_x, n_y);
                     pan.setMove((float) (p[0] * factor), (float) (p[1] * factor));
@@ -121,7 +124,7 @@ public class TileMap extends MapBase {
                 movey = pan.getTileMoveYWithoutTear();
 
                 // Find tile of where I am on screen
-                centerTile = new Tile(mContext, mPref, gpsTile, movex, movey);
+                centerTile = new Tile(gpsTile, movex, movey);
 
                 /*
                  * Neighboring tiles with center and pan
@@ -140,6 +143,13 @@ public class TileMap extends MapBase {
             @Override
             protected TileUpdate doInBackground(Void... vals) {
                 Thread.currentThread().setName("Tile");
+
+                // Get obstacles where user is looking
+                LinkedList<Obstacle> obs = null;
+                if(StorageService.getInstance().getPreferences().showObstacles()) {
+                    obs = StorageService.getInstance().getDBResource().getObstacles(centerTile.getLongitude(), centerTile.getLatitude(), altitude);
+                }
+
                 /*
                  * Load tiles, draw in UI thread
                  */
@@ -165,6 +175,7 @@ public class TileMap extends MapBase {
                 t.offsets = offsets;
                 t.factor = factor;
                 t.chart = chart;
+                t.obstacles = obs;
 
                 return t;
             }
@@ -204,6 +215,7 @@ public class TileMap extends MapBase {
         public float factor;
         public Tile centerTile;
         public Tile gpsTile;
+        public LinkedList<Obstacle> obstacles;
     }
 
 }

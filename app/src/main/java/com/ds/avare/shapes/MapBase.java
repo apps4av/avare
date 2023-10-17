@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.WindowManager;
 import androidx.collection.LruCache;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.BitmapHolder;
 import com.ds.avare.utils.GenericCallback;
@@ -33,10 +34,6 @@ public class MapBase {
     protected BitmapHolder[] mapA;
     protected BitmapHolder[] mapB;
 
-    protected Context mContext;
-
-    protected Preferences mPref;
-
     protected int mXtiles;
     protected int mYtiles;
     protected int mOverhead;
@@ -48,14 +45,14 @@ public class MapBase {
     protected LruCache<String, BitmapHolder> mBitmapCache;
 
 
-    protected MapBase(Context context, int size, int tilesdim[]) {
-
+    protected MapBase(int size) {
+        int tilesdim[] = StorageService.getInstance().getPreferences().getTilesNumber(
+                StorageService.getInstance().getApplicationContext(),
+                StorageService.getInstance().getPreferences().isScreenSizeCalculationForTiles());
         /*
          * Allocate mem for tiles.
          * Keep tiles for the life of activity
          */
-        mContext = context;
-        mPref = new Preferences(context);
         mSize = size;
 
         mXtiles = tilesdim[0];
@@ -174,7 +171,8 @@ public class MapBase {
             mapB[tilen] = mBitmapCache.get(tileNames[tilen]);
 
             if (mapB[tilen] == null) {
-                mapB[tilen] = new BitmapHolder(mContext, mPref, tileNames[tilen], 1);
+                mapB[tilen] = new BitmapHolder(StorageService.getInstance().getApplicationContext(),
+                        StorageService.getInstance().getPreferences(), tileNames[tilen], 1);
                 if (mapB[tilen].getBitmap() != null) {
                     c.callback(this, mapB[tilen]);
                     showing++;
@@ -236,7 +234,7 @@ public class MapBase {
      */
     public void setOrientation() {
 
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) StorageService.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
         if (display.getHeight() > display.getWidth()) {

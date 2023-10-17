@@ -40,18 +40,16 @@ public class GlideProfile {
     /***
      * Instrument to handle displaying of rings based on glide upon speed, glide ratio, wind speed, and terrain
      *
-     * @param service background storage service
-     * @param context application context
      * @param textSize size of the text to draw
      */
-    public GlideProfile(StorageService service, Context context, float textSize) {
-        mService = service;
-        mDipToPix = Helper.getDpiToPix(context);
-        mPref = new Preferences(context);
+    public GlideProfile(float textSize) {
+        mService = StorageService.getInstance();
+        mDipToPix = Helper.getDpiToPix(mService.getApplicationContext());
+        mPref = mService.getPreferences();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(textSize);
-        mPaint.setTypeface(Helper.getTypeFace(context));
+        mPaint.setTypeface(Helper.getTypeFace(mService.getApplicationContext()));
         mDistanceTotal = new double[DIRECTION_STEPS];
         mLastTime = System.currentTimeMillis() + UPDATE_TIME;
     }
@@ -72,15 +70,11 @@ public class GlideProfile {
         double lon = gpsParams.getLongitude();
         double lat = gpsParams.getLatitude();
         double altitudeGps = gpsParams.getAltitude();
-        double sinkRate = mPref.getBestGlideSinkRate() / 60.0; //feet per minute to feet per second
+        double sinkRate = mService.getAircraft().getSinkRate() / 60.0; //feet per minute to feet per second
         double bearing = gpsParams.getBearing();
         double declination = gpsParams.getDeclinition();
         WindsAloft wa;
         double [] metarWinds = null;
-
-        if(mPref.getDistanceRingType() != 3) {
-            return;
-        }
 
         for(int dir = 0; dir < DIRECTION_STEPS; dir++) {
             mDistanceTotal[dir] = 0; // clear
@@ -90,16 +84,16 @@ public class GlideProfile {
         if(mPref.useAdsbWeather()) {
             wa = mService.getAdsbWeather().getWindsAloft(lon, lat);
             if(null != wa) {
-                if(null != wa.station) {
-                    m = mService.getAdsbWeather().getMETAR(wa.station);
+                if(null != wa.getStation()) {
+                    m = mService.getAdsbWeather().getMETAR(wa.getStation());
                 }
             }
         }
         else {
             wa = mService.getDBResource().getWindsAloft(lon, lat);
             if(null != wa) {
-                if(null != wa.station) {
-                    m = mService.getDBResource().getMetar(wa.station);
+                if(null != wa.getStation()) {
+                    m = mService.getDBResource().getMetar(wa.getStation());
                 }
             }
         }
@@ -109,8 +103,13 @@ public class GlideProfile {
             // no wind calc
         }
         if(null != m) {
-            metarWinds = WeatherHelper.getWindFromMetar(m.rawText);
-            metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
+            metarWinds = WeatherHelper.getWindFromMetar(m.getRawText());
+            if (metarWinds != null && metarWinds.length > 0) {
+                metarWinds[0] = (metarWinds[0] - declination + 360) % 360; // true winds aloft
+            }
+            else {
+                metarWinds = null;
+            }
         }
 
         int stepSizeDirection =

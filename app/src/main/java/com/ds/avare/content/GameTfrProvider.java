@@ -73,7 +73,7 @@ public class GameTfrProvider extends MainProvider {
     @Override
     public boolean onCreate() {
         super.onCreate();
-        mDatabaseHelper = new GameTfrDatabaseHelper(getContext(), mPref.mapsFolder());
+        mDatabaseHelper = new GameTfrDatabaseHelper(getContext(), mPref.getServerDataFolder());
         return true;
     }
 

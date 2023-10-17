@@ -22,17 +22,121 @@ import com.ds.avare.shapes.MetShape;
  */
 public class AirSigMet {
 
-    public String rawText;
-    public String timeFrom;
-    public String timeTo;
-    public String points;
-    public String minFt;
-    public String maxFt;
-    public String movementDeg;
-    public String movementKt;
-    public String hazard;
-    public String severity;
-    public String reportType;
-    public long   timestamp;
-    public MetShape shape;
+    private String rawText;
+    private String timeFrom;
+    private String timeTo;
+    private String points;
+    private String minFt;
+    private String maxFt;
+    private String movementDeg;
+    private String movementKt;
+    private String hazard;
+    private String severity;
+    private String reportType;
+    private long   timestamp;
+    private MetShape shape;
+
+    public String getRawText() {
+        return rawText;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
+
+    public String getTimeFrom() {
+        return timeFrom;
+    }
+
+    public void setTimeFrom(String timeFrom) {
+        this.timeFrom = timeFrom;
+    }
+
+    public String getTimeTo() {
+        return timeTo;
+    }
+
+    public void setTimeTo(String timeTo) {
+        this.timeTo = timeTo;
+    }
+
+    public String getPoints() {
+        return points;
+    }
+
+    public void setPoints(String points) {
+        this.points = points;
+    }
+
+    public String getMinFt() {
+        return minFt;
+    }
+
+    public void setMinFt(String minFt) {
+        this.minFt = minFt;
+    }
+
+    public String getMaxFt() {
+        return maxFt;
+    }
+
+    public void setMaxFt(String maxFt) {
+        this.maxFt = maxFt;
+    }
+
+    public String getMovementDeg() {
+        return movementDeg;
+    }
+
+    public void setMovementDeg(String movementDeg) {
+        this.movementDeg = movementDeg;
+    }
+
+    public String getMovementKt() {
+        return movementKt;
+    }
+
+    public void setMovementKt(String movementKt) {
+        this.movementKt = movementKt;
+    }
+
+    public String getHazard() {
+        return hazard;
+    }
+
+    public void setHazard(String hazard) {
+        this.hazard = hazard;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(String reportType) {
+        this.reportType = reportType;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public MetShape getShape() {
+        return shape;
+    }
+
+    public void setShape(MetShape shape) {
+        this.shape = shape;
+    }
 }

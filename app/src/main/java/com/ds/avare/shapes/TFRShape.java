@@ -124,7 +124,7 @@ public class TFRShape extends Shape {
                     continue;
                 }
                 if(todraw.isOnScreen(ctx.origin) ) {
-                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.scale, ctx.movement, ctx.paint, ctx.pref.isNightMode(), true);
+                    todraw.drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }
         }

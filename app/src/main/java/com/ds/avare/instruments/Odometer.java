@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare.instruments;
 
+import com.ds.avare.StorageService;
 import com.ds.avare.gps.GpsParams;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
@@ -23,10 +24,7 @@ public class Odometer {
 	private Preferences mPref;		// How we access permanent storage
 	
 	public Odometer(){
-	}
-	
-	public void setPref(Preferences pref) {
-		mPref = pref;
+		mPref = StorageService.getInstance().getPreferences();
 	}
 	
 	/***

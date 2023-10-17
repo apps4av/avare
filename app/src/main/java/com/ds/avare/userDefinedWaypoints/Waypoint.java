@@ -27,22 +27,19 @@ public class Waypoint {
     String  mCmt;
     float  	mLat;
     float  	mLon;
+	float	mEle;
     boolean mShowDist;
     int 	mMarkerType;
     boolean mVisible;
     boolean mLocked;
 	String	mType;
 
-    public Waypoint(String name, String type, float lon, float lat, boolean showDist, int markerType, boolean bLocked) {
-    	if(null != name) {
-    		mName = name;
-    	} else {
-    		mName = "UNDEF";
-    	}
-
+    public Waypoint(String name, String type, float lon, float lat, float ele, boolean showDist, int markerType, boolean bLocked) {
+		mName = (null != name) ? name : "UNDEF";
 		mType = type;
     	mLat = lat;
         mLon = lon;
+		mEle = ele;
         mShowDist = showDist;
         mMarkerType = markerType;
         mVisible = true;
@@ -55,6 +52,7 @@ public class Waypoint {
     public String getCmt()  { return mCmt; }
     public float getLat() { return mLat; }
     public float getLon() { return mLon; }
+	public float getEle() { return mEle; }
     public boolean getVisible() { return mVisible; }
     public boolean getLocked() { return mLocked; }
     
@@ -80,7 +78,7 @@ public class Waypoint {
      * @param size - text size to use
      */
     public void draw(Canvas canvas, Origin origin, boolean trackUp, GpsParams gpsParams, Paint paint, StorageService service, String dstBrg, float size ) {
-    	if(false == mVisible) {
+    	if(!mVisible) {
     		return;
     	}
     	
@@ -101,13 +99,13 @@ public class Waypoint {
 		        canvas.drawLine(x,  y - size * 6,  x,  y + size * 6, paint);
 
 		        // A black ring to highlight it a bit
-		        canvas.drawCircle(x, y, (float) size * 3, paint);
+		        canvas.drawCircle(x, y,  size * 3, paint);
 		        
 		        // Solid (almost) white chewy center
 		        paint.setStyle(Style.FILL);
 				paint.setColor(Color.CYAN);
 				paint.setAlpha(0xF0);
-		        canvas.drawCircle(x, y, (float) size * 2, paint);
+		        canvas.drawCircle(x, y,  size * 2, paint);
 
 		        break;
 			}
@@ -117,13 +115,13 @@ public class Waypoint {
 				paint.setStyle(Style.FILL);
 				paint.setColor(Color.CYAN);
 				paint.setAlpha(0x9F);
-		        canvas.drawCircle(x, y, (float) size * 3, paint);
+		        canvas.drawCircle(x, y,  size * 3, paint);
 	
 		        // A black ring around it to highlight it a bit
 		        paint.setStyle(Style.STROKE);
 		        paint.setColor(Color.BLACK);
 		        paint.setStrokeWidth(size);
-		        canvas.drawCircle(x, y, (float) size * 3, paint);
+		        canvas.drawCircle(x, y,  size * 3, paint);
 		        break;
 			}
 		}
@@ -145,12 +143,12 @@ public class Waypoint {
 	    service.getShadowedText().draw(canvas, paint, mName, Color.BLACK, ShadowedText.ABOVE, x, y);
 	    
 	    // and the distance/brg below IF that piece of metadata is true
-	    if(true == mShowDist) {
+	    if(mShowDist) {
 	        service.getShadowedText().draw(canvas, paint, dstBrg, Color.BLACK, ShadowedText.BELOW, x, y);
 	    }
 	    
 	    // Restore canvas if we rotated it
-        if (true == bRotated) {
+        if (bRotated) {
             canvas.restore();
         }
     }
