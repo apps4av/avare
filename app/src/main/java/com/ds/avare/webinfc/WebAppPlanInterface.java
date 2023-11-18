@@ -36,6 +36,7 @@ import com.ds.avare.place.Plan;
 import com.ds.avare.plan.LmfsInterface;
 import com.ds.avare.plan.LmfsPlan;
 import com.ds.avare.plan.LmfsPlanList;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.StringPreference;
@@ -47,6 +48,7 @@ import com.ds.avare.utils.WeatherHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Observable;
@@ -1507,118 +1509,137 @@ public class WebAppPlanInterface implements Observer {
          */
         @Override
         public void run() {
-            
+
             Thread.currentThread().setName("Weather");
-            
+
         	mHandler.sendEmptyMessage(MSG_BUSY);
 
             String Pirep = "";
             String Metar = "";
             String Taf = "";
             String notams = "";
+			LinkedHashSet<String> ids = new LinkedHashSet<>();
 
-            String miles = "30";
-            String planf = "";
-            String plann = "";
-            String plan = "";
+			Plan p = mService.getPlan();
+			// find points on this plan on greater circle
+			Coordinate c[] = p.getCoordinates();
+			// now find airports in the circle
+			if(null != c) {
+				for (Coordinate point : c) {
+					mService.getDBResource().findAllAirports(point.getLongitude(), point.getLatitude(), 0.3f, ids);
+				}
 
-            int num = mService.getPlan().getDestinationNumber();
-            for(int i = 0; i < num; i++) {
-                Location l = mService.getPlan().getDestination(i).getLocation();
-                planf += l.getLongitude() + "," + l.getLatitude() + ";";
-                plan += mService.getPlan().getDestination(i).getID() + "(" +
-                        mService.getPlan().getDestination(i).getType() + ") ";
-            }
+				String stations = "";
+				if (ids.size() > 0) {
+					String[] ida = new String[ids.size()];
+					ids.toArray(ida);
+					for (String s : ida) {
+						// Do not add K to airports that have numeric in it
+						if (s.matches("[A-Z]*")) {
+							stations = stations + "K" + s + ",";
+						} else {
+							stations = stations + s + ",";
+						}
+					}
+				}
+				stations = stations.replaceAll(",$", "");
 
-            /*
-             *  Get PIREP
-             */
-            try {
-                String out = NetworkHelper.getPIREPSPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
-                    Pirep += "<font size='5' color='white'>" + outm[i] + "<br></br>";
-                }
-            }
-            catch(Exception e) {
-                Pirep = mContext.getString(R.string.WeatherError);
-            }
-            
-            if(!running) {
-            	return;
-            }
+				/*
+				 *  Get PIREP
+				 */
+				try {
+					String out = NetworkHelper.getPIREPSPlan(c);
+					String outm[] = out.split("::::");
+					for (int i = 0; i < outm.length; i++) {
+						outm[i] = WeatherHelper.formatPirepHTML(outm[i], mPref.isWeatherTranslated());
+						Pirep += "<font size='5' color='white'>" + outm[i] + "<br></br>";
+					}
+				} catch (Exception e) {
+					Pirep = mContext.getString(R.string.WeatherError);
+				}
 
-            try {
-                /*
-                 *  Get TAFs 
-                 */
-                String out = NetworkHelper.getTAFPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
-                    String vals[] = taf.split(" ");
-                    taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
-                    Taf += "<b><font size='5' color='white'>" + vals[0] + "</b><br>";
-                    Taf += "<font size='5' color='white'>" + taf + "<br></br>";
-                }
-            }
-            catch(Exception e) {
-                Taf = mContext.getString(R.string.WeatherError);
-            }
+				if (!running) {
+					return;
+				}
 
-            if(!running) {
-            	return;
-            }
+				try {
+					/*
+					 *  Get TAFs
+					 */
+					if (!stations.equals("")) {
+						String out = NetworkHelper.getTAFPlan(stations);
+						String outm[] = out.split("::::");
+						for (int i = 0; i < outm.length; i++) {
+							String taf = WeatherHelper.formatWeatherHTML(outm[i], mPref.isWeatherTranslated());
+							String vals[] = taf.split(" ");
+							taf = WeatherHelper.formatVisibilityHTML(WeatherHelper.formatTafHTML(WeatherHelper.formatWindsHTML(WeatherHelper.formatWeatherHTML(taf.replace(vals[0], ""), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()), mPref.isWeatherTranslated()));
+							Taf += "<b><font size='5' color='white'>" + vals[0] + "</b><br>";
+							Taf += "<font size='5' color='white'>" + taf + "<br></br>";
+						}
+					}
+				} catch (Exception e) {
+					Taf = mContext.getString(R.string.WeatherError);
+				}
 
-            try {
-                /*
-                 * 
-                 */
-                String out = NetworkHelper.getMETARPlan(planf, miles);
-                String outm[] = out.split("::::");
-                for(int i = 0; i < outm.length; i++) {
-                    String vals[] = outm[i].split(",");
-                    String vals2[] = vals[1].split(" ");
-                    String color = WeatherHelper.metarColorString(vals[0]);
-                    Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
-                    Metar += "<font size='5'>" + WeatherHelper.addColorWithStroke(WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()), color) + "<br></br>";
-                }
-            }
-            catch(Exception e) {
-                Metar = mContext.getString(R.string.WeatherError);
-            }
+				if (!running) {
+					return;
+				}
 
-            if(!running) {
-            	return;
-            }
+				try {
+					/*
+					 *
+					 */
+					if (!stations.equals("")) {
+						String out = NetworkHelper.getMETARPlan(stations);
+						String outm[] = out.split("::::");
+						for (int i = 0; i < outm.length; i++) {
+							String vals[] = outm[i].split(",");
+							String vals2[] = vals[1].split(" ");
+							String color = WeatherHelper.metarColorString(vals[0]);
+							Metar += "<b><font size='5' + color='" + color + "'>" + vals2[0] + "</b><br>";
+							Metar += "<font size='5'>" + WeatherHelper.addColorWithStroke(WeatherHelper.formatMetarHTML(vals[1].replace(vals2[0], ""), mPref.isWeatherTranslated()), color) + "<br></br>";
+						}
+					}
+				} catch (Exception e) {
+					Metar = mContext.getString(R.string.WeatherError);
+				}
 
-			// NOTAMS
-			num = mService.getPlan().getDestinationNumber();
-			plann = "";
-			for(int i = 0; i < num; i++) {
-				Destination d = mService.getPlan().getDestination(i);
-				if(d.getType().equals(Destination.BASE)) {
-					plann += "K" + d.getID() + ",";
+				if (!running) {
+					return;
+				}
+
+				// NOTAMS
+				int num = mService.getPlan().getDestinationNumber();
+				String plann = "";
+				for (int i = 0; i < num; i++) {
+					Destination d = mService.getPlan().getDestination(i);
+					if (d.getType().equals(Destination.BASE)) {
+						if (d.getID().matches("[A-Z]*")) {
+							plann += "K" + d.getID() + ",";
+						} else {
+							plann += d.getID() + ",";
+						}
+					}
+				}
+				if (!plann.equals("")) {
+					plann = plann.replaceAll(",$", "");
+					notams = NetworkHelper.getNotams(plann);
+					if (notams == null) {
+						notams = mContext.getString(R.string.NotamsError);
+					}
 				}
 			}
-			if(!plann.equals("")) {
-				plann = plann.replaceAll(",$", "");
-				notams = NetworkHelper.getNotams(plann);
-				if(notams == null) {
-					notams = mContext.getString(R.string.NotamsError);
-				}
-			}
 
+			String plan = "";
 			plan = "<font size='5' color='white'>" + plan + "</font><br>";
             plan = "<form>" + plan.replaceAll("'", "\"") + "</form>";
-            Metar = "<h3><font size='6' color='white'>METARs</font><br></h3>" + Metar;
+            Metar = "<h3><font size='6' color='cyan'>METARs</font><br></h3>" + Metar;
             Metar = "<form>" + Metar.replaceAll("'", "\"") + "</form>";
-            Taf = "<h3><font size='6' color='white'>TAFs</font><br></h3>" + Taf;
+            Taf = "<h3><font size='6' color='cyan'>TAFs</font><br></h3>" + Taf;
             Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
-            Pirep = "<h3><font size='6' color='white'>PIREPs</font><br></h3>" + Pirep;
+            Pirep = "<h3><font size='6' color='cyan'>PIREPs</font><br></h3>" + Pirep;
             Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-			notams = "<h3><font size='6' color='white'>NOTAMS</font><br></h3>" + notams;
+			notams = "<h3><font size='6' color='cyan'>NOTAMS</font><br></h3>" + notams;
 
             String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;

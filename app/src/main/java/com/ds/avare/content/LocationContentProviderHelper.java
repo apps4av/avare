@@ -20,6 +20,7 @@ import com.ds.avare.weather.Metar;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Set;
@@ -1016,6 +1017,36 @@ public class LocationContentProviderHelper {
         return ret;
     }
 
+
+    public static void findAllAirports(Context ctx, double lon, double lat, float distance, LinkedHashSet<String> ids) {
+
+        Cursor c = null;
+
+        double corrFactor = Math.pow(Math.cos(Math.toRadians(lat)), 2);
+        String asdistance = "((" +
+                LocationContract.AIRPORTS_LONGITUDE + " - " + lon + ") * (" +
+                LocationContract.AIRPORTS_LONGITUDE + " - " + lon + ") * " + corrFactor + " + " + "(" +
+                LocationContract.AIRPORTS_LATITUDE  + " - " + lat + ") * (" +
+                LocationContract.AIRPORTS_LATITUDE  + " - " + lat + "))";
+
+        String projection[] = new String[] {LocationContract.AIRPORTS_LOCATION_ID, asdistance + " as distance"};
+
+        String qry =  LocationContract.AIRPORTS_TYPE + "= 'AIRPORT' and distance < " + distance;
+
+        try {
+            c = ctx.getContentResolver().query(LocationContract.CONTENT_URI_AIRPORTS, projection, qry, null, null);
+            if(c != null) {
+                while(c.moveToNext()) {
+                    // put all found airports in a given distance around a point in a set (unique)
+                    ids.add(new String(c.getString(0))); // LocationContract.AIRPORTS_LOCATION_ID
+                }
+            }
+        }
+        catch (Exception e) {
+        }
+        CursorManager.close(c);
+
+    }
 
     public static Vector<NavAid> findNavaidsNearby(Context ctx, double lat, double lon) {
         Vector result = null;

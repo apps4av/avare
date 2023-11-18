@@ -41,7 +41,7 @@ public class SAXXMLHandlerPIREP extends DefaultHandler {
     public void startElement(String uri, String localName, String qName,
             Attributes attributes) {
         mTempVal = "";
-        if(qName.equalsIgnoreCase("PIREP")) {
+        if(qName.equalsIgnoreCase("AircraftReport")) {
             mTempText = new String();
             mTempType = new String();
         }
@@ -55,10 +55,10 @@ public class SAXXMLHandlerPIREP extends DefaultHandler {
         if (qName.equalsIgnoreCase("raw_text")) {
             mTempText = mTempVal;
         }
-        if (qName.equalsIgnoreCase("pirep_type")) {
+        if (qName.equalsIgnoreCase("report_type")) {
             mTempType = mTempVal;
         }
-        if(qName.equalsIgnoreCase("PIREP")) {
+        if(qName.equalsIgnoreCase("AircraftReport")) {
             if(!mTempType.equals("AIREP")) {
                 mText.add(mTempText);
             }

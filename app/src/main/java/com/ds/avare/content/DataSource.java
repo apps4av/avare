@@ -39,6 +39,7 @@ import com.ds.avare.weather.WindsAloft;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -114,6 +115,10 @@ public class DataSource {
 
     public String findClosestAirportID(double lon, double lat) {
         return (LocationContentProviderHelper.findClosestAirportID(mContext, lon, lat, mPref.isShowAllFacilities()));
+    }
+
+    public void findAllAirports(double lon, double lat, float distance, LinkedHashSet<String> ids) {
+        LocationContentProviderHelper.findAllAirports(mContext, lon, lat, distance, ids);
     }
 
     public float[] findDiagramMatrix(String name) {

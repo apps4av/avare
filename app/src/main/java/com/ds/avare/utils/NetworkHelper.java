@@ -14,6 +14,8 @@ package com.ds.avare.utils;
 import android.content.Context;
 
 
+import com.ds.avare.position.Coordinate;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -24,12 +26,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.TimeZone;
 
@@ -48,14 +54,6 @@ public class NetworkHelper {
      * 
      */
     public NetworkHelper() {
-    }
-    
-    /**
-     * 
-     * @return
-     */
-    public static String getDonationURL(String root) {
-        return root + "donate.html";
     }
 
     /**
@@ -103,46 +101,18 @@ public class NetworkHelper {
         return "";
     }   
          
-    /**
-     * 
-     * @param airport
-     * @return
-     */
-    public static String getMETAR(String airport) {
-        
-        /*
-         * Get TAF
-         */
-        String xml = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&stationString=K" +
-                airport + "&hoursBeforeNow=2";
-        XMLReader xmlReader;
-        try {
-            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            SAXXMLHandlerMETAR saxHandler = new SAXXMLHandlerMETAR();
-            xmlReader.setContentHandler(saxHandler);
-            connectAndReadXml(xmlReader, xml);
-            List<String> texts = saxHandler.getText();
-            for(String text : texts) {
-                return text;
-            }
-        }
-        catch (Exception e) {
-        }
-        return "";
-    }
-        
 
     /**
      * 
      * @param plan
      * @return
      */
-    public static String getMETARPlan(String plan, String miles) {
+    public static String getMETARPlan(String plan) {
         
         String xml = 
-                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=metars"
-                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
-                + "&flightPath=" + miles + ";" + plan;
+                "https://aviationweather.gov/api/data/dataserver?dataSource=metars&requestType=retrieve&format=xml"
+                + "&mostRecentForEachStation=constraint&hoursBeforeNow=1.25"
+                + "&stationString=" + plan;
         /*
          * Get METAR
          */
@@ -170,12 +140,12 @@ public class NetworkHelper {
      * @param plan
      * @return
      */
-    public static String getTAFPlan(String plan, String miles) {
+    public static String getTAFPlan(String plan) {
         
         String xml = 
-                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=tafs"
-                + "&requestType=retrieve&format=xml&mostRecentForEachStation=constraint&hoursBeforeNow=1.25" 
-                + "&flightPath=" + miles + ";" + plan;
+                "https://aviationweather.gov/api/data/dataserver?dataSource=tafs&requestType=retrieve&format=xml"
+                + "&mostRecentForEachStation=constraint&hoursBeforeNow=1.25"
+                + "&stationString=" + plan;
         /*
          * Get TAF
          */
@@ -199,6 +169,45 @@ public class NetworkHelper {
         return out;
     }
 
+    /**
+     *
+     * @param plan
+     * @return
+     */
+    public static String getPIREPSPlan(Coordinate[] coords) {
+
+        LinkedHashSet<String> piset = new LinkedHashSet<>();
+        for (Coordinate c : coords) {
+            String xml =
+                    "https://aviationweather.gov/api/data/dataserver?dataSource=aircraftreports&requestType=retrieve&format=xml"
+                            + "&hoursBeforeNow=12"
+                            + "&radialDistance=" + "50;" + c.getLongitude() + "," + c.getLatitude();
+            /*
+             * Get PIREPS
+             */
+            XMLReader xmlReader;
+            try {
+                xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+                SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
+                xmlReader.setContentHandler(saxHandler);
+                connectAndReadXml(xmlReader, xml);
+                List<String> texts = saxHandler.getText();
+                for (String text : texts) {
+                    piset.add(text);
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
+        String out = "";
+        Iterator<String> it = piset.iterator();
+        while(it.hasNext()) {
+            out = out + it.next() + "::::";
+        }
+
+        return out.replaceAll("::::$", "");
+    }
 
     private static void connectAndReadXml(XMLReader xmlReader, String url) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -211,38 +220,6 @@ public class NetworkHelper {
         con.disconnect();
     }
 
-    /**
-     * 
-     * @param plan
-     * @return
-     */
-    public static String getPIREPSPlan(String plan, String miles) {
-        
-        String xml = 
-                "https://aviationweather.gov/adds/dataserver_current/httpparam?datasource=pireps"
-                + "&requestType=retrieve&format=xml&hoursBeforeNow=12" 
-                + "&flightPath=" + miles + ";" + plan;
-        /*
-         * Get PIREPS
-         */
-        String out = "";
-        XMLReader xmlReader;
-        try {
-            xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-            SAXXMLHandlerPIREP saxHandler = new SAXXMLHandlerPIREP();
-            xmlReader.setContentHandler(saxHandler);
-            connectAndReadXml(xmlReader, xml);
-            List<String> texts = saxHandler.getText();
-            for(String text : texts) {
-                out += text + "::::";
-            }
-        }
-        catch (Exception e) {
-            
-        }
-        
-        return out;
-    }
 
     /**
      * 
@@ -567,7 +544,7 @@ public class NetworkHelper {
         String ret = null;
         try {
             Map<String, String> params = new HashMap<String, String>();
-            params.put("retrieveLocId", plan);
+            params.put("retrieveLocId", plan.replace(",", " "));
             params.put("reportType", "Raw");
             params.put("actionType", "notamRetrievalByICAOs");
             params.put("submit", "View+NOTAMSs");
