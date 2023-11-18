@@ -33,7 +33,7 @@ import com.ds.avare.utils.Util;
  * @author zkhan
  *
  */
-public class MsfsFragment extends Fragment {
+public class MsfsFragment extends IOFragment {
     
     private Connection mMsfs;
     private SavedEditText mTextMsfsPort;

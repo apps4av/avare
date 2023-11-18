@@ -26,7 +26,7 @@ import com.ds.avare.connections.ConnectionFactory;
 import com.ds.avare.storage.Preferences;
 import com.ds.avare.storage.SavedEditText;
 
-public class Dump1090Fragment extends Fragment {
+public class Dump1090Fragment extends IOFragment {
     
     private Connection mDump1090;
     private CheckBox mConState;

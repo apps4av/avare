@@ -34,7 +34,7 @@ import java.io.File;
  * @author zkhan
  *
  */
-public class WiFiInFragment extends Fragment {
+public class WiFiInFragment extends IOFragment {
     
     private Connection mWifi;
     private SavedEditText mTextWifiPort;
@@ -90,8 +90,7 @@ public class WiFiInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
-                    mWifi.setFileSave(fl);
+                    mWifi.setFileSave(getFileSavePath(val));
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

@@ -35,7 +35,7 @@ import java.util.List;
  * @author zkhan
  * 
  */
-public class BlueToothOutFragment extends Fragment {
+public class BlueToothOutFragment extends IOFragment {
 
     private Connection mBt;
     private List<String> mList; 

@@ -33,7 +33,7 @@ import java.io.File;
  * @author zkhan
  * 
  */
-public class USBInFragment extends Fragment {
+public class USBInFragment extends IOFragment {
 
     private Connection mUSB;
     private Context mContext;
@@ -106,8 +106,7 @@ public class USBInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
-                    mUSB.setFileSave(fl);
+                    mUSB.setFileSave(getFileSavePath(val));
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

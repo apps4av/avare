@@ -40,7 +40,7 @@ import java.util.List;
  * @author zkhan
  * 
  */
-public class BlueToothInFragment extends Fragment {
+public class BlueToothInFragment extends IOFragment {
 
     private static Connection mBt;
     private List<String> mList;
@@ -128,8 +128,7 @@ public class BlueToothInFragment extends Fragment {
                 String val = mTextFileSave.getText().toString();
                 if(mConnectFileSaveButton.getText().equals(mContext.getString(R.string.Save))) {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Saving));
-                    String fl = StorageService.getInstance().getPreferences().getUserDataFolder() + File.separatorChar + val;
-                    mBt.setFileSave(fl);
+                    mBt.setFileSave(getFileSavePath(val));
                 }
                 else {
                     mConnectFileSaveButton.setText(mContext.getString(R.string.Save));

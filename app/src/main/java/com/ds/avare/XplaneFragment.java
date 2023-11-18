@@ -33,7 +33,7 @@ import com.ds.avare.utils.Util;
  * @author zkhan
  *
  */
-public class XplaneFragment extends Fragment {
+public class XplaneFragment extends IOFragment {
     
     private Connection mXp;
     private SavedEditText mTextXplanePort;

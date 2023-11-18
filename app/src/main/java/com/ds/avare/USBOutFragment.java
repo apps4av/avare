@@ -33,7 +33,7 @@ import java.io.File;
  * @author zkhan
  * 
  */
-public class USBOutFragment extends Fragment {
+public class USBOutFragment extends IOFragment {
 
     private Connection mUSB;
     private Context mContext;

@@ -2038,6 +2038,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Minimums</item>
         <item>Tiles</item>
         <item>Chart Supplements</item>
+        <item>Recorded Files</item>
         <item>Plates</item>
         <item>Preferences</item>
     </string-array>
@@ -2048,8 +2049,9 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>minimums</item>
         <item>tiles</item>
         <item>afd</item>
+        <item>recorded</item>
         <item>plates</item>
-        <item>../shared_prefs/com.ds.avare_preferences.xml</item>
+        <item>../shared_prefs</item>
     </string-array>
 
     <string-array name="DeleteData">

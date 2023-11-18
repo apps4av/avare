@@ -37,7 +37,7 @@ import java.io.File;
  * @author zkhan
  * 
  */
-public class FileFragment extends Fragment {
+public class FileFragment extends IOFragment {
 
     private FileConnectionIn mFile;
     private Context mContext;
@@ -74,11 +74,9 @@ public class FileFragment extends Fragment {
                  * Connect to the given file
                  */
                 String val = mTextFile.getText().toString();
-                Preferences pref = StorageService.getInstance().getPreferences();
-                String fl = pref.getUserDataFolder() + File.separatorChar + val;
-                if(null != val && (!mFile.isConnected())) {                    
+                if(null != val && (!mFile.isConnected())) {
                     mConnectButton.setText(mContext.getString(R.string.Start));
-                    mFile.connect(fl, false);
+                    mFile.connect(getFileSavePath(val), false);
                     if(mFile.isConnected()) {
                         mFile.start();
                     }

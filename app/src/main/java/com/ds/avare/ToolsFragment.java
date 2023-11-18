@@ -65,7 +65,7 @@ import java.util.zip.ZipOutputStream;
  * @author rasii, zkhan
  *
  */
-public class ToolsFragment extends Fragment {
+public class ToolsFragment extends IOFragment {
 
 
     private Context mContext;

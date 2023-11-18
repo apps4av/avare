@@ -33,7 +33,7 @@ import com.ds.avare.storage.SavedEditText;
  * @author rasii, zkhan
  *
  */
-public class GPSSimulatorFragment extends Fragment {
+public class GPSSimulatorFragment extends IOFragment {
 
     private Connection mGPSSim;
     private SavedCheckbox mLandAtCb;
