@@ -402,32 +402,18 @@ function refresh() {
 	location.reload(true);
 }
 
-function getImageWinds(type, level, ftime) {
-	var elem = document.getElementById('weatherImageWinds');
-	if     (level == '030') level = '900';
-	else if(level == '060') level = '800';
-	else if(level == '090') level = '725';
-	else if(level == '120') level = '650';
-	else if(level == '150') level = '575';
-	else if(level == '180') level = '500';
-	else if(level == '240') level = '400';
-	else if(level == '300') level = '300';
-	else if(level == '360') level = '225';
-	else if(level == '420') level = '175';
-	else if(level == '480') level = '125';
-
-	var filename = 'https://aviationweather.gov/data/products/wind/' + ftime + '_' + level + '_' + type + '.gif';
+function getImageGfa(type, ftime) {
+	var elem = document.getElementById('weatherImageGfa');
+	var filename = 'https://www.aviationweather.gov/data/products/gfa/F' + ftime + '_gfa_' + type + '.png';
 	elem.src = filename;
 }
 
-function updateImageWinds() {
+function updateImageGfa() {
 	var telem = document.getElementById('type');
 	var type = telem.options[telem.selectedIndex].value;
-	var lelem = document.getElementById('level');
-	var level = lelem.options[lelem.selectedIndex].value;
 	var felem = document.getElementById('fore');
 	var ftime = felem.options[felem.selectedIndex].value;
-	getImageWinds(type, level, ftime);
+	getImageGfa(type, ftime);
 }
 
 function getImageTurb(level, ftime) {
@@ -517,7 +503,7 @@ $(document).ready(function(){
     });
     updateImageMisc();
     updateImageProg();
-    updateImageWinds();
+    updateImageGfa();
     updateImageTurb();
     updateImageIcing();
 });
@@ -1280,7 +1266,7 @@ $(document).ready(function(){
             <li class="active"><a href="#textual">Textual</a></li>
             <li><a href="#misc">Misc</a></li>
             <li><a href="#prog">Prog</a></li>
-            <li><a href="#windstemp">Winds/Temp</a></li>
+            <li><a href="#gfa">GFA</a></li>
             <li><a href="#turb">Turb</a></li>
             <li><a href="#icing">Icing</a></li>
         </ul>
@@ -1328,50 +1314,21 @@ $(document).ready(function(){
                 </select>
                 <br><img id='weatherImageProg'><br>
             </div>
-            <div id="windstemp" class="tab-pane fade">
-                <h3>Winds/Temperature Charts</h3>
-                <select class="selectpicker" id='type' name='type' data-mobile="true" onChange='updateImageWinds()'>
-                    <OPTION VALUE='wind'>Wind Speed</OPTION>
-                    <OPTION VALUE='temp'>Temperature</OPTION>
-                    <OPTION VALUE='isa'>Temp. Difference</OPTION>
-                    <OPTION VALUE='windstrm'>Streamlines</OPTION>
+            <div id="gfa" class="tab-pane fade">
+                <h3>GFA Charts</h3>
+                <select class="selectpicker" id='type' name='type' data-mobile="true" onChange='updateImageGfa()'>
+                    <OPTION VALUE='sfc_us'>Surface</OPTION>
+                    <OPTION VALUE='clouds_us'>Clouds</OPTION>
                 </select>
-                <select class="selectpicker" id='level' name='level' data-mobile="true"  onChange='updateImageWinds()'>
-                    <OPTION VALUE='sfc'>sfc</OPTION>
-                    <OPTION VALUE='900'>3,000</OPTION>
-                    <OPTION VALUE='800'>6,000</OPTION>
-                    <OPTION VALUE='725'>9,000</OPTION>
-                    <OPTION VALUE='650'>12,000</OPTION>
-                    <OPTION VALUE='575'>15,000</OPTION>
-                    <OPTION VALUE='500'>FL180</OPTION>
-                    <OPTION VALUE='400'>FL240</OPTION>
-                    <OPTION VALUE='300'>FL300</OPTION>
-                    <OPTION VALUE='225'>FL360</OPTION>
-                    <OPTION VALUE='175'>FL420</OPTION>
-                    <OPTION VALUE='125'>FL480</OPTION>
+                <select class="selectpicker" id='fore' name='fore' data-mobile="true"  onChange='updateImageGfa()'>
+                    <OPTION VALUE='03'>3 Hour</OPTION>
+                    <OPTION VALUE='06'>6 Hour</OPTION>
+                    <OPTION VALUE='09'>9 Hour</OPTION>
+                    <OPTION VALUE='12'>12 Hour</OPTION>
+                    <OPTION VALUE='15'>15 Hour</OPTION>
+                    <OPTION VALUE='18'>18 Hour</OPTION>
                 </select>
-                <select class="selectpicker" id='fore' name='fore' data-mobile="true"  onChange='updateImageWinds()'>
-                    <option value='F00_rap'>0hr</option>
-                    <option value='F01_rap'>1hr</option>
-                    <option value='F02_rap'>2hr</option>
-                    <option value='F03_rap'>3hr</option>
-                    <option value='F04_rap'>4hr</option>
-                    <option value='F05_rap'>5hr</option>
-                    <option value='F06_rap'>6hr</option>
-                    <option value='F07_rap'>7hr</option>
-                    <option value='F08_rap'>8hr</option>
-                    <option value='F09_rap'>9hr</option>
-                    <option value='F10_rap'>10hr</option>
-                    <option value='F11_rap'>11hr</option>
-                    <option value='F12_rap'>12hr</option>
-                    <option value='F13_rap'>13hr</option>
-                    <option value='F14_rap'>14hr</option>
-                    <option value='F15_rap'>15hr</option>
-                    <option value='F16_rap'>16hr</option>
-                    <option value='F17_rap'>17hr</option>
-                    <option value='F18_rap'>18hr</option>
-                </select>
-                <br><img id='weatherImageWinds'><br>
+                <br><img id='weatherImageGfa'><br>
             </div>
             <div id="turb" class="tab-pane fade">
                 <h3>Turbulence Charts</h3>
