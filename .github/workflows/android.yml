@@ -29,3 +29,19 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: Sign APK with keystore
+      uses: r0adkll/sign-android-release@v1
+      id: sign_app
+      with:
+        releaseDirectory: app/build/outputs/apk/release
+        signingKeyBase64: ${{ secrets.KEY_STORE }}
+        alias: ${{ secrets.KEY_STORE_ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASS }}
+        keyPassword: ${{ secrets.KEY_STORE_PASS }}
+
+    - name: Upload release APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-release.apk
+        path: ${{steps.sign_app.outputs.signedReleaseFile}}
