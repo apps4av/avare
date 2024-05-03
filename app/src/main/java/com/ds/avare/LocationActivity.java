@@ -268,6 +268,9 @@ public class LocationActivity extends BaseActivity implements Observer {
         // start camera on volume down/up
         PackageManager packman = getPackageManager();
         Intent intent;
+        if(!StorageService.getInstance().getPreferences().cameraButton()) {
+            return false;
+        }
         if (KeyEvent.KEYCODE_VOLUME_DOWN == event.getKeyCode()) {
             intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         }

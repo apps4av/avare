@@ -1073,6 +1073,10 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         return mPref.getBoolean(mContext.getString(R.string.b1map), false);
     }
 
+    public boolean cameraButton() {
+        return mPref.getBoolean(mContext.getString(R.string.cameraButton), false);
+    }
+
     public boolean removeB3Plate() {
         return mPref.getBoolean(mContext.getString(R.string.b3plate), false);
     }

@@ -177,6 +177,7 @@ Redistribution and use in source and binary forms, with or without modification,
       <item>Miami Flyway</item>
       <item>NewOrleans Flyway</item>
       <item>Orlando Flyway</item>
+      <item>Phoenix Flyway</item>
       <item>SaltLakeCity Flyway</item>
       <item>SanDiego Flyway</item>
       <item>SanFrancisco Flyway</item>
@@ -1940,6 +1941,7 @@ Redistribution and use in source and binary forms, with or without modification,
       <item>MiamiFLY</item>
       <item>NewOrleansFLY</item>
       <item>OrlandoFLY</item>
+      <item>PhoenixFLY</item>
       <item>SaltLakeCityFLY</item>
       <item>SanDiegoFLY</item>
       <item>SanFranciscoFLY</item>
@@ -2323,7 +2325,7 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Change the time on the fuel timer via Instrumentation->Fuel Time Interval&quot;</item>
         <item>&quot;If the app is not locking on to a GPS, move to a different area, and check GPS NOTAMs&quot;</item>
         <item>&quot;If pre-downloaded SUA or weather disappear in flight, check Weather->Data Expiry and Use ADSB Weather&quot;</item>
-        <item>&quot;If you're not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
+        <item>&quot;If you\'re not ADS/B Out equipped, most traffic might be obscured from you&quot;</item>
         <item>&quot;Avare is developed by a team volunteers and is free to use, but consider donating to support it&quot;</item>
         <item>&quot;If the app is running slow, uninstall some background running apps&quot;</item>
         <item>&quot;If the app is not locking on to a GPS, allow the app to access your location in Android Application Settings&quot;</item>
@@ -2342,21 +2344,21 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>&quot;Choose minimal length for fields in the Near tab via Display->Near Runway Minimum Length&quot;</item>
         <item>&quot;Set how long weather and TFRs are displayed for via Weather->Data Expiry&quot;</item>
         <item>&quot;To see maps from different areas, use simulation mode and enter a destination in that areas&quot;</item>
-        <item>&quot;Don't just keep Avare's data up-to-date, update Avare itself regularly via Google Play&quot;</item>
+        <item>&quot;Don\'t just keep Avare\'s data up-to-date, update Avare itself regularly via Google Play&quot;</item>
         <item>&quot;Your email address is a signature you leave for signing a liability release form&quot;</item>
         <item>&quot;To get support or report bugs, go to apps4av.com and look for the forum link&quot;</item>
         <item>&quot;If chart download fails after completing more than 50%, make sure your device has enough storage&quot;</item>
-        <item>&quot;Arrivals, departure procedures, alternate minimums and other info are included with a field's plates&quot;</item>
+        <item>&quot;Arrivals, departure procedures, alternate minimums and other info are included with a field\'s plates&quot;</item>
         <item>&quot;Practicing using Avare when flying as a passenger will make you more proficient using it&quot;</item>
         <item>&quot;Long press on an airport to show its METAR, TAF, COMM and other information&quot;</item>
         <item>&quot;Avare includes density altitude information for airports&quot;</item>
         <item>&quot;Avare works with most ADS/B receivers. Confirm compatibility before purchasing one&quot;</item>
         <item>&quot;When Avare encounters unfamliar fixes on "Create New Plan," it skips those fixes&quot;</item>
         <item>&quot;Every time you find a bug and report it, you help make Avare a better product&quot;</item>
-        <item>&quot;Avare's taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
+        <item>&quot;Avare\'s taxi diagrams are automatically geo-tagged, plates are manually tagged by volunteers&quot;</item>
         <item>&quot;Update your maps and plates well before a flight, the download process can be lengthy&quot;</item>
         <item>&quot;If you like this app, please leave a positive review on the play store, and/or donate&quot;</item>
-        <item>&quot;It's best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
+        <item>&quot;It\'s best to update maps and plates via Wi-Fi, since it takes a significant amount of data&quot;</item>
         <item>&quot;You can save and restore your data to Google Drive from Preferences->Application State->Sync Data&quot;</item>
         <item>&quot;You can change the shown chart type in Map screen by long pressing on the Map tab&quot;</item>
         <item>&quot;You can modify the quantity of fields on the top of the display by adjusting the Avare font size scaling at Preferences->UI Configuration->Adjust Font Size&quot;</item>

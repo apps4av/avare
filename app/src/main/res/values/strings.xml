@@ -640,5 +640,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="AircraftTailNumber">AircraftTailNumber</string>
     <string name="Aircraft">Acft</string>
     <string name="AircraftSummary">User defined aircraft.</string>
+    <string name="cameraButton">CameraButton</string>
+    <string name="cameraButtonSummary">Use the volume button to launch the camera app</string>
+    <string name="cameraButtonTitle">Camera App</string>
 
 </resources>

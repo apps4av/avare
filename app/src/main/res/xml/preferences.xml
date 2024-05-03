@@ -516,6 +516,12 @@ authors: zkhan, jlmcgraw
         </PreferenceScreen>
 
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/cameraButton"
+            android:summary="@string/cameraButtonSummary"
+            android:title="@string/cameraButtonTitle" />
+
+        <CheckBoxPreference
             android:key="@string/b1map"
             android:summary="@string/b1map"
             android:title="@string/b1map" />
