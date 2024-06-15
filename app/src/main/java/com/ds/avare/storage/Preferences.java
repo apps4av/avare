@@ -193,7 +193,7 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
             val = "0";
         }
         if (val.equals("0")) {
-            return "http://www.apps4av.org/new/";
+            return "http://www.apps4av.org/regions/";
         } else if (val.equals("1")) {
             return "https://avare.bubble.org/";
         } else if (val.equals("2")) {

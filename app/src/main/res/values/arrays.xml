@@ -45,59 +45,51 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resNameAFD">
-        <item>Chart Supplement NE</item>
-        <item>Chart Supplement NC</item>
-        <item>Chart Supplement NW</item>
-        <item>Chart Supplement SE</item>
-        <item>Chart Supplement SC</item>
-        <item>Chart Supplement SW</item>
-        <item>Chart Supplement EC</item>
-        <item>Chart Supplement AK</item>
-        <item>Chart Supplement Pacific</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
 
     <string-array name="resNameIFRArea">
-        <item>IFR Area ANC</item>
-        <item>IFR Area ATL</item>
-        <item>IFR Area DCA</item>
-        <item>IFR Area DEN</item>
-        <item>IFR Area DET</item>
-        <item>IFR Area DFW</item>
-        <item>IFR Area FAI</item>
-        <item>IFR Area GUA</item>
-        <item>IFR Area JAX</item>
-        <item>IFR Area JNU</item>
-        <item>IFR Area LAX</item>
-        <item>IFR Area MIA</item>
-        <item>IFR Area MKC</item>
-        <item>IFR Area MSP</item>
-        <item>IFR Area OME</item>
-        <item>IFR Area ORD</item>
-        <item>IFR Area PHX</item>
-        <item>IFR Area SFO</item>
-        <item>IFR Area STL</item>
-        <item>IFR Area VR</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
     
     <string-array name="resNameIFRHE">
-        <item>IFR High Enroute NE</item>
-        <item>IFR High Enroute NC</item>
-        <item>IFR High Enroute NW</item>
-        <item>IFR High Enroute SE</item>
-        <item>IFR High Enroute SC</item>
-        <item>IFR High Enroute SW</item>
-        <item>IFR High Enroute AK</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
     
     <string-array name="resNameIFRLE">
-        <item>IFR Low Enroute NE</item>
-        <item>IFR Low Enroute NC</item>
-        <item>IFR Low Enroute NW</item>
-        <item>IFR Low Enroute SE</item>
-        <item>IFR Low Enroute SC</item>
-        <item>IFR Low Enroute SW</item>
-        <item>IFR Low Enroute AK</item>
-        <item>IFR Low Enroute HI</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
         
     <string-array name="resNameWAC">
@@ -125,180 +117,50 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>CJ-27 (Caribbean,PR,VI,DR)</item>
     </string-array>
     <string-array name="resNameTAC">
-        <item>Anchorage TAC</item>
-        <item>Atlanta TAC</item>
-        <item>Baltimore-Washington TAC</item>
-        <item>Boston TAC</item>
-        <item>Charlotte TAC</item>
-        <item>Chicago TAC</item>
-        <item>Cincinnati TAC</item>
-        <item>Cleveland TAC</item>
-        <item>Colorado Springs TAC</item>
-        <item>Dallas-FtWorth TAC</item>
-        <item>Denver TAC</item>
-        <item>Detroit TAC</item>
-        <item>Fairbanks TAC</item>
-        <item>Honolulu Inset</item>
-        <item>Houston TAC</item>
-        <item>Kansas City TAC</item>
-        <item>Las Vegas TAC</item>
-        <item>Los Angeles TAC</item>
-        <item>Memphis TAC</item>
-        <item>Miami TAC</item>
-        <item>Minneapolis-StPaul TAC</item>
-        <item>New Orleans TAC</item>
-        <item>New York TAC</item>
-        <item>Orlando TAC</item>
-        <item>Philadelphia TAC</item>
-        <item>Phoenix TAC</item>
-        <item>Pittsburgh TAC</item>
-        <item>Portland TAC</item>
-        <item>PuertoRico-VI TAC</item>
-        <item>Salt Lake City TAC</item>
-        <item>San Diego TAC</item>
-        <item>San Francisco TAC</item>
-        <item>Seattle TAC</item>
-        <item>St Louis TAC</item>
-        <item>Tampa TAC</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
 
     <string-array name="resNameFLY">
-      <item>Atlanta Flyway</item>
-      <item>Baltimore-Washington Flyway</item>
-      <item>Charlotte Flyway</item>
-      <item>Chicago Flyway</item>
-      <item>Cincinnati Flyway</item>
-      <item>Dallas-FtWorth Flyway</item>
-      <item>Denver Flyway</item>
-      <item>Detroit Flyway</item>
-      <item>Houston Flyway</item>
-      <item>LasVegas Flyway</item>
-      <item>LosAngeles Flyway</item>
-      <item>Miami Flyway</item>
-      <item>NewOrleans Flyway</item>
-      <item>Orlando Flyway</item>
-      <item>Phoenix Flyway</item>
-      <item>SaltLakeCity Flyway</item>
-      <item>SanDiego Flyway</item>
-      <item>SanFrancisco Flyway</item>
-      <item>Seattle Flyway</item>
-      <item>StLouis Flyway</item>
-      <item>Tampa Flyway</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
 
     <string-array name="resNameSectional">
-        <item>Albuquerque</item>
-		<item>Anchorage</item>
-		<item>Atlanta</item>
-		<item>Bethel</item>
-		<item>Billings</item>
-		<item>Brownsville</item>
-		<item>Cape Lisburne</item>
-		<item>Caribbean - 1</item>
-        <item>Caribbean - 2</item>
-		<item>Charlotte</item>
-		<item>Cheyenne</item>
-		<item>Chicago</item>
-		<item>Cincinnati</item>
-		<item>Cold Bay</item>
-		<item>Dallas-FtWorth</item>
-		<item>Dawson</item>
-		<item>Denver</item>
-		<item>Detroit</item>
-		<item>Dutch Harbor</item>
-		<item>El Paso</item>
-		<item>Fairbanks</item>
-		<item>Great Falls</item>
-		<item>Green Bay</item>
-		<item>Halifax</item>
-		<item>Hawaiian Islands</item>
-		<item>Houston</item>
-		<item>Jacksonville</item>
-		<item>Juneau</item>
-		<item>Kansas City</item>
-		<item>Ketchikan</item>
-		<item>Klamath Falls</item>
-		<item>Kodiak</item>
-		<item>Lake Huron</item>
-		<item>Las Vegas</item>
-		<item>Los Angeles</item>
-		<item>McGrath</item>
-		<item>Memphis</item>
-		<item>Miami</item>
-		<item>Montreal</item>
-		<item>New Orleans</item>
-		<item>New York</item>
-		<item>Nome</item>
-		<item>Omaha</item>
-		<item>Phoenix</item>
-		<item>Point Barrow</item>
-		<item>Salt Lake City</item>
-		<item>San Antonio</item>
-		<item>San Francisco</item>
-		<item>Seattle</item>
-		<item>Seward</item>
-		<item>St Louis</item>
-		<item>Twin Cities</item>
-		<item>Washington</item>
-		<item>Wichita</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
     <string-array name="resNamePlate">
-        <item>Canada ADs</item>
-        <item>Minimums T/A</item>
-        <item>Alabama</item>
-		<item>Alaska</item>
-		<item>Arizona</item>
-		<item>Arkansas</item>
-		<item>California</item>
-		<item>Colorado</item>
-		<item>Connecticut</item>
-        <item>D.C.</item>
-		<item>Delaware</item>
-		<item>Florida</item>
-		<item>Georgia</item>
-		<item>Hawaii</item>
-		<item>Idaho</item>
-		<item>Illinois</item>
-		<item>Indiana</item>
-		<item>Iowa</item>
-		<item>Kansas</item>
-		<item>Kentucky</item>
-		<item>Louisiana</item>
-		<item>Maine</item>
-		<item>Maryland</item>
-		<item>Massachusetts</item>
-		<item>Michigan</item>
-		<item>Minnesota</item>
-		<item>Mississippi</item>
-		<item>Missouri</item>
-		<item>Montana</item>
-		<item>Nebraska</item>
-		<item>Nevada</item>
-		<item>New Hampshire</item>
-		<item>New Jersey</item>
-		<item>New Mexico</item>
-		<item>New York</item>
-		<item>North Carolina</item>
-		<item>North Dakota</item>
-		<item>Ohio</item>
-		<item>Oklahoma</item>
-		<item>Oregon</item>
-        <item>Pennsylvania</item>
-        <item>Puerto Rico</item>
-        <item>Rhode Island</item>
-		<item>South Carolina</item>
-		<item>South Dakota</item>
-		<item>Tennessee</item>
-		<item>Texas</item>
-		<item>Utah</item>
-		<item>Vermont</item>
-		<item>Virginia</item>
-		<item>Virgin Islands</item>
-		<item>Washington</item>
-		<item>West Virginia</item>
-		<item>Wisconsin</item>
-		<item>Wyoming</item>
-		<item>Others</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
 	</string-array>
     <string-array name="resNameVFRAreaPlate">
         <item>VFR Area Canada</item>
@@ -465,19 +327,17 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>Canada Grid 340</item>
         <item>Canada Grid 560</item>
     </string-array>
-    
+
     <string-array name="resNameHeli">
-        <item>Grand Canyon</item>
-        <item>Baltimore Heli</item>
-        <item>Boston Heli</item>
-        <item>Chicago Heli</item>
-        <item>Dallas-Ft-Worth Heli</item>
-        <item>Detroit Heli</item>
-        <item>Houston Heli</item>
-        <item>Los Angeles Heli</item>
-        <item>New York Heli</item>
-        <item>US Gulf Coast Heli</item>
-        <item>Washington Heli</item>
+        <item>Northeast</item>
+        <item>North Central</item>
+        <item>Northwest</item>
+        <item>Southeast</item>
+        <item>South Central</item>
+        <item>Southwest</item>
+        <item>East Central</item>
+        <item>Alaska</item>
+        <item>Pacific</item>
     </string-array>
 
     <string-array name="resNameONC">
@@ -1513,59 +1373,51 @@ Redistribution and use in source and binary forms, with or without modification,
     </string-array>
 
     <string-array name="resFilesIFRLE">
-        <item>ELUS_NE</item>
-        <item>ELUS_NC</item>
-        <item>ELUS_NW</item>
-        <item>ELUS_SE</item>
-        <item>ELUS_SC</item>
-        <item>ELUS_SW</item>
-        <item>ELUS_AK</item>
-        <item>ELUS_HI</item>
+        <item>NE_ENR_L</item>
+        <item>NC_ENR_L</item>
+        <item>NW_ENR_L</item>
+        <item>SE_ENR_L</item>
+        <item>SC_ENR_L</item>
+        <item>SW_ENR_L</item>
+        <item>EC_ENR_L</item>
+        <item>AK_ENR_L</item>
+        <item>PAC_ENR_L</item>
     </string-array>
 
     <string-array name="resFilesIFRHE">
-        <item>EHUS_NE</item>
-        <item>EHUS_NC</item>
-        <item>EHUS_NW</item>
-        <item>EHUS_SE</item>
-        <item>EHUS_SC</item>
-        <item>EHUS_SW</item>
-        <item>EHUS_AK</item>
+        <item>NE_ENR_H</item>
+        <item>NC_ENR_H</item>
+        <item>NW_ENR_H</item>
+        <item>SE_ENR_H</item>
+        <item>SC_ENR_H</item>
+        <item>SW_ENR_H</item>
+        <item>EC_ENR_H</item>
+        <item>AK_ENR_H</item>
+        <item>PAC_ENR_H</item>
     </string-array>
 
     <string-array name="resFilesIFRArea">
-        <item>ENRA_ANC</item>
-        <item>ENRA_ATL</item>
-        <item>ENRA_DCA</item>
-        <item>ENRA_DEN</item>
-        <item>ENRA_DET</item>
-        <item>ENRA_DFW</item>
-        <item>ENRA_FAI</item>
-        <item>ENRA_GUA</item>
-        <item>ENRA_JAX</item>
-        <item>ENRA_JNU</item>
-        <item>ENRA_LAX</item>
-        <item>ENRA_MIA</item>
-        <item>ENRA_MKC</item>
-        <item>ENRA_MSP</item>
-        <item>ENRA_OME</item>
-        <item>ENRA_ORD</item>
-        <item>ENRA_PHX</item>
-        <item>ENRA_SFO</item>
-        <item>ENRA_STL</item>
-        <item>ENRA_VR</item>
+        <item>NE_ENR_A</item>
+        <item>NC_ENR_A</item>
+        <item>NW_ENR_A</item>
+        <item>SE_ENR_A</item>
+        <item>SC_ENR_A</item>
+        <item>SW_ENR_A</item>
+        <item>EC_ENR_A</item>
+        <item>AK_ENR_A</item>
+        <item>PAC_ENR_A</item>
     </string-array>
     
     <string-array name="resFilesAFD">
-        <item>AFD_NE</item>
-        <item>AFD_NC</item>
-        <item>AFD_NW</item>
-        <item>AFD_SE</item>
-        <item>AFD_SC</item>
-        <item>AFD_SW</item>
-        <item>AFD_EC</item>
-        <item>AFD_AK</item>
-        <item>AFD_PAC</item>
+        <item>NE_CSUP</item>
+        <item>NC_CSUP</item>
+        <item>NW_CSUP</item>
+        <item>SE_CSUP</item>
+        <item>SC_CSUP</item>
+        <item>SW_CSUP</item>
+        <item>EC_CSUP</item>
+        <item>AK_CSUP</item>
+        <item>PAC_CSUP</item>
     </string-array>
         
     <string-array name="resFilesWAC">
@@ -1593,156 +1445,39 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>CJ-27</item>
     </string-array>
     <string-array name="resFilesTAC">
-        <item>AnchorageTAC</item>
-        <item>AtlantaTAC</item>
-        <item>Baltimore-WashingtonTAC</item>
-        <item>BostonTAC</item>
-        <item>CharlotteTAC</item>
-        <item>ChicagoTAC</item>
-        <item>CincinnatiTAC</item>
-        <item>ClevelandTAC</item>
-        <item>ColoradoSpringsTAC</item>
-        <item>Dallas-FtWorthTAC</item>
-        <item>DenverTAC</item>
-        <item>DetroitTAC</item>
-        <item>FairbanksTAC</item>
-        <item>HonoluluInset</item>
-        <item>HoustonTAC</item>
-        <item>KansasCityTAC</item>
-        <item>LasVegasTAC</item>
-        <item>LosAngelesTAC</item>
-        <item>MemphisTAC</item>
-        <item>MiamiTAC</item>
-        <item>Minneapolis-StPaulTAC</item>
-        <item>NewOrleansTAC</item>
-        <item>NewYorkTAC</item>
-        <item>OrlandoTAC</item>
-        <item>PhiladelphiaTAC</item>
-        <item>PhoenixTAC</item>
-        <item>PittsburghTAC</item>
-        <item>PortlandTAC</item>
-        <item>PuertoRico-VITAC</item>
-        <item>SaltLakeCityTAC</item>
-        <item>SanDiegoTAC</item>
-        <item>SanFranciscoTAC</item>
-        <item>SeattleTAC</item>
-        <item>StLouisTAC</item>
-        <item>TampaTAC</item>
+        <item>NE_TAC</item>
+        <item>NC_TAC</item>
+        <item>NW_TAC</item>
+        <item>SE_TAC</item>
+        <item>SC_TAC</item>
+        <item>SW_TAC</item>
+        <item>EC_TAC</item>
+        <item>AK_TAC</item>
+        <item>PAC_TAC</item>
     </string-array>
+
     <string-array name="resFilesSectional">
-        <item>Albuquerque</item>
-        <item>Anchorage</item>
-	 	<item>Atlanta</item>
-		<item>Bethel</item>
-		<item>Billings</item>
-		<item>Brownsville</item>
-		<item>CapeLisburne</item>
-        <item>Caribbean1</item>
-        <item>Caribbean2</item>
-		<item>Charlotte</item>
-		<item>Cheyenne</item>
-		<item>Chicago</item>
-		<item>Cincinnati</item>
-		<item>ColdBay</item>
-		<item>Dallas-FtWorth</item>
-		<item>Dawson</item>
-		<item>Denver</item>
-		<item>Detroit</item>
-		<item>DutchHarbor</item>
-		<item>ElPaso</item>
-		<item>Fairbanks</item>
-		<item>GreatFalls</item>
-		<item>GreenBay</item>
-		<item>Halifax</item>
-		<item>HawaiianIslands</item>
-		<item>Houston</item>
-		<item>Jacksonville</item>
-		<item>Juneau</item>
-		<item>KansasCity</item>
-		<item>Ketchikan</item>
-		<item>KlamathFalls</item>
-		<item>Kodiak</item>
-		<item>LakeHuron</item>
-		<item>LasVegas</item>
-		<item>LosAngeles</item>
-		<item>McGrath</item>
-		<item>Memphis</item>
-		<item>Miami</item>
-		<item>Montreal</item>
-		<item>NewOrleans</item>
-		<item>NewYork</item>
-		<item>Nome</item>
-		<item>Omaha</item>
-		<item>Phoenix</item>
-		<item>PointBarrow</item>
-		<item>SaltLakeCity</item>
-		<item>SanAntonio</item>
-		<item>SanFrancisco</item>
-		<item>Seattle</item>
-		<item>Seward</item>
-		<item>StLouis</item>
-		<item>TwinCities</item>
-		<item>Washington</item>
-		<item>Wichita</item>
+        <item>NE_SEC</item>
+        <item>NC_SEC</item>
+        <item>NW_SEC</item>
+        <item>SE_SEC</item>
+        <item>SC_SEC</item>
+        <item>SW_SEC</item>
+        <item>EC_SEC</item>
+        <item>AK_SEC</item>
+        <item>PAC_SEC</item>
     </string-array>
 
     <string-array name="resFilesPlate">
-        <item>CAN_ADS</item>
-        <item>alternates</item>
-        <item>AL_PLATES</item>
-		<item>AK_PLATES</item>
-		<item>AZ_PLATES</item>
-		<item>AR_PLATES</item>
-		<item>CA_PLATES</item>
-		<item>CO_PLATES</item>
-		<item>CT_PLATES</item>
-        <item>DC_PLATES</item>
-		<item>DE_PLATES</item>
-		<item>FL_PLATES</item>
-		<item>GA_PLATES</item>
-		<item>HI_PLATES</item>
-		<item>ID_PLATES</item>
-		<item>IL_PLATES</item>
-		<item>IN_PLATES</item>
-		<item>IA_PLATES</item>
-		<item>KS_PLATES</item>
-		<item>KY_PLATES</item>
-		<item>LA_PLATES</item>
-		<item>ME_PLATES</item>
-		<item>MD_PLATES</item>
-		<item>MA_PLATES</item>
-		<item>MI_PLATES</item>
-		<item>MN_PLATES</item>
-		<item>MS_PLATES</item>
-		<item>MO_PLATES</item>
-		<item>MT_PLATES</item>
-		<item>NE_PLATES</item>
-		<item>NV_PLATES</item>
-		<item>NH_PLATES</item>
-		<item>NJ_PLATES</item>
-		<item>NM_PLATES</item>
-		<item>NY_PLATES</item>
-		<item>NC_PLATES</item>
-		<item>ND_PLATES</item>
-		<item>OH_PLATES</item>
-		<item>OK_PLATES</item>
-		<item>OR_PLATES</item>
-		<item>PA_PLATES</item>
-		<item>PR_PLATES</item>
-		<item>RI_PLATES</item>
-		<item>SC_PLATES</item>
-		<item>SD_PLATES</item>
-		<item>TN_PLATES</item>
-		<item>TX_PLATES</item>
-		<item>UT_PLATES</item>
-		<item>VT_PLATES</item>
-		<item>VA_PLATES</item>
-		<item>VI_PLATES</item>
-		<item>WA_PLATES</item>
-		<item>WV_PLATES</item>
-		<item>WI_PLATES</item>
-		<item>WY_PLATES</item>
-		<item>XX_PLATES</item>
+        <item>NE_TPP</item>
+        <item>NC_TPP</item>
+        <item>NW_TPP</item>
+        <item>SE_TPP</item>
+        <item>SC_TPP</item>
+        <item>SW_TPP</item>
+        <item>EC_TPP</item>
+        <item>AK_TPP</item>
+        <item>PAC_TPP</item>
     </string-array>
     
     <string-array name="resFilesVFRAreaPlate">
@@ -1911,43 +1646,29 @@ Redistribution and use in source and binary forms, with or without modification,
         <item>CAN_340</item>
         <item>CAN_560</item>
     </string-array>
-    
+
     <string-array name="resFilesHeli">
-        <item>GrandCanyon</item>
-        <item>BaltimoreHeli</item>
-        <item>BostonHeli</item>
-        <item>ChicagoHeli</item>
-        <item>Dallas-FtWorthHeli</item>
-        <item>DetroitHeli</item>
-        <item>HoustonHeli</item>
-        <item>LosAngelesHeli</item>
-        <item>NewYorkHeli</item>
-        <item>USGulfCoastHeli</item>
-        <item>WashingtonHeli</item>
+        <item>NE_HEL</item>
+        <item>NC_HEL</item>
+        <item>NW_HEL</item>
+        <item>SE_HEL</item>
+        <item>SC_HEL</item>
+        <item>SW_HEL</item>
+        <item>EC_HEL</item>
+        <item>AK_HEL</item>
+        <item>PAC_HEL</item>
     </string-array>
 
     <string-array name="resFilesFLY">
-      <item>AtlantaFLY</item>
-      <item>Baltimore-WashingtonFLY</item>
-      <item>CharlotteFLY</item>
-      <item>ChicagoFLY</item>
-      <item>CincinnatiFLY</item>
-      <item>Dallas-FtWorthFLY</item>
-      <item>DenverFLY</item>
-      <item>DetroitFLY</item>
-      <item>HoustonFLY</item>
-      <item>LasVegasFLY</item>
-      <item>LosAngelesFLY</item>
-      <item>MiamiFLY</item>
-      <item>NewOrleansFLY</item>
-      <item>OrlandoFLY</item>
-      <item>PhoenixFLY</item>
-      <item>SaltLakeCityFLY</item>
-      <item>SanDiegoFLY</item>
-      <item>SanFranciscoFLY</item>
-      <item>SeattleFLY</item>
-      <item>StLouisFLY</item>
-      <item>TampaFLY</item>
+        <item>NE_FLY</item>
+        <item>NC_FLY</item>
+        <item>NW_FLY</item>
+        <item>SE_FLY</item>
+        <item>SC_FLY</item>
+        <item>SW_FLY</item>
+        <item>EC_FLY</item>
+        <item>AK_FLY</item>
+        <item>PAC_FLY</item>
     </string-array>
 
     <string-array name="resFilesMisc">

@@ -122,35 +122,30 @@ public class DatabaseDestination extends Destination {
                  * Find Chart Supplement
                  */
                 mAfdFound = null;
-                final LinkedList<String> afdName = mDataSource.findAFD(mName);
-                if(afdName.size() > 0) {
-                    FilenameFilter filter = new FilenameFilter() {
-                        public boolean accept(File directory, String fileName) {
-                            boolean match = false;
-                            for(final String name : afdName) {
-                                match |= fileName.matches(name + Preferences.IMAGE_EXTENSION) ||
-                                        fileName.matches(name + "-[0-9]+" + Preferences.IMAGE_EXTENSION);
-                            }
-                            return match;
+                String afd[] = null;
+                afd = new File(StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator+ mName + File.separator).list(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File file, String s) {
+                        return !s.equals(".nomedia");
+                    }
+                });
+                if(null != afd) {
+                    java.util.Arrays.sort(afd);
+                    int len1 = afd.length;
+                    String tmp1[] = new String[len1];
+                    for(int count = 0; count < len1; count++) {
+                        if(afd[count].equals(".nomedia")) {
+                            continue;
                         }
-                    };
-                    String afd[] = null;
-                    afd = new File(StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator).list(filter);
-                    if(null != afd) {
-                        java.util.Arrays.sort(afd);
-                        int len1 = afd.length;
-                        String tmp1[] = new String[len1];
-                        for(int count = 0; count < len1; count++) {
-                            /*
-                             * Add Chart Supplement
-                             */
-                            String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
-                            tmp1[count] = StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator +
-                                    tokens[0];
-                        }
-                        if(len1 > 0) {
-                            mAfdFound = tmp1;
-                        }
+                        /*
+                         * Add Chart Supplement
+                         */
+                        String tokens[] = afd[count].split(Preferences.IMAGE_EXTENSION);
+                        tmp1[count] = StorageService.getInstance().getPreferences().getServerDataFolder() + File.separator + "afd" + File.separator + mName + File.separator +
+                                tokens[0];
+                    }
+                    if(len1 > 0) {
+                        mAfdFound = tmp1;
                     }
                 }
             }

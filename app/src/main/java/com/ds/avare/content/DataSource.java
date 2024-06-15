@@ -137,13 +137,6 @@ public class DataSource {
         return LocationContentProviderHelper.searchOne(mContext, name, true);
     }
 
-    public String[] findMinimums(String airportId) {
-        return LocationContentProviderHelper.findMinimums(mContext, airportId);
-    }
-
-    public LinkedList<String> findAFD(String airportId) {
-        return LocationContentProviderHelper.findAFD(mContext, airportId);
-    }
 
     public String findLonLat(String name, String type) {
         return LocationContentProviderHelper.findLonLat(mContext, name, type);

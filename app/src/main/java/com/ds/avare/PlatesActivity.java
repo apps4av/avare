@@ -98,7 +98,6 @@ public class PlatesActivity extends BaseActivity implements Observer  {
     private TankObserver mTankObserver;
     private TimerObserver mTimerObserver;
 
-    public static final String AD = "AIRPORT-DIAGRAM";
     public static final String AREA = "AREA";
 
     /*
@@ -142,9 +141,6 @@ public class PlatesActivity extends BaseActivity implements Observer  {
      * @return
      */
     public float[] getMatrix(String name) {
-        if(name.equals(AD)) {
-            return(mMatrix);            
-        }
 
         if(mService.getPlateDiagram() != null && mService.getPlateDiagram().getName() != null) {
 
@@ -518,7 +514,7 @@ public class PlatesActivity extends BaseActivity implements Observer  {
             mPlatesView.setParams(null, true);
             float m[] = getMatrix(name);
             mService.setMatrix(null); // to small to show on map
-            if(name.startsWith(AD)) {
+            if(name.startsWith("APD")) {
                 mPlatesView.setParams(m, true);
             }
             else if(name.startsWith(AREA)) {
@@ -658,9 +654,8 @@ public class PlatesActivity extends BaseActivity implements Observer  {
 
                     String dplates[] = new File(mapFolder + "/plates/" + airport).list(filter);
                     String aplates[] = new File(mapFolder + "/area/" + airport).list(filter);
-                    String mins[] = mService.getDBResource().findMinimums(airport);
 
-                    TreeMap<String, String> plates = new TreeMap<String, String>(new PlatesComparable());
+                    TreeMap<String, String> plates = new TreeMap<String, String>();
                     if (dplates != null) {
                         for (String plate : dplates) {
                             String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
@@ -671,12 +666,6 @@ public class PlatesActivity extends BaseActivity implements Observer  {
                         for (String plate : aplates) {
                             String tokens[] = plate.split(Preferences.IMAGE_EXTENSION);
                             plates.put(tokens[0], mapFolder + "/area/" + airport + "/" + tokens[0]);
-                        }
-                    }
-                    if (mins != null) {
-                        for (String plate : mins) {
-                            String folder = plate.substring(0, 1) + "/";
-                            plates.put("Min. " + plate, mapFolder + "/minimums/" + folder + plate);
                         }
                     }
                     if (plates.size() > 0) {
@@ -884,48 +873,6 @@ public class PlatesActivity extends BaseActivity implements Observer  {
         }
     }
    
-    /**
-     * 
-     * @author zkhan
-     *
-     */
-    private class PlatesComparable implements Comparator<String>{
-        
-        @Override
-        public int compare(String o1, String o2) {
-            /*
-             * Airport diagram must be first
-             */
-            String[] type = {AD, "AREA", "ILS-", "HI-ILS-", "LOC-", "HI-LOC-", "LDA-", "SDA-", "GPS-", "RNAV-GPS-", "RNAV-RNP-", "VOR-", "HI-VOR-", "TACAN-", "HI-TACAN-", "NDB-", "COPTER-", "CUSTOM-", "LAHSO", "HOT-SPOT", "Min."};
-            
-            for(int i = 0; i < type.length; i++) {
-                if(o1.startsWith(type[i]) && (!o2.startsWith(type[i]))) {
-                    return -1;
-                }
-                if(o2.startsWith(type[i]) && (!o1.startsWith(type[i]))) {
-                    return 1;
-                }
-            }
-
-            /*
-             * Continued must follow main
-             */
-            String comp1 = o2.replace(Preferences.IMAGE_EXTENSION, "");
-            if(o1.contains("-CONT.") && (!o2.contains("-CONT."))) {
-                if(o1.startsWith(comp1)) {
-                    return 1;
-                }
-            }
-            String comp2 = o1.replace(Preferences.IMAGE_EXTENSION, "");
-            if(o2.contains("-CONT.") && (!o1.contains("-CONT."))) {
-                if(o2.startsWith(comp2)) {
-                    return -1;
-                }
-            }
-
-            return o1.compareTo(o2);
-        }
-    }    
 
     /**
      * 
@@ -944,7 +891,15 @@ public class PlatesActivity extends BaseActivity implements Observer  {
      * @return
      */
     public static boolean doesAirportHaveAirportDiagram(String mapFolder, String id) {
-        return new File(mapFolder + "/plates/" + id + "/" + AD + Preferences.IMAGE_EXTENSION).exists();
+        String[] files = new File(mapFolder + "/plates/" + id + "/").list();
+        if(null != files) {
+            for (String f : files) {
+                if (f.startsWith("APD")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     
