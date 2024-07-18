@@ -1,6 +1,8 @@
 avare
 =====
 
+Note: A more modern multi platofrm version of Avare is available as AvareX on Android Play Store, Apple App Store, Windows App Store, and Linux Snapcraft Store.
+
 Avare Aviation GPS for Android. Avare is pronounced "Ah-vAir" - like "aware" with a "v" and can be manually installed from our servers (see our website).
 
 Download from the Google Play Store: https://play.google.com/store/apps/details?id=com.ds.avare&hl=en
