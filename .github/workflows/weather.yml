@@ -1,0 +1,38 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+#  schedule:
+#    - cron: '*/7 * * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          sudo apt-get install gdal-bin python3-gdal
+          pip install bs4 tqdm numpy regex urllib3 glob2
+      - name: Build weather
+        run: |
+          cd extra/mamba && ./put_tenmin.sh
+
+      - name: SSH to mamba
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: apps4av.org
+          username: apps4av
+          password: ${{ secrets.MAMBA_PASSWORD }}
+          port: 22
+          source: "TFRs.zip weather.zip conus.zip"
+          target: /home/apps4av/mamba.dreamhosters.com/new/staging
