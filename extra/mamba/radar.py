@@ -13,7 +13,7 @@
 #
 
 import requests
-import bs4
+from bs4 import BeautifulSoup
 import re
 import os 
 import datetime
@@ -25,7 +25,7 @@ os.system('rm -f CONUS_L2_CREF* conus *latest_radaronly* conus.zip latest.txt')
 url = 'https://mrms.ncep.noaa.gov/data/RIDGEII/L2/CONUS/CREF_QCD/'
 
 #parse html
-soup = bs4.BeautifulSoup(requests.get(url).text, 'lxml')
+soup = BeautifulSoup(requests.get(url).text, 'lxml')
 table = soup.find('table')
 listOfFiles = []
 
