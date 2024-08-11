@@ -1,11 +1,8 @@
 name: Weather CI
 
 on:
-  push:
-    branches: [ "master" ]
-
-#  schedule:
-#    - cron: '*/7 * * * *'
+  schedule:
+    - cron: '*/7 * * * *'
 
 jobs:
   build:
