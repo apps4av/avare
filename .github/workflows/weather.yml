@@ -33,4 +33,4 @@ jobs:
           port: 22
           strip_components: 2
           source: "extra/mamba/TFRs.zip,extra/mamba/weather.zip,extra/mamba/conus.zip"
-          target: /home/apps4av/mamba.dreamhosters.com/new/staging
+          target: /home/apps4av/mamba.dreamhosters.com/new
