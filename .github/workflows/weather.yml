@@ -31,5 +31,5 @@ jobs:
           username: apps4av
           password: ${{ secrets.MAMBA_PASSWORD }}
           port: 22
-          source: "extra/mamba/TFRs.zip extra/mamba/weather.zip extra/mamba/conus.zip"
+          source: "extra/mamba/TFRs.zip,extra/mamba/weather.zip,extra/mamba/conus.zip"
           target: /home/apps4av/mamba.dreamhosters.com/new/staging
