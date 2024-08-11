@@ -19,8 +19,4 @@
 ./gentfr.sh
 
 
-mv TFRs.zip weather.zip conus.zip  ~/www
-
-
-sshpass -f "/home/bitnami/.ssh/mamba.passwd" scp /home/bitnami/www/*.zip apps4av@apps4av.org:/home/apps4av/mamba.dreamhosters.com/new
 
