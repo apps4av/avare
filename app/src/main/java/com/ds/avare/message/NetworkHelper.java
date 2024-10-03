@@ -47,7 +47,7 @@ public class NetworkHelper {
      * This has to be provided by apps4av
      */
     public static String getServer() {
-        return "https://apps4av.net/new/";
+        return "https://www.apps4av.org/site/";
     }
 
     /**
