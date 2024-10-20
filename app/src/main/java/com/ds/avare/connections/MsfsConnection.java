@@ -160,6 +160,7 @@ public class MsfsConnection extends Connection {
 
         try {
             mSocket = new DatagramSocket(mPort);
+            mSocket.setReuseAddress(true);
         }
         catch(Exception e) {
             Logger.Logit("Failed! Connecting socket " + e.getMessage());
