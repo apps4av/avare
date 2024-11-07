@@ -3,6 +3,7 @@ package com.ds.avare;
 import android.app.Activity;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 
@@ -21,6 +22,12 @@ public class BaseActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Helper.setTheme(this);
+        //apply theme style
+
+        // apply this for android v35 or above, opt out of edge to edge enforcement
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            this.getTheme().applyStyle(R.style.OptOutEdgeToEdgeEnforcement, /* force */ false);
+        }
 
         super.onCreate(savedInstanceState);
 
