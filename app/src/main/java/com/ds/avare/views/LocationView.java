@@ -232,6 +232,7 @@ public class LocationView extends PanZoomView implements OnTouchListener {
         mGpsParams = new GpsParams(null);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+        mPaint.setFilterBitmap(true);
         mPointProjection = null;
         mDraw = false;
         mDrawing = false;
