@@ -35,6 +35,7 @@ import com.ds.avare.adsb.gdl90.BasicReportMessage;
 import com.ds.avare.adsb.gdl90.Constants;
 import com.ds.avare.adsb.gdl90.FisBuffer;
 import com.ds.avare.adsb.gdl90.FisGraphics;
+import com.ds.avare.adsb.gdl90.HeartbeatMessage;
 import com.ds.avare.adsb.gdl90.Id11Product;
 import com.ds.avare.adsb.gdl90.Id12Product;
 import com.ds.avare.adsb.gdl90.Id13Product;
@@ -156,7 +157,29 @@ public class BufferProcessor {
             /*
              * Post on UI thread.
              */
-            
+
+            if(m instanceof HeartbeatMessage) {
+
+                /*
+                 * Make a GPS heartbeat message from ADSB heartbeat message.
+                 */
+                JSONObject object = new JSONObject();
+                HeartbeatMessage tm = (HeartbeatMessage)m;
+                try {
+                    object.put("type", "heartbeat");
+                    object.put("timestamp", (long)tm.getTime());
+                    object.put("gpsvalid", (boolean)tm.mGpsPositionValid);
+                    object.put("lowbattery", (boolean)tm.mBatteryLow);
+                    object.put("running", (boolean)tm.mDeviceRunning);
+                } catch (JSONException e1) {
+                    continue;
+                }
+
+                objs.add(object.toString());
+
+            }
+
+
             if(m instanceof TrafficReportMessage) {
                 
                 /*
