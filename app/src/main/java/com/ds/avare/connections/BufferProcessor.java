@@ -180,7 +180,7 @@ public class BufferProcessor {
             }
 
 
-            if(m instanceof TrafficReportMessage) {
+            else if(m instanceof TrafficReportMessage) {
                 
                 /*
                  * Make a GPS locaiton message from ADSB ownship message.
@@ -546,6 +546,8 @@ public class BufferProcessor {
                     object.put("time", (long)om.getTime());
                     object.put("altitude", (double) om.mAltitude);
                     object.put("address", (int)om.mIcaoAddress);
+                    object.put("nic", (int)om.mNIC);
+                    object.put("nacp", (int)om.mNACP);
                 } catch (JSONException e1) {
                     continue;
                 }

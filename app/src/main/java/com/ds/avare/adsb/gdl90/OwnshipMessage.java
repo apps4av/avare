@@ -27,8 +27,8 @@ public class OwnshipMessage extends Message {
     public boolean mIsAirborne;
     boolean mIsExtrapolated;
     int mTrackType;
-    int mNIC;
-    int mNACP;
+    public int mNIC;
+    public int mNACP;
     boolean mIsTrackHeadingValid;
     boolean mIsTrackHeadingTrueTrackAngle;
     boolean mIsTrackHeadingHeading;
