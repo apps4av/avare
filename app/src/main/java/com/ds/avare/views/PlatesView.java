@@ -244,7 +244,7 @@ public class PlatesView extends PanZoomView implements View.OnTouchListener {
                  */
 
 
-                if (mShowingAD) {
+                if (mShowingAD && mMatrix.length == 12) {
                     /*
                      * Mike's matrix
                      */
