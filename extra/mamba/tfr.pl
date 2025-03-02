@@ -16,10 +16,12 @@
 use strict;
 use warnings;
 use LWP::Simple;
+use LWP::UserAgent;
 use HTML::LinkExtor;
 use XML::Parser;
 use File::stat;
 use Time::localtime;
+use JSON qw( decode_json );  
 
 
 my $printit = 0;
@@ -33,17 +35,6 @@ my $printuomup = 0;
 my $printuomlo = 0;
 my $tfr = "";
 my @linksXml;
-sub cb {
-        my($tag, %links) = @_;
-        my $lk = "@{[%links]}\n";
-    if ($lk and (-1 != index($lk, "save_pages"))) {
-#replace html to xml to get XML
-        $lk =~ s/\.html/.xml/g;
-        $lk =~ s/href\s*//g;
-#put in an array
-        push(@linksXml, $lk);
-    }
-}
    
 # The Handlers
 sub hdl_start{
@@ -176,17 +167,22 @@ my $parser = new XML::Parser (Handlers => {
                             });
 # get TFR list
 
-my $response = get('http://tfr.faa.gov/tfr2/list.html') or die;
-# extract links from it
-my $LX = new HTML::LinkExtor(\&cb, 'http://tfr.faa.gov/');
-$LX->parse($response);
-#throw away duplicate links
-my %hash = map { $_ => 1 } @linksXml;
-my @unique = keys %hash;
+my $ua = LWP::UserAgent->new(
+   ssl_opts => { verify_hostname => 0 },
+);
+my $req = new HTTP::Request('GET','https://tfr.faa.gov/tfrapi/getTfrList');
+my $response = $ua->request($req) or die;
+my $decoded_json = decode_json($response->content());
+for my $notam (@$decoded_json) {
+   my $nid = $notam->{"notam_id"};
+   my $nn = $nid =~ s/\//_/r;
+   push(@linksXml, "https://tfr.faa.gov/download/detail_" . $nn . ".xml");
+}
 # Now process each TFR XML
-for my $url( @{unique} ) {
+for my $url( @{linksXml} ) {
     $url =~ s/\/\.\.\//\//g;
-    if(my $data_xml = get($url)) {
+    my $req = new HTTP::Request('GET', $url);
+    if(my $data_xml = $ua->request($req)->content()) {
         $parser->parse($data_xml);
     }
 }
