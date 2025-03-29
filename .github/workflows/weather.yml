@@ -18,7 +18,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          sudo apt-get install gdal-bin python3-gdal imagemagick python3-bs4 libwww-perl libxml-parser-perl
+          sudo apt-get update
+          sudo apt-get install --fix-missing gdal-bin python3-gdal imagemagick python3-bs4 libwww-perl libxml-parser-perl
           pip install regex urllib3
       - name: Build weather
         run: |
