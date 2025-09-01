@@ -1,5 +1,6 @@
 name: Weather CI
 
+
 on:
   schedule:
     - cron: '*/7 * * * *'
