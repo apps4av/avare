@@ -3,7 +3,7 @@ name: Weather CI
 
 on:
   schedule:
-    - cron: '*/7 * * * *'
+    - cron: '*/10 * * * *'
 
 jobs:
   build:
