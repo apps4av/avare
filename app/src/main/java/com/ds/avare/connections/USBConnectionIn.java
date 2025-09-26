@@ -21,6 +21,8 @@ import com.ds.avare.utils.GenericCallback;
 import com.ds.avare.utils.Logger;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 import java.util.ArrayList;
@@ -33,6 +35,28 @@ import java.util.List;
  * @author zkhan
  *
  */
+
+/**
+ * add devices here, that are not known to DefaultProber
+ *
+ * if the App should auto start for these devices, also
+ * add IDs to app/src/main/res/xml/device_filter.xml
+ */
+class CustomProber {
+
+    static UsbSerialProber getCustomProber() {
+        ProbeTable customTable = new ProbeTable();
+        customTable.addProduct(0x239A, 0x8029, CdcAcmSerialDriver.class); // SoftRF Badge
+        customTable.addProduct(0x2341, 0x804d, CdcAcmSerialDriver.class); // SoftRF Academy
+        customTable.addProduct(0x1d50, 0x6089, CdcAcmSerialDriver.class); // SoftRF ES
+        customTable.addProduct(0x2e8a, 0xf00a, CdcAcmSerialDriver.class); // SoftRF Lego
+        customTable.addProduct(0x15ba, 0x0044, CdcAcmSerialDriver.class); // SoftRF Balkan
+        customTable.addProduct(0x303a, 0x8133, CdcAcmSerialDriver.class); // SoftRF Prime Mk3
+        return new UsbSerialProber(customTable);
+    }
+
+}
+
 public class USBConnectionIn extends Connection {
 
     private static USBConnectionIn mConnection;
@@ -126,13 +150,16 @@ public class USBConnectionIn extends Connection {
         mParams = params;
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
         if (availableDrivers.isEmpty()) {
-            Logger.Logit("No USB serial device available");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            availableDrivers = CustomProber.getCustomProber().findAllDrivers(mUsbManager);
+            if (availableDrivers.isEmpty()) {
+                Logger.Logit("No USB serial device available");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return false;
             }
-            return false;
         }
         mDriver = availableDrivers.get(0);
         if(mDriver == null) {
@@ -185,7 +212,12 @@ public class USBConnectionIn extends Connection {
             }
             int stop = Integer.parseInt(tokens[3]);
             mPort.setParameters(rate, data, stop, parity);
-        } 
+            if (mDriver instanceof CdcAcmSerialDriver) {
+                if(!(mPort.getDTR())) {
+                    mPort.setDTR(true);
+                }
+            }
+        }
         catch (Exception e) {
             setState(Connection.DISCONNECTED);
             Logger.Logit("Failed!");
