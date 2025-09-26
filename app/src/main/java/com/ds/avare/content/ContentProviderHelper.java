@@ -163,6 +163,21 @@ public class ContentProviderHelper {
 
     /**
      *
+     * @param taf
+     * @return
+     */
+    public static void setTaf(Context ctx, Taf taf) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(WeatherContract.TAF_STATION, taf.getStationId());
+        newValues.put(WeatherContract.TAF_TEXT, taf.getRawText());
+        newValues.put(WeatherContract.TAF_TIME, taf.getTime());
+        ctx.getContentResolver().insert(WeatherContract.CONTENT_URI_TAF, newValues);
+    }
+
+    /**
+     *
      * @param station
      * @return
      */
@@ -193,6 +208,24 @@ public class ContentProviderHelper {
 
         CursorManager.close(c);
         return metar;
+    }
+
+    /**
+     *
+     * @param metar
+     * @return
+     */
+    public static void setMetar(Context ctx, Metar metar) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(WeatherContract.METAR_STATION, metar.getStationId());
+        newValues.put(WeatherContract.METAR_TEXT, metar.getRawText());
+        newValues.put(WeatherContract.METAR_TIME, metar.getTime());
+        newValues.put(WeatherContract.METAR_FLIGHT_CATEGORY, metar.getFlightCategory());
+        newValues.put(WeatherContract.METAR_LATITUDE, metar.getLat());
+        newValues.put(WeatherContract.METAR_LONGITUDE, metar.getLon());
+        ctx.getContentResolver().insert(WeatherContract.CONTENT_URI_METAR, newValues);
     }
 
 
@@ -233,6 +266,29 @@ public class ContentProviderHelper {
 
         CursorManager.close(c);
         return airsig;
+    }
+
+    /**
+     *
+     * @param a
+     * @return
+     */
+    public static void setAirSigMet(Context ctx, AirSigMet a) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(WeatherContract.AIRMET_TEXT, a.getRawText());
+        newValues.put(WeatherContract.AIRMET_TIME_FROM, a.getTimeFrom());
+        newValues.put(WeatherContract.AIRMET_TIME_TO, a.getTimeTo());
+        newValues.put(WeatherContract.AIRMET_POINTS, a.getPoints());
+        newValues.put(WeatherContract.AIRMET_MSL_MIN, a.getMinFt());
+        newValues.put(WeatherContract.AIRMET_MSL_MAX, a.getMaxFt());
+        newValues.put(WeatherContract.AIRMET_MOVEMENT_DIRECTION, a.getMovementDeg());
+        newValues.put(WeatherContract.AIRMET_MOVEMENT_SPEED, a.getMovementKt());
+        newValues.put(WeatherContract.AIRMET_HAZARD, a.getHazard());
+        newValues.put(WeatherContract.AIRMET_SEVERITY, a.getSeverity());
+        newValues.put(WeatherContract.AIRMET_TYPE, a.getReportType());
+        ctx.getContentResolver().insert(WeatherContract.CONTENT_URI_AIRMET, newValues);
     }
 
     /**
@@ -291,6 +347,24 @@ public class ContentProviderHelper {
         return list;
     }
 
+    /**
+     *
+     * @param a
+     * @return
+     */
+    public static void setAirep(Context ctx, Airep a) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(WeatherContract.PIREP_TEXT, a.getRawText());
+        newValues.put(WeatherContract.PIREP_TIME, a.getTime());
+        newValues.put(WeatherContract.PIREP_LONGITUDE, a.getLon());
+        newValues.put(WeatherContract.PIREP_LATITUDE, a.getLat());
+        newValues.put(WeatherContract.PIREP_TYPE, a.getReportType());
+
+        ctx.getContentResolver().insert(WeatherContract.CONTENT_URI_PIREP, newValues);
+    }
+
 
     /**
      *
@@ -339,6 +413,33 @@ public class ContentProviderHelper {
         CursorManager.close(c);
         return wa;
     }
+
+    /**
+     *
+     * @param a
+     * @return
+     */
+    public static void setWindsAloft(Context ctx, WindsAloft wa) {
+
+        ContentValues newValues = new ContentValues();
+
+        newValues.put(WeatherContract.WIND_STATION, wa.getStation());
+        newValues.put(WeatherContract.WIND_TIME, wa.getTime());
+        newValues.put(WeatherContract.WIND_LONGITUDE, wa.getLon());
+        newValues.put(WeatherContract.WIND_LATITUDE, wa.getLat());
+        newValues.put(WeatherContract.WIND_3K, wa.getW3k());
+        newValues.put(WeatherContract.WIND_6K, wa.getW6k());
+        newValues.put(WeatherContract.WIND_9K, wa.getW9k());
+        newValues.put(WeatherContract.WIND_12K, wa.getW12k());
+        newValues.put(WeatherContract.WIND_18K, wa.getW18k());
+        newValues.put(WeatherContract.WIND_24K, wa.getW24k());
+        newValues.put(WeatherContract.WIND_30K, wa.getW30k());
+        newValues.put(WeatherContract.WIND_34K, wa.getW34k());
+        newValues.put(WeatherContract.WIND_39K, wa.getW39k());
+
+        ctx.getContentResolver().insert(WeatherContract.CONTENT_URI_WIND, newValues);
+    }
+
 
     /**
      *
