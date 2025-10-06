@@ -83,13 +83,16 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     /*
      * Max memory and max screen size it will support
      */
+    public static final long MEM_512 = 512 * 1024 * 1024;
     public static final long MEM_256 = 256 * 1024 * 1024;
     public static final long MEM_192 = 192 * 1024 * 1024;
     public static final long MEM_128 = 128 * 1024 * 1024;
     public static final long MEM_64 = 64 * 1024 * 1024;
     public static final long MEM_32 = 32 * 1024 * 1024;
 
-
+    public static final int MEM_512_X = 13; // For modern devices (512MB+ heap)
+    public static final int MEM_512_Y = 11;
+    public static final int MEM_512_OH = 13;
     public static final int MEM_192_X = 9;
     public static final int MEM_192_Y = 7;
     public static final int MEM_192_OH = 13;
@@ -218,7 +221,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
          */
         long mem = Runtime.getRuntime().maxMemory();
 
-        if (mem >= MEM_192) {
+        if (mem >= MEM_512) {
+            ret[0] = MEM_512_X;
+            ret[1] = MEM_512_Y;
+            ret[2] = MEM_512_OH;
+        } else if (mem >= MEM_192) {
             ret[0] = MEM_192_X;
             ret[1] = MEM_192_Y;
             ret[2] = MEM_192_OH;
@@ -248,8 +255,11 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         defaultDisplay.getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
-        int tilesx = (width / BitmapHolder.WIDTH) + 2; // add 1 for round up, and 1 for zoom
-        int tilesy = (height / BitmapHolder.HEIGHT) + 2;
+        // Account for minimum effective zoom (scaleFactor * macroFactor minimum is 0.5)
+        // At 0.5x zoom, tiles appear half size, so we need 2x as many to cover the screen
+        float minEffectiveZoom = 0.5f;
+        int tilesx = (int)Math.ceil((width / BitmapHolder.WIDTH) / minEffectiveZoom) + 2; // +2 for rounding and buffer
+        int tilesy = (int)Math.ceil((height / BitmapHolder.HEIGHT) / minEffectiveZoom) + 2;
 
         // odd tiles only
         if (tilesx % 2 == 0) {
