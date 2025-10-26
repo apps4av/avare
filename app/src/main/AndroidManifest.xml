@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="404"
-    android:versionName="11.0.4"
+    android:versionName="11.0.5"
     android:installLocation="auto">
 
     <!-- Network State Permissions to detect Internet status -->
