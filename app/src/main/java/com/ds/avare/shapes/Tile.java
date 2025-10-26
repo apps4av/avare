@@ -332,10 +332,16 @@ public class Tile {
              */
 
             tile.getTransform().setScale(scaleFactor, scaleFactor);
+
+            int tileXIndex = tilen % tiles.getXTilesNum();
+            int tileYIndex = tilen / tiles.getXTilesNum();
+            int centerTileX = (int)(tiles.getXTilesNum() / 2);
+            int centerTileY = (int)(tiles.getYTilesNum() / 2);
+
             tile.getTransform().postTranslate(
                     ctx.view.getWidth()  / 2.f
                             + ( - BitmapHolder.WIDTH  / 2.f
-                            + ((tilen % tiles.getXTilesNum()) * BitmapHolder.WIDTH - BitmapHolder.WIDTH * (int)(tiles.getXTilesNum() / 2))
+                            + ((tileXIndex - centerTileX) * BitmapHolder.WIDTH)
                             + ctx.pan.getMoveX()
                             + ctx.pan.getTileMoveX() * BitmapHolder.WIDTH
                             - (float)ctx.movement.getOffsetLongitude()) * scaleFactor,
@@ -343,7 +349,7 @@ public class Tile {
                     ctx.view.getHeight() / 2.f
                             + ( - BitmapHolder.HEIGHT / 2.f
                             + ctx.pan.getMoveY()
-                            + ((tilen / tiles.getXTilesNum()) * BitmapHolder.HEIGHT - BitmapHolder.HEIGHT * (int)(tiles.getYTilesNum() / 2))
+                            + ((tileYIndex - centerTileY) * BitmapHolder.HEIGHT)
                             + ctx.pan.getTileMoveY() * BitmapHolder.HEIGHT
                             - (float)ctx.movement.getOffsetLatitude() ) * scaleFactor);
 
