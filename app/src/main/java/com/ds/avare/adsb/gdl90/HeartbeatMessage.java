@@ -22,9 +22,9 @@ public class HeartbeatMessage extends Message {
     int mMinute;
     int mSecond;
 
-    Boolean mGpsPositionValid;
-    Boolean mBatteryLow;
-    Boolean mDeviceRunning;
+    public Boolean mGpsPositionValid;
+    public Boolean mBatteryLow;
+    public Boolean mDeviceRunning;
 
     public HeartbeatMessage() {
         super(MessageType.HEARTBEAT);
