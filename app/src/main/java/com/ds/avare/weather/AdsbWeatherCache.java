@@ -44,31 +44,19 @@ import java.util.TimeZone;
  */
 public class AdsbWeatherCache {
 
-    private HashMap<String, Taf> mTaf;
-    private HashMap<String, Metar> mMetar;
-    private HashMap<String, Airep> mAirep;
-    private HashMap<String, WindsAloft> mWinds;
     private HashMap<String, Sua> mSua;
     private NexradImage mNexrad;
     private NexradImageConus mNexradConus;
     private Preferences mPref;
-    private RateLimitedBackgroundQueue mMetarQueue;
-    private HashMap<String, AirSigMet> mAirSig;
 
     /**
      * 
      */
     public AdsbWeatherCache() {
         mPref = StorageService.getInstance().getPreferences();
-        mTaf = new HashMap<String, Taf>();
-        mMetar = new HashMap<String, Metar>();
-        mAirep = new HashMap<String, Airep>();
-        mWinds = new HashMap<String, WindsAloft>();
         mNexrad = new NexradImage();
-        mMetarQueue = new RateLimitedBackgroundQueue(StorageService.getInstance());
         mNexradConus = new NexradImageConus();
         mSua = new HashMap<String, Sua>();
-        mAirSig = new HashMap<String, AirSigMet>();
     }
 
     /**
@@ -107,8 +95,7 @@ public class AdsbWeatherCache {
         m.setTime(sdf.format(dt) + "Z");
         m.setFlightCategory(flightCategory);
         m.setTimestamp(System.currentTimeMillis());
-        mMetar.put(location, m);
-        mMetarQueue.insertMetarInQueue(m); // This will slowly make a metar map
+        StorageService.getInstance().getDBResource().setMetar(m);
     }
 
 
@@ -188,9 +175,6 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putTaf(long time, String location, String data) {
-        if(!mPref.useAdsbWeather()) {
-            return;
-        }    
         Taf f = new Taf();
         f.setRawText(location + " " + data);
         f.setStationId(location);
@@ -199,7 +183,7 @@ public class AdsbWeatherCache {
         sdf.setTimeZone(TimeZone.getTimeZone("gmt"));
         f.setTime(sdf.format(dt) + "Z");
         f.setTimestamp(System.currentTimeMillis());
-        mTaf.put(location, f);        
+        StorageService.getInstance().getDBResource().setTaf(f);
     }
 
     /**
@@ -270,14 +254,11 @@ public class AdsbWeatherCache {
      * @param to
      */
     public void putAirSigMet(long time, String id, String shape, String points, String text, String from, String to) {
-        if(!mPref.useAdsbWeather() || null == id) {
+        if(null == id) {
             return;
         }
 
-        AirSigMet s = mAirSig.get(id);
-        if(null == s) {
-            s = new AirSigMet();
-        }
+        AirSigMet s = new AirSigMet();
         s.setTimestamp(System.currentTimeMillis());
 
         if(text != null && (!text.equals(""))) {
@@ -350,8 +331,7 @@ public class AdsbWeatherCache {
             s.getShape().makePolygon();
         }
 
-
-        mAirSig.put(id, s);
+        StorageService.getInstance().getDBResource().setAirSigMet(s);
 
     }
 
@@ -362,9 +342,6 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putAirep(long time, String location, String data, DataSource db) {
-        if(!mPref.useAdsbWeather()) {
-            return;
-        }    
         String lonlat = db.findLonLat(location, Destination.BASE);
         if(null == lonlat) {
             return;
@@ -395,9 +372,6 @@ public class AdsbWeatherCache {
      * @param data
      */
     public void putWinds(long time, String location, String data) {
-        if(!mPref.useAdsbWeather()) {
-            return;
-        }    
         WindsAloft w = new WindsAloft();
         w.setStation(location);
         
@@ -433,7 +407,7 @@ public class AdsbWeatherCache {
         w.setLon(coords[0]);
         w.setLat(coords[1]);
         w.timestamp = System.currentTimeMillis();
-        mWinds.put(location, w);
+        StorageService.getInstance().getDBResource().setWindsAloft(w);
     }
     
     /**
