@@ -56,10 +56,6 @@ public class MessageFactory {
         Message m = null;
         switch (type) {
 
-            case MessageType.HEARTBEAT:
-                m = new HeartbeatMessage();
-                break;
-
             case MessageType.UPLINK:
                 m = new UplinkMessage();
                 break;
