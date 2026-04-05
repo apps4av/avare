@@ -27,6 +27,8 @@ public class OwnshipMessage extends Message {
     public boolean mIsAirborne;
     boolean mIsExtrapolated;
     int mTrackType;
+    public int mNIC;
+    public int mNACP;
     boolean mIsTrackHeadingValid;
     boolean mIsTrackHeadingTrueTrackAngle;
     boolean mIsTrackHeadingHeading;
@@ -80,6 +82,12 @@ public class OwnshipMessage extends Message {
         mIsAirborne = (msg[11] & 0x08) != 0;
         mIsExtrapolated = (msg[11] & 0x04) != 0;
         mTrackType = msg[11] & 0x03;
+
+        /*
+         * Quality
+         */
+        mNIC = ((msg[12] & 0xF0) >> 4) & 0x0F;
+        mNACP = msg[12] & 0x0F;
 
         /*
          * Velocity
