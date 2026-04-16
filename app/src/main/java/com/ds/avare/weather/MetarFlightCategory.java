@@ -11,14 +11,42 @@ import java.util.ArrayList;
  */
 public class MetarFlightCategory {
 
+    /** Real METAR/SPECI bodies are far smaller; cap avoids parser OOM on garbage uplinks. */
+    private static final int MAX_RAW_METAR_CHARS = 4096;
 
     public static String getFlightCategory(String stationId, String rawText) {
 
         String flightCategory = "Unknown";
 
+        if (stationId == null || rawText == null) {
+            return flightCategory;
+        }
+
+        String s = rawText.trim();
+        if (s.isEmpty()) {
+            return flightCategory;
+        }
+
+        int nl = s.indexOf('\n');
+        if (nl >= 0) {
+            s = s.substring(0, nl).trim();
+            if (s.isEmpty()) {
+                return flightCategory;
+            }
+        }
+
+        if (s.length() > MAX_RAW_METAR_CHARS) {
+            s = s.substring(0, MAX_RAW_METAR_CHARS);
+        }
+
+        String id = stationId.trim();
+        if (id.isEmpty()) {
+            return flightCategory;
+        }
+
         // parse it to find flight category
         try {
-            Metar metar = MetarParser.parse(stationId + " " + rawText);
+            Metar metar = MetarParser.parse(id + " " + s);
             float vis = metar.getVisibility().floatValue();
             int ovc = Integer.MAX_VALUE;
             boolean isCeiling = false;
