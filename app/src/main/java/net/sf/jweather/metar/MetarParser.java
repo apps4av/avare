@@ -130,7 +130,10 @@ public class MetarParser {
 			throw new MetarParseException("empty metar data");
 		}
 
-
+		// sanitize abbreviated METARs that may end in '=' so they can't interfere with unit parsing on tokens
+		if(metarData.endsWith("=")) {
+			metarData = metarData.substring(0, metarData.length()-1);
+		}
 
 		Metar metar = new Metar();
 
@@ -146,7 +149,7 @@ public class MetarParser {
 			utility.split(tokens, ((String)metarData));
 		} catch(MalformedPerl5PatternException e) {
 
-			throw new MetarParseException("error spliting metar data on whitespace: "+e);
+			throw new MetarParseException("error splitting metar data on whitespace: "+e);
 		}
 
 		// the number of tokens we have
@@ -159,8 +162,10 @@ public class MetarParser {
 		// format: CCCC
 		//     CCCC - alphabetic characters only [a-zA-Z]
 		metar.setStationID((String)tokens.get(index++));
-
-
+		// station id or time may be replaced with "NIL" signifying end of METAR/missing METAR
+		if(index == numTokens || numTokens == 2) {
+            return metar;
+        }
 
 
 		// date and time of the report
@@ -211,9 +216,7 @@ public class MetarParser {
 			metar.setDate(calendar.getTime());
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
-			}
+			index++;
 
 		} else {
 
@@ -231,15 +234,13 @@ public class MetarParser {
 		{
 			metar.setReportModifier((String)tokens.get(index));
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
-
 		} else {
 
 		}
-
-
 
 		// wind group (speed and direction)
 		// format: dddff(f)Gf f (f )KT_d d d Vd d d
@@ -251,18 +252,10 @@ public class MetarParser {
 		//     KT (or) MPS   - knots (or) meters per second
 		//     d d d Vd d d  - variable wind direction > 6 knots, degree=>degree
 		//      n n n  x x x   e.g. 180V210 => variable from 180deg to 210deg
-
 		temp = (String)tokens.get(index);
 		if (temp.endsWith("KT") || temp.endsWith("MPS")) {
 			int pos = 0;
-			boolean windInKnots = false;
-
-			if (temp.endsWith("KT")) {
-
-				windInKnots = true;
-			} else {
-
-			}
+			boolean windInKnots = temp.endsWith("KT");
 
 			if (!((String)tokens.get(index)).substring(0,3).equals("VRB")) {
 				// we have gusts
@@ -331,19 +324,11 @@ public class MetarParser {
 
 			}
 
-
-			if (windInKnots) {
-
-			} else {
-
-			}
-
-
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
-
 
 			// if we have variable wind direction
 			temp = ((String)tokens.get(index));
@@ -355,12 +340,10 @@ public class MetarParser {
 					metar.setWindDirectionMin(new Integer(((String)tokens.get(index)).substring(0,3)));
 					metar.setWindDirectionMax(new Integer(((String)tokens.get(index)).substring(4,7)));
 
-
-
-
 					// on to the next token
-					if (index < numTokens - 1) {
-						index++;
+					index++;
+					if(index == numTokens) {
+						return metar;
 					}
 				}
 			} catch(MalformedPatternException e) {
@@ -383,8 +366,9 @@ public class MetarParser {
 				metar.setIsCavok(true);
 
 				// on to the next token
-				if (index < numTokens - 1) {
-					index++;
+				index++;
+				if(index == numTokens) {
+					return metar;
 				}
 			// Horizontal visibility in meters
 			} else if (matcher.matches(((String)tokens.get(index)), new Perl5Compiler().compile("/^(\\d+)$/"))) {
@@ -392,16 +376,18 @@ public class MetarParser {
 				metar.setVisibilityInMeters(new Float(tmp));
 
 				// on to the next token
-				if (index < numTokens - 1) {
-					index++;
+				index++;
+				if(index == numTokens) {
+					return metar;
 				}
 			// Horizontal visibility of 10Km and above
 			} else if (((String)tokens.get(index)).equals("9999")) {
 				metar.setVisibilityInKilometers(new Float(10));
 
 				// on to the next token
-				if (index < numTokens - 1) {
-					index++;
+				index++;
+				if(index == numTokens) {
+					return metar;
 				}
 
 			// get visibility
@@ -472,10 +458,10 @@ public class MetarParser {
 				metar.setVisibilityLessThan(isLessThan);
 
 				// on to the next token
-				if (index < numTokens - 1) {
-					index++;
+				index++;
+				if(index == numTokens) {
+					return metar;
 				}
-
 			} else {
 				String token = (String)tokens.get(index);
 				boolean isLessThan = false;
@@ -493,8 +479,9 @@ public class MetarParser {
 					metar.setVisibilityLessThan(isLessThan);
 
 					// on to the next token
-					if (index < numTokens - 1) {
-						index++;
+					index++;
+					if(index == numTokens) {
+						return metar;
 					}
 				} else {
 					// unexpected token...should have been visibility
@@ -568,8 +555,9 @@ public class MetarParser {
 			}
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
 
 			metar.addRunwayVisualRange(runwayVisualRange);
@@ -700,8 +688,9 @@ public class MetarParser {
 			}
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
 		}
 
@@ -763,8 +752,9 @@ public class MetarParser {
 
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
 		}
 
@@ -819,8 +809,9 @@ public class MetarParser {
 			//dewPoint = new Float(((String)tokens.get(index)).substring(5,9)).floatValue();
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
 		} else {
 
@@ -847,8 +838,9 @@ public class MetarParser {
 
 
 			// on to the next token
-			if (index < numTokens - 1) {
-				index++;
+			index++;
+			if(index == numTokens) {
+				return metar;
 			}
 		} else {
 
