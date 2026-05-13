@@ -1,3 +1,7 @@
+** This project is deprecated/discontinued. See the new project under https://github.com/apps4av/avarex.
+
+
+
 avare
 =====
 
