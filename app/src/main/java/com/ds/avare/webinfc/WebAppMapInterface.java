@@ -170,7 +170,7 @@ public class WebAppMapInterface {
 
                 // type from map or from search
                 String type = data.hasMoreButtons() ? "more" : "";
-                String func = "javascript:setData('" +
+                String func = "setData('" +
                         type + "','" +
                         Helper.formatJsArgs(data.getAirport()) + "','" +
                         Helper.formatJsArgs(data.getInfo()) + "','" +
@@ -187,7 +187,7 @@ public class WebAppMapInterface {
 
 
 
-                mWebView.loadUrl(func);
+                mWebView.evaluateJavascript(func, null);
             }
             else if (MSG_ACTION == msg.what) {
                 mCallback.callback((String)msg.obj, null);
