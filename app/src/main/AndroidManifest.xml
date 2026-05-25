@@ -112,6 +112,10 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity android:name=".RegisterActivity"/>
         <activity android:name=".ThreeDActivity"/>
         <activity
+            android:name=".ProActivity"
+            android:label="@string/ProServicesTitle"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
             android:name="com.ds.avare.MainActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboardHidden|screenSize"

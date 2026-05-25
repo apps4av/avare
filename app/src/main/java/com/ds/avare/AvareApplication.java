@@ -14,6 +14,11 @@ package com.ds.avare;
 
 import android.app.Application;
 
+import com.ds.avare.utils.RevenueCatService;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 /**
  * Created by zkhan on 1/25/16.
  */
@@ -25,5 +30,29 @@ public class AvareApplication extends Application {
         // init storage class
         StorageService s = StorageService.getInstance();
         s.setContext(getApplicationContext());
+
+        // Firebase (optional — google-services.json may not be present yet
+        // in checked-in code). The google-services plugin auto-initializes
+        // Firebase via a ContentProvider, but call here defensively.
+        try {
+            FirebaseApp.initializeApp(getApplicationContext());
+        } catch (Throwable ignored) {
+            // ignore — Firebase is optional
+        }
+
+        // Initialize RevenueCat (optional service — never throws).
+        RevenueCatService.init(getApplicationContext());
+
+        // If a Firebase user is cached from a previous session, sync their
+        // identity into RevenueCat immediately so the entitlement check at
+        // startup reflects their actual subscription (mirrors avarex).
+        try {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                RevenueCatService.logIn(user.getUid(), user.getEmail(), user.getDisplayName());
+            }
+        } catch (Throwable ignored) {
+            // ignore — Firebase auth not configured / no user
+        }
     }
 }

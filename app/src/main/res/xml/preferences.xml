@@ -118,6 +118,9 @@ authors: zkhan, jlmcgraw
         <com.ds.avare.utils.RegisterActivityPreference
             android:summary="@string/onlineSummary"
             android:title="@string/online" />
+        <com.ds.avare.utils.ProServicesPreference
+            android:summary="@string/ProServicesPrefSummary"
+            android:title="@string/ProServicesPrefTitle" />
         <com.ds.avare.utils.ListPreferenceWithSummary
             android:defaultValue="0"
             android:entries="@array/UnitsD"
