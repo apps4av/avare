@@ -42,6 +42,22 @@ android {
     useLibrary 'android.test.mock'
     namespace 'com.ds.avare'
 
+    // 16 KB page-size workaround. The prebuilt
+    // libdatastore_shared_counter.so in androidx.datastore-core 1.1.x /
+    // 1.2.x ships with a 4 KB-aligned RELRO segment that fails to load
+    // on Android devices using 16 KB memory pages, which crashed the
+    // Play Console pre-launch lab with
+    //   NoClassDefFoundError: Landroidx/datastore/DataStoreFile;
+    // The native lib is only required for cross-process DataStore, which
+    // neither Avare nor RevenueCat use, so excluding it lets DataStore
+    // fall back to its JVM file-lock path.
+    // Tracking: https://issuetracker.google.com/issues/476745201
+    packaging {
+        jniLibs {
+            excludes += ['**/libdatastore_shared_counter.so']
+        }
+    }
+
     applicationVariants.all { variant ->
         def productFlavor = variant.productFlavors[0] != null ? "${variant.productFlavors[0].name.capitalize()}" : ""
         def buildType = "${variant.buildType.name.capitalize()}"
