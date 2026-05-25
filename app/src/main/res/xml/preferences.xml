@@ -115,9 +115,6 @@ authors: zkhan, jlmcgraw
     <PreferenceScreen 
         android:title="@string/prefAppStateCategoryTitle" 
         android:icon="@android:drawable/ic_menu_mapmode" >
-        <com.ds.avare.utils.RegisterActivityPreference
-            android:summary="@string/onlineSummary"
-            android:title="@string/online" />
         <com.ds.avare.utils.ProServicesPreference
             android:summary="@string/ProServicesPrefSummary"
             android:title="@string/ProServicesPrefTitle" />
