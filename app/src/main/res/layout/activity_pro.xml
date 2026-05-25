@@ -48,7 +48,9 @@ All rights reserved.
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@drawable/button_bg"
-            android:text="@string/ProSignInRegister" />
+            android:text="@string/ProSignInRegister"
+            android:textColor="#000000"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/pro_subscribe_btn"
@@ -56,7 +58,9 @@ All rights reserved.
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@drawable/button_bg"
-            android:text="@string/ProServicesSubscribe" />
+            android:text="@string/ProServicesSubscribe"
+            android:textColor="#000000"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/pro_signout_btn"
@@ -64,7 +68,9 @@ All rights reserved.
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@drawable/button_bg"
-            android:text="@string/ProSignOut" />
+            android:text="@string/ProSignOut"
+            android:textColor="#000000"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/pro_close_btn"
@@ -72,7 +78,9 @@ All rights reserved.
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/button_bg"
-            android:text="@string/ProClose" />
+            android:text="@string/ProClose"
+            android:textColor="#000000"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 </ScrollView>
