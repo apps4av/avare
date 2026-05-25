@@ -45,6 +45,13 @@ public final class RevenueCatService {
     /** Entitlement identifier configured in the RevenueCat dashboard. */
     public static final String ENTITLEMENT_ID = "Pro";
 
+    /**
+     * Offering identifier configured in the RevenueCat dashboard.
+     * The dashboard display name is "Paid" — the identifier below is what
+     * the SDK uses to look the offering up.
+     */
+    public static final String OFFERING_ID = "default_paid";
+
     private static boolean sConfigured = false;
 
     private RevenueCatService() { }

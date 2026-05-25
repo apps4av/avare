@@ -28,6 +28,11 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.revenuecat.purchases.Offering;
+import com.revenuecat.purchases.Offerings;
+import com.revenuecat.purchases.Purchases;
+import com.revenuecat.purchases.PurchasesError;
+import com.revenuecat.purchases.interfaces.ReceiveOfferingsCallback;
 import com.revenuecat.purchases.ui.revenuecatui.activity.PaywallActivityLauncher;
 import com.revenuecat.purchases.ui.revenuecatui.activity.PaywallDisplayCallback;
 import com.revenuecat.purchases.ui.revenuecatui.activity.PaywallResult;
@@ -224,10 +229,45 @@ public class ProActivity extends AppCompatActivity {
             return;
         }
 
+        // Look up the "default_paid" offering before launching the paywall
+        // so the user always sees the right products and not whatever the
+        // dashboard's "current" offering happens to be.
+        try {
+            Purchases.getSharedInstance().getOfferings(new ReceiveOfferingsCallback() {
+                @Override
+                public void onReceived(Offerings offerings) {
+                    Offering offering = offerings.getAll().get(RevenueCatService.OFFERING_ID);
+                    if (offering == null) {
+                        // Fall back to whatever the dashboard marks as current
+                        offering = offerings.getCurrent();
+                    }
+                    presentPaywall(offering);
+                }
+
+                @Override
+                public void onError(PurchasesError error) {
+                    if (!isFinishing()) {
+                        Toast.makeText(ProActivity.this,
+                                getString(R.string.ProServiceUnavailable),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } catch (Throwable t) {
+            Toast.makeText(this,
+                    getString(R.string.ProServiceUnavailable),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void presentPaywall(Offering offering) {
+        if (isFinishing() || mPaywallLauncher == null) {
+            return;
+        }
         try {
             mPaywallLauncher.launchIfNeeded(
                     RevenueCatService.ENTITLEMENT_ID,
-                    null,
+                    offering,
                     null,
                     true,
                     false,
