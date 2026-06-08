@@ -200,7 +200,6 @@ public class MainActivity extends TabActivity {
             //granted
             setup();
         }
-
     }
     
     /**

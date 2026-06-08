@@ -46,6 +46,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.RateApp;
+import com.ds.avare.utils.RevenueCatService;
 import com.ds.avare.utils.Telemetry;
 import com.ds.avare.utils.TelemetryParams;
 
@@ -76,6 +77,22 @@ public class ChartsDownloadActivity extends BaseActivity {
      * Shows warning message about Avare
      */
     private AlertDialog mAlertDialog;
+
+    /**
+     * Cached Paid-entitlement result for the current download batch. Null
+     * until the first chart in the batch trips the per-category gate;
+     * after that, reused for the rest of the batch so we don't ask
+     * RevenueCat once per skipped item. Reset to null when the batch
+     * finishes (no more checked items) or when the activity pauses.
+     */
+    private Boolean mBatchProEntitled = null;
+
+    /**
+     * True once we've shown the "Paid Subscription Required" dialog at
+     * least once during the current batch, so that skipping several
+     * gated charts back-to-back doesn't spawn a stack of dialogs.
+     */
+    private boolean mBatchProWarned = false;
 
     /*
      * (non-Javadoc)
@@ -234,34 +251,146 @@ public class ChartsDownloadActivity extends BaseActivity {
 
 
     /**
+     * Entry point used by the Download / Update buttons and by the
+     * recursive continuation in {@link #mHandler}. Peeks at the next
+     * checked chart and runs the per-chart Paid-subscription gate, then
+     * either starts the download or skips/blocks the chart.
      *
+     * The gate is re-evaluated on every call so that the on-disk state
+     * updated by the previous successful download is respected live: if
+     * the user checked two new sectionals, the first downloads, the
+     * second is then blocked because the category now has one
+     * downloaded chart.
      */
     private boolean download() {
-        
-        /*
-         * Download first chart in list that is checked
-         */
-        mName = mChartAdapter.getChecked();
-        if(null == mName) {
-            /*
-             * Nothing to download
-             */
-            mToast.setText(getString(R.string.Done));
-            mToast.show();
+        final String name = mChartAdapter.getChecked();
+        if (name == null) {
+            endBatch();
             return false;
         }
-        
+
+        if (!mChartAdapter.requiresProForChart(name)) {
+            return downloadOne(name);
+        }
+
+        // This chart needs Paid. Use cached entitlement if we already
+        // know the answer for this batch.
+        if (mBatchProEntitled != null) {
+            if (mBatchProEntitled) {
+                return downloadOne(name);
+            }
+            return skipGatedChart(name);
+        }
+
+        // First gated chart of the batch — ask RevenueCat.
+        RevenueCatService.isProEntitled(new RevenueCatService.EntitlementCallback() {
+            @Override
+            public void onResult(final boolean entitled) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing()) {
+                            return;
+                        }
+                        mBatchProEntitled = entitled;
+                        // Re-enter the gate with the cached entitlement;
+                        // the new state will route the same chart to
+                        // downloadOne() or skipGatedChart() as needed.
+                        download();
+                    }
+                });
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Free user tried to download a chart that would exceed the
+     * one-per-category limit. Uncheck it so the batch can keep moving
+     * through any remaining (exempt or update) items, and surface the
+     * Paid-subscription dialog the first time it happens this batch.
+     */
+    private boolean skipGatedChart(String name) {
+        mChartAdapter.unsetChecked(name);
+        mChartAdapter.notifyDataSetChanged();
+        if (!mBatchProWarned) {
+            mBatchProWarned = true;
+            showProRequiredDialog();
+        }
+        return download();
+    }
+
+    /**
+     * Reset per-batch state when the chain runs dry.
+     */
+    private void endBatch() {
+        mBatchProEntitled = null;
+        mBatchProWarned = false;
+        mToast.setText(getString(R.string.Done));
+        mToast.show();
+    }
+
+    /**
+     * Show the "Paid subscription required" prompt offering a Subscribe
+     * shortcut into {@link ProActivity}.
+     */
+    private void showProRequiredDialog() {
+        if (isFinishing()) {
+            return;
+        }
+        DecoratedAlertDialogBuilder builder =
+                new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this);
+        builder.setTitle(getString(R.string.ProDownloadLimitTitle));
+        builder.setMessage(getString(R.string.ProDownloadLimitMessage));
+        builder.setCancelable(false);
+        builder.setNegativeButton(getString(R.string.Cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.setPositiveButton(getString(R.string.ProServicesSubscribe),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        try {
+                            startActivity(new Intent(
+                                    ChartsDownloadActivity.this,
+                                    ProActivity.class));
+                        } catch (Throwable ignored) {
+                            // Paid screen is optional
+                        }
+                    }
+                });
+        mAlertDialog = builder.create();
+        try {
+            mAlertDialog.show();
+        } catch (Throwable ignored) {
+            // ignore - window may be gone
+        }
+    }
+
+    /**
+     * Actually kicks off the download for the given chart. Caller is
+     * responsible for having peeked the next checked item via {@link
+     * ChartAdapter#getChecked()} and passed the per-chart Paid gate.
+     */
+    private boolean downloadOne(String name) {
+        mName = name;
+
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
         mDownload.start(StorageService.getInstance().getPreferences().getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
-        
+
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setMax(100);
         mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setMessage(getString(R.string.Downloading) + "/" + 
+        mProgressDialog.setMessage(getString(R.string.Downloading) + "/" +
                 getString(R.string.Extracting) + " : " + mName + ".zip");
-        
+
         mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
@@ -355,6 +484,10 @@ public class ChartsDownloadActivity extends BaseActivity {
          * Not downloading
          */
         mService.setDownloading(false);
+
+        // Force re-checking the Paid gate on the next batch.
+        mBatchProEntitled = null;
+        mBatchProWarned = false;
 
         /*
          *

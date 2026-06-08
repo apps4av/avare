@@ -20,6 +20,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Find and Replace RC Key
+      uses: richardrigutins/replace-in-files@v2
+      with:
+        files: '**/*.java'
+        search-text: '@@___revenuecat_android_api_key__@@'
+        replacement-text: ${{ secrets.ANDROID_REVENUECAT_API_KEY }}
+        encoding: 'utf8'
+        max-parallelism: 10
+        
     - name: Create Google Services JSON File
       env:
         GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
