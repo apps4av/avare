@@ -39,7 +39,6 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 
 import com.ds.avare.utils.Helper;
-import com.ds.avare.utils.UseCountDialog;
  
 /**
  * 
@@ -201,11 +200,6 @@ public class MainActivity extends TabActivity {
             //granted
             setup();
         }
-
-        // Soft paywall: shown to non-subscribers, suppressed for users with
-        // an active "Pro" entitlement on RevenueCat. Fail-open if RevenueCat
-        // is not reachable.
-        UseCountDialog.maybeShow(this, StorageService.getInstance().getPreferences());
     }
     
     /**

@@ -46,6 +46,7 @@ import com.ds.avare.storage.Preferences;
 import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.RateApp;
+import com.ds.avare.utils.RevenueCatService;
 import com.ds.avare.utils.Telemetry;
 import com.ds.avare.utils.TelemetryParams;
 
@@ -76,6 +77,16 @@ public class ChartsDownloadActivity extends BaseActivity {
      * Shows warning message about Avare
      */
     private AlertDialog mAlertDialog;
+
+    /**
+     * Once a download batch has been authorized (the user is a Paid
+     * subscriber, or the batch did not trip the per-category limit), we
+     * skip the entitlement gate for the recursive continuation calls
+     * fired from {@link #mHandler} after each successful download. Reset
+     * back to {@code false} when the batch finishes (no more checked
+     * items) or when the activity pauses.
+     */
+    private boolean mBatchProAuthorized = false;
 
     /*
      * (non-Javadoc)
@@ -234,34 +245,116 @@ public class ChartsDownloadActivity extends BaseActivity {
 
 
     /**
-     *
+     * Entry point used by the Download / Update buttons and by the
+     * recursive continuation in {@link #mHandler}. Runs the Paid
+     * subscription gate (once per batch) and then defers to {@link
+     * #downloadOne()} for the actual transfer.
      */
     private boolean download() {
-        
+        if (mBatchProAuthorized) {
+            return downloadOne();
+        }
+        if (!mChartAdapter.requiresProForDownload()) {
+            mBatchProAuthorized = true;
+            return downloadOne();
+        }
+        // Selection exceeds the free per-category limit — ask RevenueCat.
+        RevenueCatService.isProEntitled(new RevenueCatService.EntitlementCallback() {
+            @Override
+            public void onResult(final boolean entitled) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing()) {
+                            return;
+                        }
+                        if (entitled) {
+                            mBatchProAuthorized = true;
+                            downloadOne();
+                        } else {
+                            showProRequiredDialog();
+                        }
+                    }
+                });
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Show the "Paid subscription required" prompt offering a Subscribe
+     * shortcut into {@link ProActivity}.
+     */
+    private void showProRequiredDialog() {
+        if (isFinishing()) {
+            return;
+        }
+        DecoratedAlertDialogBuilder builder =
+                new DecoratedAlertDialogBuilder(ChartsDownloadActivity.this);
+        builder.setTitle(getString(R.string.ProDownloadLimitTitle));
+        builder.setMessage(getString(R.string.ProDownloadLimitMessage));
+        builder.setCancelable(false);
+        builder.setNegativeButton(getString(R.string.Cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.setPositiveButton(getString(R.string.ProServicesSubscribe),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        try {
+                            startActivity(new Intent(
+                                    ChartsDownloadActivity.this,
+                                    ProActivity.class));
+                        } catch (Throwable ignored) {
+                            // Paid screen is optional
+                        }
+                    }
+                });
+        mAlertDialog = builder.create();
+        try {
+            mAlertDialog.show();
+        } catch (Throwable ignored) {
+            // ignore - window may be gone
+        }
+    }
+
+    /**
+     * Actually kicks off the download for the next checked chart. Caller
+     * is responsible for having passed the Paid subscription gate.
+     */
+    private boolean downloadOne() {
+
         /*
          * Download first chart in list that is checked
          */
         mName = mChartAdapter.getChecked();
         if(null == mName) {
             /*
-             * Nothing to download
+             * Nothing to download — batch complete, reset the gate so the
+             * next user-initiated batch is re-checked.
              */
+            mBatchProAuthorized = false;
             mToast.setText(getString(R.string.Done));
             mToast.show();
             return false;
         }
-        
+
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
         mDownload.start(StorageService.getInstance().getPreferences().getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
-        
+
         mProgressDialog = new ProgressDialog(ChartsDownloadActivity.this);
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setMax(100);
         mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setMessage(getString(R.string.Downloading) + "/" + 
+        mProgressDialog.setMessage(getString(R.string.Downloading) + "/" +
                 getString(R.string.Extracting) + " : " + mName + ".zip");
-        
+
         mProgressDialog.setButton(ProgressDialog.BUTTON_NEGATIVE, getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             /* (non-Javadoc)
              * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
@@ -355,6 +448,9 @@ public class ChartsDownloadActivity extends BaseActivity {
          * Not downloading
          */
         mService.setDownloading(false);
+
+        // Force re-checking the Paid gate on the next activity session
+        mBatchProAuthorized = false;
 
         /*
          *

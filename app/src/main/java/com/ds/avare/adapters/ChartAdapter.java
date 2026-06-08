@@ -448,6 +448,33 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     }
 
     /**
+     * Free users are limited to a single download per category, with the
+     * exception of {@link #GROUP_DATABASE} and {@link #GROUP_WEATHER} (which
+     * contains weather, NEXRAD and TFRs — i.e. the "database", "weather" and
+     * "tfr" categories called out in the spec). This method returns {@code
+     * true} if the user has selected more than one chart in a non-exempt
+     * category, in which case the caller should prompt for a Paid
+     * subscription before starting downloads.
+     */
+    public boolean requiresProForDownload() {
+        for (int group = 0; group < GROUP_NUM; group++) {
+            if (group == GROUP_DATABASE || group == GROUP_WEATHER) {
+                continue;
+            }
+            int count = 0;
+            for (int child = 0; child < mChecked[group].length; child++) {
+                if (mChecked[group][child] == STATE_CHECKED) {
+                    count++;
+                    if (count > 1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * 
      */
     @Override

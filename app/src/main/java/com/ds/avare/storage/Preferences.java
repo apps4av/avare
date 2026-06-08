@@ -1099,19 +1099,6 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putInt("rateAskLastCount", set).commit();
     }
 
-    /**
-     * Number of times the app has been launched. Used by the RevenueCat
-     * "nag" dialog to gate non-subscribers for one second per launch.
-     * Capped at a sane upper bound by the caller.
-     */
-    public int getUseCount() {
-        return mPref.getInt("revenueCatUseCount", 0);
-    }
-
-    public void setUseCount(int count) {
-        mPref.edit().putInt("revenueCatUseCount", count).commit();
-    }
-
     public int getWindsAloftCeiling() {
         try {
             return Integer.parseInt(mPref.getString(mContext.getString(R.string.WindsAloftCeiling), "39"));
