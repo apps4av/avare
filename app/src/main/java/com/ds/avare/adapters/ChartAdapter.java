@@ -448,29 +448,48 @@ public class ChartAdapter extends BaseExpandableListAdapter {
     }
 
     /**
-     * Free users are limited to a single download per category, with the
-     * exception of {@link #GROUP_DATABASE} and {@link #GROUP_WEATHER} (which
-     * contains weather, NEXRAD and TFRs — i.e. the "database", "weather" and
-     * "tfr" categories called out in the spec). This method returns {@code
-     * true} if the user has selected more than one chart in a non-exempt
-     * category, in which case the caller should prompt for a Paid
-     * subscription before starting downloads.
+     * Per-chart Paid-subscription gate. Free users are limited to a single
+     * downloaded chart per category, with the exception of {@link
+     * #GROUP_DATABASE} and {@link #GROUP_WEATHER} (which contains weather,
+     * NEXRAD and TFRs — i.e. the "database", "weather" and "tfr"
+     * categories called out in the spec). Updating a chart that is already
+     * on disk is always allowed (the file count in the category doesn't
+     * change). Downloading a NEW chart into a non-exempt category is
+     * blocked when that category already has another downloaded chart.
+     *
+     * Re-evaluated on every call so that the batched download chain in
+     * {@link com.ds.avare.ChartsDownloadActivity} reacts live to the
+     * updated on-disk state after each successful download.
+     *
+     * @param name chart file name (e.g. {@code "Boston"})
+     * @return {@code true} when only a Paid subscriber is allowed to
+     *         download this chart right now
      */
-    public boolean requiresProForDownload() {
+    public boolean requiresProForChart(String name) {
+        if (name == null) {
+            return false;
+        }
         for (int group = 0; group < GROUP_NUM; group++) {
             if (group == GROUP_DATABASE || group == GROUP_WEATHER) {
                 continue;
             }
-            int count = 0;
-            for (int child = 0; child < mChecked[group].length; child++) {
-                if (mChecked[group][child] == STATE_CHECKED) {
-                    count++;
-                    if (count > 1) {
+            for (int child = 0; child < mChildrenFiles[group].length; child++) {
+                if (!name.equals(mChildrenFiles[group][child])) {
+                    continue;
+                }
+                if (mVers[group][child] != null) {
+                    // Update of an existing chart — never gated.
+                    return false;
+                }
+                for (int sib = 0; sib < mVers[group].length; sib++) {
+                    if (sib != child && mVers[group][sib] != null) {
                         return true;
                     }
                 }
+                return false;
             }
         }
+        // Not found, or in an exempt group.
         return false;
     }
 

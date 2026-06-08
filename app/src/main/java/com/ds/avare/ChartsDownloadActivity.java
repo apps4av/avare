@@ -79,14 +79,20 @@ public class ChartsDownloadActivity extends BaseActivity {
     private AlertDialog mAlertDialog;
 
     /**
-     * Once a download batch has been authorized (the user is a Paid
-     * subscriber, or the batch did not trip the per-category limit), we
-     * skip the entitlement gate for the recursive continuation calls
-     * fired from {@link #mHandler} after each successful download. Reset
-     * back to {@code false} when the batch finishes (no more checked
-     * items) or when the activity pauses.
+     * Cached Paid-entitlement result for the current download batch. Null
+     * until the first chart in the batch trips the per-category gate;
+     * after that, reused for the rest of the batch so we don't ask
+     * RevenueCat once per skipped item. Reset to null when the batch
+     * finishes (no more checked items) or when the activity pauses.
      */
-    private boolean mBatchProAuthorized = false;
+    private Boolean mBatchProEntitled = null;
+
+    /**
+     * True once we've shown the "Paid Subscription Required" dialog at
+     * least once during the current batch, so that skipping several
+     * gated charts back-to-back doesn't spawn a stack of dialogs.
+     */
+    private boolean mBatchProWarned = false;
 
     /*
      * (non-Javadoc)
@@ -246,19 +252,37 @@ public class ChartsDownloadActivity extends BaseActivity {
 
     /**
      * Entry point used by the Download / Update buttons and by the
-     * recursive continuation in {@link #mHandler}. Runs the Paid
-     * subscription gate (once per batch) and then defers to {@link
-     * #downloadOne()} for the actual transfer.
+     * recursive continuation in {@link #mHandler}. Peeks at the next
+     * checked chart and runs the per-chart Paid-subscription gate, then
+     * either starts the download or skips/blocks the chart.
+     *
+     * The gate is re-evaluated on every call so that the on-disk state
+     * updated by the previous successful download is respected live: if
+     * the user checked two new sectionals, the first downloads, the
+     * second is then blocked because the category now has one
+     * downloaded chart.
      */
     private boolean download() {
-        if (mBatchProAuthorized) {
-            return downloadOne();
+        final String name = mChartAdapter.getChecked();
+        if (name == null) {
+            endBatch();
+            return false;
         }
-        if (!mChartAdapter.requiresProForDownload()) {
-            mBatchProAuthorized = true;
-            return downloadOne();
+
+        if (!mChartAdapter.requiresProForChart(name)) {
+            return downloadOne(name);
         }
-        // Selection exceeds the free per-category limit — ask RevenueCat.
+
+        // This chart needs Paid. Use cached entitlement if we already
+        // know the answer for this batch.
+        if (mBatchProEntitled != null) {
+            if (mBatchProEntitled) {
+                return downloadOne(name);
+            }
+            return skipGatedChart(name);
+        }
+
+        // First gated chart of the batch — ask RevenueCat.
         RevenueCatService.isProEntitled(new RevenueCatService.EntitlementCallback() {
             @Override
             public void onResult(final boolean entitled) {
@@ -268,17 +292,42 @@ public class ChartsDownloadActivity extends BaseActivity {
                         if (isFinishing()) {
                             return;
                         }
-                        if (entitled) {
-                            mBatchProAuthorized = true;
-                            downloadOne();
-                        } else {
-                            showProRequiredDialog();
-                        }
+                        mBatchProEntitled = entitled;
+                        // Re-enter the gate with the cached entitlement;
+                        // the new state will route the same chart to
+                        // downloadOne() or skipGatedChart() as needed.
+                        download();
                     }
                 });
             }
         });
         return true;
+    }
+
+    /**
+     * Free user tried to download a chart that would exceed the
+     * one-per-category limit. Uncheck it so the batch can keep moving
+     * through any remaining (exempt or update) items, and surface the
+     * Paid-subscription dialog the first time it happens this batch.
+     */
+    private boolean skipGatedChart(String name) {
+        mChartAdapter.unsetChecked(name);
+        mChartAdapter.notifyDataSetChanged();
+        if (!mBatchProWarned) {
+            mBatchProWarned = true;
+            showProRequiredDialog();
+        }
+        return download();
+    }
+
+    /**
+     * Reset per-batch state when the chain runs dry.
+     */
+    private void endBatch() {
+        mBatchProEntitled = null;
+        mBatchProWarned = false;
+        mToast.setText(getString(R.string.Done));
+        mToast.show();
     }
 
     /**
@@ -324,25 +373,12 @@ public class ChartsDownloadActivity extends BaseActivity {
     }
 
     /**
-     * Actually kicks off the download for the next checked chart. Caller
-     * is responsible for having passed the Paid subscription gate.
+     * Actually kicks off the download for the given chart. Caller is
+     * responsible for having peeked the next checked item via {@link
+     * ChartAdapter#getChecked()} and passed the per-chart Paid gate.
      */
-    private boolean downloadOne() {
-
-        /*
-         * Download first chart in list that is checked
-         */
-        mName = mChartAdapter.getChecked();
-        if(null == mName) {
-            /*
-             * Nothing to download — batch complete, reset the gate so the
-             * next user-initiated batch is re-checked.
-             */
-            mBatchProAuthorized = false;
-            mToast.setText(getString(R.string.Done));
-            mToast.show();
-            return false;
-        }
+    private boolean downloadOne(String name) {
+        mName = name;
 
         mDownload = new Download(mPref.getRoot(), mHandler, mPref.getCycleAdjust());
         mDownload.start(StorageService.getInstance().getPreferences().getServerDataFolder(), mName, mChartAdapter.isStatic(mName));
@@ -449,8 +485,9 @@ public class ChartsDownloadActivity extends BaseActivity {
          */
         mService.setDownloading(false);
 
-        // Force re-checking the Paid gate on the next activity session
-        mBatchProAuthorized = false;
+        // Force re-checking the Paid gate on the next batch.
+        mBatchProEntitled = null;
+        mBatchProWarned = false;
 
         /*
          *

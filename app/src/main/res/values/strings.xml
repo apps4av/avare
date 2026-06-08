@@ -316,10 +316,10 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ProServicesSubscribe">Subscribe</string>
     <string name="ProServiceUnavailable">Paid Services are currently unavailable.</string>
     <string name="ProServicesPrefTitle">Paid Subscription</string>
-    <string name="ProServicesPrefSummary">Subscribe, restore a purchase, or manage your Avare Paid plan. Paid subscribers can download unlimited charts per category.</string>
-    <string name="ProServicesDescription">Sign in with your email to create or restore your account, then subscribe to Avare Paid. Free users may download at most one chart per category (Databases and Weather/TFRs are always free); Paid subscribers can download as many charts as they like.</string>
+    <string name="ProServicesPrefSummary">Subscribe, restore a purchase, or manage your Avare Paid plan. Paid subscribers can hold unlimited charts per category.</string>
+    <string name="ProServicesDescription">Sign in with your email to create or restore your account, then subscribe to Avare Paid. Free users may hold at most one chart per category (Databases and Weather/TFRs are always free); Paid subscribers can hold as many charts as they like. Updates to charts you already have are always allowed.</string>
     <string name="ProDownloadLimitTitle">Paid Subscription Required</string>
-    <string name="ProDownloadLimitMessage">Free users may download only one chart per category (Databases and Weather/TFRs are always unlimited). You have selected more than one chart in a paid category. Subscribe to Avare Paid to download as many charts as you like.</string>
+    <string name="ProDownloadLimitMessage">Free users may keep only one chart per category on the device (Databases and Weather/TFRs are always unlimited). Delete the existing chart in that category first, or subscribe to Avare Paid to keep as many charts as you like. Updates to charts you already have remain free.</string>
     <string name="ProSignInRegister">Sign in / Register</string>
     <string name="ProSignOut">Sign out</string>
     <string name="ProClose">Close</string>
