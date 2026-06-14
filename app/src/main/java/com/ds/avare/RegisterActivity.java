@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -47,6 +48,7 @@ public class RegisterActivity extends BaseActivity {
     // Register button
     private Button mButtonRegister;
     private EditText mEmailEditText;
+    private WebView mPrivacy;
 
     private void setButtonStates() {
         if(mPref.isRegistered()) {
@@ -95,6 +97,11 @@ public class RegisterActivity extends BaseActivity {
 
         mEmailEditText = (EditText) findViewById(R.id.edittext_register);
         mButtonRegister = (Button) findViewById(R.id.btn_register);
+        /*
+         * privacy policy load
+         */
+        mPrivacy = (WebView)findViewById(R.id.privacy_webview);
+        mPrivacy.loadUrl(com.ds.avare.utils.Helper.getWebViewFile(getApplicationContext(), "privacy"));
         // Check if Internet present
         if (!Helper.isNetworkAvailable(this)) {
 
@@ -263,7 +270,7 @@ public class RegisterActivity extends BaseActivity {
                                 DecoratedAlertDialogBuilder alertDialogBuilder = new DecoratedAlertDialogBuilder(RegisterActivity.this);
                                 alertDialogBuilder
                                         .setTitle(getString(R.string.register))
-                                        .setMessage(getString(R.string.registered_1800wxbrief))
+                                        .setMessage(getString(R.string.registered))
                                         .setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 dialog.dismiss();
