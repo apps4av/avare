@@ -312,12 +312,12 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Instrumentation">&quot;Instrumentation&quot;</string>
     <string name="register">Register</string>
     <string name="unregister">Unregister</string>
-    <string name="ProServicesTitle">Account and Subscription</string>
+    <string name="ProServicesTitle">Subscription</string>
     <string name="ProServicesSubscribe">Subscribe</string>
     <string name="ProServiceUnavailable">Paid Services are currently unavailable.</string>
     <string name="ProServicesPrefTitle">Subscription</string>
     <string name="ProServicesPrefSummary">Subscribe, restore a purchase, or manage your Avare Paid plan.</string>
-    <string name="ProServicesDescription">Sign in with your email to create or restore your account, then subscribe to Avare Paid. Use Server Registration for 1800wxbrief.com integration. Free users may hold at most one chart per category (Databases and Weather/TFRs are always free); Paid subscribers can hold as many charts as they like. Updates to charts you already have are always allowed.</string>
+    <string name="ProServicesDescription">Sign in with your email to create or restore your account, then subscribe to Avare Paid. Free users may hold at most one chart per category (Databases and Weather/TFRs are always free); Paid subscribers can hold as many charts as they like. Updates to charts you already have are always allowed.</string>
     <string name="ProDownloadLimitTitle">Paid Subscription Required</string>
     <string name="ProDownloadLimitMessage">Free users may keep only one chart per category on the device (Databases and Weather/TFRs are always unlimited). Delete the existing chart in that category first, or subscribe to Avare Paid to keep as many charts as you like. Updates to charts you already have remain free.</string>
     <string name="ProSignInRegister">Sign in / Register</string>
@@ -359,8 +359,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="Locked">Locked</string>
     <string name="Edit">Edit</string>
     <string name="ExternalFolder">Try using external folder</string>
-    <string name="online">Account (1800wxbrief)</string>
-    <string name="onlineSummary">Register or unregister your Apps4Av server account for 1800wxbrief integration</string>
+    <string name="online">Account</string>
+    <string name="onlineSummary">Register or unregister your Apps4Av server account (also used for 1800wxbrief.com integration)</string>
     <string name="folderHelp">If this is not the correct SD card folder, then create a folder in root of SD card named Android/data/com.ds.avare, and select it from here</string>
     <string name="ETABearing">&quot;ETABearing&quot;</string>
     <string name="ETABearingLabel">&quot;ETA/ETE Bearing&quot;</string>
