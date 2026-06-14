@@ -78,7 +78,6 @@ public class ProActivity extends AppCompatActivity {
     private Button mSignInButton;
     private Button mSignOutButton;
     private Button mSubscribeButton;
-    private Button mServerRegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,13 +119,6 @@ public class ProActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 launchPaywall();
-            }
-        });
-
-        mServerRegisterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchServerRegistration();
             }
         });
 
