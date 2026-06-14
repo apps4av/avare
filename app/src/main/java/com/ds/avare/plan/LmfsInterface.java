@@ -48,7 +48,7 @@ import android.content.Context;
  */
 public class LmfsInterface {
 
-	private static final String AVARE_LMFS_URL = "https://apps4av.net/new/lmfs.php";
+	private static final String AVARE_LMFS_URL = "https://www.apps4av.org/site/lmfs.php";
 	
 	private Context mContext;
     private Preferences mPref;
