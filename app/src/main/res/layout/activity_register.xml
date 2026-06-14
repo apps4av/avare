@@ -11,16 +11,25 @@ All rights reserved.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <WebView
+        android:id="@+id/privacy_webview"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_weight="6"
+        android:layout_height="0dp"/>
+
     <LinearLayout
         android:layout_margin="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_weight="1"
+        android:layout_height="0dp">
 
         <EditText
             android:id="@+id/edittext_register"
+            android:layout_below="@+id/privacy_webview"
             android:layout_width="0dp"
             android:layout_weight="3"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:background="@drawable/button_bg"
             android:layout_margin="1dp"
             android:hint="Your email address"
@@ -28,12 +37,13 @@ All rights reserved.
 
         <Button
             android:id="@+id/btn_register"
+            android:layout_below="@+id/edittext_register"
             android:layout_width="0dp"
             android:background="@drawable/button_bg"
             android:layout_margin="1dp"
             android:text="@string/register"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             />
 
     </LinearLayout>
