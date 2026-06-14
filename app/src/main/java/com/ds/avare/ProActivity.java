@@ -89,7 +89,6 @@ public class ProActivity extends AppCompatActivity {
         mSignInButton = findViewById(R.id.pro_signin_btn);
         mSignOutButton = findViewById(R.id.pro_signout_btn);
         mSubscribeButton = findViewById(R.id.pro_subscribe_btn);
-        mServerRegisterButton = findViewById(R.id.pro_server_register_btn);
         Button closeButton = findViewById(R.id.pro_close_btn);
 
         try {
