@@ -63,6 +63,16 @@ All rights reserved.
             android:textAllCaps="false" />
 
         <Button
+            android:id="@+id/pro_server_register_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/button_bg"
+            android:text="@string/ProServerRegistration"
+            android:textColor="#000000"
+            android:textAllCaps="false" />
+
+        <Button
             android:id="@+id/pro_signout_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

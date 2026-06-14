@@ -78,6 +78,7 @@ public class ProActivity extends AppCompatActivity {
     private Button mSignInButton;
     private Button mSignOutButton;
     private Button mSubscribeButton;
+    private Button mServerRegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class ProActivity extends AppCompatActivity {
         mSignInButton = findViewById(R.id.pro_signin_btn);
         mSignOutButton = findViewById(R.id.pro_signout_btn);
         mSubscribeButton = findViewById(R.id.pro_subscribe_btn);
+        mServerRegisterButton = findViewById(R.id.pro_server_register_btn);
         Button closeButton = findViewById(R.id.pro_close_btn);
 
         try {
@@ -119,6 +121,13 @@ public class ProActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 launchPaywall();
+            }
+        });
+
+        mServerRegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchServerRegistration();
             }
         });
 
@@ -253,6 +262,16 @@ public class ProActivity extends AppCompatActivity {
                     }
                 }
             });
+        } catch (Throwable t) {
+            Toast.makeText(this,
+                    getString(R.string.ProServiceUnavailable),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchServerRegistration() {
+        try {
+            startActivity(new Intent(this, RegisterActivity.class));
         } catch (Throwable t) {
             Toast.makeText(this,
                     getString(R.string.ProServiceUnavailable),
