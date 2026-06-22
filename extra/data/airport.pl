@@ -86,6 +86,7 @@ while (<FILE>) {
         $fee        = ltrim( rtrim( substr( $_, 1002, 1 ) ) );
         $lightsched = ltrim( rtrim( substr( $_, 966, 7 ) ) );
         $segcircle  = ltrim( rtrim( substr( $_, 995, 4 ) ) );
+        $icao       = ltrim( rtrim( substr( $_, 1210, 7 ) ) );
 
         $c1 = ltrim( rtrim( substr( $_, 877, 1 ) ) );
         $c2 = ltrim( rtrim( substr( $_, 878, 1 ) ) );
@@ -94,7 +95,7 @@ while (<FILE>) {
         $tel    = ltrim( rtrim( substr( $_, 762, 16 ) ) );
 
         print
-"$id,$lt,$ln,$type,$name,$use,$tel,$manager,$managertel,$elevation,$var,$patterna,$fuel,$custom,$beacon,$lightsched,$segcircle,$atct,$unicom,$ctaff,$fee,$state,$city\n";
+"$id,$lt,$ln,$type,$name,$use,$tel,$manager,$managertel,$elevation,$var,$patterna,$fuel,$custom,$beacon,$lightsched,$segcircle,$atct,$unicom,$ctaff,$fee,$state,$city,$icao\n";
     }
 }
 close(FILE);
