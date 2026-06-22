@@ -71,6 +71,8 @@ public class WeatherContract {
     public static final String METAR_TIME = "issue_time";
     public static final String METAR_STATION = "station_id";
     public static final String METAR_FLIGHT_CATEGORY = "flight_category";
+    public static final String METAR_LATITUDE = "latitude";
+    public static final String METAR_LONGITUDE = "longitude";
 
     public static final String BASE_WIND = "wa";
     public static final Uri CONTENT_URI_WIND = Uri.withAppendedPath(AUTHORITY_URI, BASE_WIND);
