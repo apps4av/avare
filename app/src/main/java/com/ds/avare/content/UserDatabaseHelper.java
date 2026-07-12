@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 public class UserDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "user.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 5;
 
     public UserDatabaseHelper(Context context, String folder) {
         super(context, folder, DBNAME, DB_VERSION);
@@ -93,7 +93,9 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
                             UserContract.AIRCRAFT_COLUMN_PILOT + " TEXT, " +
                             UserContract.AIRCRAFT_COLUMN_SINK_RATE + " FLOAT, " +
                             UserContract.AIRCRAFT_COLUMN_FUEL_BURN + " FLOAT, " +
-                            UserContract.AIRCRAFT_COLUMN_BASE + " TEXT);");
+                            UserContract.AIRCRAFT_COLUMN_BASE + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_WNB + " TEXT, " +
+                            UserContract.AIRCRAFT_COLUMN_PERF + " TEXT);");
         }
         catch (Exception e) {
         }
@@ -103,5 +105,19 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onCreate(db);
+        // Aircraft now own their W&B and performance data. Add the columns to
+        // pre-existing aircraft tables (CREATE TABLE above is a no-op for them).
+        try {
+            db.execSQL("ALTER TABLE " + UserContract.TABLE_AIRCRAFT +
+                    " ADD COLUMN " + UserContract.AIRCRAFT_COLUMN_WNB + " TEXT;");
+        }
+        catch (Exception e) {
+        }
+        try {
+            db.execSQL("ALTER TABLE " + UserContract.TABLE_AIRCRAFT +
+                    " ADD COLUMN " + UserContract.AIRCRAFT_COLUMN_PERF + " TEXT;");
+        }
+        catch (Exception e) {
+        }
     }
 }

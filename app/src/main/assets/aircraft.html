@@ -21,6 +21,7 @@ authors: zkhan
     <script src="file:///android_asset/bootstrap-select.min.js"></script>
     <script src="file:///android_asset/bootbox.min.js"></script>
     <script src="file:///android_asset/toastr.min.js"></script>
+    <script src="file:///android_asset/aircraft_performance.js"></script>
     <link rel="stylesheet" href="file:///android_asset/bootstrap.min.css">
     <link rel="stylesheet" href="file:///android_asset/bootstrap-select.min.css">
     <link rel="stylesheet" href="file:///android_asset/toastr.min.css">
@@ -614,6 +615,17 @@ function ac_set(data) {
     document.getElementById("bestGlideSinkRateInput").value = obj.sink_rate;
     document.getElementById("fuelBurnRateCruisingInput").value = obj.fuel_burn_rate;
     document.getElementById("aircraftHomeBaseInput").value = obj.home_base;
+
+    // W&B and performance travel with the aircraft. They may arrive as a
+    // nested object (from Java getJSON) or a JSON string; normalize to a string.
+    var wnbStr = (obj.wnb && typeof obj.wnb === "object") ? JSON.stringify(obj.wnb) : (obj.wnb || "");
+    var perfStr = (obj.perf && typeof obj.perf === "object") ? JSON.stringify(obj.perf) : (obj.perf || "");
+    if (wnbStr && wnbStr.length > 0) {
+        try { wnb_set(wnbStr); } catch (e) {}
+    }
+    if (typeof perfSetAircraftProfile === "function") {
+        perfSetAircraftProfile(perfStr);
+    }
 }
 
 
@@ -636,6 +648,10 @@ function ac_get() {
     obj.sink_rate = document.getElementById("bestGlideSinkRateInput").value;
     obj.fuel_burn_rate = document.getElementById("fuelBurnRateCruisingInput").value;
     obj.home_base = document.getElementById("aircraftHomeBaseInput").value;
+
+    // Embed this aircraft's W&B and performance so they save/load together.
+    obj.wnb = wnb_get(obj.id);
+    obj.perf = (typeof perfGetCurrentProfileJson === "function") ? perfGetCurrentProfileJson() : "";
 
     return JSON.stringify(obj);
 }
@@ -722,6 +738,9 @@ $(document).ready(function(){
     $(".nav-tabs a").click(function(){
         $(this).tab('show');
     });
+    if (typeof perfInit === "function") {
+        perfInit();
+    }
 });
 
 
@@ -822,6 +841,7 @@ function setAircraftWakeTurbulence() {
     <li class="active"><a href="#aircrafts">Aircraft</a></li>
     <li><a href="#wnbs">W&B</a></li>
     <li><a href="#lists">Lists</a></li>
+    <li><a href="#performance">Perf</a></li>
 </ul>
 
 <div class="tab-content">
@@ -1834,8 +1854,6 @@ function setAircraftWakeTurbulence() {
 
         <ul class="nav nav-tabs" style="display:inline-flex;">
             <li class="active"><a href="#wnb">Loaded</a></li>
-            <li><a href="#loadwnb">Load</a></li>
-            <li><a href="#savewnb">Save</a></li>
             <li><a href="#helpwnb">Help</a></li>
         </ul>
 
@@ -1878,21 +1896,7 @@ function setAircraftWakeTurbulence() {
 
                 <br>
                 <button class="btn btn-block" onclick="wnb_calculate()">Calculate</button>
-            </div>
-
-
-            <div id="loadwnb" class="tab-pane fade">
-                <table class="table" id="save_table_wnb" ><th>Load a W&B</th></table>
-            </div>
-
-
-            <div id="savewnb" class="tab-pane fade">
-                <table class="table"><th>Save Current W&B</th>
-                    <tr>
-                        <td><input id="save_name_wnb" spellcheck="false" placeholder="Current W&B Name"/></td>
-                        <td><button class="btn btn-block" onclick="wnb_save_wnb_add()">Save</button></td>
-                    </tr>
-                </table>
+                <button class="btn btn-block btn-success" onclick="ac_save_ac_add()">Save to Aircraft</button>
             </div>
 
 
@@ -1910,23 +1914,10 @@ function setAircraftWakeTurbulence() {
                         <li>Press Calculate button again to show the W&B inside/outside the green envelope.</li>
                     </ul>
 
-                    <b>To Save a W&B</b>
+                    <b>Saving a W&B</b>
                     <ul>
-                        <li>Press the "Save" tab</li>
-                        <li>To save a W&B, enter the name above the "Save" button, and press the "Save" Button.</li>
-                        <li>Press the "Load" tab to confirm that the W&B was saved.</li>
-                    </ul>
-
-                    <b>To Load/Delete a Saved W&B</b>
-                    <ul>
-                        <li>Press the "Load" tab to show the saved W&Bs.</li>
-                        <li>Press the "LD" button to load the W&B.</li>
-                        <li>You can delete a saved W&B by pressing the "Del" button to the right of its name in the Saved W&B.</li>
-                    </ul>
-
-                    <b>To Use a W&B</b>
-                    <ul>
-                        <li></li>
+                        <li>Each aircraft has its own W&B. Press "Save to Aircraft" to store this W&B with the aircraft loaded on the "Aircraft" tab (it is also saved whenever you save the aircraft).</li>
+                        <li>Loading an aircraft loads its W&B here automatically.</li>
                     </ul>
                 </div>
             </div>
@@ -2043,6 +2034,156 @@ function setAircraftWakeTurbulence() {
                     </ul>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="performance" class="tab-pane fade">
+
+        <table class="table">
+            <tr>
+                <td><span id="perf_ac_info" class="text-muted"></span></td>
+            </tr>
+        </table>
+
+        <ul class="nav nav-tabs" style="display:inline-flex;">
+            <li class="active"><a href="#perfto">Takeoff</a></li>
+            <li><a href="#perfld">Landing</a></li>
+            <li><a href="#perfcr">Cruise</a></li>
+            <li><a href="#perfmy">Edit</a></li>
+            <li><a href="#perfhelp">Help</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div id="perfto" class="tab-pane fade in active">
+                <table class="table"><th>Conditions</th>
+                    <tr><td>Pressure Altitude (ft)</td><td><input id="perf_to_pa" type="number" value="0" onchange="perfCalcTakeoff()"></td></tr>
+                    <tr><td>Temperature (&deg;C)</td><td><input id="perf_to_temp" type="number" value="15" onchange="perfCalcTakeoff()"></td></tr>
+                    <tr><td>Weight (lb)</td><td><input id="perf_to_weight" type="number" onchange="perfCalcTakeoff()"></td></tr>
+                    <tr><td>Headwind (kt, - for tailwind)</td><td><input id="perf_to_wind" type="number" value="0" onchange="perfCalcTakeoff()"></td></tr>
+                    <tr><td>Soft / grass field</td><td><input id="perf_to_soft" type="checkbox" onchange="perfCalcTakeoff()"></td></tr>
+                </table>
+                <table class="table"><th>Results</th>
+                    <tr><td>Ground roll</td><td><h4><span id="perf_to_roll" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Over 50 ft obstacle</td><td><h4><span id="perf_to_50out" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Density altitude</td><td><h4><span id="perf_to_da" class="label label-info"></span></h4></td></tr>
+                </table>
+            </div>
+
+            <div id="perfld" class="tab-pane fade">
+                <table class="table"><th>Conditions</th>
+                    <tr><td>Pressure Altitude (ft)</td><td><input id="perf_ld_pa" type="number" value="0" onchange="perfCalcLanding()"></td></tr>
+                    <tr><td>Temperature (&deg;C)</td><td><input id="perf_ld_temp" type="number" value="15" onchange="perfCalcLanding()"></td></tr>
+                    <tr><td>Weight (lb)</td><td><input id="perf_ld_weight" type="number" onchange="perfCalcLanding()"></td></tr>
+                    <tr><td>Headwind (kt, - for tailwind)</td><td><input id="perf_ld_wind" type="number" value="0" onchange="perfCalcLanding()"></td></tr>
+                    <tr><td>Soft / grass field</td><td><input id="perf_ld_soft" type="checkbox" onchange="perfCalcLanding()"></td></tr>
+                </table>
+                <table class="table"><th>Results</th>
+                    <tr><td>Ground roll</td><td><h4><span id="perf_ld_roll" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Over 50 ft obstacle</td><td><h4><span id="perf_ld_50out" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Density altitude</td><td><h4><span id="perf_ld_da" class="label label-info"></span></h4></td></tr>
+                </table>
+            </div>
+
+            <div id="perfcr" class="tab-pane fade">
+                <table class="table"><th>Conditions</th>
+                    <tr><td>Cruise Altitude (ft)</td><td><input id="perf_cr_alt" type="number" value="8000" onchange="perfCalcCruise()"></td></tr>
+                    <tr><td>ISA Temp Deviation (&deg;C)</td><td><input id="perf_cr_isa" type="number" value="0" onchange="perfCalcCruise()"></td></tr>
+                    <tr><td>Power (%)</td><td><input id="perf_cr_power" type="number" value="65" onchange="perfCalcCruise()"></td></tr>
+                </table>
+                <table class="table"><th>Results</th>
+                    <tr><td>True airspeed</td><td><h4><span id="perf_cr_ktas" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Fuel flow</td><td><h4><span id="perf_cr_gph" class="label label-success"></span></h4></td></tr>
+                    <tr><td>Endurance</td><td><h4><span id="perf_cr_endurance" class="label label-info"></span></h4></td></tr>
+                    <tr><td>Range (w/ 45 min reserve)</td><td><h4><span id="perf_cr_range" class="label label-info"></span></h4></td></tr>
+                    <tr><td>Density altitude</td><td><h4><span id="perf_cr_da" class="label label-info"></span></h4></td></tr>
+                </table>
+            </div>
+
+            <div id="perfmy" class="tab-pane fade">
+
+                <table class="table"><th>This Aircraft's Performance</th>
+                    <tr>
+                        <td colspan="3" class="text-muted">Edit the performance data for the loaded aircraft. It is saved with the aircraft. To start from a published handbook, pick a template and press "Load template".</td>
+                    </tr>
+                    <tr>
+                        <td>Template</td>
+                        <td><select id="perf_template" class="form-control"></select></td>
+                        <td><button class="btn btn-block" onclick="perfNewFromTemplate()">Load template</button></td>
+                    </tr>
+                </table>
+
+                <div id="perf_editor">
+                    <table class="table"><th>Aircraft</th>
+                        <tr><td>Name / Tail</td><td><input id="perf_ed_name" spellcheck="false"></td></tr>
+                        <tr><td>ICAO Type</td><td><input id="perf_ed_icao" spellcheck="false"></td></tr>
+                        <tr><td>Max Gross Weight (lb)</td><td><input id="perf_ed_maxgross" type="number"></td></tr>
+                        <tr><td>Usable Fuel (gal)</td><td><input id="perf_ed_fuel" type="number"></td></tr>
+                        <tr><td>Empty Weight (lb)</td><td><input id="perf_ed_empty" type="number"></td></tr>
+                    </table>
+
+                    <table class="table"><th>Takeoff Corrections (%)</th>
+                        <tr>
+                            <td>Headwind /kt<br><input id="perf_ed_to_hw" type="number" style="width:70px;"></td>
+                            <td>Tailwind /kt<br><input id="perf_ed_to_tw" type="number" style="width:70px;"></td>
+                            <td>Soft field<br><input id="perf_ed_to_sf" type="number" style="width:70px;"></td>
+                        </tr>
+                    </table>
+                    <table class="table"><th>Takeoff POH Points</th></table>
+                    <div style="overflow:auto;"><table class="table" id="perf_ed_to_table"></table></div>
+                    <button class="btn btn-block" onclick="perfAddRow('pedto')">Add Takeoff Row</button>
+
+                    <table class="table"><th>Landing Corrections (%)</th>
+                        <tr>
+                            <td>Headwind /kt<br><input id="perf_ed_ld_hw" type="number" style="width:70px;"></td>
+                            <td>Tailwind /kt<br><input id="perf_ed_ld_tw" type="number" style="width:70px;"></td>
+                            <td>Soft field<br><input id="perf_ed_ld_sf" type="number" style="width:70px;"></td>
+                        </tr>
+                    </table>
+                    <table class="table"><th>Landing POH Points</th></table>
+                    <div style="overflow:auto;"><table class="table" id="perf_ed_ld_table"></table></div>
+                    <button class="btn btn-block" onclick="perfAddRow('pedld')">Add Landing Row</button>
+
+                    <table class="table"><th>Cruise POH Points</th></table>
+                    <div style="overflow:auto;"><table class="table" id="perf_ed_cr_table"></table></div>
+                    <button class="btn btn-block" onclick="perfAddRow('pedcr')">Add Cruise Row</button>
+
+                    <table class="table">
+                        <tr>
+                            <td><button class="btn btn-block btn-success" onclick="perfSaveProfile()">Save to Aircraft</button></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div id="perfhelp" class="tab-pane fade">
+                <table class="table"><th>Help</th></table>
+                <div style="overflow: auto;">
+                    The Performance screen estimates takeoff, landing, and cruise performance from published POH data for several common aircraft types. Results are computed the same way as AvareX.
+                    <br><br>
+                    <b>To use</b>
+                    <ul>
+                        <li>Performance always applies to the aircraft loaded on the "Aircraft" tab. The banner at the top shows which aircraft and data source is in use.</li>
+                        <li>If the aircraft has its own saved performance data, it is used (smooth 3D spline interpolation, like AvareX). Otherwise a built-in POH matching the aircraft's ICAO type is used, falling back to a Cessna 172.</li>
+                        <li>The weights are pre-filled to max gross (takeoff) and 90% of max gross (landing); adjust as needed.</li>
+                        <li>On the "Takeoff" and "Landing" tabs, enter the pressure altitude, outside air temperature, weight, and headwind (use a negative value for a tailwind). Turn on "Soft / grass field" for unpaved runways.</li>
+                        <li>Ground roll, distance to clear a 50 ft obstacle, and density altitude update automatically.</li>
+                        <li>On the "Cruise" tab, enter the cruise altitude and power setting to see true airspeed, fuel flow, endurance, and range (range includes a 45 minute fuel reserve).</li>
+                    </ul>
+                    <b>Corrections applied</b>
+                    <ul>
+                        <li>Takeoff/landing distances are scaled for weight, reduced ~1.5% per knot of headwind, increased 10% per knot of tailwind, and increased 15% (takeoff) / 20% (landing) on soft fields.</li>
+                    </ul>
+                    <b>Giving this aircraft its own performance</b>
+                    <ul>
+                        <li>Go to the "Edit" tab. To start from a published handbook, pick a template aircraft and press "Load template" to pre-fill editable POH tables, then adjust the numbers to match your aircraft.</li>
+                        <li>Edit the identification, weights, correction percentages, and the takeoff / landing / cruise data points. Add or delete rows as needed.</li>
+                        <li>Press "Save to Aircraft" to store this performance data with the aircraft. It is saved and loaded together with the aircraft, and used for all performance calculations.</li>
+                    </ul>
+                    <b><u>These are planning estimates only. Always consult your aircraft's Pilot Operating Handbook and apply appropriate safety margins.</u></b>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

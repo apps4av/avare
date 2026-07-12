@@ -95,6 +95,8 @@ public class UserContract {
     public static final String AIRCRAFT_COLUMN_SINK_RATE = "sink_rate";
     public static final String AIRCRAFT_COLUMN_FUEL_BURN = "fuel_burn";
     public static final String AIRCRAFT_COLUMN_BASE = "base";
+    public static final String AIRCRAFT_COLUMN_WNB = "wnb";
+    public static final String AIRCRAFT_COLUMN_PERF = "perf";
 
     public static Uri buildAircraftUri(long id){
         return ContentUris.withAppendedId(CONTENT_URI_AIRCRAFT, id);

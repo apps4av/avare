@@ -301,7 +301,6 @@ public class AircraftActivity extends BaseActivity {
     		else if(msg.what == INIT) {
                 mProgressBarSearch.setVisibility(View.INVISIBLE);
                 mInfc.newList();
-                mInfc.newSaveWnb();
                 mInfc.newSaveList();
                 mInfc.newSaveAc();
     		}

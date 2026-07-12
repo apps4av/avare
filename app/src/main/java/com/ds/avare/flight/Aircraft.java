@@ -52,6 +52,9 @@ public class Aircraft {
     private float mSinkRate;
     private float mFuelBurnRate;
     private String mHomeBase;
+    // Weight & balance and performance data, stored as JSON, owned by this aircraft.
+    private String mWnb;
+    private String mPerf;
 
     // Default
     public Aircraft() {
@@ -73,6 +76,8 @@ public class Aircraft {
         mSinkRate = 700;
         mFuelBurnRate = 10;
         mHomeBase = "KTTT";
+        mWnb = "";
+        mPerf = "";
     }
 
     public Aircraft(String json) {
@@ -92,10 +97,28 @@ public class Aircraft {
             mSinkRate = (float)obj.getDouble("sink_rate");
             mFuelBurnRate = (float)obj.getDouble("fuel_burn_rate");
             mHomeBase = obj.getString("home_base");
+            mWnb = readEmbedded(obj, "wnb");
+            mPerf = readEmbedded(obj, "perf");
         } catch (JSONException e) {
             defaultAc();
             e.printStackTrace();
         }
+    }
+
+    /**
+     * The embedded W&B / perf may arrive either as a JSON string (from the
+     * JavaScript bridge, which builds it with JSON.stringify) or as a nested
+     * JSON object (from {@link #getJSON()}). Normalize both to a JSON string.
+     */
+    private static String readEmbedded(JSONObject obj, String key) {
+        Object v = obj.opt(key);
+        if (v == null) {
+            return "";
+        }
+        if (v instanceof JSONObject) {
+            return v.toString();
+        }
+        return v.toString();
     }
 
     public String getJSON() {
@@ -115,11 +138,31 @@ public class Aircraft {
             obj.put("sink_rate", mSinkRate);
             obj.put("fuel_burn_rate", mFuelBurnRate);
             obj.put("home_base", mHomeBase);
+            // Emit as nested JSON objects (not strings) so the value survives
+            // being injected into a single-quoted JavaScript string literal in
+            // ac_set(); embedding an escaped JSON string would double-escape.
+            obj.put("wnb", embeddedForJson(mWnb));
+            obj.put("perf", embeddedForJson(mPerf));
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
         }
         return obj.toString();
+    }
+
+    /**
+     * Turn a stored JSON string into a nested JSON object for {@link #getJSON()},
+     * or an empty string when there is no data.
+     */
+    private static Object embeddedForJson(String json) {
+        if (json == null || json.length() == 0) {
+            return "";
+        }
+        try {
+            return new JSONObject(json);
+        } catch (JSONException e) {
+            return "";
+        }
     }
 
     public String getId() {
@@ -232,6 +275,22 @@ public class Aircraft {
 
     public void setHomeBase(String mHomeBase) {
         this.mHomeBase = mHomeBase;
+    }
+
+    public String getWnb() {
+        return mWnb == null ? "" : mWnb;
+    }
+
+    public void setWnb(String wnb) {
+        this.mWnb = wnb;
+    }
+
+    public String getPerf() {
+        return mPerf == null ? "" : mPerf;
+    }
+
+    public void setPerf(String perf) {
+        this.mPerf = perf;
     }
 
 

@@ -767,6 +767,14 @@ public class ContentProviderHelper {
                     a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
                     a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
                     a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                    int wnbIdx = getIndex(c, UserContract.AIRCRAFT_COLUMN_WNB);
+                    if (wnbIdx >= 0 && !c.isNull(wnbIdx)) {
+                        a.setWnb(c.getString(wnbIdx));
+                    }
+                    int perfIdx = getIndex(c, UserContract.AIRCRAFT_COLUMN_PERF);
+                    if (perfIdx >= 0 && !c.isNull(perfIdx)) {
+                        a.setPerf(c.getString(perfIdx));
+                    }
                     aircraft.add(a);
                 }
             }
@@ -812,6 +820,14 @@ public class ContentProviderHelper {
                     a.setSinkRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_SINK_RATE)));
                     a.setFuelBurnRate(c.getFloat(getIndex(c, UserContract.AIRCRAFT_COLUMN_FUEL_BURN)));
                     a.setHomeBase(c.getString(getIndex(c, UserContract.AIRCRAFT_COLUMN_BASE)));
+                    int wnbIdx = getIndex(c, UserContract.AIRCRAFT_COLUMN_WNB);
+                    if (wnbIdx >= 0 && !c.isNull(wnbIdx)) {
+                        a.setWnb(c.getString(wnbIdx));
+                    }
+                    int perfIdx = getIndex(c, UserContract.AIRCRAFT_COLUMN_PERF);
+                    if (perfIdx >= 0 && !c.isNull(perfIdx)) {
+                        a.setPerf(c.getString(perfIdx));
+                    }
                 }
             }
         }
@@ -839,6 +855,8 @@ public class ContentProviderHelper {
         newValues.put(UserContract.AIRCRAFT_COLUMN_SINK_RATE, a.getSinkRate());
         newValues.put(UserContract.AIRCRAFT_COLUMN_FUEL_BURN, a.getFuelBurnRate());
         newValues.put(UserContract.AIRCRAFT_COLUMN_BASE, a.getHomeBase());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_WNB, a.getWnb());
+        newValues.put(UserContract.AIRCRAFT_COLUMN_PERF, a.getPerf());
 
         ctx.getContentResolver().insert(UserContract.CONTENT_URI_AIRCRAFT, newValues);
     }
