@@ -41,5 +41,48 @@ public class WindTriagle {
         return(tr);
     }
 
+    /**
+     * Solve the wind triangle to find ground speed and wind correction angle from a
+     * known true airspeed, course and wind. Mirrors avarex WindSolution.solveWindTriangle.
+     *
+     * @param windSpeed        wind speed
+     * @param windDirectionDeg wind direction (FROM), degrees
+     * @param courseDeg        desired true course, degrees
+     * @param trueAirspeed     true airspeed
+     * @return array of [wcaDeg (+right / -left), headingDeg, groundSpeed]
+     */
+    public static double[] solveWindTriangle(double windSpeed, double windDirectionDeg, double courseDeg, double trueAirspeed) {
+
+        double windDirRad = Math.toRadians(windDirectionDeg);
+        double courseRad = Math.toRadians(courseDeg);
+
+        double theta = windDirRad - courseRad;
+
+        // components
+        double crosswind = windSpeed * Math.sin(theta);
+        double headwind = windSpeed * Math.cos(theta);
+
+        // clamp for safety
+        double ratio = trueAirspeed == 0 ? 0 : crosswind / trueAirspeed;
+        if(ratio > 1.0) {
+            ratio = 1.0;
+        }
+        if(ratio < -1.0) {
+            ratio = -1.0;
+        }
+
+        // wind correction angle
+        double wcaRad = Math.asin(ratio);
+
+        // heading
+        double headingDeg = Math.toDegrees(courseRad + wcaRad);
+        headingDeg = (headingDeg % 360 + 360) % 360;
+
+        // ground speed (corrected)
+        double groundSpeed = Math.sqrt(trueAirspeed * trueAirspeed - crosswind * crosswind) - headwind;
+
+        return new double[] {Math.toDegrees(wcaRad), headingDeg, groundSpeed};
+    }
+
 
 }

@@ -700,6 +700,9 @@ function plan_clear() {
 			plan_table.deleteRow(row);
 	}
     document.getElementById('plan_altitude').selectedIndex = 0;
+    // Sync the bootstrap-select widget with the native select, otherwise the
+    // widget keeps showing the previous altitude while the plan is reset to 000.
+    $('#plan_altitude').val('000').change();
 
     //clear Create New Plan box as well
     document.getElementById("create_input").value = "";

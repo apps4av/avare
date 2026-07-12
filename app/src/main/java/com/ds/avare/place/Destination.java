@@ -18,6 +18,7 @@ import android.location.Location;
 import com.ds.avare.StorageService;
 import com.ds.avare.content.LocationContentProviderHelper;
 import com.ds.avare.gps.GpsParams;
+import com.ds.avare.position.Coordinate;
 import com.ds.avare.position.Projection;
 import com.ds.avare.shapes.TrackShape;
 import com.ds.avare.storage.Preferences;
@@ -111,6 +112,12 @@ public class Destination extends Observable {
     public static final String NAVAID = "Navaid";
     public static final String UDW = "UDW";
 
+    // Length of a calculation segment. A leg is broken into segments this long so
+    // that winds are sampled and applied as they change along the route (like avarex).
+    private static final double SEGMENT_LENGTH = 100;
+    // Cap on the number of segments per leg to bound wind lookups on very long legs
+    private static final int MAX_SEGMENTS = 50;
+
     /**
      * Contains all info in a hash map for the destination
      * Dozens of parameters in a linked map because simple map would rearrange the importance
@@ -193,7 +200,7 @@ public class Destination extends Observable {
         }
         
 		/*
-		 * Project and find distance
+		 * Project and find distance and initial bearing to the destination
 		 */
 		Projection p = new Projection(mLon, mLat, mLond, mLatd);
 		
@@ -205,48 +212,105 @@ public class Destination extends Observable {
         mWca = 0;
         mCrs = mBearing;
         mWindString = "-";
-        double hd = mBearing;
-        double wm[] = {0, 0};
+        mGroundSpeed = params.getSpeed();
+
+        // METAR wind used to interpolate winds down to the ground on low altitude flight
+        double metarWind[] = null;
         if(mWindMetar != null) {
-            // if low altitude flight use correction with metar
-            wm[1] = mWindMetar[1];
-            wm[0] = (mWindMetar[0] - mDeclination + 360) % 360;
-        }
-        double ws = 0;
-        double wd = 0;
-        double tas = params.getSpeed();
-        if(mWinds != null) {
-            // wind calculation
-            double winds[] = mWinds.getWindAtAltitude(mAltitude, wm);
-            ws = winds[0];
-            wd = winds[1];
-            mWindString = String.format(Locale.getDefault(),
-                    ws >= 100 ? "%03d@%03d" : "%03d@%02d", Math.round(wd), Math.round(ws));
-        }
-        else {
-            mWindString = "-";
+            metarWind = new double[2];
+            metarWind[1] = mWindMetar[1];
+            metarWind[0] = (mWindMetar[0] - mDeclination + 360) % 360;
         }
 
         Preferences pref = StorageService.getInstance().getPreferences();
 
+        /*
+         * True airspeed is constant along the leg. In simulation the given speed is the
+         * aircraft cruise TAS. In live flight derive the TAS from the GPS ground speed and
+         * the wind at the current position.
+         */
+        double tas = params.getSpeed();
+        WindsAloft startWinds = getWindsAloftAt(mLon, mLat);
         if(!pref.isSimulationMode()) {
-            double t[] = WindTriagle.getTrueFromGroundAndWind(params.getSpeed(), params.getBearing(), ws, wd);
+            double ws0 = 0, wd0 = 0;
+            if(startWinds != null) {
+                double winds[] = startWinds.getWindAtAltitude(mAltitude, metarWind);
+                ws0 = winds[0];
+                wd0 = winds[1];
+            }
+            double t[] = WindTriagle.getTrueFromGroundAndWind(params.getSpeed(), params.getBearing(), ws0, wd0);
             tas = t[0];
-            hd = t[1];
         }
 
-        // from wind triangle
-        mGroundSpeed = Math.sqrt(ws * ws + tas * tas - 2 * ws * tas * Math.cos((hd - wd) * Math.PI / 180.0));
-        mWca = -Math.toDegrees(Math.atan2(ws * Math.sin((hd - wd) * Math.PI / 180.0), tas - ws * Math.cos((hd - wd) * Math.PI / 180.0)));
-        mCrs = (hd + mWca + 360) % 360;
+        /*
+         * Break the leg into segments along the great circle so that winds are applied as
+         * they change along the route. This matches avarex DestinationCalculations. Time and
+         * fuel accumulate over the segments; the values shown are from the first (start)
+         * segment since averaging them makes no sense.
+         */
+        int num = (int) Math.round(mDistance / SEGMENT_LENGTH);
+        if(num < 2) {
+            num = 2;
+        }
+        if(num > MAX_SEGMENTS) {
+            num = MAX_SEGMENTS;
+        }
+        // findPoints() returns points ordered from destination to origin, so walk it backwards
+        Coordinate points[] = p.findPoints(num);
 
+        double totalTimeSec = 0;
+        boolean stationary = false;
+        boolean first = true;
+
+        for(int i = num - 1; i > 0; i--) {
+            Coordinate segStart = points[i];     // closer to the origin
+            Coordinate segEnd = points[i - 1];   // closer to the destination
+
+            double d = Projection.getStaticDistance(segStart.getLongitude(), segStart.getLatitude(),
+                    segEnd.getLongitude(), segEnd.getLatitude());
+            double tc = Projection.getStaticBearing(segStart.getLongitude(), segStart.getLatitude(),
+                    segEnd.getLongitude(), segEnd.getLatitude());
+
+            double ws = 0, wd = 0;
+            WindsAloft w = first ? startWinds : getWindsAloftAt(segStart.getLongitude(), segStart.getLatitude());
+            if(w != null) {
+                double winds[] = w.getWindAtAltitude(mAltitude, metarWind);
+                ws = winds[0];
+                wd = winds[1];
+            }
+
+            double sol[] = WindTriagle.solveWindTriangle(ws, wd, tc, tas);
+            double wca = sol[0];
+            double gs = sol[2];
+
+            if(first) {
+                first = false;
+                mGroundSpeed = gs;
+                mWca = wca;
+                mCrs = (tc + wca + 360) % 360;
+                if(w != null) {
+                    mWindString = String.format(Locale.getDefault(),
+                            ws >= 100 ? "%03d@%03d" : "%03d@%02d", Math.round(wd), Math.round(ws));
+                }
+                else {
+                    mWindString = "-";
+                }
+            }
+
+            if(gs < 1) { // practically stationary or the headwind exceeds the true airspeed
+                stationary = true;
+                break;
+            }
+            totalTimeSec += 3600.0 * d / gs;
+        }
+
+        double xFactor = 1;
         if(pref.useBearingForETEA() && (!StorageService.getInstance().getPlan().isActive())) {
             // This is just when we have a destination set and no plan is active
             // We can't assume that we are heading DIRECTLY for the destination, so
             // we need to figure out the multiply factor by taking the COS of the difference
             // between the bearing and the heading.
             double angDif = Helper.angularDifference(params.getBearing(), mBearing);
-            double xFactor = 1;
 
             // If the difference is 90 or greater, then ETE means nothing as we are not
             // closing on the target
@@ -257,25 +321,41 @@ public class Destination extends Observable {
             mGroundSpeed *= xFactor;
         }
 
-    	/*
-    	 * ETA when speed != 0
-    	 */
-    	mEte = Helper.calculateEte(mDistance, mGroundSpeed, 0, true);
-        if(mGroundSpeed < 1) { // practically stationary
+        if(stationary || totalTimeSec <= 0 || xFactor <= 0) { // practically stationary
             mEteSec = Long.MAX_VALUE;
             mFuelGallons = Float.MAX_VALUE;
             mFuel = "-.-";
+            mEte = "--:--";
+            mEta = "--:--";
         }
         else {
-            mEteSec = (long)(mDistance / mGroundSpeed * 3600);
+            mEteSec = (long)(totalTimeSec / xFactor);
             mFuelGallons = (float)mEteSec / 3600 * StorageService.getInstance().getAircraft().getFuelBurnRate();
             mFuel = String.valueOf((float)Math.round(mFuelGallons * 10.f) / 10.f);
-        }
+            mEte = Helper.calculateEte(0, 0, mEteSec, false);
 
-    	// Calculate the time of arrival at our destination based on the system time
-        // We SHOULD be taking in to account the timezone at that location
-    	mEta = Helper.calculateEta(CalendarHelper.getInstance(System.currentTimeMillis()), mDistance, mGroundSpeed);
+            // Calculate the time of arrival at our destination based on the system time
+            // We SHOULD be taking in to account the timezone at that location
+            double effSpeed = mDistance * 3600.0 / (double) mEteSec;
+            mEta = Helper.calculateEta(CalendarHelper.getInstance(System.currentTimeMillis()), mDistance, effSpeed);
+        }
 	}
+
+    /**
+     * Find winds aloft nearest to a given point, using the same source (ADSB or database)
+     * that updateWinds() uses. Returns null if none are available.
+     */
+    private WindsAloft getWindsAloftAt(double lon, double lat) {
+        try {
+            StorageService s = StorageService.getInstance();
+            if (s.getPreferences().useAdsbWeather()) {
+                return s.getAdsbWeather().getWindsAloft(lon, lat);
+            }
+            return s.getDBResource().getWindsAloft(lon, lat);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 
 	/* (non-Javadoc)
