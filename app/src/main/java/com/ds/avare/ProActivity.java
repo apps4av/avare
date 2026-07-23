@@ -22,6 +22,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ds.avare.utils.Helper;
 import com.ds.avare.utils.RevenueCatService;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -83,6 +84,7 @@ public class ProActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pro);
+        Helper.applySystemBarInsets(this);
 
         mStatus = findViewById(R.id.pro_status_text);
         mSignInButton = findViewById(R.id.pro_signin_btn);

@@ -19,12 +19,16 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Insets;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Environment;
 import android.text.format.Time;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import com.ds.avare.R;
@@ -493,6 +497,38 @@ public class Helper {
     }
 
     /**
+     * Pad the activity content for system bars. Required on API 35+ where
+     * edge-to-edge is enforced (and on API 36+ the old
+     * windowOptOutEdgeToEdgeEnforcement opt-out is ignored). Without this,
+     * bottom controls (Menu/Pan) and the tab bar draw under the nav bar.
+     *
+     * Only apply on top-level activities. Tab children share MainActivity's
+     * window and would double-pad if they also applied insets.
+     */
+    public static void applySystemBarInsets(Activity act) {
+        if (act == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        if (act.getParent() != null) {
+            return;
+        }
+        final View content = act.findViewById(android.R.id.content);
+        if (content == null) {
+            return;
+        }
+        content.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                // Consume only the system-bar portion so IME / other insets still work.
+                return insets.inset(bars.left, bars.top, bars.right, bars.bottom);
+            }
+        });
+        content.requestApplyInsets();
+    }
+
+    /**
      * Set common features of all activities in the framework
      * @param act
      */
@@ -524,6 +560,8 @@ public class Helper {
          * Do not open keyboard automatically.
          */
         act.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        applySystemBarInsets(act);
     }
     
     /**

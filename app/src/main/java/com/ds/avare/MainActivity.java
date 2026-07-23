@@ -148,6 +148,9 @@ public class MainActivity extends TabActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.main);
+        // Keep Menu/Pan and the tab bar above the system navigation bar on
+        // Android 15+ (edge-to-edge is mandatory with targetSdk 36).
+        Helper.applySystemBarInsets(this);
         mScrollView = (HorizontalScrollView)findViewById(R.id.tabscroll);
         mTextView = (TextView)findViewById(R.id.main_textview);
         mButton = (Button)findViewById(R.id.main_button);

@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
@@ -61,15 +60,11 @@ public class PrefActivity extends PreferenceActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Helper.setTheme(this);
 
-        // apply this for android v35 or above, opt out of edge to edge enforcement
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            this.getTheme().applyStyle(R.style.OptOutEdgeToEdgeEnforcement, /* force */ false);
-        }
-
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
+        Helper.applySystemBarInsets(this);
         mService = StorageService.getInstance();
     }
 
