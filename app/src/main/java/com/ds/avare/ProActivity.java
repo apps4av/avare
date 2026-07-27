@@ -12,10 +12,18 @@ Redistribution and use in source and binary forms, with or without modification,
 
 package com.ds.avare;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +35,8 @@ import com.ds.avare.utils.RevenueCatService;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.revenuecat.purchases.Offering;
@@ -47,7 +57,8 @@ import java.util.List;
  *
  * Flow:
  *  1. If the user is not signed in to Firebase, the "Sign in / Register"
- *     button launches the FirebaseUI Auth email flow.
+ *     button launches the FirebaseUI Auth email flow. "Forgot password?"
+ *     mirrors avarex SignInScreen and sends a Firebase password-reset email.
  *  2. After successful sign-in, the same Firebase UID is forwarded to
  *     RevenueCat so the entitlement is restored across devices.
  *  3. The "Subscribe" button then opens the RevenueCat paywall via
@@ -77,6 +88,7 @@ public class ProActivity extends AppCompatActivity {
 
     private TextView mStatus;
     private Button mSignInButton;
+    private Button mForgotPasswordButton;
     private Button mSignOutButton;
     private Button mSubscribeButton;
 
@@ -88,6 +100,7 @@ public class ProActivity extends AppCompatActivity {
 
         mStatus = findViewById(R.id.pro_status_text);
         mSignInButton = findViewById(R.id.pro_signin_btn);
+        mForgotPasswordButton = findViewById(R.id.pro_forgot_password_btn);
         mSignOutButton = findViewById(R.id.pro_signout_btn);
         mSubscribeButton = findViewById(R.id.pro_subscribe_btn);
         Button closeButton = findViewById(R.id.pro_close_btn);
@@ -107,6 +120,13 @@ public class ProActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startSignIn();
+            }
+        });
+
+        mForgotPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showForgotPasswordDialog();
             }
         });
 
@@ -153,6 +173,7 @@ public class ProActivity extends AppCompatActivity {
         if (user == null) {
             mStatus.setText(getString(R.string.ProStatusSignedOut));
             mSignInButton.setVisibility(View.VISIBLE);
+            mForgotPasswordButton.setVisibility(View.VISIBLE);
             mSignOutButton.setVisibility(View.GONE);
             mSubscribeButton.setEnabled(false);
             return;
@@ -167,6 +188,7 @@ public class ProActivity extends AppCompatActivity {
         }
         mStatus.setText(getString(R.string.ProStatusSignedIn, label));
         mSignInButton.setVisibility(View.GONE);
+        mForgotPasswordButton.setVisibility(View.GONE);
         mSignOutButton.setVisibility(View.VISIBLE);
         mSubscribeButton.setEnabled(true);
 
@@ -193,6 +215,90 @@ public class ProActivity extends AppCompatActivity {
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * AvareX SignInScreen exposes Firebase UI Auth's "Forgot password?" on the
+     * email form. Android FirebaseUI only surfaces recovery as "Trouble signing
+     * in?" after an existing email is entered, so offer the same reset path
+     * directly on this screen via {@link FirebaseAuth#sendPasswordResetEmail}.
+     */
+    private void showForgotPasswordDialog() {
+        final EditText emailInput = new EditText(this);
+        emailInput.setInputType(InputType.TYPE_CLASS_TEXT
+                | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        emailInput.setHint(R.string.Email);
+
+        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.leftMargin = pad;
+        params.rightMargin = pad;
+        emailInput.setLayoutParams(params);
+        container.addView(emailInput);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.ProForgotPasswordTitle)
+                .setMessage(R.string.ProForgotPasswordMessage)
+                .setView(container)
+                .setPositiveButton(R.string.OK, null)
+                .setNegativeButton(R.string.Cancel, null)
+                .create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface d) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                        .setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String email = emailInput.getText().toString().trim();
+                                if (!isValidEmail(email)) {
+                                    Toast.makeText(ProActivity.this,
+                                            getString(R.string.error_email),
+                                            Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                dialog.dismiss();
+                                sendPasswordReset(email);
+                            }
+                        });
+            }
+        });
+        dialog.show();
+    }
+
+    private void sendPasswordReset(String email) {
+        try {
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(Task<Void> task) {
+                            if (isFinishing()) {
+                                return;
+                            }
+                            if (task.isSuccessful()) {
+                                Toast.makeText(ProActivity.this,
+                                        getString(R.string.ProForgotPasswordSent),
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(ProActivity.this,
+                                        getString(R.string.ProForgotPasswordFailed),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+        } catch (Throwable t) {
+            Toast.makeText(this,
+                    getString(R.string.ProServiceUnavailable),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email)
+                && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private void handleSignInResult() {

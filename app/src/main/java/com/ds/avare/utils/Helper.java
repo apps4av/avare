@@ -14,6 +14,7 @@ package com.ds.avare.utils;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -25,9 +26,14 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Environment;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceGroup;
+import android.preference.PreferenceScreen;
 import android.text.format.Time;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
@@ -522,6 +528,69 @@ public class Helper {
                 Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
                 v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
                 // Consume only the system-bar portion so IME / other insets still work.
+                return insets.inset(bars.left, bars.top, bars.right, bars.bottom);
+            }
+        });
+        content.requestApplyInsets();
+    }
+
+    /**
+     * Nested {@link PreferenceScreen}s open as full-screen {@link Dialog}s.
+     * Under edge-to-edge those dialogs draw under the status bar, clipping
+     * the first prefs (e.g. Charts Download Server). Pad each dialog when
+     * it is shown.
+     */
+    public static void applyPreferenceScreenDialogInsets(PreferenceActivity act) {
+        if (act == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        PreferenceScreen root = act.getPreferenceScreen();
+        if (root != null) {
+            installPreferenceScreenDialogInsets(root, true);
+        }
+    }
+
+    private static void installPreferenceScreenDialogInsets(Preference preference,
+                                                            boolean isRoot) {
+        if (preference instanceof PreferenceScreen) {
+            final PreferenceScreen screen = (PreferenceScreen) preference;
+            if (!isRoot) {
+                screen.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        Dialog dialog = screen.getDialog();
+                        if (dialog != null) {
+                            applySystemBarInsetsToDialog(dialog);
+                        }
+                        return false;
+                    }
+                });
+            }
+            for (int i = 0; i < screen.getPreferenceCount(); i++) {
+                installPreferenceScreenDialogInsets(screen.getPreference(i), false);
+            }
+        } else if (preference instanceof PreferenceGroup) {
+            PreferenceGroup group = (PreferenceGroup) preference;
+            for (int i = 0; i < group.getPreferenceCount(); i++) {
+                installPreferenceScreenDialogInsets(group.getPreference(i), false);
+            }
+        }
+    }
+
+    private static void applySystemBarInsetsToDialog(Dialog dialog) {
+        Window window = dialog.getWindow();
+        if (window == null) {
+            return;
+        }
+        final View content = dialog.findViewById(android.R.id.content);
+        if (content == null) {
+            return;
+        }
+        content.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
                 return insets.inset(bars.left, bars.top, bars.right, bars.bottom);
             }
         });

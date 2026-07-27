@@ -65,6 +65,7 @@ public class PrefActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
         setContentView(R.layout.preferences);
         Helper.applySystemBarInsets(this);
+        Helper.applyPreferenceScreenDialogInsets(this);
         mService = StorageService.getInstance();
     }
 

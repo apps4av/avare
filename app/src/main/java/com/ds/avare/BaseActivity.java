@@ -3,8 +3,11 @@ package com.ds.avare;
 import android.app.Activity;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import com.ds.avare.gps.GpsInterface;
 import com.ds.avare.storage.Preferences;
@@ -28,6 +31,21 @@ public class BaseActivity extends Activity {
 
         mService = StorageService.getInstance();
         mPref = mService.getPreferences();
+
+        // targetSdk 36 no longer dispatches onBackPressed / KEYCODE_BACK.
+        // Tab children are handled by MainActivity; register here for
+        // standalone screens (download, register, plates tag, etc.).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && getParent() == null) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                    new OnBackInvokedCallback() {
+                        @Override
+                        public void onBackInvoked() {
+                            onBackPressed();
+                        }
+                    });
+        }
     }
 
     /*

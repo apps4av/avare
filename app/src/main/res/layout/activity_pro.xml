@@ -52,6 +52,17 @@ All rights reserved.
             android:textColor="#000000"
             android:textAllCaps="false" />
 
+        <!-- Mirrors avarex SignInScreen's built-in "Forgot password?" control. -->
+        <Button
+            android:id="@+id/pro_forgot_password_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@android:color/transparent"
+            android:text="@string/ProForgotPassword"
+            android:textColor="#CCCCCC"
+            android:textAllCaps="false" />
+
         <Button
             android:id="@+id/pro_subscribe_btn"
             android:layout_width="match_parent"

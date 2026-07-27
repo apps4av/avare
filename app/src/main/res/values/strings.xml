@@ -321,6 +321,11 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ProDownloadLimitTitle">Paid Subscription Required</string>
     <string name="ProDownloadLimitMessage">Free users may keep only one chart per category on the device (Databases and Weather/TFRs are always unlimited). Delete the existing chart in that category first, or subscribe to Avare Paid to keep as many charts as you like. Updates to charts you already have remain free.</string>
     <string name="ProSignInRegister">Sign in / Register</string>
+    <string name="ProForgotPassword">Forgot password?</string>
+    <string name="ProForgotPasswordTitle">Reset password</string>
+    <string name="ProForgotPasswordMessage">Enter the email address for your account. We will send a password reset link.</string>
+    <string name="ProForgotPasswordSent">Password reset email sent. Check your inbox.</string>
+    <string name="ProForgotPasswordFailed">Unable to send password reset email. Check the address and try again.</string>
     <string name="ProServerRegistration">Server Registration (1800wxbrief)</string>
     <string name="ProSignOut">Sign out</string>
     <string name="ProClose">Close</string>
