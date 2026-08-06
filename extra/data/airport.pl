@@ -30,7 +30,14 @@ while (<FILE>) {
     if (m/^APT/) {
         #sanitize input text for output to csv
         $_ =~ s/,|"/ /g;
-        $id   = ltrim( rtrim( substr( $_, 27,  4 ) ) );
+        $icaoID = ltrim( rtrim( substr( $_, 1210,  4 ) ) );
+        $iataID = ltrim( rtrim( substr( $_, 27,  4 ) ) );
+        if ( $icaoID eq "" ) {
+            $id   = $iataID;
+        }
+        else {
+            $id   = $icaoID;
+        }
         $type = ltrim( rtrim( substr( $_, 14,  12 ) ) );
         $name = ltrim( rtrim( substr( $_, 133, 50 ) ) );
         $state = ltrim( rtrim( substr( $_, 91, 2 ) ) );
