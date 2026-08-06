@@ -329,6 +329,28 @@ public class DataSource {
         return ContentProviderHelper.getAirSigMets(mContext);
     }
 
+
+    public void setTaf(Taf taf) {
+        ContentProviderHelper.setTaf(mContext, taf);
+    }
+
+    public void setMetar(Metar metar) {
+        ContentProviderHelper.setMetar(mContext, metar);
+    }
+
+    public void setAirep(Airep airep) {
+        ContentProviderHelper.setAirep(mContext, airep);
+    }
+
+    public void setWindsAloft(WindsAloft wa) {
+        ContentProviderHelper.setWindsAloft(mContext, wa);
+    }
+
+    public void setAirSigMet(AirSigMet asm) {
+        ContentProviderHelper.setAirSigMet(mContext, asm);
+    }
+
+
     public LinkedList<Cifp> findProcedure(String name, String approach) {
         return ContentProviderHelper.findProcedure(mContext, name, approach);
     }
