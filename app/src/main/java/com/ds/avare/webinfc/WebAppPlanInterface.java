@@ -1410,27 +1410,27 @@ public class WebAppPlanInterface implements Observer {
         @Override
         public void handleMessage(Message msg) {
         	if(MSG_CLEAR_PLAN == msg.what) {
-        		mWebView.loadUrl("javascript:plan_clear()");
+        		mWebView.evaluateJavascript("plan_clear()", null);
         	}
         	else if(MSG_ADD_PLAN == msg.what) {
-            	String func = "javascript:plan_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "plan_add(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_ADD_SEARCH == msg.what) {
-            	String func = "javascript:search_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "search_add(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if (MSG_TIMER == msg.what) {
 				Plan plan = mService.getPlan();
         		plan.simulate();
         	}
         	else if(MSG_CLEAR_PLAN_SAVE == msg.what) {
-            	String func = "javascript:save_clear()";
-            	mWebView.loadUrl(func);
+            	String func = "save_clear()";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_ADD_PLAN_SAVE == msg.what) {
-            	String func = "javascript:save_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "save_add(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
         		mCallback.callback((Object)PlanActivity.UNSHOW_BUSY, null);
@@ -1445,31 +1445,31 @@ public class WebAppPlanInterface implements Observer {
         		mCallback.callback((Object)PlanActivity.INACTIVE, null);
         	}
            	else if(MSG_SAVE_HIDE == msg.what) {	
-            	String func = "javascript:save_hide(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "save_hide(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
            	else if(MSG_PREV_HIDE == msg.what) {	
-            	String func = "javascript:disable_prev(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "disable_prev(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
            	else if(MSG_NEXT_HIDE == msg.what) {	
-            	String func = "javascript:disable_next(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "disable_next(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
            	else if(MSG_PLAN_COUNT == msg.what) {	
-            	String func = "javascript:set_plan_count(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "set_plan_count(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
 			else if(MSG_UPDATE_WEATHER == msg.what) {
-				String func = "javascript:update_weather(" + (String)msg.obj + ")";
-				mWebView.loadUrl(func);
+				String func = "update_weather(" + (String)msg.obj + ")";
+				mWebView.evaluateJavascript(func, null);
 			}
 			else if(MSG_ERROR == msg.what) {
         		mCallback.callback((Object)PlanActivity.MESSAGE, msg.obj);
         	}
 			else if(MSG_FILL_FORM == msg.what) {
-				String func = "javascript:plan_fill(" + (String)msg.obj + ")";
-				mWebView.loadUrl(func);
+				String func = "plan_fill(" + (String)msg.obj + ")";
+				mWebView.evaluateJavascript(func, null);
 			}
 			else if(MSG_FAA_PLANS == msg.what) {
 				/*
@@ -1485,12 +1485,12 @@ public class WebAppPlanInterface implements Observer {
 					p += ((i == mFaaPlans.mSelectedIndex) ? "1" : "0") + "," + pl.departure + "-" + pl.destination + "-" + pl.aircraftId + "," + pl.currentState + ",";
 					i++;
 				}
-				String func = "javascript:set_faa_plans('" + p + "')";
-				mWebView.loadUrl(func);
+				String func = "set_faa_plans('" + p + "')";
+				mWebView.evaluateJavascript(func, null);
 			}
 			else if(MSG_SET_EMAIL == msg.what) {
-				String func = "javascript:set_email('" + mPref.getRegisteredEmail() + "')";
-				mWebView.loadUrl(func);
+				String func = "set_email('" + mPref.getRegisteredEmail() + "')";
+				mWebView.evaluateJavascript(func, null);
 			}
 
 
