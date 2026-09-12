@@ -1608,17 +1608,14 @@ public class WebAppPlanInterface implements Observer {
 					return;
 				}
 
-				// NOTAMS
+				// NOTAMS — FAA NMS location ids match AvareX (airport
+				// LocationID as stored, not a forced K-prefix ICAO).
 				int num = mService.getPlan().getDestinationNumber();
 				String plann = "";
 				for (int i = 0; i < num; i++) {
 					Destination d = mService.getPlan().getDestination(i);
 					if (d.getType().equals(Destination.BASE)) {
-						if (d.getID().matches("[A-Z]*")) {
-							plann += "K" + d.getID() + ",";
-						} else {
-							plann += d.getID() + ",";
-						}
+						plann += d.getID() + ",";
 					}
 				}
 				if (!plann.equals("")) {
@@ -1639,7 +1636,8 @@ public class WebAppPlanInterface implements Observer {
             Taf = "<form>" + Taf.replaceAll("'", "\"") + "</form>";
             Pirep = "<h3><font size='6' color='cyan'>PIREPs</font><br></h3>" + Pirep;
             Pirep = "<form>" + Pirep.replaceAll("'", "\"") + "</form>";
-			notams = "<h3><font size='6' color='cyan'>NOTAMS</font><br></h3>" + notams;
+			notams = "<h3><font size='6' color='cyan'>NOTAMS</font><br></h3>"
+					+ "<font size='5' color='white'>" + notams + "</font>";
 
             String time = NetworkHelper.getVersion("", "weather", null);
             String weather = time + "<br></br>" + plan + Metar + Taf + Pirep + notams;

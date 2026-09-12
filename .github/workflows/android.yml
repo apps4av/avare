@@ -23,6 +23,15 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: Find and Replace NMS FAA
+      uses: richardrigutins/replace-in-files@v2
+      with:
+        files: '**/*.java'
+        search-text: '@@__faa_nms_api_client_id_secret__@@'
+        replacement-text: ${{ secrets.FAA_NMS_API_CLIENT_ID_SECRET }}
+        encoding: 'utf8'
+        max-parallelism: 10
+
     - name: Find and Replace RC Key
       uses: richardrigutins/replace-in-files@v2
       with:

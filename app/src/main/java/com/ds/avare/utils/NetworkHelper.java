@@ -29,12 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.TimeZone;
@@ -536,38 +534,13 @@ public class NetworkHelper {
     }
 
     /**
-     * Get notams from FAA in the plan form KBOS,BOS,KLWM
-     * @param plan
-     * @return
+     * Get NOTAMs from the FAA NMS API (same source as AvareX) for ICAO
+     * ids in the form KBOS,BOS,KLWM.
+     * @param plan comma-separated ICAO identifiers
+     * @return HTML, or {@code null} if the download failed
      */
     public static String getNotams(String plan) {
-        String ret = null;
-        try {
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("retrieveLocId", plan.replace(",", " "));
-            params.put("reportType", "Raw");
-            params.put("actionType", "notamRetrievalByICAOs");
-            params.put("submit", "View+NOTAMSs");
-            ret = com.ds.avare.message.NetworkHelper.post("https://www.notams.faa.gov/dinsQueryWeb/queryRetrievalMapAction.do",
-                    params);
-        } catch (Exception e) {
-
-        }
-
-        // NOTAMS are in form <PRE></PRE>. Parse them, and convert \n to BR
-        String notams = "";
-        if(ret != null) {
-            String rets[] = ret.split("\\<PRE\\>");
-            for (String ret1 : rets) {
-                if(ret1.contains("</PRE>")) {
-                    String parsed[] = ret1.split("</PRE>");
-                    notams += parsed[0] + "\n\n";
-                }
-            }
-            notams = notams.replaceAll("(\r\n|\n)", "<br />");
-        }
-
-        return notams;
+        return FaaNmsNotams.fetchHtml(plan);
     }
 }
 
