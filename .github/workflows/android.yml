@@ -99,10 +99,12 @@ jobs:
 
     - name: Decide store publish
       id: store
+      env:
+        PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
       run: bash .github/scripts/should-publish-store.sh
 
     - name: Upload to Google Play
-      if: ${{ steps.store.outputs.publish == 'true' && secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON != '' }}
+      if: steps.store.outputs.publish == 'true'
       uses: r0adkll/upload-google-play@v1.1.3
       with:
         serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

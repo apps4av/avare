@@ -9,7 +9,9 @@ publish=false
 reason="not master"
 
 if [[ "${GITHUB_REF:-}" == refs/heads/master ]]; then
-  if git rev-parse --verify HEAD^ >/dev/null 2>&1 && \
+  if [[ -z "${PLAY_STORE_SERVICE_ACCOUNT_JSON:-}" ]]; then
+    reason="PLAY_STORE_SERVICE_ACCOUNT_JSON not set"
+  elif git rev-parse --verify HEAD^ >/dev/null 2>&1 && \
      git diff HEAD^ HEAD -- "$VERSION_FILE" | grep -qE "$PATTERN"; then
     publish=true
     reason="version bump in ${VERSION_FILE}"
