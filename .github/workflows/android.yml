@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
     - name: Set app version
       run: |
         echo "APP_VERSION=$(sed -n 's/.*android:versionName="\([^"]*\)".*/\1/p' app/src/main/AndroidManifest.xml)" >> "$GITHUB_ENV"
@@ -94,3 +96,18 @@ jobs:
         strip_components: 2
         source: build/artifacts/*
         target: /home/apps4av/builds
+
+    - name: Decide store publish
+      id: store
+      run: bash .github/scripts/should-publish-store.sh
+
+    - name: Upload to Google Play
+      if: ${{ steps.store.outputs.publish == 'true' && secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON != '' }}
+      uses: r0adkll/upload-google-play@v1.1.3
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        packageName: com.ds.avare
+        releaseFiles: build/artifacts/avare_${{ env.APP_VERSION }}.aab
+        track: internal
+        status: completed
+        whatsNewDirectory: store/whatsnew
