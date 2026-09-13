@@ -2,15 +2,15 @@
 name: update-help
 description: >-
   Updates Avare in-app help (app/src/main/assets/help.html) to match current
-  code, and prepends an Avare Releases changelog entry whenever
-  AndroidManifest versionName changes. Use when bumping versionCode/versionName,
-  editing AndroidManifest.xml, writing release notes, updating help.html, or
-  documenting user-facing Avare changes.
+  code, prepends an Avare Releases changelog entry whenever AndroidManifest
+  versionName changes, and syncs Play store/whatsnew from that entry. Use when
+  bumping versionCode/versionName, editing AndroidManifest.xml, writing release
+  notes, updating help.html, or documenting user-facing Avare changes.
 ---
 
 # Update Avare help.html
 
-Keep `app/src/main/assets/help.html` accurate against the code, and add a release note at the top of **Avare Releases** for every new `android:versionName` in `app/src/main/AndroidManifest.xml`.
+Keep `app/src/main/assets/help.html` accurate against the code, add a release note at the top of **Avare Releases** for every new `android:versionName` in `app/src/main/AndroidManifest.xml`, and sync Play “What’s new” from that same entry.
 
 Do this in the same turn as a version bump. Do not wait to be asked.
 
@@ -24,6 +24,7 @@ Do this in the same turn as a version bump. Do not wait to be asked.
 - [ ] Update help body sections that no longer match the app
 - [ ] If versionName is new, prepend a changelog block from that diff
 - [ ] If versionName already has an entry, update that entry's bullets
+- [ ] Sync `store/whatsnew/whatsnew-en-US` from the latest Avare Releases entry
 ```
 
 ## Changes since last manifest version
@@ -117,6 +118,16 @@ Bullet rules:
 - Do not add dates, authors, issue numbers, or `versionCode`.
 - Do not rewrite older entries.
 
+## Play what’s new
+
+After the latest **Avare Releases** `<ul>` is written or updated, regenerate Play notes:
+
+```bash
+bash .github/scripts/update-whatsnew.sh
+```
+
+That script copies the latest changelog bullets into `store/whatsnew/whatsnew-en-US` (Play’s 500-character limit). CI also runs it before a store upload. Do not hand-edit `whatsnew-en-US`; change the help changelog and run the script.
+
 ## Help body vs code
 
 File: `app/src/main/assets/help.html`.
@@ -140,4 +151,4 @@ Areas that drift often:
 - Change `versionName` / `versionCode` from this skill unless the user asked for a version bump.
 - Reformat the whole `help.html`.
 - Add a changelog when versionName is unchanged.
-- Publish Play release notes (`store/whatsnew`); this skill is in-app help only.
+- Hand-write `store/whatsnew/whatsnew-en-US`; always generate it from help.html.

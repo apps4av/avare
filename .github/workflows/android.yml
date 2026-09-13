@@ -97,6 +97,9 @@ jobs:
         source: build/artifacts/*
         target: /home/apps4av/builds
 
+    - name: Update Play whatsnew from help
+      run: bash .github/scripts/update-whatsnew.sh
+
     - name: Decide store publish
       id: store
       env:
