@@ -282,7 +282,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="prefShowAdsbCallSign">ShowAdsbCallSign</string>
     <string name="ShowAdsbCallSignLabel">&quot;Show ADSB Callsigns&quot;</string>
     <string name="ShowAdsbCallSignSummary">&quot;Select to show ADSB provided callsigns&quot;</string>
-    <string name="signDisclaimer">Sign This Disclaimer</string>
+    <string name="signDisclaimer">I Agree &amp; Sign</string>
     <string name="prefUseDynamicFields">UseDynamicFields</string>
     <string name="UseDynamicFieldsLabel">&quot;Use Dynamic Fields&quot;</string>
     <string name="UseDynamicFieldsSummary">&quot;Allow the top two text lines to be configured dynamically&quot;</string>

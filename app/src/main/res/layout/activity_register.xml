@@ -41,7 +41,7 @@ All rights reserved.
             android:layout_width="0dp"
             android:background="@drawable/button_bg"
             android:layout_margin="1dp"
-            android:text="@string/register"
+            android:text="@string/signDisclaimer"
             android:layout_weight="1"
             android:layout_height="fill_parent"
             />

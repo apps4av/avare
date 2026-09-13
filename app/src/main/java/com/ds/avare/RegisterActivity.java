@@ -59,7 +59,7 @@ public class RegisterActivity extends BaseActivity {
         else {
             mEmailEditText.setEnabled(true);
             mEmailEditText.setText(mPref.getRegisteredEmail());
-            mButtonRegister.setText(getString(R.string.register));
+            mButtonRegister.setText(getString(R.string.signDisclaimer));
         }
     }
 
@@ -127,7 +127,7 @@ public class RegisterActivity extends BaseActivity {
          * Click event on Register button
          *
          */
-        mButtonRegister.setText(getString(R.string.register));
+        mButtonRegister.setText(getString(R.string.signDisclaimer));
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
              
             @Override
