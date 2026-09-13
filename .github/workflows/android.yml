@@ -53,7 +53,7 @@ jobs:
 
     - name: Sign APK with keystore
       uses: r0adkll/sign-android-release@v1
-      id: sign_app
+      id: sign_apk
       with:
         releaseDirectory: app/build/outputs/apk/release
         signingKeyBase64: ${{ secrets.KEY_STORE }}
@@ -63,12 +63,28 @@ jobs:
       env:
         BUILD_TOOLS_VERSION: "34.0.0"
 
-    - name: Prepare upload artifact
+    - name: Build AAB
+      run: ./gradlew bundleRelease
+
+    - name: Sign AAB with keystore
+      uses: r0adkll/sign-android-release@v1
+      id: sign_aab
+      with:
+        releaseDirectory: app/build/outputs/bundle/release
+        signingKeyBase64: ${{ secrets.KEY_STORE }}
+        alias: ${{ secrets.KEY_STORE_ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASS }}
+        keyPassword: ${{ secrets.KEY_STORE_PASS }}
+      env:
+        BUILD_TOOLS_VERSION: "34.0.0"
+
+    - name: Prepare upload artifacts
       run: |
         mkdir -p build/artifacts
-        cp "${{ steps.sign_app.outputs.signedReleaseFile }}" "build/artifacts/avare_${APP_VERSION}.apk"
+        cp "${{ steps.sign_apk.outputs.signedReleaseFile }}" "build/artifacts/avare_${APP_VERSION}.apk"
+        cp "${{ steps.sign_aab.outputs.signedReleaseFile }}" "build/artifacts/avare_${APP_VERSION}.aab"
 
-    - name: Upload release APK
+    - name: Upload release
       uses: appleboy/scp-action@v0.1.7
       with:
         host: apps4av.org
