@@ -310,8 +310,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="EdgeTapeLabel">&quot;Edge Tape&quot;</string>
     <string name="EdgeTapeSummary">&quot;Select to show a distance tape on the edges&quot;</string>
     <string name="Instrumentation">&quot;Instrumentation&quot;</string>
-    <string name="register">Register</string>
-    <string name="unregister">Unregister</string>
+    <string name="register">Register.</string>
+    <string name="unregister">Unregister.</string>
     <string name="ProServicesTitle">Subscription</string>
     <string name="ProServicesSubscribe">Subscribe</string>
     <string name="ProServiceUnavailable">Paid Services are currently unavailable.</string>
