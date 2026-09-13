@@ -1435,10 +1435,10 @@ $(document).ready(function(){
             <ul>
                 <li>Clear the current plan by pressing "Clr"</li>
                 <li>Select the "Plan" tab.</li>
-                <li>Enter a way point name (e.g. BOS) in the "Add To Plan" box, then press Search. If the point is valid, several options will be presented.</li>
+                <li>Enter a way point name (e.g. BOS) in the "Add Waypoint to Plan" box, then press Search. If the point is valid, several options will be presented.</li>
                 <li>Press Add button to the right of one of the presented options to add it to the end of the plan.</li>
                 <li>Touch the added point in the "Plan" tab to move the green bar to it.</li>
-                <li>Move the point to the desired sequence by pressing the Up or Down button several times.</li>
+                <li>Move the point to the desired sequence by pressing the Up or Dn button several times.</li>
                 <li>If a wrong point is added by mistake, it can be deleted by touching the point to move the green bar to it, then pressing the Delete button.</li>
             </ul>
 
@@ -1461,7 +1461,7 @@ $(document).ready(function(){
                 <li>Use the "<" button to move to the previous page of plans.</li>
                 <li>Use the ">" button to advance the list to the next page.</li>
                 <li>The "<<" button will list the plans starting at the beginning.</li>
-                <li>The "Last" button will show the plans at the end of the list.</li>
+                <li>The "&gt;&gt;" button will show the plans at the end of the list.</li>
                 <li>Using the "Apply" button will use the text entered into the "Plan Filter Spec" area to shorten the list of displayed plans to only those that contain the phrase entered here.</li>
                 <li>Using empty filter will clear the filter and refresh the plan list.</li>
                 <li>The "Refresh List" button will synchronize the displayed list with the flight plans in storage. This action will reflect any changes made by external apps on the plans.</li>
@@ -1517,15 +1517,15 @@ $(document).ready(function(){
             <b>To Simulate a Plan</b>
             <ul>
                 <li>You can simulate a plan and show total distance and time from first way point point to the last way point with wind factored into the calculation.</li>
-                <li>On the Map screen, press "Navigate" button on the right side slide out buttons to make it "Simulation"</li>
-                <li>Go to Plan screen, and press the "Activate" button. Total distance and time of the plan will be shown in the Total row. Time is calculated from TAS specified Aircraft menu. Heading is calculated from wind speeds at the given altitude. User will need to download weather to see the heading.</li>
+                <li>On the Map screen, press Menu, then press "Navigate" so it changes to "Simulation".</li>
+                <li>Go to Plan screen, and press the "Activate" button. Total distance and time of the plan will be shown in the Total row. Time is calculated from Cruising TAS on the Acft tab. Heading is calculated from wind speeds at the given altitude. User will need to download weather to see the heading.</li>
                 <li>Change the altitude from drop down at the top of the Plan to use wind at that altitude.</li>
                 <li>Move back to the Map screen to see the plan route in magenta.</li>
             </ul>
 
             <b>To Fly a Plan</b>
             <ul>
-                <li>On the Map screen, press make sure that the "Navigate"/"Simulation" slide out button is in the "Navigate" state.</li>
+                <li>On the Map screen, press Menu and make sure the "Navigate"/"Simulation" button is in the "Navigate" state.</li>
                 <li>Go to Plan screen, press the "Next"/"Previous" buttons to move the green bar to the second way point in the plan. Note: The first way point should be your departure airport.</li>
                 <li>Press the "Inactive" button to make it "Active".</li>
                 <li>The distance remaining, course, heading to the next way point, fuel burn, and ETE will be shown in the Total row when the plane is moving.</li>
@@ -1558,13 +1558,15 @@ $(document).ready(function(){
                 <li>Once a plan is entered, you can get the latest briefing for that plan area.</li>
                 <li>Enter a plan with at least two points, at least one of which is an airport.</li>
                 <li>Make sure you are connected to the Internet.</li>
-                <li>Press "Get Briefing" link under the Brief tag.</li>
-                <li>After a few seconds, the briefing will be shown.</li>
+                <li>Under Brief -&gt; Textual, press the "Get Briefing" link.</li>
+                <li>After a few seconds, METARs, TAFs, PIREPs, and FAA NOTAMs for airports in the plan are shown.</li>
+                <li>Brief also has graphic products under Misc, Prog, GFA, Turb, and Icing (Internet required).</li>
             </ul>
 
             <b>To Fill and File the Flight Plan Form</b>
             <ul>
-                <li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. See Aircraft and Pilot under Aircraft for the form fields.</li>
+                <li>Register first under Preferences -&gt; Application State -&gt; Account (1800wxbrief). Filing uses that account, not DUATS.</li>
+                <li>Note: You can enter a plan in the Plan screen, then press the "Prepare" button to let the app fill the form. Aircraft and pilot fields come from the aircraft loaded on the Acft tab.</li>
                 <li>Enter all the mandatory fields in the form. For example, enter Aircraft ID as N172EF, Flight Rule as VFR, Flight Type as General Aviation, No. of Aircraft as 1, Aircraft Type as C172, Wake Turbulence as Light, Aircraft Equipment as S, Departure as KBOS,
                     Departure Date Time(Zulu) as 2016-01-31 22:30,  Cruising Speed in knots as 110, Altitude in x100 feet as 045, Surveillance Equipment as N, Route as LWM, Destination as KJFK, Total Elapsed Time as 1H30M,
                     Alternate1 as KTEB, Alternate2 as KMMU, Fuel Endurance as 2H45M, People On Board as 2, Aircraft Color as W/B, Pilot in Command as Charles L, and Pilot Info as Charles L 202-267-8738. Note, if a departure/destination ICAO code is not available, enter ZZZZ in requisite field, then enter DEP / DEST in the Other Information Sub-field.</li>
@@ -1573,6 +1575,7 @@ $(document).ready(function(){
             </ul>
             <b>To Load a Plan</b>
             <ul>
+                <li>On Filing -&gt; Filed Plans, press "Get Plans" to fetch filed plans from the Internet.</li>
                 <li>Filed plans can be loaded in the filing form in any state.</li>
                 <li>Select the plan you want to load in the Filed Plans list by touching on it. The green bar will move to it.</li>
                 <li>Press the "Load" button, and if the operation is successful, the plan will be loaded in the form as filed.</li>
@@ -1596,8 +1599,8 @@ $(document).ready(function(){
             <ul>
                 <li>After filing the plan, its state changes to PROPOSED. You can activate a plan only in PROPOSED state.</li>
                 <li>Select the plan you want to activate in the Filed Plans list by touching on it. The green bar will move to it.</li>
-                <li>Select the time from now when you will take off from the drop down next to the "Activate Now" button.</li>
-                <li>Press the "Activate Now" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
+                <li>Select the time from now when you will take off from the drop down next to the "Activate" button (Departing Now, or 5 to 30 minutes from now).</li>
+                <li>Press the "Activate" button, and if the activation is successful, the plan's state will change to ACTIVE.</li>
             </ul>
             <b>To Close an Active Plan</b>
             <ul>
@@ -1611,7 +1614,7 @@ $(document).ready(function(){
             <ul>
                 <li>Select the plan you want to get briefing for in the Filed Plans list, by touching on it. The green bar will move to it.</li>
                 <li>Press the "Get Email Briefing" button once.</li>
-                <li>The briefing will be emailed to you at the address used for registering with Avare.</li>
+                <li>The briefing will be emailed to the address registered under Preferences -&gt; Application State -&gt; Account.</li>
                 <li>Note: Route corridor width of 50 NM is used.</li>
             </ul>
             <b>To Get Plan Navigation Log</b>
