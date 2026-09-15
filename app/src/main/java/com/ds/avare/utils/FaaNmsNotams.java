@@ -29,15 +29,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- * Fetches NOTAMs from the FAA NMS API the same way AvareX does
- * ({@code notam_cache.dart}): client-credentials OAuth, then AIXM NOTAMs
- * for each ICAO location.
+ * Fetches NOTAMs from the FAA production NMS-API the same way AvareX does
+ * ({@code notam_cache.dart}): client-credentials OAuth (host without
+ * {@code /nmsapi}), then GeoJSON NOTAMs for each location, with AIXM
+ * as a fallback.
  *
  * {@link #CLIENT_ID_SECRET} is replaced at build time from the
  * {@code FAA_NMS_API_CLIENT_ID_SECRET} GitHub Actions secret. The value
@@ -52,13 +57,17 @@ public final class FaaNmsNotams {
     public static final String CLIENT_ID_SECRET =
             "@@__faa_nms_api_client_id_secret__@@";
 
+    // Auth is on the host without /nmsapi. Data calls use the /nmsapi base path.
     private static final String TOKEN_URL =
-            "https://api-staging.cgifederal-aim.com/v1/auth/token";
+            "https://api-nms.aim.faa.gov/v1/auth/token";
     private static final String NOTAM_URL =
-            "https://api-staging.cgifederal-aim.com/nmsapi/v1/notams?location=";
+            "https://api-nms.aim.faa.gov/nmsapi/v1/notams?location=";
 
     private static final int CONNECT_TIMEOUT_MS = 15000;
     private static final int READ_TIMEOUT_MS = 30000;
+
+    private static String sAccessToken;
+    private static long sAccessTokenExpiresAtMs;
 
     private FaaNmsNotams() { }
 
@@ -91,7 +100,7 @@ public final class FaaNmsNotams {
 
         String accessToken;
         try {
-            accessToken = requestAccessToken();
+            accessToken = getAccessToken();
         } catch (Exception e) {
             return null;
         }
@@ -112,6 +121,21 @@ public final class FaaNmsNotams {
                 if (block != null && !block.isEmpty()) {
                     blocks.add(block);
                 }
+            } catch (UnauthorizedException e) {
+                clearAccessToken();
+                try {
+                    accessToken = getAccessToken();
+                    if (accessToken == null || accessToken.isEmpty()) {
+                        failures++;
+                        continue;
+                    }
+                    String block = fetchLocation(accessToken, icao);
+                    if (block != null && !block.isEmpty()) {
+                        blocks.add(block);
+                    }
+                } catch (Exception retry) {
+                    failures++;
+                }
             } catch (Exception e) {
                 failures++;
             }
@@ -127,6 +151,31 @@ public final class FaaNmsNotams {
         return CLIENT_ID_SECRET != null
                 && !CLIENT_ID_SECRET.isEmpty()
                 && !CLIENT_ID_SECRET.startsWith("@@");
+    }
+
+    private static synchronized String getAccessToken() throws Exception {
+        long now = System.currentTimeMillis();
+        if (sAccessToken != null && now < sAccessTokenExpiresAtMs) {
+            return sAccessToken;
+        }
+
+        String token = requestAccessToken();
+        if (token == null || token.isEmpty()) {
+            clearAccessToken();
+            return null;
+        }
+        return token;
+    }
+
+    private static synchronized void clearAccessToken() {
+        sAccessToken = null;
+        sAccessTokenExpiresAtMs = 0;
+    }
+
+    private static synchronized void storeAccessToken(String token, int expiresInSec) {
+        sAccessToken = token;
+        int ttl = expiresInSec > 60 ? expiresInSec - 60 : expiresInSec;
+        sAccessTokenExpiresAtMs = System.currentTimeMillis() + ttl * 1000L;
     }
 
     private static String requestAccessToken() throws Exception {
@@ -152,7 +201,24 @@ public final class FaaNmsNotams {
                 return null;
             }
             JSONObject json = new JSONObject(readFully(conn.getInputStream()));
-            return json.optString("access_token", null);
+            String token = json.optString("access_token", null);
+            if (token == null || token.isEmpty()) {
+                return null;
+            }
+            int expiresIn = 1799;
+            if (json.has("expires_in")) {
+                expiresIn = json.optInt("expires_in", 1799);
+                if (expiresIn <= 0) {
+                    try {
+                        expiresIn = Integer.parseInt(
+                                json.optString("expires_in", "1799"));
+                    } catch (NumberFormatException e) {
+                        expiresIn = 1799;
+                    }
+                }
+            }
+            storeAccessToken(token, expiresIn);
+            return token;
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -178,10 +244,14 @@ public final class FaaNmsNotams {
             conn.setUseCaches(false);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-            conn.setRequestProperty("nmsResponseFormat", "AIXM");
+            conn.setRequestProperty("nmsResponseFormat", "GEOJSON");
 
-            if (conn.getResponseCode() != 200) {
-                throw new Exception("NOTAM HTTP " + conn.getResponseCode());
+            int code = conn.getResponseCode();
+            if (code == 401) {
+                throw new UnauthorizedException();
+            }
+            if (code != 200) {
+                throw new Exception("NOTAM HTTP " + code);
             }
 
             JSONObject root = new JSONObject(readFully(conn.getInputStream()));
@@ -189,17 +259,29 @@ public final class FaaNmsNotams {
             if (data == null || data.length() == 0) {
                 return "";
             }
-            JSONArray aixm = data.optJSONArray("aixm");
-            if (aixm == null || aixm.length() == 0) {
-                return "";
-            }
 
             List<String> lines = new ArrayList<>();
-            for (int i = 0; i < aixm.length(); i++) {
-                String xml = aixm.optString(i, "");
-                String formatted = extractFormattedText(xml);
-                if (formatted != null && !formatted.isEmpty()) {
-                    lines.add(formatted);
+            JSONArray geojson = data.optJSONArray("geojson");
+            if (geojson != null) {
+                for (int i = 0; i < geojson.length(); i++) {
+                    JSONObject feature = geojson.optJSONObject(i);
+                    String formatted = extractGeoJsonText(feature);
+                    if (formatted != null && !formatted.isEmpty()) {
+                        lines.add(formatted);
+                    }
+                }
+            }
+
+            if (lines.isEmpty()) {
+                JSONArray aixm = data.optJSONArray("aixm");
+                if (aixm != null) {
+                    for (int i = 0; i < aixm.length(); i++) {
+                        String xml = aixm.optString(i, "");
+                        String formatted = extractFormattedText(xml);
+                        if (formatted != null && !formatted.isEmpty()) {
+                            lines.add(formatted);
+                        }
+                    }
                 }
             }
             if (lines.isEmpty()) {
@@ -292,49 +374,9 @@ public final class FaaNmsNotams {
                     }
                 }
 
-                List<String> headerBits = new ArrayList<>();
-                String yy = year.length() >= 2
-                        ? year.substring(year.length() - 2) : year;
-                if (!number.isEmpty() || !yy.isEmpty()) {
-                    String id = !yy.isEmpty() ? yy + "/" + number : number;
-                    headerBits.add("NOTAM " + id);
-                } else {
-                    headerBits.add("NOTAM");
-                }
-                if (!location.isEmpty()) {
-                    headerBits.add(location);
-                }
-                if (!type.isEmpty()) {
-                    headerBits.add("[" + type + "]");
-                }
-                if (!classification.isEmpty()) {
-                    headerBits.add("(" + classification + ")");
-                }
-                if (!accountId.isEmpty()) {
-                    headerBits.add(accountId);
-                }
-
-                String start = formatNotamDate(effectiveStart);
-                String end = formatNotamDate(effectiveEnd);
-                String range = "";
-                if (!start.isEmpty() && !end.isEmpty()) {
-                    range = start + "-" + end;
-                } else if (!start.isEmpty()) {
-                    range = start;
-                }
-
-                List<String> parts = new ArrayList<>();
-                parts.add(join(headerBits, " "));
-                if (!range.isEmpty()) {
-                    parts.add(range);
-                }
-                if (!body.isEmpty()) {
-                    parts.add(body);
-                }
-
-                String line = join(parts, " | ")
-                        .replaceAll("\\s+", " ")
-                        .trim();
+                String line = formatNotamLine(number, year, type, location,
+                        classification, accountId, effectiveStart, effectiveEnd,
+                        body);
                 if (!line.isEmpty()) {
                     lines.add(line);
                 }
@@ -348,18 +390,181 @@ public final class FaaNmsNotams {
         }
     }
 
-    private static String formatNotamDate(String s) {
-        if (s == null || s.length() != 12) {
-            return s == null ? "" : s;
+    static String extractGeoJsonText(JSONObject feature) {
+        if (feature == null) {
+            return null;
         }
-        for (int i = 0; i < s.length(); i++) {
-            if (!Character.isDigit(s.charAt(i))) {
-                return s;
+        try {
+            JSONObject properties = feature.optJSONObject("properties");
+            if (properties == null) {
+                return null;
+            }
+            JSONObject core = properties.optJSONObject("coreNOTAMData");
+            if (core == null) {
+                return null;
+            }
+            JSONObject notam = core.optJSONObject("notam");
+            if (notam == null) {
+                return null;
+            }
+
+            String body = notam.optString("text", "").trim();
+            if (body.isEmpty()) {
+                JSONArray translations = core.optJSONArray("notamTranslation");
+                if (translations != null) {
+                    for (int t = 0; t < translations.length(); t++) {
+                        JSONObject tr = translations.optJSONObject(t);
+                        if (tr == null) {
+                            continue;
+                        }
+                        String st = tr.optString("simpleText", "").trim();
+                        if (!st.isEmpty()) {
+                            body = st;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return formatNotamLine(
+                    notam.optString("number", ""),
+                    notam.optString("year", ""),
+                    notam.optString("type", ""),
+                    notam.optString("location", ""),
+                    notam.optString("classification", ""),
+                    notam.optString("accountId", ""),
+                    notam.optString("effectiveStart", ""),
+                    notam.optString("effectiveEnd", ""),
+                    body);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static String formatNotamLine(String number, String year, String type,
+            String location, String classification, String accountId,
+            String effectiveStart, String effectiveEnd, String body) {
+        if (number == null) {
+            number = "";
+        }
+        if (year == null) {
+            year = "";
+        }
+        if (type == null) {
+            type = "";
+        }
+        if (location == null) {
+            location = "";
+        }
+        if (classification == null) {
+            classification = "";
+        }
+        if (accountId == null) {
+            accountId = "";
+        }
+        if (body == null) {
+            body = "";
+        }
+
+        List<String> headerBits = new ArrayList<>();
+        if (number.contains("/")) {
+            headerBits.add("NOTAM " + number);
+        } else {
+            String yy = year.length() >= 2
+                    ? year.substring(year.length() - 2) : year;
+            if (!number.isEmpty() || !yy.isEmpty()) {
+                String id = !yy.isEmpty() ? yy + "/" + number : number;
+                headerBits.add("NOTAM " + id);
+            } else {
+                headerBits.add("NOTAM");
             }
         }
-        return s.substring(0, 4) + "-" + s.substring(4, 6) + "-"
-                + s.substring(6, 8) + " " + s.substring(8, 10) + ":"
-                + s.substring(10, 12) + "Z";
+        if (!location.isEmpty()) {
+            headerBits.add(location);
+        }
+        if (!type.isEmpty()) {
+            headerBits.add("[" + type + "]");
+        }
+        if (!classification.isEmpty()) {
+            headerBits.add("(" + classification + ")");
+        }
+        if (!accountId.isEmpty()) {
+            headerBits.add(accountId);
+        }
+
+        String start = formatNotamDate(effectiveStart);
+        String end = formatNotamDate(effectiveEnd);
+        String range = "";
+        if (!start.isEmpty() && !end.isEmpty()) {
+            range = start + "-" + end;
+        } else if (!start.isEmpty()) {
+            range = start;
+        }
+
+        List<String> parts = new ArrayList<>();
+        parts.add(join(headerBits, " "));
+        if (!range.isEmpty()) {
+            parts.add(range);
+        }
+        if (!body.isEmpty()) {
+            parts.add(body);
+        }
+
+        return join(parts, " | ")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
+
+    /**
+     * Converts a NOTAM timestamp into "YYYY-MM-DD HH:MMZ".
+     * Accepts 12-digit YYYYMMDDHHMM and ISO-8601 values from NMS-API.
+     */
+    private static String formatNotamDate(String s) {
+        if (s == null) {
+            return "";
+        }
+        String trimmed = s.trim();
+        if (trimmed.isEmpty()) {
+            return "";
+        }
+        if (trimmed.length() == 12) {
+            boolean digits = true;
+            for (int i = 0; i < trimmed.length(); i++) {
+                if (!Character.isDigit(trimmed.charAt(i))) {
+                    digits = false;
+                    break;
+                }
+            }
+            if (digits) {
+                return trimmed.substring(0, 4) + "-" + trimmed.substring(4, 6)
+                        + "-" + trimmed.substring(6, 8) + " "
+                        + trimmed.substring(8, 10) + ":"
+                        + trimmed.substring(10, 12) + "Z";
+            }
+        }
+        String[] patterns = new String[] {
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+                "yyyy-MM-dd'T'HH:mm:ssZ"
+        };
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat in = new SimpleDateFormat(pattern, Locale.US);
+                in.setTimeZone(utc);
+                in.setLenient(false);
+                Date d = in.parse(trimmed);
+                if (d != null) {
+                    SimpleDateFormat out =
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm'Z'", Locale.US);
+                    out.setTimeZone(utc);
+                    return out.format(d);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return trimmed;
     }
 
     private static String childText(Element parent, String localName) {
@@ -402,5 +607,9 @@ public final class FaaNmsNotams {
             sb.append(parts.get(i));
         }
         return sb.toString();
+    }
+
+    private static final class UnauthorizedException extends Exception {
+        private static final long serialVersionUID = 1L;
     }
 }

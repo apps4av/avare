@@ -534,8 +534,8 @@ public class NetworkHelper {
     }
 
     /**
-     * Get NOTAMs from the FAA NMS API (same source as AvareX) for ICAO
-     * ids in the form KBOS,BOS,KLWM.
+     * Get NOTAMs from the FAA production NMS-API (same source as AvareX)
+     * for location ids in the form KBOS,BOS,KLWM.
      * @param plan comma-separated ICAO identifiers
      * @return HTML, or {@code null} if the download failed
      */
