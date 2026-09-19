@@ -566,30 +566,30 @@ public class WebAppAircraftInterface {
                  */
         		String[] steps = mList.getStepsArray();
             	for(int num = 0; num < steps.length; num++) {
-            		String url = "javascript:set_list_line(" + 
+            		String url = "set_list_line(" + 
             				num + "," +
             				(mList.isSelected(num) ? 1 : 0) + ",'" + steps[num] + "')";
-            		mWebView.loadUrl(url);
+            		mWebView.evaluateJavascript(url, null);
             	}
             	
             	if(null != mList.getName()) {
-            		mWebView.loadUrl("javascript:list_setname('" + mList.getName() + "')");
+            		mWebView.evaluateJavascript("list_setname('" + mList.getName() + "')", null);
             	}
         	}
         	else if(MSG_CLEAR_LIST == msg.what) {
-        		mWebView.loadUrl("javascript:list_clear()");
+        		mWebView.evaluateJavascript("list_clear()", null);
         	}
         	else if(MSG_ADD_LIST == msg.what) {
-            	String func = "javascript:list_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "list_add(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_CLEAR_LIST_SAVE == msg.what) {
-            	String func = "javascript:save_clear()";
-            	mWebView.loadUrl(func);
+            	String func = "save_clear()";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_ADD_LIST_SAVE == msg.what) {
-            	String func = "javascript:save_add(" + (String)msg.obj + ")";
-            	mWebView.loadUrl(func);
+            	String func = "save_add(" + (String)msg.obj + ")";
+            	mWebView.evaluateJavascript(func, null);
         	}
         	else if(MSG_NOTBUSY == msg.what) {
         		mCallback.callback((Object) AircraftActivity.UNSHOW_BUSY, null);
@@ -606,17 +606,17 @@ public class WebAppAircraftInterface {
                     String data = mWnb.getJSON().toString();
 
                     if (null != data) {
-                        mWebView.loadUrl("javascript:wnb_set('" + data + "')");
+                        mWebView.evaluateJavascript("wnb_set('" + data + "')", null);
                     }
                 }
             }
             else if(MSG_ADD_WNB_SAVE == msg.what) {
-                String func = "javascript:wnb_save_add(" + (String)msg.obj + ")";
-                mWebView.loadUrl(func);
+                String func = "wnb_save_add(" + (String)msg.obj + ")";
+                mWebView.evaluateJavascript(func, null);
             }
             else if(MSG_CLEAR_WNB_SAVE == msg.what) {
-                String func = "javascript:wnb_save_clear()";
-                mWebView.loadUrl(func);
+                String func = "wnb_save_clear()";
+                mWebView.evaluateJavascript(func, null);
             }
 
 
@@ -625,17 +625,17 @@ public class WebAppAircraftInterface {
                     String data = mAircraft.getJSON();
 
                     if (null != data) {
-                        mWebView.loadUrl("javascript:ac_set('" + data + "')");
+                        mWebView.evaluateJavascript("ac_set('" + data + "')", null);
                     }
                 }
             }
             else if(MSG_ADD_AC_SAVE == msg.what) {
-                String func = "javascript:ac_save_add(" + (String)msg.obj + ")";
-                mWebView.loadUrl(func);
+                String func = "ac_save_add(" + (String)msg.obj + ")";
+                mWebView.evaluateJavascript(func, null);
             }
             else if(MSG_CLEAR_AC_SAVE == msg.what) {
-                String func = "javascript:ac_save_clear()";
-                mWebView.loadUrl(func);
+                String func = "ac_save_clear()";
+                mWebView.evaluateJavascript(func, null);
             }
 
         }
