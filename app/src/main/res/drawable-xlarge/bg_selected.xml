@@ -20,11 +20,11 @@ Redistribution and use in source and binary forms, with or without modification,
         android:endColor="#4682b4" android:angle="-90" />
 
     <size
-        android:width="150dp"
-        android:height="70dp"/>
+        android:width="100dp"
+        android:height="60dp"/>
 
     <corners
-        android:radius="20dp"
+        android:radius="5dp"
 />
 
 </shape>
