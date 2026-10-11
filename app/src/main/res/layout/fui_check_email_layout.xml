@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FirebaseUI email form, vertically centered so it is not under the Sign in bar. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/top_progress_bar"
+        style="@style/FirebaseUI.TopProgressBar"
+        tools:visibility="visible" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            style="@style/FirebaseUI.WrapperStyle"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/header_text"
+                style="@style/FirebaseUI.Text.Heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:text="@string/fui_email_link_confirm_email_message"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_layout"
+                android:labelFor="@+id/email"
+                style="@style/FirebaseUI.TextInputLayout.EmailField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fui_field_padding_vert"
+                android:transitionGroup="true"
+                android:transitionName="@string/fui_email_field_name"
+                app:errorEnabled="true"
+                tools:ignore="UnusedAttribute">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    style="@style/FirebaseUI.TextInputEditText.EmailField" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end">
+                <Button
+                    android:id="@+id/button_sign_up"
+                    style="@style/FirebaseUI.Button"
+                    android:text="@string/fui_title_register_email"
+                    android:layout_marginEnd="16dp"/>
+
+                <Button
+                    android:id="@+id/button_sign_in"
+                    style="@style/FirebaseUI.Button"
+                    android:text="@string/fui_sign_in_default" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/email_tos_and_pp_text"
+                style="@style/FirebaseUI.Text.BodyText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fui_field_padding_vert"
+                android:textIsSelectable="false"
+                tools:text="Terms and Privacy Policy" />
+
+            <TextView
+                android:id="@+id/email_footer_tos_and_pp_text"
+                style="@style/FirebaseUI.PrivacyFooter" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
