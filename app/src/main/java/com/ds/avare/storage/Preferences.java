@@ -33,6 +33,7 @@ import com.ds.avare.flight.WeightAndBalance;
 import com.ds.avare.place.Destination;
 import com.ds.avare.utils.BTListPreferenceWithSummary;
 import com.ds.avare.utils.BitmapHolder;
+import com.ds.avare.utils.DismissedAppNotices;
 import com.ds.avare.utils.Helper;
 
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Preferences for main activity
@@ -1217,6 +1219,18 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
     }
     public void setLastConnectedWifi(String val) {
         mPref.edit().putString("LastConnectedWifi", val).commit();
+    }
+
+    /**
+     * Apps4Av messages already dismissed on this device.
+     */
+    public Set<String> dismissedAppNoticeKeys() {
+        return DismissedAppNotices.decode(mPref.getString(DismissedAppNotices.PREF_KEY, ""));
+    }
+
+    public void dismissAppNotice(String dismissKey) {
+        String raw = mPref.getString(DismissedAppNotices.PREF_KEY, "");
+        mPref.edit().putString(DismissedAppNotices.PREF_KEY, DismissedAppNotices.dismiss(raw, dismissKey)).commit();
     }
 
 }

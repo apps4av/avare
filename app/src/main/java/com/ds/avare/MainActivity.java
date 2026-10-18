@@ -40,6 +40,8 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
+import com.ds.avare.utils.AppNotice;
+import com.ds.avare.utils.AppNoticeService;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -55,6 +57,11 @@ public class MainActivity extends TabActivity {
     int      mScrollWidth;
     TextView mTextView;
     Button mButton;
+
+    /** True while an Apps4Av message dialog is being fetched or shown. */
+    private boolean mNoticesOpen;
+    /** Epoch millis of the last Firestore check. 0 means never. */
+    private long mNoticesCheckedAt;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -306,5 +313,33 @@ public class MainActivity extends TabActivity {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+        // Pull Apps4Av messages after the first frame, on open and when the
+        // app returns to the foreground. Same gate as AvareX.
+        getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                checkAppNotices();
+            }
+        });
+    }
+
+    /**
+     * Pull Apps4Av messages from Firestore ({@code appNotices}) and show any
+     * the pilot has not dismissed.
+     */
+    private void checkAppNotices() {
+        boolean active = !isFinishing() && !isDestroyed();
+        long now = System.currentTimeMillis();
+        if (!AppNotice.shouldCheck(mNoticesOpen, active, now, mNoticesCheckedAt)) {
+            return;
+        }
+        mNoticesCheckedAt = now;
+        mNoticesOpen = true;
+        AppNoticeService.present(this, StorageService.getInstance().getPreferences(), new Runnable() {
+            @Override
+            public void run() {
+                mNoticesOpen = false;
+            }
+        });
     }
 }
