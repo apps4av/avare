@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Apps4Av messages shown when Avare opens.
+//
+// Written only from Google Cloud: the Firebase console or the Admin SDK
+// (both bypass these rules). The app can read active notices and cannot
+// create, edit, or delete them. No sign-in is required to read.
+//
+// Reads are limited to documents with active == true, so drafts and
+// taken-down messages stay in the console.
+//
+// Publish a document at appNotices/{id}:
+//   title      string
+//   body       string
+//   active     true
+//   createdAt  timestamp (now)
+//   updatedAt  timestamp (now; set again whenever you edit the text)
+//   expiresAt  timestamp, optional
+//   url        https string, optional
+//
+// Set active to false, or delete the document, to take it down.
+// Database is (default) on project avare-1f119, same as AvareX.
+// Deploy with: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /appNotices/{id} {
+      allow read: if resource.data.active == true;
+      allow write: if false;
+    }
+  }
+}

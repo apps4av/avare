@@ -1219,4 +1219,12 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putString("LastConnectedWifi", val).commit();
     }
 
+    public String getDismissedAppNotices() {
+        return mPref.getString("DismissedAppNotices", "");
+    }
+
+    public void setDismissedAppNotices(String val) {
+        mPref.edit().putString("DismissedAppNotices", val).commit();
+    }
+
 }

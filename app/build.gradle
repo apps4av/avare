@@ -80,6 +80,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
 
     // FirebaseUI Auth provides the email sign-in / register screen used by
     // ProActivity (same UX as avarex's LoginScreen).

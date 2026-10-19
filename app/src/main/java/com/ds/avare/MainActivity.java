@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 
+import com.ds.avare.utils.AppNoticeService;
 import com.ds.avare.utils.Helper;
  
 /**
@@ -55,6 +56,11 @@ public class MainActivity extends TabActivity {
     int      mScrollWidth;
     TextView mTextView;
     Button mButton;
+
+    /** True while an Apps4Av notice dialog is up, so a resume does not stack another. */
+    private boolean mNoticesOpen;
+    /** Last time a notice check was started. Repeat checks wait 20 seconds. */
+    private long mNoticesCheckedAt;
 
     // Tab panels that can display at the bottom of the screen. These manifest as 
     // separate display panes with their own intent to handle the content. Each one
@@ -306,5 +312,29 @@ public class MainActivity extends TabActivity {
     public void onResume() {
         super.onResume();
         Helper.setOrientationAndOn(this);
+        checkAppNotices();
+    }
+
+    /**
+     * Pull Apps4Av messages from Firestore and show any this device has not
+     * dismissed. Checked when the app opens and when it returns to the foreground.
+     * The map is not held up: the read runs after this method returns.
+     */
+    private void checkAppNotices() {
+        if (mNoticesOpen || isFinishing()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - mNoticesCheckedAt < 20 * 1000L) {
+            return;
+        }
+        mNoticesCheckedAt = now;
+        mNoticesOpen = true;
+        AppNoticeService.getInstance().present(this, new Runnable() {
+            @Override
+            public void run() {
+                mNoticesOpen = false;
+            }
+        });
     }
 }
