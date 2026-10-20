@@ -572,6 +572,8 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="DefaultAFD">DefaultAFD</string>
     <string name="DefaultAFDLabel">Default Chart Supplement</string>
     <string name="DefaultAFDSummary">Select to show downloaded chart supplement images by default on CSup screen</string>
+    <string name="CsupPdfLabel">%1$s PDF</string>
+    <string name="NoPdfViewer">Install a PDF viewer to open the Chart Supplement</string>
 
     <string name="UseNmeaAltitude">UseNmeaAltitude</string>
     <string name="UseNmeaAltitudeLabel">Use NMEA Altitude</string>

@@ -14,6 +14,7 @@ package com.ds.avare;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -32,6 +34,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.core.content.FileProvider;
 
 import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.content.LocationContentProviderHelper;
@@ -48,6 +52,7 @@ import com.ds.avare.utils.DecoratedAlertDialogBuilder;
 import com.ds.avare.utils.Helper;
 import com.ds.avare.views.AfdView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -72,6 +77,8 @@ public class AirportActivity extends BaseActivity implements Observer {
     private ImageButton mCenterButton;
     private String mDestString;
     private String mNearString;
+    /** Regional Chart Supplement PDFs appended to {@link #mListViews}, in the same order. */
+    private final ArrayList<File> mCsupPdfs = new ArrayList<File>();
 
     /**
      * 
@@ -110,6 +117,11 @@ public class AirportActivity extends BaseActivity implements Observer {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        int pdf = csupPdfIndex(which);
+                        if(pdf >= 0) {
+                            openCsupPdf(mCsupPdfs.get(pdf));
+                            return;
+                        }
                         setViewFromPos(which);
                     }
                 };
@@ -172,6 +184,7 @@ public class AirportActivity extends BaseActivity implements Observer {
     
     private void setupViewInfo() {
         mListViews.clear();
+        mCsupPdfs.clear();
         mListViews.add(getString(R.string.AFD));
         
         /*
@@ -310,7 +323,7 @@ public class AirportActivity extends BaseActivity implements Observer {
                 return true;
             }
         });
-        
+
         /*
          * Not found
          */
@@ -319,6 +332,7 @@ public class AirportActivity extends BaseActivity implements Observer {
             mAirportView.setVisibility(View.VISIBLE);
             mAfdView.setVisibility(View.INVISIBLE);
             mCenterButton.setVisibility(View.INVISIBLE);
+            addPresentCsupPdfs();
             return;                
         }
         
@@ -329,7 +343,36 @@ public class AirportActivity extends BaseActivity implements Observer {
         for(int plate = 0; plate < afd.length; plate++) {
             String tokens[] = afd[plate].split("/");
             mListViews.add(tokens[tokens.length - 1]);
-        }     
+        }
+        addPresentCsupPdfs();
+    }
+
+    /**
+     * Append each downloaded regional Chart Supplement PDF. These files sit in
+     * the app's private files directory as NE_CSUP.pdf and the other regions.
+     */
+    private void addPresentCsupPdfs() {
+        String[] names = getResources().getStringArray(R.array.resNameAFD);
+        String[] files = getResources().getStringArray(R.array.resFilesAFD);
+        File root = new File(mPref.getServerDataFolder());
+        int count = Math.min(names.length, files.length);
+        for(int i = 0; i < count; i++) {
+            File pdf = new File(root, files[i] + ".pdf");
+            if(pdf.isFile()) {
+                mCsupPdfs.add(pdf);
+                mListViews.add(getString(R.string.CsupPdfLabel, names[i]));
+            }
+        }
+    }
+
+    /** Index into {@link #mCsupPdfs} for a dropdown row, or -1. */
+    private int csupPdfIndex(int pos) {
+        int start = mListViews.size() - mCsupPdfs.size();
+        int index = pos - start;
+        if(index >= 0 && index < mCsupPdfs.size()) {
+            return index;
+        }
+        return -1;
     }
     
     /*
@@ -338,6 +381,26 @@ public class AirportActivity extends BaseActivity implements Observer {
     private void addAirport(String name) {  
         if(mListAirports.indexOf(name) < 0) {
             mListAirports.add(name);
+        }
+    }
+
+    /**
+     * Hand a Chart Supplement PDF to whatever viewer the device has installed.
+     * The file lives in the app's private files directory, so the viewer
+     * receives a FileProvider URI with read permission.
+     */
+    private void openCsupPdf(File pdf) {
+        try {
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".provider.file", pdf);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "application/pdf");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setClipData(ClipData.newRawUri(pdf.getName(), uri));
+            startActivity(intent);
+        }
+        catch (Exception e) {
+            mToast.setText(getString(R.string.NoPdfViewer));
+            mToast.show();
         }
     }
     
@@ -498,6 +561,7 @@ public class AirportActivity extends BaseActivity implements Observer {
          */
         mListViews = new ArrayList<String>();
         mListViews.add(AirportActivity.this.getString(R.string.AFD));
+        mCsupPdfs.clear();
 
         mListAirports = new ArrayList<String>();
         mListAirports.add(mDestString);

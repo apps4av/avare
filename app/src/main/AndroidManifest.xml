@@ -60,6 +60,11 @@ Redistribution and use in source and binary forms, with or without modification,
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
+        <!-- Regional Chart Supplement PDFs open in an external viewer -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:mimeType="application/pdf" />
+        </intent>
     </queries>
 
     <application
