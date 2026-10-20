@@ -578,7 +578,9 @@ public class BufferProcessor {
             object.put("startTime", fisg.getStartTime());
             object.put("endTime", fisg.getEndTime());
             object.put("shape", fisg.getShapeString());
-            object.put("number", fisg.getReportNumber());
+            object.put("number", Integer.toString(fisg.getReportNumber()));
+            object.put("altitudeBottom", fisg.getAltitudeBottom() == null ? "0" : fisg.getAltitudeBottom());
+            object.put("altitudeTop", fisg.getAltitudeTop() == null ? "0" : fisg.getAltitudeTop());
 
             if(null != fisg.getShapeString()) {
                 LinkedList<FisGraphics.Coordinate> coords = fisg.getCoordinates();

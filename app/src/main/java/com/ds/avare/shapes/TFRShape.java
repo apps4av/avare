@@ -31,11 +31,24 @@ import java.util.LinkedList;
  */
 public class TFRShape extends Shape {
 
+    /** Upcoming TFR. Same brown AvareX uses before a TFR is in effect. */
+    public static final int COLOR_FUTURE = 0xFF966700;
+
+    private int mColor = Color.RED;
+
     /**
      * 
      */
     public TFRShape(String text, Date date) {
         super(text, date);
+    }
+
+    public void setColor(int color) {
+        mColor = color;
+    }
+
+    public int getColor() {
+        return mColor;
     }
 
     public void updateText(String text) {
@@ -111,12 +124,11 @@ public class TFRShape extends Shape {
          * Draw TFRs only if they belong to the screen
          */
         if(null != shapes) {
-            ctx.paint.setColor(Color.RED);
             ctx.paint.setStrokeWidth(3 * ctx.dip2pix);
             ctx.paint.setShadowLayer(0, 0, 0, 0);
 
             for(int shape = 0; shape < shapes.size(); shape++) {
-                Shape todraw = shapes.get(shape);
+                TFRShape todraw = shapes.get(shape);
                 if(null == todraw) {
                     continue;
                 }
@@ -124,6 +136,7 @@ public class TFRShape extends Shape {
                     continue;
                 }
                 if(todraw.isOnScreen(ctx.origin) ) {
+                    ctx.paint.setColor(todraw.getColor());
                     todraw.drawShape(ctx.canvas, ctx.origin, ctx.paint);
                 }
             }

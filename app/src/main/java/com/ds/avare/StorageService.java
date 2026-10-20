@@ -1409,12 +1409,14 @@ public class StorageService  {
             else if(type.equals("notam")) {
                 getAdsbTfrCache().putTfr(
                         Helper.getMillisGMT(),
-                        object.getString("number"),
-                        object.getString("shape"),
-                        object.getString("data"),
-                        object.getString("text"),
-                        object.getString("startTime"),
-                        object.getString("endTime"));
+                        String.valueOf(object.get("number")),
+                        object.optString("shape", ""),
+                        object.optString("data", ""),
+                        object.optString("text", ""),
+                        object.optString("startTime", ""),
+                        object.optString("endTime", ""),
+                        object.optString("altitudeBottom", ""),
+                        object.optString("altitudeTop", ""));
             }
             else if(type.equals("METAR") || type.equals("SPECI")) {
                     /*
