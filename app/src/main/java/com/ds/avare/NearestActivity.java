@@ -131,7 +131,7 @@ public class NearestActivity extends BaseActivity  implements Observer {
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_SHORT);
         
         /*
          * Get views from XML

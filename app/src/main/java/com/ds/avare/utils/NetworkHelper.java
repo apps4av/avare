@@ -19,12 +19,9 @@ import com.ds.avare.position.Coordinate;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -400,59 +397,31 @@ public class NetworkHelper {
     }
 
     /**
-     * 
-     * @return
+     * Chart cycle, computed on the device. {@code root} is unused; the cycle
+     * no longer comes from version.php. {@code networkState[0]} is true when
+     * that cycle (or the weather timestamp) is known.
      */
     public static String getVersion(String root, String name, boolean[] networkState) {
-        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        String netVers = getVersionNetwork(root);
-        
-        if(networkState != null && networkState.length != 0) {
-        	networkState[0] = netVers != null;
-        }
-
+        String version;
         /*
-         * Expires every so many mins
+         * These files are not stored in a cycle folder. The stamp expires
+         * every so many minutes.
          */
         if(name.equals("TFRs") || name.equals("weather") || name.equals("conus")) {
-            return String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+            version = String.format(Locale.US, "%02d_%02d_%04d_%02d:%02d_UTC", now.get(Calendar.MONTH) + 1,
                     now.get(Calendar.DAY_OF_MONTH),
                     now.get(Calendar.YEAR),
                     now.get(Calendar.HOUR_OF_DAY),
                     now.get(Calendar.MINUTE));
         }
-        else if(netVers != null) {
-        	return netVers;
+        else {
+            version = getCycle();
         }
-        return getCycle();
-    }
-
-
-    /**
-     * 
-     * @return
-     */
-    private static String getVersionNetwork(String root) {
-
-        /*
-         * Download version from the internet first, then if not found,
-         * calculate what it should be
-         */
-        try {
-            URL u = new URL(root + "version.php");
-            URLConnection c = u.openConnection();
-            InputStream r = c.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(r));
-            String line = reader.readLine();
-            if(null != line) {
-                return line;
-            }
+        if(networkState != null && networkState.length != 0) {
+            networkState[0] = version != null && version.length() > 0;
         }
-        catch (Exception e) {
-
-        }
-
-        return null;
+        return version;
     }
 
     /**

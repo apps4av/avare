@@ -266,7 +266,7 @@ public class PlatesTagActivity extends BaseActivity implements Observer {
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_LONG);
 
         /*
          * The button that adds a point

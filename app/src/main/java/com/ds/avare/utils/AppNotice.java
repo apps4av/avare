@@ -85,6 +85,10 @@ public final class AppNotice {
         return mUrl;
     }
 
+    public Date getUpdatedAt() {
+        return mUpdatedAt;
+    }
+
     /**
      * Token stored after the pilot taps OK. A change to the title, body,
      * link, or updatedAt produces a new token, so the message is shown again.

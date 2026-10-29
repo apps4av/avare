@@ -46,7 +46,7 @@ public class ProServicesPreference extends DialogPreference {
             return;
         }
         if (!RevenueCatService.isConfigured()) {
-            Toast.makeText(mContext,
+            Helper.makeText(mContext,
                     mContext.getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
             return;

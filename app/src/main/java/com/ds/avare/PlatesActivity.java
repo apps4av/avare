@@ -489,7 +489,7 @@ public class PlatesActivity extends BaseActivity implements Observer  {
         /*
          * Create toast beforehand so multiple clicks don't throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_SHORT);
         
         // Allocate the watch object for fuel tanks
         mTankObserver = new TankObserver();

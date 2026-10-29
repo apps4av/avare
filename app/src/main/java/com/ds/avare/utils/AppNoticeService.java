@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,6 +43,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Reads {@code appNotices} and shows each pending message in a dialog.
  *
+ * Current messages are also copied into local settings until the pilot
+ * deletes them. This client does not write Firestore.
+ *
  * Failures (offline, rules, App Check) are ignored. A missing message must
  * not block the map. The Firestore read is given 8 seconds, then dropped.
  */
@@ -49,7 +53,8 @@ public final class AppNoticeService {
 
     /** Firestore {@code (default)} database, same as AvareX. */
     public static final String COLLECTION = "appNotices";
-    private static final int DISMISSED_CAP = 40;
+    private static final int TOKEN_CAP = 40;
+    private static final Object LOCK = new Object();
 
     private static final AppNoticeService INSTANCE = new AppNoticeService();
 
@@ -70,22 +75,41 @@ public final class AppNoticeService {
     }
 
     /**
-     * Shows pending notices one at a time. Each is remembered only after the
-     * pilot taps OK and the screen is still open. {@code onDone} runs on the
-     * main thread when the check is finished, including when nothing is shown.
+     * Messages kept on this device, newest first.
+     */
+    public List<StoredAppNotice> saved() {
+        synchronized (LOCK) {
+            return loadSaved();
+        }
+    }
+
+    /**
+     * Drops one saved message. That revision is not saved or popped up again.
+     */
+    public void deleteSaved(StoredAppNotice notice) {
+        synchronized (LOCK) {
+            writeSaved(AppNoticeInbox.without(loadSaved(), notice.getDismissKey()));
+            rememberToken(notice.getDismissKey(), true);
+            rememberToken(notice.getDismissKey(), false);
+        }
+    }
+
+    /**
+     * Shows pending notices one at a time. Each current message is saved
+     * before the popup. OK only suppresses the popup. {@code onDone} runs on
+     * the main thread when the check is finished, including when nothing is shown.
      */
     public void present(final Activity activity, final Runnable onDone) {
         if (activity.isFinishing()) {
             finish(activity, onDone);
             return;
         }
-        final Set<String> dismissed = dismissedKeys();
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 final List<AppNotice> notices;
                 try {
-                    notices = fetchPending(dismissed, new Date());
+                    notices = fetchPending(new Date());
                 } catch (Throwable ignored) {
                     if (ignored instanceof InterruptedException) {
                         Thread.currentThread().interrupt();
@@ -103,7 +127,7 @@ public final class AppNoticeService {
         });
     }
 
-    List<AppNotice> fetchPending(Set<String> dismissed, Date now) throws Exception {
+    List<AppNotice> fetchPending(Date now) throws Exception {
         QuerySnapshot snap = Tasks.await(
                 FirebaseFirestore.getInstance()
                         .collection(COLLECTION)
@@ -127,7 +151,17 @@ public final class AppNoticeService {
                 notices.add(notice);
             }
         }
-        return AppNotice.pendingOf(notices, now, dismissed, AppNotice.DEFAULT_LIMIT);
+        List<AppNotice> current = new ArrayList<AppNotice>();
+        for (int i = 0; i < notices.size(); i++) {
+            AppNotice notice = notices.get(i);
+            if (notice.isCurrent(now)) {
+                current.add(notice);
+            }
+        }
+        synchronized (LOCK) {
+            remember(current);
+            return AppNotice.pendingOf(notices, now, dismissedKeys(), AppNotice.DEFAULT_LIMIT);
+        }
     }
 
     private void show(final Activity activity, final List<AppNotice> notices,
@@ -177,20 +211,77 @@ public final class AppNoticeService {
         }
     }
 
-    private static Set<String> dismissedKeys() {
-        Set<String> keys = new HashSet<String>();
+    private static void remember(List<AppNotice> current) {
         Preferences preferences = preferences();
         if (preferences == null) {
-            return keys;
+            return;
         }
-        String raw = preferences.getDismissedAppNotices();
+        List<StoredAppNotice> next = AppNoticeInbox.remember(
+                loadSaved(),
+                current,
+                keys(preferences.getDeletedAppNotices()));
+        writeSaved(next);
+    }
+
+    private static List<StoredAppNotice> loadSaved() {
+        List<StoredAppNotice> notices = new ArrayList<StoredAppNotice>();
+        Preferences preferences = preferences();
+        if (preferences == null) {
+            return notices;
+        }
+        String raw = preferences.getSavedAppNotices();
+        if (raw == null || raw.length() == 0) {
+            return notices;
+        }
+        try {
+            JSONArray array = new JSONArray(raw);
+            for (int i = 0; i < array.length(); i++) {
+                Object item = array.opt(i);
+                if (!(item instanceof JSONObject)) {
+                    continue;
+                }
+                StoredAppNotice notice = StoredAppNotice.tryParse((JSONObject) item);
+                if (notice != null) {
+                    notices.add(notice);
+                }
+            }
+        } catch (JSONException ignored) {
+        }
+        return notices;
+    }
+
+    private static void writeSaved(List<StoredAppNotice> notices) {
+        Preferences preferences = preferences();
+        if (preferences == null) {
+            return;
+        }
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < notices.size(); i++) {
+            array.put(notices.get(i).toJson());
+        }
+        preferences.setSavedAppNotices(array.toString());
+    }
+
+    private static Set<String> dismissedKeys() {
+        Preferences preferences = preferences();
+        if (preferences == null) {
+            return new HashSet<String>();
+        }
+        return keys(preferences.getDismissedAppNotices());
+    }
+
+    private static Set<String> keys(String raw) {
+        Set<String> keys = new HashSet<String>();
         if (raw == null || raw.length() == 0) {
             return keys;
         }
         try {
             JSONArray array = new JSONArray(raw);
             for (int i = 0; i < array.length(); i++) {
-                keys.add(array.getString(i));
+                String item = array.optString(i, "");
+                if (item.length() > 0) {
+                    keys.add(item);
+                }
             }
         } catch (JSONException ignored) {
         }
@@ -198,32 +289,43 @@ public final class AppNoticeService {
     }
 
     private static void dismiss(String dismissKey) {
+        synchronized (LOCK) {
+            rememberToken(dismissKey, false);
+        }
+    }
+
+    /** {@code deleted} stores the key so that revision is not saved again. */
+    private static void rememberToken(String token, boolean deleted) {
         Preferences preferences = preferences();
         if (preferences == null) {
             return;
         }
         JSONArray kept = new JSONArray();
         try {
-            String raw = preferences.getDismissedAppNotices();
+            String raw = deleted ? preferences.getDeletedAppNotices() : preferences.getDismissedAppNotices();
             JSONArray array = raw == null || raw.length() == 0 ? new JSONArray() : new JSONArray(raw);
             for (int i = 0; i < array.length(); i++) {
                 String item = array.optString(i, "");
-                if (item.length() > 0 && !item.equals(dismissKey)) {
+                if (item.length() > 0 && !item.equals(token)) {
                     kept.put(item);
                 }
             }
         } catch (JSONException ignored) {
             kept = new JSONArray();
         }
-        kept.put(dismissKey);
-        if (kept.length() > DISMISSED_CAP) {
+        kept.put(token);
+        if (kept.length() > TOKEN_CAP) {
             JSONArray trimmed = new JSONArray();
-            for (int i = kept.length() - DISMISSED_CAP; i < kept.length(); i++) {
+            for (int i = kept.length() - TOKEN_CAP; i < kept.length(); i++) {
                 trimmed.put(kept.optString(i));
             }
             kept = trimmed;
         }
-        preferences.setDismissedAppNotices(kept.toString());
+        if (deleted) {
+            preferences.setDeletedAppNotices(kept.toString());
+        } else {
+            preferences.setDismissedAppNotices(kept.toString());
+        }
     }
 
     private static void finish(final Activity activity, final Runnable onDone) {

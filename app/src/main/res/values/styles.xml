@@ -12,4 +12,12 @@ Redistribution and use in source and binary forms, with or without modification,
 <resources>
     <style name="AppTheme" parent="android:Theme.Light" />
     <style name="Theme.Dialog" parent="@android:style/Theme.Dialog" />
+    <style name="AvareToast" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Toast</item>
+    </style>
 </resources>

@@ -185,7 +185,7 @@ public class Download {
             try {
 
             	if(!flags[0]) {
-            		mCode = "code unable to connect to server ";
+            		mCode = "code cycle not known ";
                     sendFailure();
                     return;
             	}

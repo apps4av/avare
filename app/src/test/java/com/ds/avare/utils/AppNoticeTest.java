@@ -2,6 +2,7 @@ package com.ds.avare.utils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -114,5 +115,77 @@ public class AppNoticeTest {
                 2);
         assertEquals("c", pending.get(0).getId());
         assertEquals("b", pending.get(1).getId());
+    }
+
+    @Test
+    public void replacesTheSavedRowForTheSameId() {
+        AppNotice original = notice("cycle", "Chart cycle", "First text", true, null, null, null);
+        AppNotice edited = notice("cycle", "Chart cycle", "Updated text", true, null, null, null);
+        List<StoredAppNotice> saved = AppNoticeInbox.remember(
+                Collections.singletonList(StoredAppNotice.fromNotice(original)),
+                Collections.singletonList(edited),
+                new HashSet<String>());
+        assertEquals(1, saved.size());
+        assertEquals("Updated text", saved.get(0).getBody());
+        assertEquals(edited.getDismissKey(), saved.get(0).getDismissKey());
+    }
+
+    @Test
+    public void aDeletedRevisionIsNotSavedAgain() {
+        AppNotice item = notice("cycle", "Chart cycle", "New charts are available.", true, null, null, null);
+        List<StoredAppNotice> saved = AppNoticeInbox.remember(
+                Collections.<StoredAppNotice>emptyList(),
+                Collections.singletonList(item),
+                Collections.singleton(item.getDismissKey()));
+        assertEquals(0, saved.size());
+    }
+
+    @Test
+    public void anEditOfADeletedMessageIsSavedAgain() {
+        AppNotice original = notice("cycle", "Chart cycle", "First text", true, null, null, null);
+        AppNotice edited = notice("cycle", "Chart cycle", "Updated text", true,
+                new Date(Date.UTC(2026, 9, 3, 0, 0, 0)), null, null);
+        List<StoredAppNotice> saved = AppNoticeInbox.remember(
+                Collections.singletonList(StoredAppNotice.fromNotice(original)),
+                Collections.singletonList(edited),
+                Collections.singleton(original.getDismissKey()));
+        assertEquals(1, saved.size());
+        assertEquals("Updated text", saved.get(0).getBody());
+    }
+
+    @Test
+    public void keepsASavedMessageThatIsNoLongerCurrent() {
+        AppNotice kept = notice("old", "Chart cycle", "New charts are available.", true,
+                new Date(Date.UTC(2026, 0, 1, 0, 0, 0)), null, null);
+        AppNotice fresh = notice("new", "Chart cycle", "New charts are available.", true,
+                new Date(Date.UTC(2026, 2, 1, 0, 0, 0)), null, null);
+        List<StoredAppNotice> saved = AppNoticeInbox.remember(
+                Collections.singletonList(StoredAppNotice.fromNotice(kept)),
+                Collections.singletonList(fresh),
+                new HashSet<String>());
+        assertEquals("new", saved.get(0).getId());
+        assertEquals("old", saved.get(1).getId());
+    }
+
+    @Test
+    public void dropsTheOldestPastTheCap() {
+        List<AppNotice> current = new ArrayList<AppNotice>();
+        for (int index = 0; index < AppNoticeInbox.CAP + 1; index++) {
+            current.add(notice("n" + index, "Chart cycle", "New charts are available.", true,
+                    new Date(Date.UTC(2026, 0, 1 + index, 0, 0, 0)), null, null));
+        }
+        List<StoredAppNotice> saved = AppNoticeInbox.remember(
+                Collections.<StoredAppNotice>emptyList(),
+                current,
+                new HashSet<String>());
+        assertEquals(AppNoticeInbox.CAP, saved.size());
+        assertEquals("n" + AppNoticeInbox.CAP, saved.get(0).getId());
+        boolean dropped = true;
+        for (int i = 0; i < saved.size(); i++) {
+            if ("n0".equals(saved.get(i).getId())) {
+                dropped = false;
+            }
+        }
+        assertTrue(dropped);
     }
 }

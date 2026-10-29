@@ -1227,4 +1227,22 @@ public class Preferences implements SharedPreferences.OnSharedPreferenceChangeLi
         mPref.edit().putString("DismissedAppNotices", val).commit();
     }
 
+    /** JSON list of Apps4Av messages kept on this device until the pilot deletes them. */
+    public String getSavedAppNotices() {
+        return mPref.getString("SavedAppNotices", "");
+    }
+
+    public void setSavedAppNotices(String val) {
+        mPref.edit().putString("SavedAppNotices", val).commit();
+    }
+
+    /** Dismiss keys the pilot removed from Messages. A later edit is a new key. */
+    public String getDeletedAppNotices() {
+        return mPref.getString("DeletedAppNotices", "");
+    }
+
+    public void setDeletedAppNotices(String val) {
+        mPref.edit().putString("DeletedAppNotices", val).commit();
+    }
+
 }

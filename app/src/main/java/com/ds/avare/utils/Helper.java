@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.ds.avare.R;
 import com.ds.avare.StorageService;
@@ -1142,6 +1143,17 @@ public class Helper {
 
         }
         return null;
+    }
+
+    /**
+     * Text toast, vertically centered on the right edge.
+     * Callers may reuse the result with {@link Toast#setText}.
+     */
+    public static Toast makeText(Context context, CharSequence text, int duration) {
+        AvareToast toast = new AvareToast(context);
+        toast.setDuration(duration);
+        toast.setText(text);
+        return toast;
     }
 }
 

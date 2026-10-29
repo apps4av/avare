@@ -110,7 +110,7 @@ public class ChartsDownloadActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_LONG);
 
         /*
          * Show charts
@@ -571,7 +571,7 @@ public class ChartsDownloadActivity extends BaseActivity {
                     }
                     catch (Exception e){}
 
-                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " "
+                    Helper.makeText(ChartsDownloadActivity.this, getString(R.string.download) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
                     /*
@@ -643,7 +643,7 @@ public class ChartsDownloadActivity extends BaseActivity {
                     }
                     catch (Exception e){}
 
-                    Toast.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " "
+                    Helper.makeText(ChartsDownloadActivity.this, getString(R.string.Delete) + " "
                             + getString(R.string.Success), Toast.LENGTH_SHORT).show();
     
                     if(mName.equals(getString(R.string.TFRs))) {

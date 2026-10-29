@@ -162,7 +162,7 @@ public class ThreeDActivity extends BaseActivity {
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_SHORT);
 
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.threed, null);

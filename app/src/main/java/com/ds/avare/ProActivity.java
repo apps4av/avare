@@ -211,7 +211,7 @@ public class ProActivity extends AppCompatActivity {
                     .build();
             mSignInLauncher.launch(signInIntent);
         } catch (Throwable t) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }
@@ -255,7 +255,7 @@ public class ProActivity extends AppCompatActivity {
                             public void onClick(View v) {
                                 String email = emailInput.getText().toString().trim();
                                 if (!isValidEmail(email)) {
-                                    Toast.makeText(ProActivity.this,
+                                    Helper.makeText(ProActivity.this,
                                             getString(R.string.error_email),
                                             Toast.LENGTH_LONG).show();
                                     return;
@@ -279,18 +279,18 @@ public class ProActivity extends AppCompatActivity {
                                 return;
                             }
                             if (task.isSuccessful()) {
-                                Toast.makeText(ProActivity.this,
+                                Helper.makeText(ProActivity.this,
                                         getString(R.string.ProForgotPasswordSent),
                                         Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(ProActivity.this,
+                                Helper.makeText(ProActivity.this,
                                         getString(R.string.ProForgotPasswordFailed),
                                         Toast.LENGTH_LONG).show();
                             }
                         }
                     });
         } catch (Throwable t) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }
@@ -322,7 +322,7 @@ public class ProActivity extends AppCompatActivity {
     private void launchPaywall() {
         FirebaseUser user = currentUser();
         if (user == null) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProMustSignInFirst),
                     Toast.LENGTH_SHORT).show();
             return;
@@ -331,7 +331,7 @@ public class ProActivity extends AppCompatActivity {
         RevenueCatService.logIn(user.getUid(), user.getEmail(), user.getDisplayName());
 
         if (mPaywallLauncher == null || !RevenueCatService.isConfigured()) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
             return;
@@ -355,14 +355,14 @@ public class ProActivity extends AppCompatActivity {
                 @Override
                 public void onError(PurchasesError error) {
                     if (!isFinishing()) {
-                        Toast.makeText(ProActivity.this,
+                        Helper.makeText(ProActivity.this,
                                 getString(R.string.ProServiceUnavailable),
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } catch (Throwable t) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }
@@ -372,7 +372,7 @@ public class ProActivity extends AppCompatActivity {
         try {
             startActivity(new Intent(this, RegisterActivity.class));
         } catch (Throwable t) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }
@@ -393,7 +393,7 @@ public class ProActivity extends AppCompatActivity {
                         @Override
                         public void onPaywallDisplayResult(boolean wasDisplayed) {
                             if (!wasDisplayed && !isFinishing()) {
-                                Toast.makeText(ProActivity.this,
+                                Helper.makeText(ProActivity.this,
                                         getString(R.string.ProStatusEntitled),
                                         Toast.LENGTH_SHORT).show();
                                 refreshUI();
@@ -401,7 +401,7 @@ public class ProActivity extends AppCompatActivity {
                         }
                     });
         } catch (Throwable t) {
-            Toast.makeText(this,
+            Helper.makeText(this,
                     getString(R.string.ProServiceUnavailable),
                     Toast.LENGTH_SHORT).show();
         }

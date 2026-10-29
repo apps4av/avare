@@ -386,7 +386,7 @@ public class LocationActivity extends BaseActivity implements Observer {
         /*
          * Create toast beforehand so multiple clicks dont throw up a new toast
          */
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mToast = Helper.makeText(this, "", Toast.LENGTH_SHORT);
 
         LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.location, null);
@@ -635,7 +635,7 @@ public class LocationActivity extends BaseActivity implements Observer {
                         dialog.dismiss();
                         String ret = Emergency.declare();
                         hideMenu();
-                        Toast.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
+                        Helper.makeText(LocationActivity.this, ret, Toast.LENGTH_LONG).show();
 
                     }
                 });

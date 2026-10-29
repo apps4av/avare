@@ -141,7 +141,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     }
 
-                    Toast.makeText(RegisterActivity.this, getString(R.string.unregistering_server), Toast.LENGTH_LONG).show();
+                    com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.unregistering_server), Toast.LENGTH_LONG).show();
 
                     mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
 
@@ -190,10 +190,10 @@ public class RegisterActivity extends BaseActivity {
                             if(result) {
                                 mPref.setRegistered(false);
                                 mPref.setRegisteredEmail(null);
-                                Toast.makeText(RegisterActivity.this, getString(R.string.unregistered), Toast.LENGTH_LONG).show();
+                                com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.unregistered), Toast.LENGTH_LONG).show();
                             }
                             else {
-                                Toast.makeText(RegisterActivity.this, getString(R.string.failed_unregister), Toast.LENGTH_LONG).show();
+                                com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.failed_unregister), Toast.LENGTH_LONG).show();
                             }
                             setButtonStates();
                         }
@@ -204,7 +204,7 @@ public class RegisterActivity extends BaseActivity {
                 else {
                     final String email = mEmailEditText.getText().toString();
                     if(!isValidEmail(email)) {
-                        Toast.makeText(RegisterActivity.this, getString(R.string.error_email), Toast.LENGTH_LONG).show();
+                        com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.error_email), Toast.LENGTH_LONG).show();
                         return;
                     }
 
@@ -214,7 +214,7 @@ public class RegisterActivity extends BaseActivity {
                         }
                     }
 
-                    Toast.makeText(RegisterActivity.this, getString(R.string.registering_server), Toast.LENGTH_LONG).show();
+                    com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.registering_server), Toast.LENGTH_LONG).show();
 
                     mRegisterTask = new AsyncTask<Void, Void, Boolean>() {
 
@@ -281,7 +281,7 @@ public class RegisterActivity extends BaseActivity {
                                 }
                             }
                             else {
-                                Toast.makeText(RegisterActivity.this, getString(R.string.failed_register), Toast.LENGTH_LONG).show();
+                                com.ds.avare.utils.Helper.makeText(RegisterActivity.this, getString(R.string.failed_register), Toast.LENGTH_LONG).show();
                             }
                             setButtonStates();
                         }
