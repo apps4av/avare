@@ -12,7 +12,7 @@
 #
 # Author: zkhan
 
-rm -f *.csv *.xml *.db *.gz all weather latest_fcat.png latest_fcat.tif latest_fcat.txt flight_category.tif
+rm -f *.csv *.xml *.db *.gz weather latest_fcat.png latest_fcat.tif latest_fcat.txt flight_category.tif
 
 date -u +"%m_%d_%Y_%H:%M_UTC" > weather 
 echo weather.db >> weather
@@ -41,8 +41,8 @@ wget ${CMD}/${FL}.gz
 gzip -d ${FL}.gz
 perl metars.pl > metars.csv
 
-curl -X GET  "https://aviationweather.gov/api/data/windtemp?level=low&region=all&layout=off" -o all 
-perl wa.pl > wa.csv
+# winds aloft from the GFA forecast, the legacy windtemp feed is discontinued
+python3 wa.py > wa.csv
 
 sqlite3 weather.db < import.sql
 
@@ -59,4 +59,4 @@ date -u +"%Y%m%d_%H%M" >> latest_fcat.txt
 rm -f weather.zip
 zip weather.zip weather.db weather latest_fcat.png latest_fcat.txt
 
-rm -f *.csv *.xml *.db *.gz all weather latest_fcat.png latest_fcat.tif latest_fcat.txt flight_category.tif
+rm -f *.csv *.xml *.db *.gz weather latest_fcat.png latest_fcat.tif latest_fcat.txt flight_category.tif
