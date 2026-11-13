@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#202020"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/documents_back"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:text="&lt;"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/documents_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/DocumentsTitle"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/documents_new_folder"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:text="@string/DocumentsNewFolder"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/documents_import"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:text="@string/DocumentsImport"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <Spinner
+        android:id="@+id/documents_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#202020"
+        android:minHeight="44dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <GridView
+            android:id="@+id/documents_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:columnWidth="150dp"
+            android:horizontalSpacing="4dp"
+            android:numColumns="auto_fit"
+            android:padding="8dp"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="4dp" />
+
+        <TextView
+            android:id="@+id/documents_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="24dp"
+            android:textColor="#AAAAAA"
+            android:textSize="16sp"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

@@ -162,6 +162,22 @@ Redistribution and use in source and binary forms, with or without modification,
             android:layout_margin="5dp"
             android:textStyle="bold"/>
 
+        <!-- Pro button, same glyph avarex shows at the top right. Moved below the info lines at run time. -->
+        <ImageButton
+            android:id="@+id/location_button_pro"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="60dp"
+            android:layout_marginRight="5dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/pro_icon_bg"
+            android:contentDescription="@string/ProIconDescription"
+            android:src="@drawable/ic_pro"
+            android:visibility="visible" />
+
         <ImageButton
             android:id="@+id/location_button_center"
             android:layout_width="wrap_content"

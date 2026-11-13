@@ -32,6 +32,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resNameDatabase">
         <item>@string/databases</item>
+        <item>FAA AIM</item>
+        <item>FAA 14 CFR</item>
+        <item>FAA Handbooks</item>
+        <item>FAA Handbooks Specialty</item>
+        <item>FAA ACS</item>
+        <item>FAA Advisory Circulars</item>
     </string-array>
      
     <string-array name="resNameWeather">
@@ -249,6 +255,12 @@ Redistribution and use in source and binary forms, with or without modification,
 
     <string-array name="resFilesDatabase">
         <item>databases</item>
+        <item>FAA_AIM</item>
+        <item>FAA_CFR14</item>
+        <item>FAA_HANDBOOKS</item>
+        <item>FAA_HANDBOOKS_SPECIALTY</item>
+        <item>FAA_ACS</item>
+        <item>FAA_AC</item>
     </string-array>
     
     <string-array name="resFilesWeather">

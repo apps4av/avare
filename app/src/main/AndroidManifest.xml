@@ -60,11 +60,6 @@ Redistribution and use in source and binary forms, with or without modification,
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
-        <!-- Regional Chart Supplement PDFs open in an external viewer -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:mimeType="application/pdf" />
-        </intent>
     </queries>
 
     <application
@@ -129,6 +124,23 @@ Redistribution and use in source and binary forms, with or without modification,
         <activity
             android:name=".ProActivity"
             android:label="@string/ProServicesTitle"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <!-- Documents (Pro): FAA documents, weather pictures, user files, and their viewers -->
+        <activity
+            android:name=".DocumentsActivity"
+            android:label="@string/DocumentsTitle"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".PdfViewerActivity"
+            android:label="@string/DocumentsTitle"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".PictureViewerActivity"
+            android:label="@string/DocumentsTitle"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".TextViewerActivity"
+            android:label="@string/DocumentsTitle"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name="com.ds.avare.MainActivity"

@@ -128,6 +128,7 @@ public class LocationActivity extends BaseActivity implements Observer {
     private Button mPrefButton;
     private Button mDownloadButton;
     private Button mMenuButton;
+    private ImageButton mProButton;
     private TwoButton mSimButton;
     private TwoButton mDrawButton;
     private Button mWebButton;
@@ -556,6 +557,17 @@ public class LocationActivity extends BaseActivity implements Observer {
             }
         });
 
+
+        mProButton = (ImageButton)view.findViewById(R.id.location_button_pro);
+        mProButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Subscription Services: open to all, sign in / subscribe live there
+                startActivity(new Intent(LocationActivity.this, ProActivity.class));
+            }
+
+        });
 
         mMenuButton = (Button)view.findViewById(R.id.location_button_menu);
         mMenuButton.getBackground().setAlpha(255);
@@ -1438,12 +1450,33 @@ public class LocationActivity extends BaseActivity implements Observer {
     }
 
     // animate layers at 500 ms
+    /**
+     * Keep the Pro button just under the info lines at the top of the map. The
+     * info line height depends on screen size and settings, so follow it.
+     */
+    private void placeProButton() {
+        if(mProButton == null || mService == null) {
+            return;
+        }
+        int top = (int)mService.getInfoLines().getHeight()
+                + (int)(5 * getResources().getDisplayMetrics().density);
+        android.view.ViewGroup.LayoutParams lp = mProButton.getLayoutParams();
+        if(lp instanceof android.widget.RelativeLayout.LayoutParams) {
+            android.widget.RelativeLayout.LayoutParams rlp = (android.widget.RelativeLayout.LayoutParams)lp;
+            if(rlp.topMargin != top) {
+                rlp.topMargin = top;
+                mProButton.setLayoutParams(rlp);
+            }
+        }
+    }
+
     Handler mAnimationLayerHandler = new Handler();
     private Runnable mAnimationRunnableCode = new Runnable() {
         @Override
         public void run() {
             if(mLocationView != null) {
                 mLocationView.postInvalidate();
+                placeProButton();
                 mAnimationLayerHandler.postDelayed(this, Layer.ANIMATE_SPEED_MS);
             }
         }

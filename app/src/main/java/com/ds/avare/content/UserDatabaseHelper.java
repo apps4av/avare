@@ -10,7 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 public class UserDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "user.db";
-    private static final int DB_VERSION = 5;
+    /** Schema version; a user.db with a higher version came from a newer app. */
+    public static final int DB_VERSION = 5;
 
     public UserDatabaseHelper(Context context, String folder) {
         super(context, folder, DBNAME, DB_VERSION);

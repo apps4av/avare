@@ -83,6 +83,23 @@ All rights reserved.
             android:textColor="#000000"
             android:textAllCaps="false" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="8dp"
+            android:text="@string/ProPagesHeader"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/pro_pages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
         <Button
             android:id="@+id/pro_close_btn"
             android:layout_width="match_parent"

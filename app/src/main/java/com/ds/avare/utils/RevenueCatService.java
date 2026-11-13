@@ -13,7 +13,6 @@ Redistribution and use in source and binary forms, with or without modification,
 package com.ds.avare.utils;
 
 import android.content.Context;
-
 import com.revenuecat.purchases.CustomerInfo;
 import com.revenuecat.purchases.EntitlementInfo;
 import com.revenuecat.purchases.LogLevel;
@@ -103,19 +102,36 @@ public final class RevenueCatService {
      * {@code RevenueCatService.logIn}. All errors swallowed.
      */
     public static void logIn(String userId, String email, String displayName) {
+        logIn(userId, email, displayName, null);
+    }
+
+    /**
+     * Same as {@link #logIn(String, String, String)} but runs {@code done}
+     * once RevenueCat has switched to this user (or failed to), so the caller
+     * can read the entitlement of the right account. {@code done} is also run
+     * right away when RevenueCat is not configured.
+     */
+    public static void logIn(String userId, String email, String displayName, final Runnable done) {
         if (!isConfigured() || userId == null || userId.isEmpty()) {
+            if (done != null) {
+                done.run();
+            }
             return;
         }
         try {
             Purchases.getSharedInstance().logIn(userId, new LogInCallback() {
                 @Override
                 public void onReceived(CustomerInfo customerInfo, boolean created) {
-                    // ignore
+                    if (done != null) {
+                        done.run();
+                    }
                 }
 
                 @Override
                 public void onError(PurchasesError error) {
-                    // ignore
+                    if (done != null) {
+                        done.run();
+                    }
                 }
             });
             if (email != null && !email.isEmpty()) {
@@ -130,6 +146,9 @@ public final class RevenueCatService {
             }
         } catch (Throwable ignored) {
             // optional service
+            if (done != null) {
+                done.run();
+            }
         }
     }
 

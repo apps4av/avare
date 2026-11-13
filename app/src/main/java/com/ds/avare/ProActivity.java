@@ -19,11 +19,14 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +56,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Pro Services screen — Avare's analog of the avarex LoginScreen.
+ * Subscription Services screen. Avare's analog of the avarex LoginScreen, plus
+ * the list of subscriber pages (see {@link #PAGES}). Anyone can open it from the
+ * map icon or Preferences; only the page links need a subscription.
  *
  * Flow:
  *  1. If the user is not signed in to Firebase, the "Sign in / Register"
@@ -73,6 +78,33 @@ public class ProActivity extends AppCompatActivity {
 
     private static final List<AuthUI.IdpConfig> PROVIDERS =
             Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build());
+
+    /** One link in the subscriber pages list. */
+    private static final class SubscriberPage {
+        final int icon;
+        final int title;
+        final int summary;
+        final Class<?> target;
+
+        SubscriberPage(int icon, int title, int summary, Class<?> target) {
+            this.icon = icon;
+            this.title = title;
+            this.summary = summary;
+            this.target = target;
+        }
+    }
+
+    /**
+     * The subscriber pages, in display order. The screen itself is open to
+     * everyone, but these links need the Pro entitlement.
+     *
+     * To add a page: write its Activity, register it in AndroidManifest.xml,
+     * add its title and summary strings, and add one entry here.
+     */
+    private static final SubscriberPage[] PAGES = {
+            new SubscriberPage(R.drawable.ic_document, R.string.ProPageDocuments,
+                    R.string.ProPageDocumentsSummary, DocumentsActivity.class),
+    };
 
     private PaywallActivityLauncher mPaywallLauncher;
 
@@ -151,7 +183,51 @@ public class ProActivity extends AppCompatActivity {
             }
         });
 
+        addPages((LinearLayout) findViewById(R.id.pro_pages));
+
         refreshUI();
+    }
+
+    private void addPages(LinearLayout list) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        for (final SubscriberPage page : PAGES) {
+            View item = inflater.inflate(R.layout.pro_home_item, list, false);
+            ((ImageView) item.findViewById(R.id.pro_home_item_icon)).setImageResource(page.icon);
+            ((TextView) item.findViewById(R.id.pro_home_item_title)).setText(page.title);
+            ((TextView) item.findViewById(R.id.pro_home_item_summary)).setText(page.summary);
+            item.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openPage(page);
+                }
+            });
+            list.addView(item);
+        }
+    }
+
+    /** Open a subscriber page, or explain how to get access when not subscribed. */
+    private void openPage(final SubscriberPage page) {
+        RevenueCatService.isProEntitled(new RevenueCatService.EntitlementCallback() {
+            @Override
+            public void onResult(boolean entitled) {
+                if (isFinishing()) {
+                    return;
+                }
+                if (!entitled) {
+                    Helper.makeText(ProActivity.this,
+                            getString(currentUser() == null
+                                    ? R.string.ProPageNeedsSignIn
+                                    : R.string.ProPageNeedsSubscription),
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    startActivity(new Intent(ProActivity.this, page.target));
+                } catch (Throwable ignored) {
+                    // page not available
+                }
+            }
+        });
     }
 
     @Override

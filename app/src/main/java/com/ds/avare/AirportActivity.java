@@ -14,7 +14,6 @@ package com.ds.avare;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,7 +22,6 @@ import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
 import android.location.GpsStatus;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -34,8 +32,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import androidx.core.content.FileProvider;
 
 import com.ds.avare.adapters.TypeValueAdapter;
 import com.ds.avare.content.LocationContentProviderHelper;
@@ -119,7 +115,7 @@ public class AirportActivity extends BaseActivity implements Observer {
                         dialog.dismiss();
                         int pdf = csupPdfIndex(which);
                         if(pdf >= 0) {
-                            openCsupPdf(mCsupPdfs.get(pdf));
+                            openCsupPdf(mCsupPdfs.get(pdf), mListViews.get(which));
                             return;
                         }
                         setViewFromPos(which);
@@ -385,23 +381,14 @@ public class AirportActivity extends BaseActivity implements Observer {
     }
 
     /**
-     * Hand a Chart Supplement PDF to whatever viewer the device has installed.
-     * The file lives in the app's private files directory, so the viewer
-     * receives a FileProvider URI with read permission.
+     * Open a Chart Supplement PDF in the built-in viewer, so no external PDF
+     * app is needed.
      */
-    private void openCsupPdf(File pdf) {
-        try {
-            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".provider.file", pdf);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, "application/pdf");
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.setClipData(ClipData.newRawUri(pdf.getName(), uri));
-            startActivity(intent);
-        }
-        catch (Exception e) {
-            mToast.setText(getString(R.string.NoPdfViewer));
-            mToast.show();
-        }
+    private void openCsupPdf(File pdf, String title) {
+        Intent intent = new Intent(this, PdfViewerActivity.class);
+        intent.putExtra(PdfViewerActivity.EXTRA_PATH, pdf.getAbsolutePath());
+        intent.putExtra(PdfViewerActivity.EXTRA_TITLE, title);
+        startActivity(intent);
     }
     
     private void setViewFromPos(int pos) {
