@@ -402,6 +402,11 @@
 
 <section class="releases">
 <h3 class="western">Avare Releases</h3>
+<p><b>11.1.20</b></p>
+<ul>
+	<li>Added a Log Book under Subscription Services. Import and export CSV, including files from AvareX.</li>
+	<li>User Data backup now includes the log book.</li>
+</ul>
 <p><b>11.1.19</b></p>
 <ul>
 	<li>Added the Subscription Services icon on the Map for sign in and Subscribe. It replaces Subscription under Preferences.</li>
@@ -730,6 +735,7 @@
     <ul>
       <li><b>Unlimited charts.</b> Keep as many charts as you like in every Download category.</li>
       <li><b>Documents.</b> FAA documents, internet weather pictures, your own files, and a backup of your saved data, all in one place. The features are listed below.</li>
+      <li><b>Log Book.</b> Flight records, totals, and charts. Import and export a CSV file.</li>
     </ul>
     <p>To subscribe, restore a purchase, or manage the plan, tap the round <b>Subscription Services</b> icon at the top right of the Map, just under the status lines. The screen is open to anyone. Tap Sign in / Register with your email, then Subscribe. Forgot password? sends a reset email. Sign out signs you out on this device. Under the buttons is a list of subscriber features. If you are not signed in or not subscribed, tapping one tells you to sign in or subscribe first.</p>
     <p><b>Documents</b> shows the FAA documents you downloaded, your own files, and internet weather pictures as a grid. Under Download, in the <b>Databases</b> category, select <b>FAA AIM</b>, <b>FAA 14 CFR</b>, <b>FAA Handbooks</b>, <b>FAA Handbooks Specialty</b>, <b>FAA ACS</b>, or <b>FAA Advisory Circulars</b> and tap Download. They are free to download for everyone, and then appear in Documents as folders of PDFs. Reading them in Documents needs a subscription.</p>
@@ -738,10 +744,16 @@
       <li><b>PDF reader.</b> Tap a PDF to read it in Avare. Swipe left or right, or use the arrows or the slider, to change pages. Pinch or double tap to zoom. Tap the page number to go to a page. Avare remembers your last page in each PDF. There is no text search.</li>
       <li><b>Weather pictures.</b> The filter at the top shows All Documents, User Docs, or one kind of weather picture (WPC, SigWx, AIRMETs, forecasts, Winds/Temp). Tap a picture to view it full screen, and swipe to the next one. Weather pictures need an internet connection.</li>
       <li><b>Your files.</b> <b>Import</b> copies a PDF, text, KML, GeoJSON, or picture file into your documents. <b>New folder</b> makes a folder. Press and hold a file or folder to share, move, or delete it. A folder must be empty to be deleted. Text, KML, and GeoJSON files open as text.</li>
-      <li><b>User Data backup.</b> <b>User Data</b> is the file that holds your saved plans, lists, aircraft, and recent destinations. Tap it to share a backup copy, for example to email it to yourself. Long-press it and choose <i>Import user data from a backup</i> to replace your current data with a backup. You can also pick a <code>user.db</code> file with the Import button. The file is checked first, and the import replaces everything, so share a backup of the current data before importing.</li>
+      <li><b>User Data backup.</b> <b>User Data</b> is the file that holds your saved plans, lists, aircraft, log book, and recent destinations. Tap it to share a backup copy, for example to email it to yourself. Long-press it and choose <i>Import user data from a backup</i> to replace your current data with a backup. You can also pick a <code>user.db</code> file with the Import button. The file is checked first, and the import replaces everything, so share a backup of the current data before importing.</li>
       <li><b>Removing FAA documents.</b> Use Download, select the item, tap until it shows the delete mark, and tap Delete.</li>
     </ul>
     <p><b>Messages</b>, under Preferences -&gt; Application State, lists notices from Apps4Av saved on this device. Tap <b>Delete</b> on a row to remove one. Deleting does not change the message Apps4Av published.</p>
+  </article>
+
+  <article class="topic">
+    <h4>Log Book</h4>
+    <p>Tap the round <b>Subscription Services</b> icon at the top right of the Map, then <b>Log Book</b>. The top of the screen shows total hours, landings, and approaches. Tap an entry to edit it, or <b>Add entry</b> to write one. <b>Charts</b> opens the dashboard: day, night, and IFR currency, hours by year, aircraft, and category, and landings. Filters narrow the charts by year, aircraft type, tail number, or a remark such as IPC or Flight Review.</p>
+    <p><b>Import</b> reads a CSV file. <b>Export</b> writes one you can share. The first line is the header. Use Export once to see the column names. A CSV from AvareX imports here, and a CSV from here imports in AvareX. The log book is included in the User Data backup.</p>
   </article>
 
   <article class="topic">

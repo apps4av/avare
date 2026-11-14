@@ -104,6 +104,8 @@ public class ProActivity extends AppCompatActivity {
     private static final SubscriberPage[] PAGES = {
             new SubscriberPage(R.drawable.ic_document, R.string.ProPageDocuments,
                     R.string.ProPageDocumentsSummary, DocumentsActivity.class),
+            new SubscriberPage(R.drawable.ic_logbook, R.string.ProPageLogBook,
+                    R.string.ProPageLogBookSummary, LogbookActivity.class),
     };
 
     private PaywallActivityLauncher mPaywallLauncher;

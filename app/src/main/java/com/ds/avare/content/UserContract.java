@@ -102,4 +102,12 @@ public class UserContract {
         return ContentUris.withAppendedId(CONTENT_URI_AIRCRAFT, id);
     }
 
+    public static final String BASE_LOGBOOK = "logbook";
+    public static final Uri CONTENT_URI_LOGBOOK = Uri.withAppendedPath(AUTHORITY_URI, BASE_LOGBOOK);
+    public static final String TABLE_LOGBOOK = "logbook";
+
+    public static Uri buildLogbookUri(long id){
+        return ContentUris.withAppendedId(CONTENT_URI_LOGBOOK, id);
+    }
+
 }

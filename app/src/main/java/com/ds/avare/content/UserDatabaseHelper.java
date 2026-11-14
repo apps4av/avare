@@ -11,7 +11,7 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
 
     private static final String DBNAME = "user.db";
     /** Schema version; a user.db with a higher version came from a newer app. */
-    public static final int DB_VERSION = 5;
+    public static final int DB_VERSION = 6;
 
     public UserDatabaseHelper(Context context, String folder) {
         super(context, folder, DBNAME, DB_VERSION);
@@ -97,6 +97,39 @@ public class UserDatabaseHelper extends MainDatabaseHelper {
                             UserContract.AIRCRAFT_COLUMN_BASE + " TEXT, " +
                             UserContract.AIRCRAFT_COLUMN_WNB + " TEXT, " +
                             UserContract.AIRCRAFT_COLUMN_PERF + " TEXT);");
+        }
+        catch (Exception e) {
+        }
+
+        try {
+            db.execSQL(
+                    "CREATE TABLE " + UserContract.TABLE_LOGBOOK + " (" +
+                            "id TEXT PRIMARY KEY, " +
+                            "date TEXT, " +
+                            "aircraftMakeModel TEXT, " +
+                            "aircraftIdentification TEXT, " +
+                            "route TEXT, " +
+                            "totalFlightTime REAL, " +
+                            "dayTime REAL, " +
+                            "nightTime REAL, " +
+                            "crossCountryTime REAL, " +
+                            "soloTime REAL, " +
+                            "simulatedInstruments REAL, " +
+                            "actualInstruments REAL, " +
+                            "dualReceived REAL, " +
+                            "pilotInCommand REAL, " +
+                            "copilot REAL, " +
+                            "instructor REAL, " +
+                            "examiner REAL, " +
+                            "flightSimulator REAL, " +
+                            "dayLandings INTEGER, " +
+                            "nightLandings INTEGER, " +
+                            "holdingProcedures REAL, " +
+                            "groundTime REAL, " +
+                            "instrumentApproaches INTEGER, " +
+                            "instructorName TEXT, " +
+                            "instructorCertificate TEXT, " +
+                            "remarks TEXT);");
         }
         catch (Exception e) {
         }
