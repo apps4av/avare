@@ -580,7 +580,7 @@ Redistribution and use in source and binary forms, with or without modification,
     <string name="ProPageNeedsSignIn">Documents is for subscribers. Sign in or register above, then subscribe.</string>
     <string name="ProPageNeedsSubscription">Documents is for subscribers. Tap Subscribe above to unlock it.</string>
     <string name="ProPageDocuments">Documents</string>
-    <string name="ProPageDocumentsSummary">FAA documents, weather pictures, and your own files</string>
+    <string name="ProPageDocumentsSummary">FAA documents, weather pictures, and your own files. Download the FAA documents from the Download menu, under Databases.</string>
     <string name="DocumentsTitle">Documents</string>
     <string name="DocumentsAll">All Documents</string>
     <string name="DocumentsUser">User Docs</string>
